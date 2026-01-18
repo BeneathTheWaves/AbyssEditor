@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
 namespace ReefEditor.UI {
@@ -67,7 +65,21 @@ namespace ReefEditor.UI {
         // getting commands from UI
         void UpdateBrushLight() => brushLight.enabled = checkbox.check;
         void UpdateSunRotation() => sunTransform.eulerAngles = new Vector3(rotationXSlider.LerpedValue, rotationYSlider.LerpedValue, 0);
-        void UpdateSunColor() => sunLights.ForEach(l => l.color = new Color(sunR.LerpedValue, sunG.LerpedValue, sunB.LerpedValue));
-        void UpdateSunIntensity() => sunLights.ForEach(l => l.intensity = sunIntensity.LerpedValue);
+
+        void UpdateSunColor()
+        {
+            foreach (var light in sunLights)
+            {
+                light.color = new Color(sunR.LerpedValue, sunG.LerpedValue, sunB.LerpedValue);
+            }
+        }
+
+        void UpdateSunIntensity()
+        {
+            foreach (var light in sunLights)
+            {
+                light.intensity = sunIntensity.LerpedValue;
+            }
+        }
     }
 }

@@ -1,8 +1,10 @@
 ﻿using System;
 using ProtoBuf;
 using ProtoBuf.Meta; 
+
 namespace ReefEditor.ContentLoading {
     public class SNTypeModel : TypeModel {
+        /*
         protected override int GetKeyImpl(Type type)
         {
             return GetKey(ref type);
@@ -17,5 +19,6 @@ namespace ReefEditor.ContentLoading {
         {
             return ProtoReader.ReadObject(value, key, source);
         }
+        */
     }
 }

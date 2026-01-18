@@ -1,13 +1,13 @@
 {
   "dependencies": {
-    "com.passivepicasso.thunderkit": "https://github.com/PassivePicasso/ThunderKit.git",
     "com.unity.2d.sprite": "1.0.0",
     "com.unity.assetbundlebrowser": "1.7.0",
-    "com.unity.burst": "1.3.9",
     "com.unity.collab-proxy": "1.2.16",
     "com.unity.ide.rider": "1.1.4",
     "com.unity.ide.vscode": "1.2.3",
     "com.unity.inputsystem": "1.3.0",
+    "com.unity.mathematics": "1.2.6",
+    "com.unity.nuget.newtonsoft-json": "2.0.2",
     "com.unity.render-pipelines.universal": "7.3.1",
     "com.unity.shadergraph": "7.3.1",
     "com.unity.test-framework": "1.1.22",
