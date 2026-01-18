@@ -26,7 +26,7 @@ namespace ReefEditor.UI {
 
                 if(SceneManager.GetActiveScene().buildIndex == 0)
                 {
-                    SceneManager.LoadScene("VoidEditor");
+                    SceneManager.LoadScene("AbyssEditor");
                 }
             }
         }

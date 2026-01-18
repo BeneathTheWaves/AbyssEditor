@@ -70,3 +70,5 @@ crashlytics-build.properties
 AssetBundles/
 */[Pp]ackages/
 /Library
+/Temp
+*.cache

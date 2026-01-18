@@ -20,7 +20,7 @@ public class Menu : MonoBehaviour
             return;
         }
 
-        SceneManager.LoadScene("VoidEditor"); //Loadbatch window now automatically gets opened when the scene is loaded.
+        SceneManager.LoadScene("AbyssEditor"); //Loadbatch window now automatically gets opened when the scene is loaded.
     }
 
     public void ShowAbout()
