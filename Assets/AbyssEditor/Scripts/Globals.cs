@@ -1,4 +1,5 @@
 using System.IO;
+using ReefEditor.UI;
 using UnityEngine;
 
 namespace ReefEditor {
@@ -15,6 +16,7 @@ namespace ReefEditor {
         public string gamePath;
         public bool belowzero;
         public string userBatchOutputPath;
+        public bool autoLoadMats;
 
         private GameObject[] boundaryPlanes;
 
@@ -82,6 +84,14 @@ namespace ReefEditor {
         }
         public static Material GetSimpleMapMat() {
             return instance.simpleMapMat;
+        }
+
+        public static void SetAutoLoadMatsToggle(bool value)
+        {
+            if (value)
+            {
+                UIMaterialsWindow.main.LoadMaterials();
+            }
         }
 
         public static void SetGamePath(string path, bool save) {

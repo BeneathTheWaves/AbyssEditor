@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 
+//soon to be removed as this is so stupid, why are we reinventing the toggle in unity??? like we have the editor.................
 namespace ReefEditor.UI {
     public class UICheckbox : MonoBehaviour {
         public bool check;

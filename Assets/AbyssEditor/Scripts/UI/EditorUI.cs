@@ -12,8 +12,11 @@ namespace ReefEditor.UI {
             inst = this;
         }
 
-        private void Start() {
+        private void Start()
+        {
             UIWindow.ShowWindow("Button_LoadBatch");
+
+            Globals.SetAutoLoadMatsToggle(true);
         }
 
         public static void UpdateStatusBar(string title, float val) {

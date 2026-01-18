@@ -1,20 +1,16 @@
 ﻿using UnityEngine.UI;
 using SFB;
 using UnityEngine;
+using UnityEngine.Assertions;
 using UnityEngine.SceneManagement;
 
 namespace ReefEditor.UI {
     public class UISettingsWindow : UIWindow {
-        UICheckbox fullscreenCheckbox;
 
-        private void Start() {
-            fullscreenCheckbox = GetComponentInChildren<UICheckbox>();
-
-            if(fullscreenCheckbox != null)
-            {
-				fullscreenCheckbox.SetState(true);
-				fullscreenCheckbox.transform.GetComponent<Button>().onClick.AddListener(UpdateFullscreenMode);
-			}
+        private void Start()
+        {
+            OnFullscreenToggle(true);
+            OnAutoLoadMaterialsToggle(true);
         }
 
         public void BrowseGamePath() {
@@ -37,6 +33,14 @@ namespace ReefEditor.UI {
         }
         private void UpdatePathDisplay(string path) => transform.GetChild(1).GetChild(1).GetComponent<Text>().text = path;
 
-        private void UpdateFullscreenMode() { Screen.fullScreenMode = (fullscreenCheckbox.check ? FullScreenMode.ExclusiveFullScreen : FullScreenMode.Windowed); }
+        public void OnFullscreenToggle(bool value)
+        {
+            Screen.fullScreenMode = (value ? FullScreenMode.ExclusiveFullScreen : FullScreenMode.Windowed);
+        }
+
+        public void OnAutoLoadMaterialsToggle(bool value)
+        {
+            Globals.instance.autoLoadMats = value;
+        }
     }
 }
