@@ -16,7 +16,7 @@ MonoBehaviour:
   ShowOnStartup: 1
   GameExecutable: Subnautica.exe
   GamePath: C:\Program Files (x86)\Steam\steamapps\common\Subnautica
-  Is64Bit: 1
+  Is64Bit: 0
   DateTimeFormat: HH:mm:ss:fff
   CreatedDateFormat: MMM/dd HH:mm:ss
   ShowLogWindow: 1
