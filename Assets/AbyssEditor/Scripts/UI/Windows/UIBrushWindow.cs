@@ -1,6 +1,5 @@
 ﻿using System;
 using AbyssEditor.Scripts.TerrainMaterials;
-using AbyssEditor.TerrainMaterials;
 
 namespace AbyssEditor.UI {
     public class UIBrushWindow : UIWindow {

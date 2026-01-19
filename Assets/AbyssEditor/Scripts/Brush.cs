@@ -201,8 +201,11 @@ namespace AbyssEditor {
                 return t * t * (3 - 2 * t);
             }
             public float GetWeight(Vector3 voxelPos) {
-                // float brushWeight = SmoothStep((brushLocation - voxelPos).magnitude, brushRadius * 0.7f, brushRadius);
-                return strength * 252;
+                float dist = (brushLocation - voxelPos).magnitude;
+                float falloff = 1f - SmoothStep(dist, brushRadius * 0.7f, brushRadius);
+
+                float scaledRadius = Mathf.Pow(brushRadius, 0.8f) * (100f * strength);
+                return falloff * scaledRadius;
             }
 
             public bool ReadyForNextAction() {
