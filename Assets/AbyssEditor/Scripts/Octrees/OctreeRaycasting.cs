@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace ReefEditor {
+namespace AbyssEditor {
     public static class OctreeRaycasting {
         public static bool RayIntersectsBox(Ray ray, Vector3 boxStart, Vector3 boxEnd) {
             

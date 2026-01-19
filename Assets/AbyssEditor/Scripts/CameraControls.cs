@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.EventSystems;
 
-namespace ReefEditor
+namespace AbyssEditor
 {
     public class CameraControls : MonoBehaviour
     {

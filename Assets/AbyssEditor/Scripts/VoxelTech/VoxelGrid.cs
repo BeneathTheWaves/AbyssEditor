@@ -1,8 +1,8 @@
 ﻿using System;
-using ReefEditor.Octrees;
+using AbyssEditor.Octrees;
 using UnityEngine;
 
-namespace ReefEditor.VoxelTech {
+namespace AbyssEditor.VoxelTech {
     public class VoxelGrid {
         public byte[] densityGrid;
         public byte[] typeGrid;

@@ -3,12 +3,12 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using AbyssEditor.Octrees;
+using AbyssEditor.UI;
+using AbyssEditor.VoxelTech;
 using UnityEngine;
-using ReefEditor.Octrees;
-using ReefEditor.UI;
-using ReefEditor.VoxelTech;
 
-namespace ReefEditor {
+namespace AbyssEditor {
     public class BatchReadWriter : MonoBehaviour {
         public static BatchReadWriter readWriter;
 
@@ -87,8 +87,8 @@ namespace ReefEditor {
             else {
                 DebugOverlay.LogMessage("no file for batch " + filePath);
                 // TODO: remove dependency
-                ReefEditor.UI.EditorUI.DisplayErrorMessage($"No file for batch {batchIndex.x}-{batchIndex.y}-{batchIndex.z}\n" +
-                                                           $"Created an empty batch", EditorUI.NotificationType.Warning);
+                EditorUI.DisplayErrorMessage($"No file for batch {batchIndex.x}-{batchIndex.y}-{batchIndex.z}\n" +
+                                             $"Created an empty batch", EditorUI.NotificationType.Warning);
                 
                 if (generateEmpty && batchIndex != new Vector3Int(0, 13, 17))
                 {

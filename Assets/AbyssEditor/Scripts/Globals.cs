@@ -1,8 +1,8 @@
 using System.IO;
-using ReefEditor.UI;
+using AbyssEditor.UI;
 using UnityEngine;
 
-namespace ReefEditor {
+namespace AbyssEditor {
     public class Globals : MonoBehaviour {
 
         public static Globals instance;

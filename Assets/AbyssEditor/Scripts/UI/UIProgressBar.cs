@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 
-namespace ReefEditor.UI {
+namespace AbyssEditor.UI {
     public class UIProgressBar : MonoBehaviour {
         Image barImage;
         public void SetFill(float amount) {

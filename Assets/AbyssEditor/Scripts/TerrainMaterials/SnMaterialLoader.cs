@@ -1,31 +1,37 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using AbyssEditor.Scripts.Asset_Loading;
+using AbyssEditor.TerrainMaterials;
 using UnityEngine;
 
-namespace ReefEditor.ContentLoading {
-    public class SNContentLoader : MonoBehaviour {
-        public static SNContentLoader instance;
+namespace AbyssEditor.Scripts.TerrainMaterials
+{
+    public class SnMaterialLoader : MonoBehaviour {
+        public static SnMaterialLoader instance;
         public BlocktypeMaterial[] blocktypesData;
         Dictionary<string, List<int>> materialBlocktypes;
         public bool contentLoaded = false;
-        public bool busyLoading = false;
 
         // TODO: remove later and rework into some loader task system
         public bool updateMeshesOnLoad;
 
-        public float loadProgress;
-        public string loadState;
-
         void Awake() {
             instance = this;
-        } 
+        }
 
-        public IEnumerator LoadMaterialContent() {
+        public MaterialRequest LoadMaterialsFromGameAsync()
+        {
+            MaterialRequest matRequest = new MaterialRequest();
+            StartCoroutine(LoadMaterialContent(matRequest));
+            return matRequest;
+        }
 
-            busyLoading = true;
-            loadState = "Loading material names";
-            loadProgress = 0;
+        private IEnumerator LoadMaterialContent(MaterialRequest matRequest)
+        {
+            matRequest.SetStatus("Loading material names");
+            matRequest.SetProgress(0);
+            
             int totalTasks = 12;
             if (updateMeshesOnLoad) totalTasks += 3;
 
@@ -35,8 +41,8 @@ namespace ReefEditor.ContentLoading {
             sw.Stop();
             DebugOverlay.LogMessage($"Loaded material names in {sw.ElapsedMilliseconds}ms");
             
-            loadProgress = 1f / totalTasks;
-            loadState = "Getting assets";
+            matRequest.SetStatus("Getting assets");
+            matRequest.SetProgress(1f / totalTasks);
 
             sw.Restart();
             List<AssetStudio.Texture2D> textureAssets = new List<AssetStudio.Texture2D>();
@@ -45,16 +51,16 @@ namespace ReefEditor.ContentLoading {
             sw.Stop();
             DebugOverlay.LogMessage($"Got assets in {sw.ElapsedMilliseconds}ms");
             
-            loadProgress = 4f / totalTasks;
-            loadState = "Setting materials";
+            matRequest.SetStatus("Setting materials");
+            matRequest.SetProgress(4f / totalTasks);
             sw.Restart();
             SetMaterials(materialAssets.ToArray());
-            loadProgress = 8f / totalTasks;
-            loadState = "Setting textures";
+            yield return null;
+            matRequest.SetStatus("Setting textures");
+            matRequest.SetProgress(8f / totalTasks);
             yield return null;
             SetTextures(textureAssets.ToArray());
             sw.Stop();
-            
             
             yield return null;
             DebugOverlay.LogMessage($"Set assets in {sw.ElapsedMilliseconds}ms");
@@ -63,16 +69,16 @@ namespace ReefEditor.ContentLoading {
             if (updateMeshesOnLoad) {
                 VoxelWorld.StartMetaspaceRegenerate(12, totalTasks);
                 while (VoxelWorld.loadInProgress) {
-                    loadProgress = VoxelWorld.loadingProgress;
-                    loadState = VoxelWorld.loadingState;
+                    matRequest.SetStatus(VoxelWorld.loadingState);
+                    matRequest.SetProgress(VoxelWorld.loadingProgress);
                     yield return null;
                 }
                 updateMeshesOnLoad = false;
             }
-            busyLoading = false;
+            matRequest.Complete();
         }
 
-        IEnumerator GetMaterialAssetsAsync(List<AssetStudio.Texture2D> textureAssets, List<AssetStudio.Material> materialAssets) {
+        private IEnumerator GetMaterialAssetsAsync(List<AssetStudio.Texture2D> textureAssets, List<AssetStudio.Material> materialAssets) {
 
             string bundleName = "\\resources.assets";
             string resourcesPath = Globals.instance.resourcesSourcePath + bundleName;
@@ -98,7 +104,7 @@ namespace ReefEditor.ContentLoading {
 
             assetManager.Clear();
         }
-        IEnumerator LoadMaterialNamesAsync() {
+        private IEnumerator LoadMaterialNamesAsync() {
             ResourceRequest materialNameRequest = Resources.LoadAsync<TextAsset>(Globals.instance.blocktypeStringsFilename);
             yield return materialNameRequest;
 
@@ -133,7 +139,7 @@ namespace ReefEditor.ContentLoading {
             }
         }
 
-        void SetTextures(AssetStudio.Texture2D[] textureAssets) {
+        private void SetTextures(AssetStudio.Texture2D[] textureAssets) {
             foreach (AssetStudio.Texture2D textureAsset in textureAssets) {
                 List<int> blocktypes = new List<int>();
                 if (IsTextureNeeded(textureAsset.m_PathID, out blocktypes)) {
@@ -150,7 +156,7 @@ namespace ReefEditor.ContentLoading {
             }
         }
 
-        void SetMaterials(AssetStudio.Material[] materialAssets) {
+        private void SetMaterials(AssetStudio.Material[] materialAssets) {
             foreach (AssetStudio.Material materialAsset in materialAssets) {
 
                 var texturePathIDs = new Dictionary<long, string>();
@@ -168,6 +174,7 @@ namespace ReefEditor.ContentLoading {
             }
         }
 
+        
         public static Material GetMaterialForType(int b) {
             if (instance.contentLoaded && instance.blocktypesData[b] != null && instance.blocktypesData[b].ExistsInGame) {
                 return instance.blocktypesData[b].MakeMaterial();
@@ -178,6 +185,7 @@ namespace ReefEditor.ContentLoading {
             colorMat.SetColor("_Color", Globals.ColorFromType(b));
             return colorMat;
         }
+        
 
         bool IsTextureNeeded(long pathID, out List<int> blocktypes) {
 
@@ -193,87 +201,5 @@ namespace ReefEditor.ContentLoading {
 
             return blocktypes.Count > 0;
         } 
-    }
-
-    public class BlocktypeMaterial {
-        public string originalName;
-        public string prettyName;
-        public int blocktype;
-        public bool hasDeco;
-        private bool useCap;
-        public Dictionary<long, string> propertyFromPathIDMap = new Dictionary<long, string>();
-        public Texture2D[] textures;
-
-        public BlocktypeMaterial(string _originalName, string _prettyName, int _blocktype, bool _hasDeco) {
-            originalName = _originalName;
-            prettyName = _prettyName;
-            blocktype = _blocktype;
-            hasDeco = _hasDeco;
-        }
-
-        public Texture2D MainTexture {
-            get {
-                return textures[0];
-            }
-        }
-        public Texture2D SideTexture {
-            get {
-                return textures[2];
-            }
-        }
-
-        public bool ExistsInGame {
-            get { 
-                return textures != null;
-            }
-        }
-
-        public void SetTexture(long pathID, Texture2D texture) {
-            if (textures == null) {
-                textures = new Texture2D[4];
-            }
-            
-            switch (propertyFromPathIDMap[pathID]) {
-                case "_MainTex":
-                case "_CapTexture":
-                    textures[0] = texture;
-                    break;
-                case "_BumpMap":
-                case "_CapBumpMap":
-                    textures[1] = texture;
-                    break;
-                case "_SideTexture":
-                    useCap = true;
-                    textures[2] = texture;
-                    break;
-                case "_SideBumpMap":
-                    useCap = true;
-                    textures[3] = texture;
-                    break;
-                default:
-                    break;
-            }
-        } 
-
-        public Material MakeMaterial() {
-            Material mat;
-            if (useCap) {
-                mat = new Material(Globals.instance.batchCappedMat);
-
-                mat.SetTexture("_MainTex", textures[0]);
-                mat.SetTexture("_NormalMap", textures[1]);
-                mat.SetTexture("_SideTex", textures[2]);
-                mat.SetTexture("_SideNormalMap", textures[3]);
-            } else {
-                mat = new Material(Globals.instance.batchMat);
-
-                mat.SetTexture("_MainTex", textures[0]);
-                mat.SetTexture("_NormalMap", textures[1]);
-            }
-            
-            mat.name = originalName;
-
-            return mat;
-        }
     }
 }

@@ -1,9 +1,10 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using ReefEditor.ContentLoading;
+using AbyssEditor.Scripts.TerrainMaterials;
+using AbyssEditor.TerrainMaterials;
 using UnityEngine;
 
-namespace ReefEditor.VoxelTech {
+namespace AbyssEditor.VoxelTech {
     public class VoxelMetaspace : MonoBehaviour
     {
         public static VoxelMetaspace metaspace;
@@ -28,8 +29,8 @@ namespace ReefEditor.VoxelTech {
         public void Create(int numBatches) {
             meshes = new VoxelMesh[numBatches];
 
-            if (!SNContentLoader.instance.contentLoaded) {
-                SNContentLoader.instance.updateMeshesOnLoad = true;
+            if (!SnMaterialLoader.instance.contentLoaded) {
+                SnMaterialLoader.instance.updateMeshesOnLoad = true;
             }
 
             for (int y = VoxelWorld.start.y; y <= VoxelWorld.end.y; y++) {

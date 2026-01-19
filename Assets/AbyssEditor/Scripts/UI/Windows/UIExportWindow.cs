@@ -2,7 +2,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace ReefEditor.UI {
+namespace AbyssEditor.UI {
     public class UIExportWindow : UIWindow {
         UICheckbox checkbox;
         UIButtonSelect modeSelection;

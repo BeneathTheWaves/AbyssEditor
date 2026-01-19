@@ -3,7 +3,7 @@ using UnityEngine;
 using System.IO;
 using System.Xml.Serialization;
 
-namespace ReefEditor {
+namespace AbyssEditor {
     public class SaveData : MonoBehaviour {
         static SaveData save;
 

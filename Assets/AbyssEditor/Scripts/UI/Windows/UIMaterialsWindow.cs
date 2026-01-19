@@ -1,10 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
+using AbyssEditor.Scripts.Asset_Loading;
+using AbyssEditor.Scripts.TerrainMaterials;
 using UnityEngine;
 using UnityEngine.UI;
-using ReefEditor.ContentLoading;
+using AbyssEditor.TerrainMaterials;
 
-namespace ReefEditor.UI
+namespace AbyssEditor.UI
 {
     public class UIMaterialsWindow : UIWindow
     {
@@ -16,7 +18,6 @@ namespace ReefEditor.UI
         public Toggle showFavoritesOnlyToggle;
 
         private GameObject matIconPrefab;
-        private bool materialsLoaded = false;
         private List<UIBlocktypeIconDisplay> icons;
 
         private bool showFavoritedOnly;
@@ -36,7 +37,6 @@ namespace ReefEditor.UI
 
         public void LoadMaterials()
         {
-
             if (!Globals.CheckIsGamePathValid())
             {
                 EditorUI.DisplayErrorMessage("Please select a valid game path");
@@ -45,9 +45,9 @@ namespace ReefEditor.UI
             transform.GetChild(1).gameObject.SetActive(false);
             transform.GetChild(2).gameObject.SetActive(true);
 
-            if (!materialsLoaded)
+            if (!SnMaterialLoader.instance.contentLoaded)
             {
-                StartCoroutine(DisplayMaterialIcons());
+                StartCoroutine(GenerateMaterialIcons());
             }
         }
 
@@ -67,14 +67,12 @@ namespace ReefEditor.UI
             }
         }
 
-        private IEnumerator DisplayMaterialIcons()
+        private IEnumerator GenerateMaterialIcons()
         {
-            materialsLoaded = true;
-
-            Coroutine matLoadCoroutine = StartCoroutine(SNContentLoader.instance.LoadMaterialContent());
-            while (SNContentLoader.instance.busyLoading)
+            MaterialRequest matLoadCoroutine = SnMaterialLoader.instance.LoadMaterialsFromGameAsync();
+            while (!matLoadCoroutine.IsDone)
             {
-                EditorUI.UpdateStatusBar(SNContentLoader.instance.loadState, SNContentLoader.instance.loadProgress);
+                EditorUI.UpdateStatusBar(matLoadCoroutine.Status, matLoadCoroutine.Progress);
                 yield return null;
             }
 
@@ -84,7 +82,7 @@ namespace ReefEditor.UI
 
             int successCount = 0;
             int errorCount = 0;
-            foreach (BlocktypeMaterial mat in SNContentLoader.instance.blocktypesData)
+            foreach (BlocktypeMaterial mat in SnMaterialLoader.instance.blocktypesData)
             {
                 if (mat != null && mat.ExistsInGame)
                 {

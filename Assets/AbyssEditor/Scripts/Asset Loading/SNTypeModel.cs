@@ -1,8 +1,6 @@
-﻿using System;
-using ProtoBuf;
-using ProtoBuf.Meta; 
+﻿using ProtoBuf.Meta;
 
-namespace ReefEditor.ContentLoading {
+namespace AbyssEditor.Scripts.Asset_Loading {
     public class SNTypeModel : TypeModel {
         /*
         protected override int GetKeyImpl(Type type)

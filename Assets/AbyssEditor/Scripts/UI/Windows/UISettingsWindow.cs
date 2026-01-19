@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.SceneManagement;
 
-namespace ReefEditor.UI {
+namespace AbyssEditor.UI {
     public class UISettingsWindow : UIWindow {
 
         private void Start()

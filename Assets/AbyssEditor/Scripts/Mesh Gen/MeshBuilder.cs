@@ -4,7 +4,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.Rendering;
 
-namespace ReefEditor {
+namespace AbyssEditor {
     public class MeshBuilder : MonoBehaviour {
         public static MeshBuilder builder;
         
@@ -19,9 +19,9 @@ namespace ReefEditor {
             builder = this;
         }
 
-        void OnDestroy () {
+        void OnDestroy() {
             if (Application.isPlaying) {
-                ReleaseBuffers ();
+                ReleaseBuffers();
             }
         }
 
@@ -38,7 +38,7 @@ namespace ReefEditor {
 
             if (Application.isPlaying == false || (densityBuffer == null || bufferSizeChanged)) {
 
-                ReleaseBuffers ();
+                ReleaseBuffers();
                 
                 faceBuffer = new ComputeBuffer (maxFaceCount, Face.GetStride(), ComputeBufferType.Append);
                 densityBuffer = new ComputeBuffer (numPoints, sizeof (int));
@@ -47,7 +47,7 @@ namespace ReefEditor {
             }
         }
 
-        void ReleaseBuffers () {
+        void ReleaseBuffers() {
             if (faceBuffer != null) {
                 faceBuffer.Release();
                 densityBuffer.Release();

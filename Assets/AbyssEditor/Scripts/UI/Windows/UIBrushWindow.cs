@@ -1,8 +1,8 @@
 ﻿using System;
-using UnityEngine;
-using UnityEngine.UI;
+using AbyssEditor.Scripts.TerrainMaterials;
+using AbyssEditor.TerrainMaterials;
 
-namespace ReefEditor.UI {
+namespace AbyssEditor.UI {
     public class UIBrushWindow : UIWindow {
         UIButtonSelect modeSelector;
         UIHybridInput brushSizeSelector;
@@ -51,7 +51,7 @@ namespace ReefEditor.UI {
         }
         public void SetNewBlocktype() {
             if (byte.TryParse(blocktypePreview.matNumber.ToString(), out byte typeValue)) {
-                if (ContentLoading.SNContentLoader.instance.blocktypesData[typeValue].ExistsInGame) {
+                if (SnMaterialLoader.instance.blocktypesData[typeValue].ExistsInGame) {
                     Brush.SetBrushMaterial(typeValue);
                 }
             }
@@ -81,7 +81,7 @@ namespace ReefEditor.UI {
         public void RedrawBlocktypeDisplay(){
             try
             {
-				blocktypePreview.UpdatePreview(Convert.ToInt32(Brush.selectedType), ContentLoading.SNContentLoader.instance.blocktypesData[Brush.selectedType]);
+				blocktypePreview.UpdatePreview(Convert.ToInt32(Brush.selectedType), SnMaterialLoader.instance.blocktypesData[Brush.selectedType]);
 			}
             catch (NullReferenceException)
             {}

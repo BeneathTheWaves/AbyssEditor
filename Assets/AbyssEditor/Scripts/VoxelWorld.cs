@@ -1,9 +1,9 @@
 using System;
 using System.Collections;
+using AbyssEditor.VoxelTech;
 using UnityEngine;
-using ReefEditor.VoxelTech;
 
-namespace ReefEditor {
+namespace AbyssEditor {
     public class VoxelWorld : MonoBehaviour {
         // constants
         // LOD. 0-5 lod => 32-1 resolution

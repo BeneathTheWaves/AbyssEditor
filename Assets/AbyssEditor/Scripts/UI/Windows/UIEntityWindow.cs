@@ -1,4 +1,4 @@
-﻿namespace ReefEditor.UI
+﻿namespace AbyssEditor.UI
 {
     using System.Collections.Generic;
     using UnityEngine;

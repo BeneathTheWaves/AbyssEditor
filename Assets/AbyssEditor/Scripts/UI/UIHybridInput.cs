@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-namespace ReefEditor.UI {
+namespace AbyssEditor.UI {
     public class UIHybridInput : MonoBehaviour, IDragHandler, IPointerClickHandler {
 
         public float LerpedValue {

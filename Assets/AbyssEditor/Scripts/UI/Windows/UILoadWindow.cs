@@ -2,7 +2,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace ReefEditor.UI {
+namespace AbyssEditor.UI {
     public class UILoadWindow : UIWindow
     {
         public UICheckbox moddedBatchesCheckbox;

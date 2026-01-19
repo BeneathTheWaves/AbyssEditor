@@ -2,7 +2,7 @@
 using ProtoBuf;
 using UnityEngine;
 
-namespace ReefEditor.ContentLoading {
+namespace AbyssEditor.Scripts.Asset_Loading {
     public class SNProtobufBehaviour : MonoBehaviour {
         SNTypeModel typeModel;
 

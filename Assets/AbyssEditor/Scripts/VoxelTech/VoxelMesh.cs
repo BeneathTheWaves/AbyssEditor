@@ -1,8 +1,9 @@
+using AbyssEditor.Octrees;
+using AbyssEditor.Scripts.TerrainMaterials;
+using AbyssEditor.TerrainMaterials;
 using UnityEngine;
-using ReefEditor.Octrees;
-using ReefEditor.ContentLoading;
 
-namespace ReefEditor.VoxelTech {
+namespace AbyssEditor.VoxelTech {
     public class VoxelMesh : MonoBehaviour {
 
         internal PointContainer[] octreeContainers;
@@ -190,7 +191,7 @@ namespace ReefEditor.VoxelTech {
                     MeshRenderer renderer = meshObj.GetComponent<MeshRenderer>();
                     Material[] materials = new Material[blocktypes.Length];
                     for (int b = 0; b < blocktypes.Length; b++) {
-                        materials[b] = SNContentLoader.GetMaterialForType(blocktypes[b]);
+                        materials[b] = SnMaterialLoader.GetMaterialForType(blocktypes[b]);
                     }
                     renderer.materials = materials;
                 }

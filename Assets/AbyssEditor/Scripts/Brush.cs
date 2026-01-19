@@ -1,8 +1,8 @@
 ﻿using System;
+using AbyssEditor.VoxelTech;
 using UnityEngine;
-using ReefEditor.VoxelTech;
 
-namespace ReefEditor {
+namespace AbyssEditor {
     public class Brush : MonoBehaviour {
         public static float brushSize = 10;
         public static float minBrushSize = 1;

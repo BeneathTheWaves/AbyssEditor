@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.EventSystems;
 
-namespace ReefEditor.UI {
+namespace AbyssEditor.UI {
     public class WindowDrag : MonoBehaviour, IBeginDragHandler, IDragHandler {
         [SerializeField] RectTransform windowTf;
         Vector3 offset;

@@ -1,8 +1,8 @@
-﻿using ReefEditor.ContentLoading;
+﻿using AbyssEditor.TerrainMaterials;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace ReefEditor.UI
+namespace AbyssEditor.UI
 {
 	internal class UIBlocktypePreview : MonoBehaviour
 	{

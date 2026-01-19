@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 
-namespace ReefEditor.UI {
+namespace AbyssEditor.UI {
     public class EditorUI : MonoBehaviour {
         public static EditorUI inst;
         [SerializeField] RectTransform statusBar;

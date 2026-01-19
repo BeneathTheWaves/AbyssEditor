@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
+using AbyssEditor.VoxelTech;
 using UnityEngine;
-using ReefEditor.VoxelTech;
 
-namespace ReefEditor.Octrees {
+namespace AbyssEditor.Octrees {
     [System.Serializable]
     public class Octree {
         
