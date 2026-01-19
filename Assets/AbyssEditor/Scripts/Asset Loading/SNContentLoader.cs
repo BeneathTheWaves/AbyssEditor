@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.IO;
 using UnityEngine;
 
 namespace ReefEditor.ContentLoading {
@@ -32,25 +31,22 @@ namespace ReefEditor.ContentLoading {
 
             System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch();
             sw.Start();
-            LoadMaterialNames();
+            yield return StartCoroutine(LoadMaterialNamesAsync());
             sw.Stop();
-
             DebugOverlay.LogMessage($"Loaded material names in {sw.ElapsedMilliseconds}ms");
+            
             loadProgress = 1f / totalTasks;
             loadState = "Getting assets";
-            yield return null;
 
             sw.Restart();
             List<AssetStudio.Texture2D> textureAssets = new List<AssetStudio.Texture2D>();
             List<AssetStudio.Material> materialAssets = new List<AssetStudio.Material>();
-            GetMaterialAssets(textureAssets, materialAssets);
+            yield return StartCoroutine(GetMaterialAssetsAsync(textureAssets, materialAssets));
             sw.Stop();
-
             DebugOverlay.LogMessage($"Got assets in {sw.ElapsedMilliseconds}ms");
+            
             loadProgress = 4f / totalTasks;
             loadState = "Setting materials";
-            yield return null;
-        
             sw.Restart();
             SetMaterials(materialAssets.ToArray());
             loadProgress = 8f / totalTasks;
@@ -58,6 +54,8 @@ namespace ReefEditor.ContentLoading {
             yield return null;
             SetTextures(textureAssets.ToArray());
             sw.Stop();
+            
+            
             yield return null;
             DebugOverlay.LogMessage($"Set assets in {sw.ElapsedMilliseconds}ms");
             contentLoaded = true;
@@ -74,7 +72,7 @@ namespace ReefEditor.ContentLoading {
             busyLoading = false;
         }
 
-        void GetMaterialAssets(List<AssetStudio.Texture2D> textureAssets, List<AssetStudio.Material> materialAssets) {
+        IEnumerator GetMaterialAssetsAsync(List<AssetStudio.Texture2D> textureAssets, List<AssetStudio.Material> materialAssets) {
 
             string bundleName = "\\resources.assets";
             string resourcesPath = Globals.instance.resourcesSourcePath + bundleName;
@@ -83,16 +81,16 @@ namespace ReefEditor.ContentLoading {
             AssetStudio.AssetsManager assetManager = new AssetStudio.AssetsManager();
             assetManager.LoadFiles(files);
             
-            foreach (AssetStudio.SerializedFile file in assetManager.assetsFileList) {
+            foreach (AssetStudio.SerializedFile file in assetManager.assetsFileList)
+            {
+                yield return new WaitForEndOfFrame();
                 foreach(AssetStudio.Object obj in file.Objects) {
-                    AssetStudio.Texture2D textureAsset = obj as AssetStudio.Texture2D;
-                    if (textureAsset != null) {
+                    if (obj is AssetStudio.Texture2D textureAsset) {
                         textureAssets.Add(textureAsset);
                         continue;
                     }
 
-                    AssetStudio.Material materialAsset = obj as AssetStudio.Material;
-                    if (materialAsset != null) {
+                    if (obj is AssetStudio.Material materialAsset) {
                         materialAssets.Add(materialAsset);
                     }
                 }
@@ -100,8 +98,12 @@ namespace ReefEditor.ContentLoading {
 
             assetManager.Clear();
         }
-        void LoadMaterialNames() {
-            string combinedString = Resources.Load<TextAsset>(Globals.instance.blocktypeStringsFilename).text;
+        IEnumerator LoadMaterialNamesAsync() {
+            ResourceRequest materialNameRequest = Resources.LoadAsync<TextAsset>(Globals.instance.blocktypeStringsFilename);
+            yield return materialNameRequest;
+
+            string combinedString = (materialNameRequest.asset as TextAsset).text;
+            
             string[] lines = combinedString.Split(new[] {Environment.NewLine}, StringSplitOptions.None);
             blocktypesData = new BlocktypeMaterial[255];
             materialBlocktypes = new Dictionary<string, List<int>>();

@@ -20,36 +20,12 @@ namespace ReefEditor {
 
         private GameObject[] boundaryPlanes;
 
-        public string batchSourcePath {
-            get {
-                return Path.Combine(gamePath, gameDataFolder, dataToUnmanaged, gameExportWindow, "CompiledOctreesCache");
-            }
-        }
-        public string batchOutputPath {
-            get {
-                return exportIntoGame ? batchSourcePath : userBatchOutputPath;
-            }
-        }
-        public string gameDataFolder {
-            get {
-                return belowzero ? "SubnauticaZero_Data" : "Subnautica_Data";
-            }
-        }
-        public string gameExportWindow {
-            get {
-                return belowzero ? "Expansion" : "Build18";
-            }
-        }
-        public string resourcesSourcePath {
-            get {
-                return Path.Combine(gamePath, gameDataFolder);
-            }
-        }
-        public string blocktypeStringsFilename {
-            get {
-                return belowzero ? "blocktypeStringsBZ" : "blocktypeStrings";
-            }
-        }
+        public string batchSourcePath { get { return Path.Combine(gamePath, gameDataFolder, dataToUnmanaged, gameExportWindow, "CompiledOctreesCache"); } }
+        public string batchOutputPath { get { return exportIntoGame ? batchSourcePath : userBatchOutputPath; } }
+        public string gameDataFolder { get { return belowzero ? "SubnauticaZero_Data" : "Subnautica_Data"; } }
+        public string gameExportWindow { get { return belowzero ? "Expansion" : "Build18"; } }
+        public string resourcesSourcePath { get { return Path.Combine(gamePath, gameDataFolder); } }
+        public string blocktypeStringsFilename { get { return belowzero ? "blocktypeStringsBZ" : "blocktypeStrings"; } }
         
         public const int threadGroupSize = 8;
 
@@ -84,14 +60,6 @@ namespace ReefEditor {
         }
         public static Material GetSimpleMapMat() {
             return instance.simpleMapMat;
-        }
-
-        public static void SetAutoLoadMatsToggle(bool value)
-        {
-            if (value)
-            {
-                UIMaterialsWindow.main.LoadMaterials();
-            }
         }
 
         public static void SetGamePath(string path, bool save) {

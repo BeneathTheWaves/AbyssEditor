@@ -4367,7 +4367,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   statusBar: {fileID: 1646270908}
-  errorPrefab: {fileID: 2475003777856417063, guid: e55fdf942ef979445b2cf1bb6a40fee6,
+  errorPrefab: {fileID: 2475003777856417063, guid: abd8306bff3989248a023ed6dd3e8290,
     type: 3}
   uiColors:
   - {r: 0.6132076, g: 0.107447445, b: 0.020247431, a: 1}

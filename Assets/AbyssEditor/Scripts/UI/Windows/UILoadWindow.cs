@@ -51,17 +51,18 @@ namespace ReefEditor.UI {
         private bool TryParseBatchString(string s, out Vector3Int index) {
             
             string[] splitString = s.Split(' ');
-            index = Vector3Int.zero;
+            
             if (splitString.Length != 3) {
+                index = Vector3Int.zero;
                 return false;
             }
-
-            int x, y, z;
-            if (int.TryParse(splitString[0], out x) && int.TryParse(splitString[1], out y) && int.TryParse(splitString[2], out z)) {
+            
+            if (int.TryParse(splitString[0], out int x) && int.TryParse(splitString[1], out int y) && int.TryParse(splitString[2], out int z)) {
                 index = new Vector3Int(x, y, z);
                 return true;
             }
             
+            index = Vector3Int.zero;
             return false;
         }
     }
