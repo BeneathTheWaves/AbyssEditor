@@ -104,7 +104,6 @@ namespace AbyssEditor {
             // calculate vertex positions
             VoxelVertex[] verticesOfNodes = new VoxelVertex[resolution.x * resolution.y * resolution.z];
             List<Vector3> vertices = new List<Vector3>();
-            List<Vector2> vertexUVs = new List<Vector2>();
 
             Dictionary<int, List<Face>> submeshFaces = new Dictionary<int, List<Face>>();
             foreach (Face face in faces) {
@@ -139,7 +138,6 @@ namespace AbyssEditor {
                         verticesOfNodes[i].addedToVertexArray = true;
                         verticesOfNodes[i].vertIndex = vertices.Count;
                         vertices.Add((verticesOfNodes[i].ComputePos() + vertexOffsetSum) * scaleFactor);
-                        vertexUVs.Add(BlockTypeToUV(verticesOfNodes[i].GetBlockType()));
                     }
                 }
             }
@@ -151,7 +149,6 @@ namespace AbyssEditor {
             Mesh mesh = new Mesh();
             mesh.subMeshCount = submeshCount;
             mesh.vertices = vertices.ToArray();
-            mesh.uv = vertexUVs.ToArray();
             
             for (int k = 0; k < blocktypes.Length; k++) {
                 
@@ -273,30 +270,6 @@ namespace AbyssEditor {
             Array.Clear(indices, 0, 65536);
             Array.Clear(normals, 0, 65536);
             Array.Clear(uvs, 0, 65536);
-        }
-
-        Vector2 BlockTypeToUV(int blockType) {
-            return new Vector2((blockType % 16)/16f, (blockType / 16)/16f);
-        }
-
-        struct Triangle {
-            public Vector3 a;
-            public Vector3 b;
-            public Vector3 c;
-            public int type;
-
-            public Vector3 this [int i] {
-                get {
-                    switch (i) {
-                        case 0:
-                            return a;
-                        case 1:
-                            return b;
-                        default:
-                            return c;
-                    }
-                }
-            }
         }
 
         struct Face : IComparable {
