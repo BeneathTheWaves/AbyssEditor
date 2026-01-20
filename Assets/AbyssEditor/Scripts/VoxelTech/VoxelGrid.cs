@@ -236,6 +236,8 @@ namespace AbyssEditor.VoxelTech {
             int sum = 0;
             int count = 0;
 
+            byte neighborType = 0;
+
             for (int dz = -blurRadius; dz <= blurRadius; dz++) {
                 for (int dy = -blurRadius; dy <= blurRadius; dy++) {
                     for (int dx = -blurRadius; dx <= blurRadius; dx++) {
@@ -268,6 +270,11 @@ namespace AbyssEditor.VoxelTech {
                             sum += voxelData[0];
                         }
 
+                        if (voxelData[0] >= 126)
+                        {
+                            neighborType = voxelData[1];
+                        }
+
                         count++;
                     }
                 }
@@ -277,10 +284,12 @@ namespace AbyssEditor.VoxelTech {
             SetVoxel(densityGrid, x, y, z, (byte)(sum));
 
             // update type as well
+            
             bool solidNow = GetVoxel(densityGrid, x, y, z) >= 126;
             if (solidNow != solidBefore) {
-                if (solidNow) {
-                    SetVoxel(typeGrid, x, y, z, Brush.selectedType);
+                if (solidNow)
+                {
+                    SetVoxel(typeGrid, x, y, z, neighborType);
                 } else {
                     SetVoxel(typeGrid, x, y, z, 0);
                 }
