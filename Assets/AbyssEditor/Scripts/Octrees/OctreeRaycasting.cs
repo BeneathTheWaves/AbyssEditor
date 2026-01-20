@@ -44,8 +44,6 @@ namespace AbyssEditor {
             
             return false;
         }
-
-        
         
         //TODO: Move this to squared distance
         public static float DistanceToBox (Vector3 p, Vector3 boxMin, Vector3 boxMax) {

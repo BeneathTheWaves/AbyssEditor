@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using AbyssEditor.Scripts.TerrainMaterials;
+using AbyssEditor.Scripts.VoxelTech.VoxelGrids;
 using AbyssEditor.TerrainMaterials;
 using UnityEngine;
 
@@ -24,6 +25,7 @@ namespace AbyssEditor.VoxelTech {
 
         void Awake() {
             metaspace = this;
+            VoxelGrid.PrecomputeNeighborOffsets();
         }
 
         public void Create(int numBatches) {
@@ -57,20 +59,9 @@ namespace AbyssEditor.VoxelTech {
         }
 
         public VoxelGrid GetVoxelGrid(Vector3Int globalBatchIndex, Vector3Int containerIndex) => meshes[GetLabel(globalBatchIndex)].GetVoxelGrid(containerIndex);
-        public byte[] GetCachedVoxel(Vector3Int voxel, Vector3Int octree, Vector3Int batch) => GetVoxelGrid(batch, octree).GetCachedVoxel(voxel.x, voxel.y, voxel.z);
+        public byte[] GetVoxel(Vector3Int voxel, Vector3Int octree, Vector3Int batch) => GetVoxelGrid(batch, octree).GetVoxel(voxel.x, voxel.y, voxel.z);
 
         public void ApplyDensityAction(Brush.BrushStroke stroke) {
-            
-            // Cache grids if smooth
-            if (stroke.brushMode == BrushMode.Smooth) {
-                // cache
-                foreach(VoxelMesh mesh in meshes) {
-                    if (OctreeRaycasting.DistanceToBox(stroke.brushLocation, mesh.GetBatchMinBound(), mesh.GetBatchMaxBound()) <= stroke.brushRadius) {
-                        mesh.CacheGridsInsideBrush(stroke);
-                    }
-                }
-            }
-
             List<VoxelMesh> modifiedMeshes = new List<VoxelMesh>();
             foreach(VoxelMesh mesh in meshes) {
                 if (OctreeRaycasting.DistanceToBox(stroke.brushLocation, mesh.GetBatchMinBound(), mesh.GetBatchMaxBound()) <= stroke.brushRadius) {
