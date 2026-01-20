@@ -115,7 +115,7 @@ namespace AbyssEditor {
                 planes = instance.boundaryPlanes;
             }
 
-            Vector3 worldCenter = VoxelWorld.regionSize * VoxelWorld.OCTREE_SIDE * VoxelWorld.CONTAINERS_PER_SIDE / 2;
+            Vector3 worldCenter = VoxelWorld.regionSize * VoxelWorld.OCTREE_WIDTH * VoxelWorld.CONTAINERS_PER_SIDE / 2;
 
             planes[0].transform.position = new Vector3(worldCenter.x, 0, worldCenter.z);
             planes[0].transform.localScale = new Vector3(worldCenter.x * .2f, 1, worldCenter.z * .2f);

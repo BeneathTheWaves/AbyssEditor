@@ -7,9 +7,9 @@ namespace AbyssEditor {
     public class VoxelWorld : MonoBehaviour {
         // constants
         // LOD. 0-5 lod => 32-1 resolution
-        public static int LEVEL_OF_DETAIL { get; private set; }
+        public static int LEVEL_OF_DETAIL = 0;
         // this defines the in-game size of the meshes
-        public const int OCTREE_SIDE = 32;
+        public const int OCTREE_WIDTH = 32;
         // this is the 'resolution' but for batches
         public const int CONTAINERS_PER_SIDE = 5;
 
@@ -24,11 +24,11 @@ namespace AbyssEditor {
         private static VoxelWorld world;
 
         // public static fields
-        public static Vector3Int start;
-        public static Vector3Int end;
+        public static Vector3Int startBatch;
+        public static Vector3Int endBatch;
         public static Vector3Int regionSize {
             get {
-                return end - start + Vector3Int.one;
+                return endBatch - startBatch + Vector3Int.one;
             }
         }
         public static bool aRegionIsLoaded = false;
@@ -105,26 +105,28 @@ namespace AbyssEditor {
             Camera.main.gameObject.SendMessage("OnRegionLoad");
         }
 
+        /*
         public static void LoadWorld() {
             LEVEL_OF_DETAIL = 4;
             // very laggy :(
             LoadRegion(new Vector3Int(0, 0, 0), new Vector3Int(25, 20, 25), true);
         }
         public static void LoadSingleBatch(Vector3Int batch) {
-            LEVEL_OF_DETAIL = 0;
+            LEVEL_OF_DETAIL = 1;
             LoadRegion(batch, batch, true);
         }
+        */
 
-        public static void LoadRegion(Vector3Int _start, Vector3Int _end, bool allowModded) {
-            
+        public static void LoadRegion(Vector3Int _start, Vector3Int _end, bool allowModded)
+        {
             if (aRegionIsLoaded) {
                 world.metaspace.Clear();
             }
             aRegionIsLoaded = true;
 
             DebugOverlay.LogMessage($"Reading {_start} to {_end}");
-            start = new Vector3Int(Math.Min(_start.x, _end.x), Math.Min(_start.y, _end.y), Math.Min(_start.z, _end.z));
-            end = new Vector3Int(Math.Max(_start.x, _end.x), Math.Max(_start.y, _end.y), Math.Max(_start.z, _end.z));
+            startBatch = new Vector3Int(Math.Min(_start.x, _end.x), Math.Min(_start.y, _end.y), Math.Min(_start.z, _end.z));
+            endBatch = new Vector3Int(Math.Max(_start.x, _end.x), Math.Max(_start.y, _end.y), Math.Max(_start.z, _end.z));
             
             world.StartCoroutine(world.RegionLoadCoroutine(allowModded));
         }
@@ -172,17 +174,17 @@ namespace AbyssEditor {
 
             // batch
             Vector3Int batchOffset = LocalBatchFromPoint(hitPoint);
-            if (!VoxelMetaspace.BatchExists(batchOffset + start)) {
+            if (!VoxelMetaspace.BatchExists(batchOffset + startBatch)) {
                 float newDistance = Vector3.Distance(hitPoint, cameraRay.origin) + .5f;
                 Vector3 newPoint = cameraRay.GetPoint(newDistance);
                 return SampleBlocktype(newPoint, cameraRay, retryCount + 1);
             }
-            VoxelMesh batch = world.metaspace[batchOffset + start];
+            VoxelMesh batch = world.metaspace[batchOffset + startBatch];
 
-            Vector3 _local = hitPoint - batchOffset * OCTREE_SIDE * CONTAINERS_PER_SIDE; 
-            int x = (int)_local.x / OCTREE_SIDE;
-            int y = (int)_local.y / OCTREE_SIDE;
-            int z = (int)_local.z / OCTREE_SIDE;
+            Vector3 _local = hitPoint - batchOffset * OCTREE_WIDTH * CONTAINERS_PER_SIDE; 
+            int x = (int)_local.x / OCTREE_WIDTH;
+            int y = (int)_local.y / OCTREE_WIDTH;
+            int z = (int)_local.z / OCTREE_WIDTH;
 
             byte type = batch.octreeContainers[Globals.LinearIndex(x, y, z, 5)].SampleBlocktype(hitPoint);
 
@@ -196,7 +198,7 @@ namespace AbyssEditor {
         }
 
         public static Vector3Int LocalBatchFromPoint(Vector3 p) {
-            const int batchSide = OCTREE_SIDE * CONTAINERS_PER_SIDE;
+            const int batchSide = OCTREE_WIDTH * CONTAINERS_PER_SIDE;
             return new Vector3Int(Mathf.FloorToInt(p.x / batchSide), Mathf.FloorToInt(p.y / batchSide), Mathf.FloorToInt(p.z / batchSide));
         }
 

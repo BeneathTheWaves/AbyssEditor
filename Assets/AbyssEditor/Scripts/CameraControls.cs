@@ -42,7 +42,7 @@ namespace AbyssEditor
 
         public void PoseCamera()
         {
-            Camera.main.transform.parent.position = (VoxelWorld.end - VoxelWorld.start + Vector3.one + Vector3.up) * VoxelWorld.OCTREE_SIDE * VoxelWorld.CONTAINERS_PER_SIDE / 2;
+            Camera.main.transform.parent.position = (VoxelWorld.endBatch - VoxelWorld.startBatch + Vector3.one + Vector3.up) * VoxelWorld.OCTREE_WIDTH * VoxelWorld.CONTAINERS_PER_SIDE / 2;
             Camera.main.transform.LookAt(Vector3.zero);
         }
 

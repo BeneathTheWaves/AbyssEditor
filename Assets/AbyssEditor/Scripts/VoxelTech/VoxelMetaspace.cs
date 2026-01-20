@@ -33,9 +33,9 @@ namespace AbyssEditor.VoxelTech {
                 SnMaterialLoader.instance.updateMeshesOnLoad = true;
             }
 
-            for (int y = VoxelWorld.start.y; y <= VoxelWorld.end.y; y++) {
-                for (int z = VoxelWorld.start.z; z <= VoxelWorld.end.z; z++) {
-                    for (int x = VoxelWorld.start.x; x <= VoxelWorld.end.x; x++) {
+            for (int y = VoxelWorld.startBatch.y; y <= VoxelWorld.endBatch.y; y++) {
+                for (int z = VoxelWorld.startBatch.z; z <= VoxelWorld.endBatch.z; z++) {
+                    for (int x = VoxelWorld.startBatch.x; x <= VoxelWorld.endBatch.x; x++) {
                         
                         Vector3Int coords = new Vector3Int(x, y, z);
                         VoxelMesh batchComponent = new GameObject($"batch-{x}-{y}-{z}").AddComponent<VoxelMesh>();
@@ -47,9 +47,9 @@ namespace AbyssEditor.VoxelTech {
             }
         }
         public void Clear() {
-            for (int y = VoxelWorld.start.y; y <= VoxelWorld.end.y; y++) {
-                for (int z = VoxelWorld.start.z; z <= VoxelWorld.end.z; z++) {
-                    for (int x = VoxelWorld.start.x; x <= VoxelWorld.end.x; x++) {
+            for (int y = VoxelWorld.startBatch.y; y <= VoxelWorld.endBatch.y; y++) {
+                for (int z = VoxelWorld.startBatch.z; z <= VoxelWorld.endBatch.z; z++) {
+                    for (int x = VoxelWorld.startBatch.x; x <= VoxelWorld.endBatch.x; x++) {
                         Destroy(meshes[GetLabel(x, y, z)].gameObject);
                     }
                 }
@@ -65,8 +65,7 @@ namespace AbyssEditor.VoxelTech {
             if (stroke.brushMode == BrushMode.Smooth) {
                 // cache
                 foreach(VoxelMesh mesh in meshes) {
-                    Vector3 min = (mesh.batchIndex - VoxelWorld.start) * VoxelWorld.OCTREE_SIDE * VoxelWorld.CONTAINERS_PER_SIDE;
-                    if (OctreeRaycasting.DistanceToBox(stroke.brushLocation, min, min + Vector3.one * VoxelWorld.OCTREE_SIDE * VoxelWorld.CONTAINERS_PER_SIDE) <= stroke.brushRadius) {
+                    if (OctreeRaycasting.DistanceToBox(stroke.brushLocation, mesh.GetBatchMinBound(), mesh.GetBatchMaxBound()) <= stroke.brushRadius) {
                         mesh.CacheGridsInsideBrush(stroke);
                     }
                 }
@@ -74,8 +73,7 @@ namespace AbyssEditor.VoxelTech {
 
             List<VoxelMesh> modifiedMeshes = new List<VoxelMesh>();
             foreach(VoxelMesh mesh in meshes) {
-                Vector3 min = (mesh.batchIndex - VoxelWorld.start) * VoxelWorld.OCTREE_SIDE * VoxelWorld.CONTAINERS_PER_SIDE;
-                if (OctreeRaycasting.DistanceToBox(stroke.brushLocation, min, min + Vector3.one * VoxelWorld.OCTREE_SIDE * VoxelWorld.CONTAINERS_PER_SIDE) <= stroke.brushRadius) {
+                if (OctreeRaycasting.DistanceToBox(stroke.brushLocation, mesh.GetBatchMinBound(), mesh.GetBatchMaxBound()) <= stroke.brushRadius) {
                     mesh.ApplyDensityAction(stroke);
                     modifiedMeshes.Add(mesh);
                 }
@@ -88,7 +86,7 @@ namespace AbyssEditor.VoxelTech {
         public IEnumerator RegionReadCoroutine(bool allowModded) {
             // sets + rasterizes all octrees
             loadInProgress = true;
-            float endLabel = GetLabel(VoxelWorld.end) + 1;
+            float endLabel = GetLabel(VoxelWorld.endBatch) + 1;
             foreach (VoxelMesh mesh in meshes) {
                 loadingProgress = GetLabel(mesh.batchIndex) / (endLabel * 3);
                 BatchReadWriter.GetPath(mesh.batchIndex, allowModded, out bool isModded);
@@ -102,7 +100,7 @@ namespace AbyssEditor.VoxelTech {
         public IEnumerator RegenerateMeshesCoroutine(int tasksDone, int totalTasks) {
             // redistribute full grids
             loadInProgress = true;
-            float endLabel = GetLabel(VoxelWorld.end) + 1;
+            float endLabel = GetLabel(VoxelWorld.endBatch) + 1;
             foreach (VoxelMesh mesh in meshes) {
                 loadingProgress = (GetLabel(mesh.batchIndex) / (endLabel * totalTasks)) + ((float)tasksDone) / totalTasks;
                 loadingState = $"Joining batch {mesh.batchIndex}";
@@ -128,11 +126,11 @@ namespace AbyssEditor.VoxelTech {
             return (treeIndex.x >= 0 && treeIndex.x < dimensions.x && treeIndex.y >= 0 && treeIndex.y < dimensions.y && treeIndex.z >= 0 && treeIndex.z < dimensions.z);
         }
         public static bool BatchExists(Vector3Int batchIndex) {
-            if (batchIndex.x >= VoxelWorld.start.x && batchIndex.x <= VoxelWorld.end.x
-                                                   && batchIndex.y >= VoxelWorld.start.y &&
-                                                   batchIndex.y <= VoxelWorld.end.y
-                                                   && batchIndex.z >= VoxelWorld.start.z &&
-                                                   batchIndex.z <= VoxelWorld.end.z)
+            if (batchIndex.x >= VoxelWorld.startBatch.x && batchIndex.x <= VoxelWorld.endBatch.x
+                                                   && batchIndex.y >= VoxelWorld.startBatch.y &&
+                                                   batchIndex.y <= VoxelWorld.endBatch.y
+                                                   && batchIndex.z >= VoxelWorld.startBatch.z &&
+                                                   batchIndex.z <= VoxelWorld.endBatch.z)
             {
                 return metaspace[batchIndex].nodes != null;
             }
@@ -145,10 +143,10 @@ namespace AbyssEditor.VoxelTech {
             return GetLabel(globalBatchIndex.x, globalBatchIndex.y, globalBatchIndex.z);
         }
         private int GetLabel(int x, int y, int z) {
-            int localX = x - VoxelWorld.start.x;
-            int localY = y - VoxelWorld.start.y;
-            int localZ = z - VoxelWorld.start.z;
-            Vector3Int regionSize = VoxelWorld.end - VoxelWorld.start + Vector3Int.one;
+            int localX = x - VoxelWorld.startBatch.x;
+            int localY = y - VoxelWorld.startBatch.y;
+            int localZ = z - VoxelWorld.startBatch.z;
+            Vector3Int regionSize = VoxelWorld.endBatch - VoxelWorld.startBatch + Vector3Int.one;
 
             return localY * regionSize.x * regionSize.z + localZ * regionSize.x + localX;
         }

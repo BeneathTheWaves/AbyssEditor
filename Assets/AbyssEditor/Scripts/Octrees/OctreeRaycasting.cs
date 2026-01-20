@@ -45,11 +45,14 @@ namespace AbyssEditor {
             return false;
         }
 
+        
+        
+        //TODO: Move this to squared distance
         public static float DistanceToBox (Vector3 p, Vector3 boxMin, Vector3 boxMax) {
             float dx = Mathf.Max(boxMin.x - p.x, 0, p.x - boxMax.x);
             float dy = Mathf.Max(boxMin.y - p.y, 0, p.y - boxMax.y);
             float dz = Mathf.Max(boxMin.z - p.z, 0, p.z - boxMax.z);
-            return Mathf.Pow(dx*dx + dy*dy + dz*dz, 1f/3f);
+            return Mathf.Sqrt(dx*dx + dy*dy + dz*dz);
         }
 
         public static float DistanceToALine(Vector3 p, Ray lineRay) {

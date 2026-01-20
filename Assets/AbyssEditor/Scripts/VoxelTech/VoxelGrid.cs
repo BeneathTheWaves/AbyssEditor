@@ -128,7 +128,7 @@ namespace AbyssEditor.VoxelTech {
                 for (int y = offset; y < fullSide; y++) {
                     for (int x = offset; x < fullSide; x++) {
                         Vector3Int neigOffset = NeighbourOffsetFromVoxel(x, y, z);
-                        if (neighbourMap[(neigOffset.x + 1) + (neigOffset.y + 1) * 3 + (neigOffset.z + 1) * 9]) {
+                        if (neighbourMap[(neigOffset.x + 1) + (neigOffset.y + 1) * 3 + (neigOffset.z + 1) * 9]) { 
                             ApplyGridAction(x, y, z, gridOrigin, stroke);
                         }
                     }
@@ -210,6 +210,7 @@ namespace AbyssEditor.VoxelTech {
                 VoxelAdd(x, y, z, (int)add, (byte)Brush.selectedType);
             }
         }
+        
         void DensityAction_Paint(int x, int y, int z, Vector3 gridOrigin, Brush.BrushStroke stroke) {
 
             // Paint voxels on the intersection of mesh and brush
@@ -220,6 +221,7 @@ namespace AbyssEditor.VoxelTech {
                 SetVoxel(typeGrid, x, y, z, Brush.selectedType);
             }
         }
+        
         void DensityAction_Smooth(int x, int y, int z, Vector3 gridOrigin, Brush.BrushStroke stroke) {
 
             // basically Gaussian blur
@@ -232,37 +234,41 @@ namespace AbyssEditor.VoxelTech {
             const int blurRadius = 2;
             bool solidBefore = GetVoxel(oldDensityGrid, x, y, z) >= 126;
             int sum = 0;
-            int count = (int)Mathf.Pow((1 + blurRadius * 2), 3) - 1;
+            int count = 0;
 
-            for (int k = z - blurRadius; k <= z + blurRadius; k++) {
-                for (int j = y - blurRadius; j <= y + blurRadius; j++) {
-                    for (int i = x - blurRadius; i <= x + blurRadius; i++) {
-                        if (i != x || j != y || k != z) {
+            for (int dz = -blurRadius; dz <= blurRadius; dz++) {
+                for (int dy = -blurRadius; dy <= blurRadius; dy++) {
+                    for (int dx = -blurRadius; dx <= blurRadius; dx++) {
+                        if (dx == 0 && dy == 0 && dz == 0) 
+                            continue;
 
-                            Vector3Int voxel = new Vector3Int(i, j, k), octree = octreeIndex, batch = batchIndex;
-                            if (!VoxelMetaspace.VoxelExists(i, j, k)) {
-                                // its in another octree
-                                Vector3Int neigOffset = NeighbourOffsetFromVoxel(i, j, k);
-                                voxel = IndexMod(new Vector3Int(i, j, k) + neigOffset * 2, VoxelWorld.RESOLUTION + 2);
-                                octree += neigOffset;
-                                if (!VoxelMetaspace.OctreeExists(octree, batchIndex)) {
-                                    // its in another batch
-                                    octree = IndexMod(octree, 5);
-                                    batch += neigOffset;
-                                    if (!VoxelMetaspace.BatchExists(batch)) {
-                                        count--;
-                                        continue;
-                                    }
+                        Vector3Int voxel = new Vector3Int(x + dx, y + dy, z + dz);
+                        Vector3Int voxelOctree = octreeIndex;
+                        Vector3Int voxelBatch = batchIndex;
+                        if (!VoxelMetaspace.VoxelExists(voxel.x, voxel.y, voxel.z)) {
+                            // its in another octree
+                            Vector3Int neigOffset = NeighbourOffsetFromVoxel(voxel.x, voxel.y, voxel.z);
+                            voxel = IndexMod(voxel + neigOffset * 2, VoxelWorld.RESOLUTION + 2);
+                            voxelOctree += neigOffset;
+                            if (!VoxelMetaspace.OctreeExists(voxelOctree, batchIndex)) {
+                                // its in another batch
+                                voxelOctree = IndexMod(voxelOctree, VoxelWorld.CONTAINERS_PER_SIDE);
+                                voxelBatch += neigOffset;
+                                if (!VoxelMetaspace.BatchExists(voxelBatch)) {
+                                    //doesnt exist
+                                    continue;
                                 }
                             }
-
-                            byte[] voxelData = VoxelMetaspace.metaspace.GetCachedVoxel(voxel, octree, batch);
-                            if (voxelData[0] == 0 && voxelData[1] != 0) {
-                                sum += 252;
-                            } else {
-                                sum += voxelData[0];
-                            }
                         }
+
+                        byte[] voxelData = VoxelMetaspace.metaspace.GetCachedVoxel(voxel, voxelOctree, voxelBatch);
+                        if (voxelData[0] == 0 && voxelData[1] != 0) {
+                            sum += 252;
+                        } else {
+                            sum += voxelData[0];
+                        }
+
+                        count++;
                     }
                 }
             }
@@ -280,6 +286,7 @@ namespace AbyssEditor.VoxelTech {
                 }
             }
         }
+        
         void DensityAction_Flatten(int x, int y, int z, Vector3 gridOrigin, Brush.BrushStroke stroke) {
 
             // Make voxels solid below surface & inside brush

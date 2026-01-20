@@ -58,7 +58,7 @@ namespace AbyssEditor {
                     int nodeCount = data[curr_pos + 1] * 256 + data[curr_pos];
                     // record all nodes of this octree in an array
                     OctNodeData[] nodesOfThisOctree = new OctNodeData[nodeCount];
-                    Vector3 batchOrigin = (batchIndex - VoxelWorld.start) * VoxelWorld.OCTREE_SIDE * VoxelWorld.CONTAINERS_PER_SIDE;
+                    Vector3 batchOrigin = (batchIndex - VoxelWorld.startBatch) * VoxelWorld.OCTREE_WIDTH * VoxelWorld.CONTAINERS_PER_SIDE;
                     for (int i = 0; i < nodeCount; ++i) {
                         byte type = data[curr_pos + 2 + i * 4];
                         byte signedDist = data[curr_pos + 3 + i * 4];
@@ -67,8 +67,8 @@ namespace AbyssEditor {
                         nodesOfThisOctree[i] = (new OctNodeData((byte)type, (byte)signedDist, (ushort)childIndex));
                     }
 
-                    Octree octree = new Octree(x, y, z, VoxelWorld.OCTREE_SIDE, batchOrigin);
-                    sb.AppendLine($"(x: {x}, y: {y}, z: {z}, root size: {VoxelWorld.OCTREE_SIDE}, origin: {batchOrigin})");
+                    Octree octree = new Octree(x, y, z, VoxelWorld.OCTREE_WIDTH, batchOrigin);
+                    sb.AppendLine($"(x: {x}, y: {y}, z: {z}, root size: {VoxelWorld.OCTREE_WIDTH}, origin: {batchOrigin})");
                     octree.Write(nodesOfThisOctree);
                     octrees[z, y, x] = octree;
 
@@ -182,7 +182,7 @@ namespace AbyssEditor {
 
                     nodes.Add(new OctNodeData(37, 0, 0));
 
-                    Octree octree = new Octree(x, 0, z, VoxelWorld.OCTREE_SIDE, batch.transform.position);
+                    Octree octree = new Octree(x, 0, z, VoxelWorld.OCTREE_WIDTH, batch.transform.position);
                     octree.Write(nodes.ToArray());
                     octrees[z, 0, x] = octree;
 
@@ -201,7 +201,7 @@ namespace AbyssEditor {
 
                     MatGalleryAction(ref nodes, 0, octreeIndex, ref type, 0);
 
-                    Octree octree = new Octree(x, 1, z, VoxelWorld.OCTREE_SIDE, batch.transform.position);
+                    Octree octree = new Octree(x, 1, z, VoxelWorld.OCTREE_WIDTH, batch.transform.position);
                     octree.Write(nodes.ToArray());
                     octrees[z, 1, x] = octree;
 
@@ -218,7 +218,7 @@ namespace AbyssEditor {
                         Vector3Int octreeIndex = new Vector3Int(x, y, z);
                         nodes.Add(new OctNodeData(0, 0, 0));
 
-                        Octree octree = new Octree(x, y, z, VoxelWorld.OCTREE_SIDE, batch.transform.position);
+                        Octree octree = new Octree(x, y, z, VoxelWorld.OCTREE_WIDTH, batch.transform.position);
                         octree.Write(nodes.ToArray());
                         octrees[z, y, x] = octree;
 

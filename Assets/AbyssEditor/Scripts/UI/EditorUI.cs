@@ -14,7 +14,14 @@ namespace AbyssEditor.UI {
 
         private void Start()
         {
-            UIWindow.ShowWindow("Button_LoadBatch");
+            if(string.IsNullOrEmpty(Globals.instance.gamePath))
+            {
+                UIWindow.ShowWindow("Button_Settings");
+            }
+            else
+            {
+                UIWindow.ShowWindow("Button_LoadBatch");
+            }
         }
 
         public static void UpdateStatusBar(string title, float val) {

@@ -74,3 +74,5 @@ AssetBundles/
 *.cache
 /Packages
 /obj
+/Logs
+/Logs

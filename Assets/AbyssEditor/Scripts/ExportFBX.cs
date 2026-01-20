@@ -87,7 +87,7 @@ namespace AbyssEditor {
                     }
                 }
 
-                var localBatchPos = (voxelMesh.batchIndex - VoxelWorld.start) * VoxelWorld.CONTAINERS_PER_SIDE * VoxelWorld.OCTREE_SIDE;
+                var localBatchPos = (voxelMesh.batchIndex - VoxelWorld.startBatch) * VoxelWorld.CONTAINERS_PER_SIDE * VoxelWorld.OCTREE_WIDTH;
                 FbxDouble3 batchPosition = new FbxDouble3(localBatchPos.x, localBatchPos.y, localBatchPos.z);
                 batchRoot.LclTranslation.Set(batchPosition);
                 node.AddChild(batchRoot);
