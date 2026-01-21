@@ -29,10 +29,10 @@ namespace AbyssEditor {
         
         public const int threadGroupSize = 8;
 
-        public const string sourcePathKey = "gamePath";
-        public const string outputPathKey = "outputPath";
-        public const string dataToUnmanaged = "StreamingAssets\\SNUnmanagedData";
-        public const string dataToAddressables = "StreamingAssets\\aa\\StandaloneWindows64";
+        public static string sourcePathKey = "gamePath";
+        public static string outputPathKey = "outputPath";
+        public static string dataToUnmanaged = Path.Combine("StreamingAssets", "SNUnmanagedData");
+        public static string dataToAddressables = Path.Combine("StreamingAssets", "aa", "StandaloneWindows64");
         public bool exportIntoGame;
 
         void Awake() {
@@ -69,7 +69,7 @@ namespace AbyssEditor {
             }
 
             instance.gamePath = path;
-            string[] splitdirs = path.Split('\\');
+            string[] splitdirs = path.Split(Path.DirectorySeparatorChar);
             instance.belowzero = splitdirs[splitdirs.Length - 1] == "SubnauticaZero";
             
             if (save)

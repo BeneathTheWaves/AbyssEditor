@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using AbyssEditor.Scripts.Asset_Loading;
 using AbyssEditor.TerrainMaterials;
 using UnityEngine;
@@ -80,7 +81,7 @@ namespace AbyssEditor.Scripts.TerrainMaterials
 
         private IEnumerator GetMaterialAssetsAsync(List<AssetStudio.Texture2D> textureAssets, List<AssetStudio.Material> materialAssets) {
 
-            string bundleName = "\\resources.assets";
+            string bundleName = Path.DirectorySeparatorChar + "resources.assets";
             string resourcesPath = Globals.instance.resourcesSourcePath + bundleName;
             string[] files = { resourcesPath };
 

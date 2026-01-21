@@ -18,13 +18,23 @@ namespace AbyssEditor
 
         Vector3 velocity; // current velocity
 
-        static bool Focused
+#if UNITY_STANDALONE_LINUX || UNITY_EDITOR_LINUX
+        public static bool mouseWarpedToCenter;//On linux the mouse only warps on the first move of the mouse, this can cause a big jump in camera movement when pressing right click
+#endif
+        
+        static bool HoldingRMB
         {
             get => Cursor.lockState == CursorLockMode.Locked;
             set
             {
                 Cursor.lockState = value ? CursorLockMode.Locked : CursorLockMode.None;
                 Cursor.visible = value == false;
+#if UNITY_STANDALONE_LINUX || UNITY_EDITOR_LINUX
+                if (!value)
+                {
+                    mouseWarpedToCenter = false;//reset
+                }
+#endif
             }
         }
 
@@ -46,7 +56,7 @@ namespace AbyssEditor
             Camera.main.transform.LookAt(Vector3.zero);
         }
 
-        void OnDisable() => Focused = false;
+        void OnDisable() => HoldingRMB = false;
 
 
         private void Update()
@@ -57,9 +67,10 @@ namespace AbyssEditor
             mouseOverUI = IsMouseOverUI();
 
             // Input
-            if (Focused)
+            if (HoldingRMB)
                 UpdateInput();
-            Focused = Input.GetMouseButton(1);
+            
+            HoldingRMB = Input.GetMouseButton(1);
 
             // Physics
             velocity = Vector3.Lerp(velocity, Vector3.zero, dampingCoefficient * Time.deltaTime);
@@ -70,15 +81,24 @@ namespace AbyssEditor
 
         void UpdateInput()
         {
-            // Position
-            velocity += GetAccelerationVector() * Time.deltaTime;
-
             // Rotation
             Vector2 mouseDelta = lookSensitivity * new Vector2(Input.GetAxis("Mouse X"), -Input.GetAxis("Mouse Y"));
             Quaternion rotation = transform.rotation;
             Quaternion horiz = Quaternion.AngleAxis(mouseDelta.x, Vector3.up);
             Quaternion vert = Quaternion.AngleAxis(mouseDelta.y, Vector3.right);
+            
+#if UNITY_STANDALONE_LINUX || UNITY_EDITOR_LINUX
+            //On linux, we need to skip the first frame of mouse movement as it takes 1 set it to the center
+            if (!mouseWarpedToCenter && mouseDelta.magnitude != 0)
+            {
+                mouseWarpedToCenter = true;
+                return;
+            }
+#endif
+
+            //Apply
             transform.rotation = horiz * rotation * vert;
+            velocity += GetAccelerationVector() * Time.deltaTime;// Position
         }
 
         Vector3 GetAccelerationVector()

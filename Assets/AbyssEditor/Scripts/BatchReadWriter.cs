@@ -105,7 +105,7 @@ namespace AbyssEditor {
         } 
 
         public bool QuickReadBatch(Vector3Int batchIndex, out int[,,] octrees) {
-            string batchname = string.Format("\\compiled-batch-{0}-{1}-{2}.optoctrees", batchIndex.x, batchIndex.y, batchIndex.z);
+            string batchname = string.Format(Path.DirectorySeparatorChar + "compiled-batch-{0}-{1}-{2}.optoctrees", batchIndex.x, batchIndex.y, batchIndex.z);
             busy = true;
 
             octrees = new int[5, 5, 5];
@@ -261,7 +261,7 @@ namespace AbyssEditor {
         }
 
         public bool WriteOptoctrees(Vector3 batchIndex, Octree[,,] octrees) { 
-            string batchname = string.Format("\\compiled-batch-{0}-{1}-{2}.optoctrees", batchIndex.x, batchIndex.y, batchIndex.z);
+            string batchname = string.Format(Path.DirectorySeparatorChar + "compiled-batch-{0}-{1}-{2}.optoctrees", batchIndex.x, batchIndex.y, batchIndex.z);
             busy = true;
             
             DebugOverlay.LogMessage($"Writing {batchname} to {Globals.instance.batchOutputPath}");
