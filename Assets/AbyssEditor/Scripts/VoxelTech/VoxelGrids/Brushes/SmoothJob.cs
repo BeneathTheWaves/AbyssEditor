@@ -83,6 +83,8 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelGrids.Brushes
                 
                 int sum = 0;
                 int count = 0;
+                
+                byte nearestValidType = 0;
 
                 foreach (Vector3Int neighborOffset in VoxelGrid.neighboursToCheckInSmooth)
                 {
@@ -106,27 +108,37 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelGrids.Brushes
                     }
                     
                     VoxelMetaspace.metaspace.GetVoxel(voxel, voxelOctree, voxelBatch, out byte density, out byte type);
+                    
                     if (density == 0 && type != 0) {
                         sum += 252;
-                        
                     } else {
                         sum += density;
                     }
 
                     count++;
+                    
+                    //Store a solid neighbor type to use later
+                    if (nearestValidType == 0 && type != 0)
+                    {
+                        nearestValidType = type;
+                    }
                 }
 
                 sum /= count;
-                resultingDensities[index] = (byte) sum;
-                // update type as well
-                bool solidBefore = ((byte) sum) >= 126;
-                
-                bool solidNow = ((byte) sum) >= 126;
-                if (solidNow != solidBefore) {
+
+                bool solidBefore = VoxelGrid.GetVoxel(densityGrid, x, y, z) >= 126;
+                bool solidNow = (byte) sum >= 126;
+
+                //state changes
+                if (solidNow != solidBefore)
+                {
                     if (solidNow)
                     {
-                        resultingTypes[index] = Brush.selectedType;
-                    } else {
+                        resultingTypes[index] = nearestValidType;
+                    }
+                    else//Air now, density less than 126
+                    {
+                        // voxel became air
                         resultingTypes[index] = 0;
                     }
                 }
@@ -134,6 +146,9 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelGrids.Brushes
                 {
                     resultingTypes[index] = VoxelGrid.GetVoxel(typeGrid, x, y, z);
                 }
+                
+                
+                resultingDensities[index] = (byte) sum;
             }
         }
     }

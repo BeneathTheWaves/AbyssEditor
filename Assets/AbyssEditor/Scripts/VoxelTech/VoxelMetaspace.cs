@@ -87,6 +87,10 @@ namespace AbyssEditor.VoxelTech {
             foreach (BrushJob brushJob in brushJobs)
             {
                 brushJob.jobHandle.Complete();
+            }
+            
+            foreach (BrushJob brushJob in brushJobs)
+            {
                 brushJob.OnJobCompleteCleanup();
             }
             
