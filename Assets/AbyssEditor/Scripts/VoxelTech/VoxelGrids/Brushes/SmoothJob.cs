@@ -10,8 +10,8 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelGrids.Brushes
     {
         public DensitySmoothJob job;
         
-        public SmoothJob(VoxelGrid grid, Vector3 brushLocation, float brushRadius, Vector3 gridOrigin) 
-            : base(grid, brushLocation, brushRadius, gridOrigin) { }
+        public SmoothJob(VoxelGrid grid, Vector3 brushLocation, float brushRadius, float brushIntensity, Vector3 gridOrigin) 
+            : base(grid, brushLocation, brushRadius, brushIntensity, gridOrigin) { }
         
         public override void StartJob(NativeArray<Vector3Int> voxelsToUpdate)
         {
@@ -26,6 +26,7 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelGrids.Brushes
                 batchIndex = grid.batchIndex,
                 gridOrigin = gridOrigin,
                 brushLocation = brushLocation,
+                brushIntensity = brushIntensity,
                 brushRadius = brushRadius,
             };
             jobHandle = job.ScheduleParallel(voxelsToUpdate.Length, voxelsToUpdate.Length/64, new JobHandle());
@@ -56,6 +57,7 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelGrids.Brushes
             [ReadOnly] public Vector3 gridOrigin;
             [ReadOnly] public Vector3 brushLocation;
             [ReadOnly] public float brushRadius;
+            [ReadOnly] public float brushIntensity;
             
             //in
             [ReadOnly] public NativeArray<Vector3Int> voxelsToUpdate;
@@ -73,11 +75,17 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelGrids.Brushes
             // basically Gaussian blur
             private void DensityAction_Smooth(int x, int y, int z, int index)
             {
+                //we always need these values so might as well get them once
+                byte originalType = VoxelGrid.GetVoxel(typeGrid, x, y, z);
+                byte originalDensity = VoxelGrid.GetVoxel(densityGrid, x, y, z);
+                
+                
                 // If voxel is outside the brush, skip it
                 // offset sample position because full grid
-                if (VoxelGrid.SampleDensity_Sphere_Squared(new Vector3(x - 1, y - 1, z - 1) + gridOrigin, brushLocation, brushRadius) < 0) {
-                    resultingDensities[index] = VoxelGrid.GetVoxel(densityGrid, x, y, z);
-                    resultingTypes[index] = VoxelGrid.GetVoxel(typeGrid, x, y, z);
+                if (VoxelGrid.SampleDensity_Sphere_Squared(new Vector3(x - 1, y - 1, z - 1) + gridOrigin, brushLocation, brushRadius) < 0)
+                {
+                    resultingDensities[index] = originalDensity;
+                    resultingTypes[index] = originalType;
                     return;
                 }
                 
@@ -123,11 +131,19 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelGrids.Brushes
                         nearestValidType = type;
                     }
                 }
-
+                
                 sum /= count;
-
-                bool solidBefore = VoxelGrid.GetVoxel(densityGrid, x, y, z) >= 126;
-                bool solidNow = (byte) sum >= 126;
+                
+                //It's possible for tiles to have their density set incorrectly despite being solid, so treat them as max density
+                if (originalDensity == 0 && originalType != 0)
+                {
+                    originalDensity = 252;
+                }
+                
+                byte newDensity = (byte) Mathf.Lerp(originalDensity, sum, brushIntensity);
+                
+                bool solidBefore = originalDensity >= 126;
+                bool solidNow = newDensity >= 126;
 
                 //state changes
                 if (solidNow != solidBefore)
@@ -144,11 +160,11 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelGrids.Brushes
                 }
                 else
                 {
-                    resultingTypes[index] = VoxelGrid.GetVoxel(typeGrid, x, y, z);
+                    resultingTypes[index] = originalType;
                 }
                 
                 
-                resultingDensities[index] = (byte) sum;
+                resultingDensities[index] = newDensity;
             }
         }
     }

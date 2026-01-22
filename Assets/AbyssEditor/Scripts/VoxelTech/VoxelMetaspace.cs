@@ -66,9 +66,6 @@ namespace AbyssEditor.VoxelTech {
             density = density2;
             type = type2;
         }
-
-        private static long TEMPORARY_TOTAL_COUNT;
-        private static long TEMPORARY_TOTAL_TIME;
         
         public void ApplyJobBasedDensityAction(Brush.BrushStroke stroke)
         {
@@ -84,11 +81,13 @@ namespace AbyssEditor.VoxelTech {
                 }
             }
 
+            //ensure they are ALL complete
             foreach (BrushJob brushJob in brushJobs)
             {
                 brushJob.jobHandle.Complete();
             }
             
+            //Then update grid
             foreach (BrushJob brushJob in brushJobs)
             {
                 brushJob.OnJobCompleteCleanup();
@@ -96,10 +95,7 @@ namespace AbyssEditor.VoxelTech {
             
             sw.Stop();
             
-            TEMPORARY_TOTAL_TIME += sw.ElapsedMilliseconds;
-            TEMPORARY_TOTAL_COUNT++;
-            
-            DebugOverlay.LogMessage($"Average Brush Operation in {TEMPORARY_TOTAL_TIME/TEMPORARY_TOTAL_COUNT}ms with {brushJobs.Count} Scheduled Jobs");
+            DebugOverlay.LogMessage($"Completed Brush Job in {sw.ElapsedMilliseconds}ms with {brushJobs.Count} Scheduled");
             
             foreach(VoxelMesh mesh in modifiedMeshes) {
                 mesh.UpdateMeshesAfterBrush(stroke);

@@ -9,15 +9,17 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelGrids.Brushes
         
         public Vector3 brushLocation;
         public float brushRadius;
+        public float brushIntensity;
         public Vector3 gridOrigin;
         
         public JobHandle jobHandle;
 
-        public BrushJob(VoxelGrid grid, Vector3 brushLocation, float brushRadius, Vector3 gridOrigin)
+        public BrushJob(VoxelGrid grid, Vector3 brushLocation, float brushRadius, float brushIntensity, Vector3 gridOrigin)
         {
             this.grid = grid;
             this.brushLocation = brushLocation;
             this.brushRadius = brushRadius;
+            this.brushIntensity = brushIntensity;
             this.gridOrigin = gridOrigin;
         }
         

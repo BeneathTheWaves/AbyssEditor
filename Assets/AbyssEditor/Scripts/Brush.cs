@@ -157,7 +157,7 @@ namespace AbyssEditor {
         public struct BrushStroke {
             public Vector3 brushLocation;
             public float brushRadius;
-            float strength;
+            public float strength;
             public BrushMode brushMode;
             public Vector3 firstStrokePoint;
             public Vector3 firstStrokeNormal;

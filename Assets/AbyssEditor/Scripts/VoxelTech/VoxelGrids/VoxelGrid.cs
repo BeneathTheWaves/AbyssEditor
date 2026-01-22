@@ -152,7 +152,7 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelGrids {
             
             /*if (stroke.brushMode == BrushMode.Smooth)
             {*/
-                brushJob = new SmoothJob(this, stroke.brushLocation, stroke.brushRadius, gridOrigin);
+                brushJob = new SmoothJob(this, stroke.brushLocation, stroke.brushRadius, stroke.strength ,gridOrigin);
             //}
             
             brushJob.StartJob(voxelsToUpdate);
