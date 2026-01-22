@@ -1,6 +1,7 @@
 ﻿using AbyssEditor.Octrees;
 using AbyssEditor.Scripts.TerrainMaterials;
 using AbyssEditor.Scripts.VoxelTech.VoxelGrids;
+using AbyssEditor.Scripts.VoxelTech.VoxelGrids.Brushes;
 using UnityEngine;
 
 namespace AbyssEditor.VoxelTech
@@ -60,6 +61,13 @@ namespace AbyssEditor.VoxelTech
             octree.Rasterize(tempDensities, tempTypes, _res, 5 - VoxelWorld.LEVEL_OF_DETAIL);
 
             grid = new VoxelGrid(tempDensities, tempTypes, octreeIndex, batchIndex);
+        }
+        
+        public BrushJob ApplyJobBasedDensityAction(Brush.BrushStroke stroke)
+        {
+            if (grid != null)
+                return grid.ApplyJobBasedDensityFunction(stroke, octreeIndex * VoxelWorld.OCTREE_WIDTH + meshObj.transform.position);
+            return null;
         }
 
         public void ApplyDensityAction(Brush.BrushStroke stroke)

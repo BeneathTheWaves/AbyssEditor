@@ -1,7 +1,9 @@
+using System.Collections.Generic;
 using System.Numerics;
 using AbyssEditor.Octrees;
 using AbyssEditor.Scripts.TerrainMaterials;
 using AbyssEditor.Scripts.VoxelTech.VoxelGrids;
+using AbyssEditor.Scripts.VoxelTech.VoxelGrids.Brushes;
 using AbyssEditor.TerrainMaterials;
 using UnityEngine;
 using Vector3 = UnityEngine.Vector3;
@@ -99,6 +101,21 @@ namespace AbyssEditor.VoxelTech
 
         public void Write() => BatchReadWriter.readWriter.WriteOptoctrees(batchIndex, nodes);
 
+        public void ApplyJobBasedDensityFunction(Brush.BrushStroke stroke, List<BrushJob> brushActions)
+        {
+            foreach (PointContainer container in octreeContainers)
+            {
+                Bounds bounds = container.bounds;
+                if (OctreeRaycasting.DistanceToBox(stroke.brushLocation, bounds.min, bounds.max) <= stroke.brushRadius)
+                {
+                    brushActions.Add(container.ApplyJobBasedDensityAction(stroke));
+                    
+                }
+            }
+            
+            
+        }
+        
         public void ApplyDensityAction(Brush.BrushStroke stroke)
         {
             System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch();

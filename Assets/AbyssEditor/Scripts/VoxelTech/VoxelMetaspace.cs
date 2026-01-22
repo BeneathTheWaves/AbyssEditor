@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using AbyssEditor.Scripts.TerrainMaterials;
 using AbyssEditor.Scripts.VoxelTech.VoxelGrids;
+using AbyssEditor.Scripts.VoxelTech.VoxelGrids.Brushes;
 using AbyssEditor.TerrainMaterials;
 using UnityEngine;
 
@@ -61,7 +62,42 @@ namespace AbyssEditor.VoxelTech {
         public VoxelGrid GetVoxelGrid(Vector3Int globalBatchIndex, Vector3Int containerIndex) => meshes[GetLabel(globalBatchIndex)].GetVoxelGrid(containerIndex);
         public byte[] GetVoxel(Vector3Int voxel, Vector3Int octree, Vector3Int batch) => GetVoxelGrid(batch, octree).GetVoxel(voxel.x, voxel.y, voxel.z);
 
+        public void ApplyJobBasedDensityAction(Brush.BrushStroke stroke)
+        {
+            System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch();
+            sw.Start();
+            
+            List<VoxelMesh> modifiedMeshes = new List<VoxelMesh>();
+            List<BrushJob> brushJobs = new List<BrushJob>();
+            foreach(VoxelMesh mesh in meshes) {
+                if (OctreeRaycasting.DistanceToBox(stroke.brushLocation, mesh.GetBatchMinBound(), mesh.GetBatchMaxBound()) <= stroke.brushRadius) {
+                    mesh.ApplyJobBasedDensityFunction(stroke, brushJobs);
+                    modifiedMeshes.Add(mesh);
+                }
+            }
+
+            foreach (BrushJob brushJob in brushJobs)
+            {
+                brushJob.EnsureComplete();
+                brushJob.OnJobCompleteCleanup();
+            }
+            
+            sw.Stop();
+            DebugOverlay.LogMessage($"Brush Operation in {sw.ElapsedMilliseconds}ms");
+            
+            foreach(VoxelMesh mesh in modifiedMeshes) {
+                mesh.UpdateMeshesAfterBrush(stroke);
+            }
+        }
+        
         public void ApplyDensityAction(Brush.BrushStroke stroke) {
+
+            if (Brush.activeMode == BrushMode.Smooth)
+            {
+                ApplyJobBasedDensityAction(stroke);
+                return;
+            }
+            
             List<VoxelMesh> modifiedMeshes = new List<VoxelMesh>();
             foreach(VoxelMesh mesh in meshes) {
                 if (OctreeRaycasting.DistanceToBox(stroke.brushLocation, mesh.GetBatchMinBound(), mesh.GetBatchMaxBound()) <= stroke.brushRadius) {
