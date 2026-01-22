@@ -109,11 +109,8 @@ namespace AbyssEditor.VoxelTech
                 if (OctreeRaycasting.DistanceToBox(stroke.brushLocation, bounds.min, bounds.max) <= stroke.brushRadius)
                 {
                     brushActions.Add(container.ApplyJobBasedDensityAction(stroke));
-                    
                 }
             }
-            
-            
         }
         
         public void ApplyDensityAction(Brush.BrushStroke stroke)

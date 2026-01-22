@@ -2,6 +2,7 @@
 using AbyssEditor.Scripts.TerrainMaterials;
 using AbyssEditor.Scripts.VoxelTech.VoxelGrids;
 using AbyssEditor.Scripts.VoxelTech.VoxelGrids.Brushes;
+using Unity.Collections;
 using UnityEngine;
 
 namespace AbyssEditor.VoxelTech
@@ -78,8 +79,8 @@ namespace AbyssEditor.VoxelTech
 
         public void UpdateMesh()
         {
-            byte[] _tempDensities;
-            byte[] _tempTypes;
+            NativeArray<byte> _tempDensities;
+            NativeArray<byte> _tempTypes;
             if (grid == null) return;
             grid.GetFullGrids(out _tempDensities, out _tempTypes);
 

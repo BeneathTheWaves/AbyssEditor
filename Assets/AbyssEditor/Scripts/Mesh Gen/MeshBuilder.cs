@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.Collections;
 using UnityEngine;
 using UnityEngine.Rendering;
 
@@ -56,7 +57,7 @@ namespace AbyssEditor {
             }
         }
 
-        public Mesh GenerateMesh(byte[] densityGrid, byte[] typeGrid, Vector3Int resolution, Vector3 offset, out int[] blocktypes) {
+        public Mesh GenerateMesh(NativeArray<byte> densityGrid, NativeArray<byte> typeGrid, Vector3Int resolution, Vector3 offset, out int[] blocktypes) {
 
             // Setting data inside shader
 
@@ -64,7 +65,7 @@ namespace AbyssEditor {
 
             int numThreads = Mathf.CeilToInt ((resolution.x) / (float) Globals.threadGroupSize);
 
-            if (typeGrid == null) typeGrid = new byte[resolution.x * resolution.y * resolution.z];
+            //if (!typeGrid.IsCreated) typeGrid = new byte[resolution.x * resolution.y * resolution.z];
 
             int[] densityIntGrid = densityGrid.Select(x => (int)x).ToArray();
             int[] typeIntGrid = typeGrid.Select(x => (int)x).ToArray();

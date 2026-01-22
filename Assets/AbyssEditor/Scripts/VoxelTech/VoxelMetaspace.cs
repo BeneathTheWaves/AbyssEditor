@@ -60,8 +60,16 @@ namespace AbyssEditor.VoxelTech {
         }
 
         public VoxelGrid GetVoxelGrid(Vector3Int globalBatchIndex, Vector3Int containerIndex) => meshes[GetLabel(globalBatchIndex)].GetVoxelGrid(containerIndex);
-        public byte[] GetVoxel(Vector3Int voxel, Vector3Int octree, Vector3Int batch) => GetVoxelGrid(batch, octree).GetVoxel(voxel.x, voxel.y, voxel.z);
+        public void GetVoxel(Vector3Int voxel, Vector3Int octree, Vector3Int batch, out byte density, out byte type)
+        {
+            GetVoxelGrid(batch, octree).GetVoxel(voxel.x, voxel.y, voxel.z, out byte density2, out byte type2);
+            density = density2;
+            type = type2;
+        }
 
+        private static long TEMPORARY_TOTAL_COUNT;
+        private static long TEMPORARY_TOTAL_TIME;
+        
         public void ApplyJobBasedDensityAction(Brush.BrushStroke stroke)
         {
             System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch();
@@ -78,12 +86,16 @@ namespace AbyssEditor.VoxelTech {
 
             foreach (BrushJob brushJob in brushJobs)
             {
-                brushJob.EnsureComplete();
+                brushJob.jobHandle.Complete();
                 brushJob.OnJobCompleteCleanup();
             }
             
             sw.Stop();
-            DebugOverlay.LogMessage($"Brush Operation in {sw.ElapsedMilliseconds}ms");
+            
+            TEMPORARY_TOTAL_TIME += sw.ElapsedMilliseconds;
+            TEMPORARY_TOTAL_COUNT++;
+            
+            DebugOverlay.LogMessage($"Average Brush Operation in {TEMPORARY_TOTAL_TIME/TEMPORARY_TOTAL_COUNT}ms with {brushJobs.Count} Scheduled Jobs");
             
             foreach(VoxelMesh mesh in modifiedMeshes) {
                 mesh.UpdateMeshesAfterBrush(stroke);

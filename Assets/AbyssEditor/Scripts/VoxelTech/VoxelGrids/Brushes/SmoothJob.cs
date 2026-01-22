@@ -1,15 +1,16 @@
 using AbyssEditor.VoxelTech;
 using Unity.Collections;
+using Unity.Collections.LowLevel.Unsafe;
 using Unity.Jobs;
 using UnityEngine;
 
 namespace AbyssEditor.Scripts.VoxelTech.VoxelGrids.Brushes
 {
-    public class SmoothBrush : BrushJob
+    public class SmoothJob : BrushJob
     {
         public DensitySmoothJob job;
         
-        public SmoothBrush(VoxelGrid grid, Vector3 brushLocation, float brushRadius, Vector3 gridOrigin) 
+        public SmoothJob(VoxelGrid grid, Vector3 brushLocation, float brushRadius, Vector3 gridOrigin) 
             : base(grid, brushLocation, brushRadius, gridOrigin) { }
         
         public override void StartJob(NativeArray<Vector3Int> voxelsToUpdate)
@@ -19,15 +20,15 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelGrids.Brushes
                 voxelsToUpdate = voxelsToUpdate,
                 resultingDensities = new NativeArray<byte>(voxelsToUpdate.Length, Allocator.TempJob),
                 resultingTypes = new NativeArray<byte>(voxelsToUpdate.Length, Allocator.TempJob),
-                densityGrid = new NativeArray<byte>(grid.densityGrid, Allocator.TempJob),
-                typeGrid = new NativeArray<byte>(grid.typeGrid, Allocator.TempJob),
+                densityGrid = grid.densityGrid,
+                typeGrid = grid.typeGrid,
                 octreeIndex = grid.octreeIndex,
                 batchIndex = grid.batchIndex,
                 gridOrigin = gridOrigin,
                 brushLocation = brushLocation,
                 brushRadius = brushRadius,
             };
-            jobHandle = job.ScheduleParallel(voxelsToUpdate.Length, voxelsToUpdate.Length/Globals.threadGroupSize, new JobHandle());
+            jobHandle = job.ScheduleParallel(voxelsToUpdate.Length, voxelsToUpdate.Length/64, new JobHandle());
         }
         
         public override void OnJobCompleteCleanup()
@@ -42,14 +43,12 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelGrids.Brushes
             job.voxelsToUpdate.Dispose();
             job.resultingDensities.Dispose();
             job.resultingTypes.Dispose();
-            job.densityGrid.Dispose();
-            job.typeGrid.Dispose();
         }
 
         public struct DensitySmoothJob : IJobFor
         {
-            [ReadOnly] public NativeArray<byte> densityGrid;
-            [ReadOnly] public NativeArray<byte> typeGrid;
+            [NativeDisableContainerSafetyRestriction] public NativeArray<byte> densityGrid;
+            [NativeDisableContainerSafetyRestriction] public NativeArray<byte> typeGrid;
 
             [ReadOnly] public Vector3Int octreeIndex;
             [ReadOnly] public Vector3Int batchIndex;
@@ -71,14 +70,14 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelGrids.Brushes
                 DensityAction_Smooth(voxelUpdate.x, voxelUpdate.y, voxelUpdate.z, index);
             }
 
+            // basically Gaussian blur
             private void DensityAction_Smooth(int x, int y, int z, int index)
             {
-                // basically Gaussian blur
                 // If voxel is outside the brush, skip it
                 // offset sample position because full grid
                 if (VoxelGrid.SampleDensity_Sphere_Squared(new Vector3(x - 1, y - 1, z - 1) + gridOrigin, brushLocation, brushRadius) < 0) {
-                    resultingDensities[index] = GetVoxel(densityGrid, x, y, z);
-                    resultingTypes[index] = GetVoxel(typeGrid, x, y, z);
+                    resultingDensities[index] = VoxelGrid.GetVoxel(densityGrid, x, y, z);
+                    resultingTypes[index] = VoxelGrid.GetVoxel(typeGrid, x, y, z);
                     return;
                 }
                 
@@ -105,12 +104,13 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelGrids.Brushes
                             }
                         }
                     }
-
-                    byte[] voxelData = VoxelMetaspace.metaspace.GetVoxel(voxel, voxelOctree, voxelBatch);
-                    if (voxelData[0] == 0 && voxelData[1] != 0) {
+                    
+                    VoxelMetaspace.metaspace.GetVoxel(voxel, voxelOctree, voxelBatch, out byte density, out byte type);
+                    if (density == 0 && type != 0) {
                         sum += 252;
+                        
                     } else {
-                        sum += voxelData[0];
+                        sum += density;
                     }
 
                     count++;
@@ -118,9 +118,8 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelGrids.Brushes
 
                 sum /= count;
                 resultingDensities[index] = (byte) sum;
-
                 // update type as well
-                bool solidBefore = GetVoxel(densityGrid, x, y, z) >= 126;
+                bool solidBefore = ((byte) sum) >= 126;
                 
                 bool solidNow = ((byte) sum) >= 126;
                 if (solidNow != solidBefore) {
@@ -133,12 +132,8 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelGrids.Brushes
                 }
                 else
                 {
-                    resultingTypes[index] = GetVoxel(typeGrid, x, y, z);
+                    resultingTypes[index] = VoxelGrid.GetVoxel(typeGrid, x, y, z);
                 }
-            }
-            
-            public static byte GetVoxel(NativeArray<byte> array, int x, int y, int z) {
-                return array[Globals.LinearIndex(x, y, z, VoxelWorld.RESOLUTION + 2)];
             }
         }
     }

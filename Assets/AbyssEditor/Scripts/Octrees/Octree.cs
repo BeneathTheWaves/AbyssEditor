@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using AbyssEditor.Scripts.VoxelTech.VoxelGrids;
 using AbyssEditor.VoxelTech;
+using Unity.Collections;
 using UnityEngine;
 
 namespace AbyssEditor.Octrees {
@@ -55,7 +56,7 @@ namespace AbyssEditor.Octrees {
         public void Rasterize(byte[] densityGrid, byte[] typeGrid, int side, int maxHeight) {
             node.RasterizeTree(densityGrid, typeGrid, side, node.position, 0, maxHeight);
         }
-        public void DeRasterizeGrid(byte[] densityGrid, byte[] typeGrid, int side, int maxHeight) {
+        public void DeRasterizeGrid(NativeArray<byte> densityGrid, NativeArray<byte> typeGrid, int side, int maxHeight) {
             node.DeRasterizeGrid(densityGrid, typeGrid, side, node.position, 0, maxHeight);
         }
 
@@ -237,7 +238,7 @@ namespace AbyssEditor.Octrees {
                 }
             }
 
-            public void DeRasterizeGrid(byte[] densityGrid, byte[] typeGrid, int gridSide, Vector3 octreeOrigin, int height, int maxHeight) {
+            public void DeRasterizeGrid(NativeArray<byte> densityGrid, NativeArray<byte> typeGrid, int gridSide, Vector3 octreeOrigin, int height, int maxHeight) {
                 if (size > 1 && height < maxHeight) {
                     Subdivide();
 

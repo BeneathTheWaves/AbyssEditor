@@ -4,13 +4,14 @@ using AbyssEditor.Octrees;
 using AbyssEditor.Scripts.VoxelTech.VoxelGrids.Brushes;
 using AbyssEditor.VoxelTech;
 using Unity.Collections;
+using Unity.Collections.LowLevel.Unsafe;
 using Unity.Jobs;
 using UnityEngine;
 
 namespace AbyssEditor.Scripts.VoxelTech.VoxelGrids {
     public class VoxelGrid {
-        public readonly byte[] densityGrid;
-        public readonly byte[] typeGrid;
+        public NativeArray<byte> densityGrid;
+        public NativeArray<byte> typeGrid;
         public Vector3Int fullGridDim;
         public readonly Vector3Int octreeIndex;
         public readonly Vector3Int batchIndex;
@@ -22,8 +23,8 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelGrids {
             
             int _fullSide = VoxelWorld.RESOLUTION + 2;
             int leng = _fullSide * _fullSide * _fullSide;
-            densityGrid = new byte[leng];
-            typeGrid = new byte[leng];
+            densityGrid = new NativeArray<byte>(leng, Allocator.Persistent);
+            typeGrid = new NativeArray<byte>(leng, Allocator.Persistent);
             
             const int so = 1;
 
@@ -42,10 +43,10 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelGrids {
             batchIndex = _batchIndex;
         }
 
-        public static byte GetVoxel(byte[] array, int x, int y, int z) {
+        public static byte GetVoxel(NativeArray<byte> array, int x, int y, int z) {
             return array[Globals.LinearIndex(x, y, z, VoxelWorld.RESOLUTION + 2)];
         }
-        public static void SetVoxel(byte[] array, int x, int y, int z, byte val) {
+        public static void SetVoxel(NativeArray<byte> array, int x, int y, int z, byte val) {
             array[Globals.LinearIndex(x, y, z, VoxelWorld.RESOLUTION + 2)] = val;
         }
         public static byte GetCoreVoxel(byte[] array, int x, int y, int z) {
@@ -114,11 +115,15 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelGrids {
         }
         
         internal static Vector3Int IndexMod(Vector3Int octreeIndex, int mod) => new Vector3Int((octreeIndex.x + mod) % mod, (octreeIndex.y + mod) % mod, (octreeIndex.z + mod) % mod);
-        public void GetFullGrids(out byte[] _fullDensityGrid, out byte[] _fullTypeGrid) {
+        public void GetFullGrids(out NativeArray<byte> _fullDensityGrid, out NativeArray<byte> _fullTypeGrid) {
             _fullDensityGrid =   densityGrid;
             _fullTypeGrid =      typeGrid;
         }
-        public byte[] GetVoxel(int x, int y, int z) => new byte[] { GetVoxel(densityGrid, x, y, z), GetVoxel(typeGrid, x, y, z) };
+        public void GetVoxel(int x, int y, int z, out byte density, out byte type)
+        {
+            density = GetVoxel(densityGrid, x, y, z);
+            type = GetVoxel(typeGrid, x, y, z);
+        }
 
         public BrushJob ApplyJobBasedDensityFunction(Brush.BrushStroke stroke, Vector3 gridOrigin)
         {
@@ -147,7 +152,7 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelGrids {
             
             /*if (stroke.brushMode == BrushMode.Smooth)
             {*/
-                brushJob = new SmoothBrush(this, stroke.brushLocation, stroke.brushRadius, gridOrigin);
+                brushJob = new SmoothJob(this, stroke.brushLocation, stroke.brushRadius, gridOrigin);
             //}
             
             brushJob.StartJob(voxelsToUpdate);
