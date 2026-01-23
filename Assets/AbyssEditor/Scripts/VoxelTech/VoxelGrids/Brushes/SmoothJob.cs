@@ -1,7 +1,9 @@
 using AbyssEditor.VoxelTech;
+using Unity.Burst;
 using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
 using Unity.Jobs;
+using Unity.Mathematics;
 using UnityEngine;
 
 namespace AbyssEditor.Scripts.VoxelTech.VoxelGrids.Brushes
@@ -11,9 +13,9 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelGrids.Brushes
         public DensitySmoothJob job;
         
         public SmoothJob(VoxelGrid grid, Vector3 brushLocation, float brushRadius, float brushIntensity, Vector3 gridOrigin) 
-            : base(grid, brushLocation, brushRadius, brushIntensity, gridOrigin) { }
+            : base(grid, brushLocation, brushRadius, brushIntensity, 0/*not needed specially*/, gridOrigin) { }
         
-        public override void StartJob(NativeArray<Vector3Int> voxelsToUpdate)
+        public override void StartJob(NativeArray<int3> voxelsToUpdate)
         {
             job = new DensitySmoothJob
             {
@@ -36,7 +38,7 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelGrids.Brushes
         {
             for (int i = 0; i < job.voxelsToUpdate.Length; i++)
             {
-                Vector3Int voxel = job.voxelsToUpdate[i];
+                int3 voxel = job.voxelsToUpdate[i];
                 VoxelGrid.SetVoxel(grid.densityGrid, voxel.x, voxel.y, voxel.z, job.resultingDensities[i]);
                 VoxelGrid.SetVoxel(grid.typeGrid, voxel.x, voxel.y, voxel.z, job.resultingTypes[i]);
             }
@@ -45,7 +47,7 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelGrids.Brushes
             job.resultingDensities.Dispose();
             job.resultingTypes.Dispose();
         }
-
+        
         public struct DensitySmoothJob : IJobFor
         {
             [NativeDisableContainerSafetyRestriction] public NativeArray<byte> densityGrid;
@@ -60,7 +62,7 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelGrids.Brushes
             [ReadOnly] public float brushIntensity;
             
             //in
-            [ReadOnly] public NativeArray<Vector3Int> voxelsToUpdate;
+            [ReadOnly] public NativeArray<int3> voxelsToUpdate;
             
             //out
             [WriteOnly] public NativeArray<byte> resultingDensities;
@@ -68,7 +70,7 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelGrids.Brushes
             
             public void Execute(int index)
             {
-                Vector3Int voxelUpdate = voxelsToUpdate[index];
+                int3 voxelUpdate = voxelsToUpdate[index];
                 DensityAction_Smooth(voxelUpdate.x, voxelUpdate.y, voxelUpdate.z, index);
             }
 

@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using AbyssEditor.Octrees;
 using AbyssEditor.Scripts.VoxelTech.VoxelGrids.Brushes;
 using AbyssEditor.VoxelTech;
+using Unity.Burst;
 using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
 using Unity.Jobs;
+using Unity.Mathematics;
 using UnityEngine;
 
 namespace AbyssEditor.Scripts.VoxelTech.VoxelGrids {
@@ -130,7 +132,7 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelGrids {
             const int offset = 1;
             int fullSide = VoxelWorld.RESOLUTION + 2 - offset;
             
-            List<Vector3Int> affectedVoxels = new List<Vector3Int>();
+            List<int3> affectedVoxels = new List<int3>();
 
             for (int z = offset; z < fullSide; z++) {
                 for (int y = offset; y < fullSide; y++) {
@@ -139,25 +141,33 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelGrids {
                         if (!neighbourMap[(neigOffset.x + 1) + (neigOffset.y + 1) * 3 + (neigOffset.z + 1) * 9])
                             continue;
                             
-                        affectedVoxels.Add(new Vector3Int(x, y, z));
+                        affectedVoxels.Add(new int3(x, y, z));
                     }
                 }
             }
+            Debug.Log(affectedVoxels.Count);
                 
-            NativeArray<Vector3Int> voxelsToUpdate = new NativeArray<Vector3Int>(affectedVoxels.Count, Allocator.TempJob);
+            NativeArray<int3> voxelsToUpdate = new NativeArray<int3>(affectedVoxels.Count, Allocator.TempJob);
             for (int i = 0; i < affectedVoxels.Count; i++)
                 voxelsToUpdate[i] = affectedVoxels[i];
 
             BrushJob brushJob;
             
-            /*if (stroke.brushMode == BrushMode.Smooth)
-            {*/
+            if (stroke.brushMode == BrushMode.Smooth)
+            {
                 brushJob = new SmoothJob(this, stroke.brushLocation, stroke.brushRadius, stroke.strength ,gridOrigin);
-            //}
+                brushJob.StartJob(voxelsToUpdate);
+                return brushJob;
+            }
             
-            brushJob.StartJob(voxelsToUpdate);
-            
-            return brushJob;
+            if (stroke.brushMode == BrushMode.Add || stroke.brushMode == BrushMode.Remove )
+            {
+                bool shouldRemoveDensity = stroke.brushMode == BrushMode.Remove;
+                brushJob = new AddSubJob(this, stroke.brushLocation, stroke.brushRadius, stroke.strength, Brush.selectedType, gridOrigin, shouldRemoveDensity );
+                brushJob.StartJob(voxelsToUpdate);
+                return brushJob;
+            }
+            return null;
         }
 
         public void ApplyDensityFunction(Brush.BrushStroke stroke, Vector3 gridOrigin) {
@@ -226,6 +236,7 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelGrids {
         public static float SampleDensity_Sphere(Vector3 sample, Vector3 origin, float radius) {
             return radius - (sample - origin).magnitude;
         }
+        
         public static float SampleDensity_Sphere_Squared(Vector3 sample, Vector3 origin, float radius)
         {
             return radius * radius - (sample - origin).sqrMagnitude;

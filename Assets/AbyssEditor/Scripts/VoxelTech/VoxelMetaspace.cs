@@ -104,7 +104,7 @@ namespace AbyssEditor.VoxelTech {
         
         public void ApplyDensityAction(Brush.BrushStroke stroke) {
 
-            if (Brush.activeMode == BrushMode.Smooth)
+            if (Brush.activeMode == BrushMode.Smooth || Brush.activeMode == BrushMode.Add || Brush.activeMode == BrushMode.Remove)
             {
                 ApplyJobBasedDensityAction(stroke);
                 return;
