@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Unity.Collections;
 using Unity.Jobs;
 using Unity.Mathematics;
@@ -6,18 +7,20 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelGrids.Brushes
 {
     public abstract class BrushJob
     {
-        public VoxelGrid grid;
+        private static Stack<NativeArray<byte>> pooledResultArrays = new ();
         
-        public Vector3 brushLocation;
+        protected VoxelGrid grid;
+        
+        protected Vector3 brushLocation;
         //TODO: should we not just take the stroke and get the vars off that?
-        public float brushRadius;
-        public float brushIntensity;
-        public byte brushSelectedType;
-        public Vector3 gridOrigin;
+        protected float brushRadius;
+        protected float brushIntensity;
+        protected byte brushSelectedType;
+        protected Vector3 gridOrigin;
         
         public JobHandle jobHandle;
 
-        public BrushJob(VoxelGrid grid, Vector3 brushLocation, float brushRadius, float brushIntensity, byte brushSelectedType, Vector3 gridOrigin)
+        protected BrushJob(VoxelGrid grid, Vector3 brushLocation, float brushRadius, float brushIntensity, byte brushSelectedType, Vector3 gridOrigin)
         {
             this.grid = grid;
             this.brushLocation = brushLocation;
@@ -27,13 +30,29 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelGrids.Brushes
             this.gridOrigin = gridOrigin;
         }
         
-        public abstract void StartJob(NativeArray<int3> voxelsToUpdate);
-        
-        public abstract void OnJobCompleteCleanup();
+        public abstract void StartJob();
 
-        public void EnsureComplete()
+        public virtual void OnJobCompleteCleanup()
         {
-            jobHandle.Complete();
+            Debug.Log($"{pooledResultArrays.Count} pool size");
+        }
+        
+        /// <summary>
+        /// Get an array that is either already allocated or newly allocated if none exist
+        /// </summary>
+        /// <returns>an allocated array, assume data within is random</returns>
+        public NativeArray<byte> GetPooledNativeArray()
+        {
+            if (pooledResultArrays.Count <= 0)
+            {
+                return new NativeArray<byte>(VoxelGrid.GetGridInnerSize(), Allocator.Persistent);
+            }
+            return pooledResultArrays.Pop();
+        } 
+        
+        public void ReturnPooledNativeArray(NativeArray<byte> arr)
+        {
+            pooledResultArrays.Push(arr);
         }
     }
 }

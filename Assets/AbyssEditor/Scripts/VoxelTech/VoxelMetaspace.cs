@@ -95,7 +95,7 @@ namespace AbyssEditor.VoxelTech {
             
             sw.Stop();
             double elapsedMs = (double)sw.ElapsedTicks / System.Diagnostics.Stopwatch.Frequency * 1000.0;
-            DebugOverlay.LogMessage($"Completed Brush Job in {(elapsedMs):F8}ms with {brushJobs.Count} Scheduled");
+            DebugOverlay.LogMessage($"Completed Brush Job in {(elapsedMs):F4}ms with {brushJobs.Count} Scheduled");
             
             foreach(VoxelMesh mesh in modifiedMeshes) {
                 mesh.UpdateMeshesAfterBrush(stroke);

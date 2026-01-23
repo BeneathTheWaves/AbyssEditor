@@ -1,3 +1,4 @@
+using System.Numerics;
 using AbyssEditor.VoxelTech;
 using Unity.Burst;
 using Unity.Collections;
@@ -5,23 +6,23 @@ using Unity.Collections.LowLevel.Unsafe;
 using Unity.Jobs;
 using Unity.Mathematics;
 using UnityEngine;
+using Vector3 = UnityEngine.Vector3;
 
 namespace AbyssEditor.Scripts.VoxelTech.VoxelGrids.Brushes
 {
     public class SmoothJob : BrushJob
     {
-        public DensitySmoothJob job;
+        private DensitySmoothJob job;
         
         public SmoothJob(VoxelGrid grid, Vector3 brushLocation, float brushRadius, float brushIntensity, Vector3 gridOrigin) 
             : base(grid, brushLocation, brushRadius, brushIntensity, 0/*not needed specially*/, gridOrigin) { }
         
-        public override void StartJob(NativeArray<int3> voxelsToUpdate)
+        public override void StartJob()
         {
             job = new DensitySmoothJob
             {
-                voxelsToUpdate = voxelsToUpdate,
-                resultingDensities = new NativeArray<byte>(voxelsToUpdate.Length, Allocator.TempJob),
-                resultingTypes = new NativeArray<byte>(voxelsToUpdate.Length, Allocator.TempJob),
+                resultingDensities = GetPooledNativeArray(),
+                resultingTypes = GetPooledNativeArray(),
                 densityGrid = grid.densityGrid,
                 typeGrid = grid.typeGrid,
                 octreeIndex = grid.octreeIndex,
@@ -31,24 +32,26 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelGrids.Brushes
                 brushIntensity = brushIntensity,
                 brushRadius = brushRadius,
             };
-            jobHandle = job.ScheduleParallel(voxelsToUpdate.Length, voxelsToUpdate.Length/64, new JobHandle());
+            
+            int voxelsToUpdateCount = VoxelGrid.GetGridInnerSize();
+            jobHandle = job.ScheduleParallel(voxelsToUpdateCount, voxelsToUpdateCount/64, new JobHandle());
         }
         
         public override void OnJobCompleteCleanup()
         {
-            for (int i = 0; i < job.voxelsToUpdate.Length; i++)
+            int innerSize = VoxelGrid.GetGridInnerSize();
+            for (int i = 0; i < innerSize; i++)
             {
-                int3 voxel = job.voxelsToUpdate[i];
+                Vector3Int voxel = BrushUtils.Managed.GetVoxelFromIndex(i);
                 VoxelGrid.SetVoxel(grid.densityGrid, voxel.x, voxel.y, voxel.z, job.resultingDensities[i]);
                 VoxelGrid.SetVoxel(grid.typeGrid, voxel.x, voxel.y, voxel.z, job.resultingTypes[i]);
             }
-                
-            job.voxelsToUpdate.Dispose();
-            job.resultingDensities.Dispose();
-            job.resultingTypes.Dispose();
+
+            ReturnPooledNativeArray(job.resultingDensities);
+            ReturnPooledNativeArray(job.resultingTypes);
         }
-        
-        public struct DensitySmoothJob : IJobFor
+
+        private struct DensitySmoothJob : IJobFor
         {
             [NativeDisableContainerSafetyRestriction] public NativeArray<byte> densityGrid;
             [NativeDisableContainerSafetyRestriction] public NativeArray<byte> typeGrid;
@@ -61,30 +64,27 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelGrids.Brushes
             [ReadOnly] public float brushRadius;
             [ReadOnly] public float brushIntensity;
             
-            //in
-            [ReadOnly] public NativeArray<int3> voxelsToUpdate;
-            
             //out
             [WriteOnly] public NativeArray<byte> resultingDensities;
             [WriteOnly] public NativeArray<byte> resultingTypes;
             
             public void Execute(int index)
             {
-                int3 voxelUpdate = voxelsToUpdate[index];
-                DensityAction_Smooth(voxelUpdate.x, voxelUpdate.y, voxelUpdate.z, index);
+                Vector3Int voxelToUpdate = BrushUtils.Managed.GetVoxelFromIndex(index);
+                DensityAction_Smooth(voxelToUpdate, index);
             }
 
             // basically Gaussian blur
-            private void DensityAction_Smooth(int x, int y, int z, int index)
+            private void DensityAction_Smooth(Vector3Int voxelToUpdate, int index)
             {
                 //we always need these values so might as well get them once
-                byte originalType = VoxelGrid.GetVoxel(typeGrid, x, y, z);
-                byte originalDensity = VoxelGrid.GetVoxel(densityGrid, x, y, z);
+                byte originalType = VoxelGrid.GetVoxel(typeGrid, voxelToUpdate.x, voxelToUpdate.y, voxelToUpdate.z);
+                byte originalDensity = VoxelGrid.GetVoxel(densityGrid, voxelToUpdate.x, voxelToUpdate.y, voxelToUpdate.z);
                 
                 
                 // If voxel is outside the brush, skip it
                 // offset sample position because full grid
-                if (VoxelGrid.SampleDensity_Sphere_Squared(new Vector3(x - 1, y - 1, z - 1) + gridOrigin, brushLocation, brushRadius) < 0)
+                if (BrushUtils.Managed.SampleDensity_Sphere_Squared(voxelToUpdate - Vector3Int.one+ gridOrigin, brushLocation, brushRadius) < 0)
                 {
                     resultingDensities[index] = originalDensity;
                     resultingTypes[index] = originalType;
@@ -98,7 +98,8 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelGrids.Brushes
 
                 foreach (Vector3Int neighborOffset in VoxelGrid.neighboursToCheckInSmooth)
                 {
-                    Vector3Int voxel = new Vector3Int(x + neighborOffset.x, y + neighborOffset.y, z + neighborOffset.z);
+                    //Vector3Int voxel = new Vector3Int(x + neighborOffset.x, y + neighborOffset.y, z + neighborOffset.z);
+                    Vector3Int voxel = voxelToUpdate - (Vector3Int.one * neighborOffset);
                     Vector3Int voxelOctree = octreeIndex;
                     Vector3Int voxelBatch = batchIndex;
                     if (!VoxelMetaspace.VoxelExists(voxel.x, voxel.y, voxel.z)) {
