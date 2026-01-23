@@ -20,12 +20,10 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelGrids.Brushes
             this.shouldRemoveDensity = shouldRemoveDensity;
         }
         
-        
-        public override void StartJob(NativeArray<int3> voxelsToUpdate)
+        public void StartTEMPJob()
         {
             job = new DensityAddSubJob
             {
-                voxelsToUpdate = voxelsToUpdate,
                 densityGrid = grid.densityGrid,
                 typeGrid = grid.typeGrid,
                 gridOrigin = gridOrigin,
@@ -36,12 +34,37 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelGrids.Brushes
                 brushRadius = brushRadius,
                 dim = VoxelWorld.RESOLUTION + 2,
             };
-            jobHandle = job.ScheduleParallel(voxelsToUpdate.Length, voxelsToUpdate.Length/64, new JobHandle());
+            
+            int innerSide = VoxelWorld.RESOLUTION;
+            int totalVoxels = innerSide * innerSide * innerSide;
+            
+            jobHandle = job.ScheduleParallel(totalVoxels, totalVoxels/64, new JobHandle());
+        }
+        
+        public override void StartJob(NativeArray<int3> voxelsToUpdate)
+        {
+            job = new DensityAddSubJob
+            {
+                densityGrid = grid.densityGrid,
+                typeGrid = grid.typeGrid,
+                gridOrigin = gridOrigin,
+                brushLocation = brushLocation,
+                brushIntensity = brushIntensity,
+                brushSelectedType = brushSelectedType,
+                shouldRemoveDensity = shouldRemoveDensity,
+                brushRadius = brushRadius,
+                dim = VoxelWorld.RESOLUTION + 2,
+            };
+            
+            int innerSide = VoxelWorld.RESOLUTION;
+            int totalVoxels = innerSide * innerSide * innerSide;
+            
+            jobHandle = job.ScheduleParallel(totalVoxels, totalVoxels/64, new JobHandle());
         }
         
         public override void OnJobCompleteCleanup()
         {
-            job.voxelsToUpdate.Dispose();
+            
         }
         
         [BurstCompile]
@@ -58,14 +81,22 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelGrids.Brushes
             [ReadOnly] public byte brushSelectedType;
 
             [ReadOnly] public bool shouldRemoveDensity;
-        
-            [ReadOnly] public NativeArray<int3> voxelsToUpdate;
 
             [ReadOnly] public int dim;
             
             public void Execute(int index)
             {
-                int3 voxelUpdate = voxelsToUpdate[index];
+                // Map linear index to 3D inner coordinates
+                int innerSide = dim - 2;
+                int z = index / (innerSide * innerSide);
+                int y = (index / innerSide) % innerSide;
+                int x = index % innerSide;
+
+                x += 1 ;
+                y += 1;
+                z += 1;
+                
+                int3 voxelUpdate = new int3(x, y, z);
                 DensityAction_AddSmooth(voxelUpdate);
             }
         
