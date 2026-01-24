@@ -34,7 +34,7 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelGrids.Brushes
 
         public virtual void OnJobCompleteCleanup()
         {
-            Debug.Log($"{pooledResultArrays.Count} pool size");
+            
         }
         
         /// <summary>

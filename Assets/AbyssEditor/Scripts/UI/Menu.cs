@@ -4,6 +4,14 @@ using UnityEngine.SceneManagement;
 
 public class Menu : MonoBehaviour
 {
+    private void Awake()
+    {
+        if (!SceneManager.GetSceneByName("Essentials").isLoaded)
+        {
+            SceneManager.LoadScene("Essentials", LoadSceneMode.Additive);
+        }
+    }
+    
     private void Start()
     {
         Screen.fullScreenMode = FullScreenMode.FullScreenWindow;
@@ -11,7 +19,8 @@ public class Menu : MonoBehaviour
 
     public void LoadBatch()
     {
-        SceneManager.LoadScene("AbyssEditor"); //Loadbatch window now automatically gets opened when the scene is loaded.
+        SceneManager.LoadScene("AbyssEditor", LoadSceneMode.Additive); //Loadbatch window now automatically gets opened when the scene is loaded.
+        SceneManager.UnloadSceneAsync("MainMenu");
     }
 
     public void ShowAbout()
