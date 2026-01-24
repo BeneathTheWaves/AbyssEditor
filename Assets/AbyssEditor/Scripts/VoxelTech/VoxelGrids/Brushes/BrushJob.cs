@@ -5,6 +5,7 @@ using Unity.Collections.LowLevel.Unsafe;
 using Unity.Jobs;
 using Unity.Mathematics;
 using UnityEngine;
+
 namespace AbyssEditor.Scripts.VoxelTech.VoxelGrids.Brushes
 {
     public abstract class BrushJob
