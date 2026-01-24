@@ -1,5 +1,7 @@
+using System;
 using System.Runtime.CompilerServices;
 using Unity.Burst;
+using Unity.Collections;
 using Unity.Mathematics;
 using UnityEngine;
 namespace AbyssEditor.Scripts.VoxelTech.VoxelGrids.Brushes
@@ -43,11 +45,33 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelGrids.Brushes
                 
                 return new int3(x, y, z);
             }
+            
+            /// <summary>
+            /// Get the voxel byte data within the padded region of the grid passed
+            /// </summary>
+            /// <returns>the byte form the position of the voxel in the array</returns>
+            [BurstCompile]
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            public static byte GetVoxelData(NativeArray<byte> arr, int3 voxel, int voxelGridResolution)
+            {
+                return arr[voxel.x + voxel.y * voxelGridResolution + voxel.z * voxelGridResolution * voxelGridResolution];
+            }
+            
+            /// <summary>
+            /// Set the voxel byte data within the padded region of the grid passed
+            /// </summary>
+            /// <returns>the byte form the position of the voxel in the array</returns>
+            [BurstCompile]
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            public static void SetVoxelData(NativeArray<byte> arr, int3 voxel, int voxelGridResolution, byte val)
+            {
+                arr[voxel.x + voxel.y * voxelGridResolution + voxel.z * voxelGridResolution * voxelGridResolution] = val;
+            }
         }
+        
         
         public static class Managed
         {
-            //TODO: MIGRATE THIS TO BRUSH UTILS
             public static float SampleDensity_Sphere_Squared(Vector3 sample, Vector3 origin, float radius)
             {
                 return radius * radius - (sample - origin).sqrMagnitude;
@@ -58,7 +82,6 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelGrids.Brushes
             /// 0,0,0 would actually be 1,1,1 of the padded grid
             /// </summary>
             /// <returns></returns>
-            [BurstCompile]
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public static Vector3Int GetVoxelFromIndex(int index)
             {

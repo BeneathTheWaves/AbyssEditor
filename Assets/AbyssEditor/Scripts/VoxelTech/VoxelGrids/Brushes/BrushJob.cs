@@ -1,5 +1,7 @@
 using System.Collections.Generic;
+using Unity.Burst;
 using Unity.Collections;
+using Unity.Collections.LowLevel.Unsafe;
 using Unity.Jobs;
 using Unity.Mathematics;
 using UnityEngine;
@@ -13,9 +15,9 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelGrids.Brushes
         
         protected Vector3 brushLocation;
         //TODO: should we not just take the stroke and get the vars off that?
-        protected float brushRadius;
-        protected float brushIntensity;
-        protected byte brushSelectedType;
+        protected readonly float brushRadius;
+        protected readonly float brushIntensity;
+        protected readonly byte brushSelectedType;
         protected Vector3 gridOrigin;
         
         public JobHandle jobHandle;
@@ -53,6 +55,42 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelGrids.Brushes
         public void ReturnPooledNativeArray(NativeArray<byte> arr)
         {
             pooledResultArrays.Push(arr);
+        }
+
+        
+        protected void ProcessCopyJob(NativeArray<byte> densityGrid, NativeArray<byte> typeGrid, NativeArray<byte> resultingDensities, NativeArray<byte> resultingTypes)
+        {
+            ArrayCopyJob job = new ArrayCopyJob()
+            {
+                densityGrid = densityGrid,
+                typeGrid = typeGrid,
+                resultingDensities = resultingDensities,
+                resultingTypes = resultingTypes,
+                dim = VoxelWorld.RESOLUTION + 2,
+            };
+            JobHandle handle = job.ScheduleParallel(VoxelGrid.GetGridInnerSize(), VoxelGrid.GetGridInnerSize() / 128, new JobHandle());
+            handle.Complete();
+        }
+
+        [BurstCompile]
+        protected struct ArrayCopyJob : IJobFor
+        {
+            //Copy into
+            [NativeDisableContainerSafetyRestriction] public NativeArray<byte> densityGrid;
+            [NativeDisableContainerSafetyRestriction] public NativeArray<byte> typeGrid;
+            
+            [ReadOnly] public int dim;
+            //read from
+            [ReadOnly] public NativeArray<byte> resultingDensities;
+            [ReadOnly] public NativeArray<byte> resultingTypes;
+
+            public void Execute(int index)
+            {
+                int3 voxel = BrushUtils.Bursted.GetVoxelFromIndex(index, dim);
+                
+                BrushUtils.Bursted.SetVoxelData(densityGrid, voxel, dim, resultingDensities[index]);
+                BrushUtils.Bursted.SetVoxelData(typeGrid, voxel, dim, resultingTypes[index]);
+            }
         }
     }
 }

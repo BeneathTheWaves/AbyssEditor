@@ -19,7 +19,7 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelGrids {
         public readonly Vector3Int batchIndex;
         bool[] neighbourMap;
         
-        public static Vector3Int[] neighboursToCheckInSmooth;
+        public static NativeArray<int3> neighboursToCheckInSmooth;
 
         public VoxelGrid(byte[] _coreDensity, byte[] _coreTypes, Vector3Int _octreeIndex, Vector3Int _batchIndex) {
             
@@ -261,7 +261,7 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelGrids {
         internal static void PrecomputeNeighborOffsets()
         {
             int blurRadius = 1;
-            List<Vector3Int> offsets = new List<Vector3Int>();
+            List<int3> offsets = new List<int3>();
 
             for (int dz = -blurRadius; dz <= blurRadius; dz++) {
                 for (int dy = -blurRadius; dy <= blurRadius; dy++) {
@@ -270,12 +270,12 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelGrids {
                         if (dx == 0 && dy == 0 && dz == 0)
                             continue;
 
-                        offsets.Add(new Vector3Int(dx, dy, dz));
+                        offsets.Add(new int3(dx, dy, dz));
                     }
                 }
             }
-
-            neighboursToCheckInSmooth = offsets.ToArray();
+//
+            neighboursToCheckInSmooth = new NativeArray<int3>(offsets.ToArray(), Allocator.Persistent);
         }
 
         /// <summary>

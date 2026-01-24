@@ -6,6 +6,9 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
+    path: Assets/AbyssEditor/Scenes/Essentials.unity
+    guid: b642d80e89f9fde448079429b9d91103
+  - enabled: 1
     path: Assets/AbyssEditor/Scenes/MainMenu.unity
     guid: 687e0f5bfda4dc6439a4ec9caef00050
   - enabled: 1
@@ -15,3 +18,4 @@ EditorBuildSettings:
     path: Assets/AbyssEditor/Scenes/AbyssEditor.unity
     guid: 8212c4c847b9a2a4ebe6993a8c064094
   m_configObjects: {}
+  m_UseUCBPForAssetBundles: 0
