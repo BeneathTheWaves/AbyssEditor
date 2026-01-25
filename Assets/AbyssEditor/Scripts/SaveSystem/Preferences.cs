@@ -9,11 +9,26 @@ using UnityEngine;
 
 namespace AbyssEditor.Scripts.SaveSystem
 {
+    /// <summary>
+    /// When adding to this format make sure to edit V1Loaders format with the same data and update the 
+    /// </summary>
     [Serializable]
-    public class PreferencesFormat
+    public class PreferencesMainFormat : DataFormatSnapshot
     {
         public readonly int configVersion = 1;//Latest Version!!!
         public string gamePath = "";
+        
+        //Lighting Tab
+        public float sunPitch = 60f;
+        public float sunYaw = 180;
+        public bool enableBrushLight = true;
+        public float sunColorR = 1f;
+        public float sunColorG = 1f;
+        public float sunColorB = 1f;
+        public float sunIntensity = 0.5f;
+        
+        public bool fullscreen = false;
+        public bool autoLoadMaterials = true;
     }
     
     public class Preferences : MonoBehaviour
@@ -26,7 +41,7 @@ namespace AbyssEditor.Scripts.SaveSystem
             //new V2Loader()
         };
 
-        public static PreferencesFormat data;
+        public static PreferencesMainFormat data;
 
         public static void SavePreferences()
         {
@@ -45,11 +60,10 @@ namespace AbyssEditor.Scripts.SaveSystem
         private void Awake()
         {
             data = Load();
-            Debug.Log($"{data.gamePath} loaded");
             SavePreferences();
         }
 
-        private static PreferencesFormat Load()
+        private static PreferencesMainFormat Load()
         {
             if (!PreferencesExists(out string filePath))
             {
@@ -80,9 +94,7 @@ namespace AbyssEditor.Scripts.SaveSystem
                 (loader, loadedFormat) = loader.UpgradeToNextVersion(loadedFormat);
             }
 
-            ILatestLoader latestVersion = (ILatestLoader) loader;
-            
-            return latestVersion.ConvertLoaderFormatToPreferencesFormat(loadedFormat);
+            return (PreferencesMainFormat)loadedFormat;
         }
 
         /// <summary>
@@ -137,10 +149,10 @@ namespace AbyssEditor.Scripts.SaveSystem
             return false;
         }
         
-        internal static PreferencesFormat GetDefaultConfig()
+        internal static PreferencesMainFormat GetDefaultConfig()
         {
             BackupConfigIfExists();//safety check
-            return new PreferencesFormat();
+            return new PreferencesMainFormat();
         }
         
         private class PreferencesVersionFormat { public int configVersion { get; set; } }

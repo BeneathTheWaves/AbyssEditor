@@ -1,70 +1,73 @@
-﻿using UnityEngine;
+﻿using AbyssEditor.Scripts.SaveSystem;
+using AbyssEditor.UI;
+using UnityEngine;
 using UnityEngine.UI;
-
-namespace AbyssEditor.UI {
+namespace AbyssEditor.Scripts.UI.Windows {
     public class UILightWindow : UIWindow {
         public Light[] sunLights;
         // Two things:
         // 1. Rotate the sun around X and Y axis with a hybrid slider
-        UIHybridInput rotationXSlider;
-        UIHybridInput rotationYSlider;
-        UIHybridInput sunR;
-        UIHybridInput sunG;
-        UIHybridInput sunB;
-        UIHybridInput sunIntensity;
+        public UIHybridInput rotationPitchSlider;
+        public UIHybridInput rotationYawSlider;
+        public UIHybridInput sunR;
+        public UIHybridInput sunG;
+        public UIHybridInput sunB;
+        public UIHybridInput sunIntensity;
         public Transform sunTransform;
         // 2. Enable/disable brush light
-        UICheckbox checkbox;
+        public Toggle brushLightToggle;
         Light brushLight;
 
         private void Start() {
-            rotationXSlider = transform.GetChild(1).GetChild(0).GetComponentInChildren<UIHybridInput>();
-            rotationXSlider.OnValueUpdated += UpdateSunRotation;
-            rotationXSlider.formatFunction = FormatAngle;
-            rotationXSlider.maxValue = 90;
-            rotationXSlider.SetValue(60);
+            rotationPitchSlider.OnValueUpdated += UpdateSunRotation;
+            rotationPitchSlider.OnEndDragging += SavePreferences;
+            rotationPitchSlider.formatFunction = FormatAngle;
+            rotationPitchSlider.SetValue(Preferences.data.sunPitch);
 
-            rotationYSlider = transform.GetChild(1).GetChild(1).GetComponentInChildren<UIHybridInput>();
-            rotationYSlider.OnValueUpdated += UpdateSunRotation;
-            rotationYSlider.formatFunction = FormatAngle;
-            rotationYSlider.maxValue = 360;
-            rotationYSlider.SetValue(250);
-            rotationYSlider.modValue = true;
+            rotationYawSlider.OnValueUpdated += UpdateSunRotation;
+            rotationYawSlider.OnEndDragging += SavePreferences;
+            rotationYawSlider.formatFunction = FormatAngle;
+            rotationYawSlider.SetValue(Preferences.data.sunYaw);
 
-            sunR = transform.GetChild(1).GetChild(3).GetComponentInChildren<UIHybridInput>();
             sunR.OnValueUpdated += UpdateSunColor;
+            sunR.OnEndDragging += SavePreferences;
             sunR.formatFunction = FormatScalar;
-            sunR.SetValue(1f);
+            sunR.SetValue(Preferences.data.sunColorR);
 
-            sunG = transform.GetChild(1).GetChild(4).GetComponentInChildren<UIHybridInput>();
             sunG.OnValueUpdated += UpdateSunColor;
+            sunG.OnEndDragging += SavePreferences;
             sunG.formatFunction = FormatScalar;
-            sunG.SetValue(1f);
+            sunG.SetValue(Preferences.data.sunColorG);
 
-            sunB = transform.GetChild(1).GetChild(5).GetComponentInChildren<UIHybridInput>();
             sunB.OnValueUpdated += UpdateSunColor;
+            sunB.OnEndDragging += SavePreferences;
             sunB.formatFunction = FormatScalar;
-            sunB.SetValue(1f);
+            sunB.SetValue(Preferences.data.sunColorB);
 
-            sunIntensity = transform.GetChild(1).GetChild(6).GetComponentInChildren<UIHybridInput>();
             sunIntensity.OnValueUpdated += UpdateSunIntensity;
+            sunIntensity.OnEndDragging += SavePreferences;
             sunIntensity.formatFunction = FormatScalar;
-            sunIntensity.SetValue(1f);
+            sunIntensity.SetValue(Preferences.data.sunIntensity);
 
             brushLight = Brush.GetBrushLight();
-            checkbox = GetComponentInChildren<UICheckbox>();
-            checkbox.transform.GetComponent<Button>().onClick.AddListener(UpdateBrushLight);
+            brushLightToggle.onValueChanged.AddListener(UpdateBrushLight);
+            brushLightToggle.SetIsOnWithoutNotify(Preferences.data.enableBrushLight);
 
             UpdateSunRotation();
-            UpdateBrushLight();
         }
 
         private string FormatAngle(float lerpedVal) => $"{Mathf.RoundToInt(lerpedVal)} deg";
-        private string FormatScalar(float lerpedVal) => lerpedVal.ToString("#.##");
+        private string FormatScalar(float lerpedVal) => lerpedVal.ToString("0.00");
 
         // getting commands from UI
-        void UpdateBrushLight() => brushLight.enabled = checkbox.check;
-        void UpdateSunRotation() => sunTransform.eulerAngles = new Vector3(rotationXSlider.LerpedValue, rotationYSlider.LerpedValue, 0);
+        void UpdateBrushLight(bool value)
+        {
+            brushLight.enabled = value;
+            Preferences.data.enableBrushLight = value;
+            Preferences.SavePreferences();
+        }
+        
+        void UpdateSunRotation() => sunTransform.eulerAngles = new Vector3(rotationPitchSlider.LerpedValue, rotationYawSlider.LerpedValue, 0);
 
         void UpdateSunColor()
         {
@@ -72,6 +75,17 @@ namespace AbyssEditor.UI {
             {
                 light.color = new Color(sunR.LerpedValue, sunG.LerpedValue, sunB.LerpedValue);
             }
+        }
+
+        void SavePreferences()
+        {
+            Preferences.data.sunPitch = rotationPitchSlider.LerpedValue;
+            Preferences.data.sunYaw = rotationYawSlider.LerpedValue;
+            Preferences.data.sunColorR = sunR.LerpedValue;
+            Preferences.data.sunColorG = sunG.LerpedValue;
+            Preferences.data.sunColorB = sunB.LerpedValue;
+            Preferences.data.sunIntensity = sunIntensity.LerpedValue;
+            Preferences.SavePreferences();
         }
 
         void UpdateSunIntensity()

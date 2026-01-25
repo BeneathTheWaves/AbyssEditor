@@ -13,6 +13,10 @@ namespace AbyssEditor.UI {
             PushToTop();
             gameObject.SetActive(windowActive);
         }
+        public virtual void UpdateScale()
+        {
+            transform.localScale = Vector3.one * 1;
+        }
         public void ToggleWindow() {
             if (windowActive) DisableWindow();
             else EnableWindow();

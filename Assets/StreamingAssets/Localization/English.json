@@ -5,5 +5,24 @@
   "Help": "Help",
   "Quit": "Quit",
   "CreatorCredit": "Original Creator: Eterna",
-  "Maintainers": "Active Maintainers: Jbeast291, Kallie23\nPast Contributors: Esper, Lyonic, Metious,  "
+  "Maintainers": "Active Maintainers: Jbeast291, Kallie23\nPast Contributors: Esper, Lyonic, Metious,  ",
+  
+  //Lighting
+  "LightingTitle": "Lighting",
+  "SunPitch": "Sun Pitch",
+  "SunYaw": "Sun Yaw",
+  "EnableBrushLight": "Enable Brush Light",
+  "SunCR": "Sun Color (R)",
+  "SunCG": "Sun Color (G)",
+  "SunCB": "Sun Color (B)",
+  "SunIntensity": "Sun Intensity",
+  
+  //Settings
+  "SettingsTitle": "Settings",
+  "GamePath": "GamePath",
+  "GamePath_SubText": "game path should be here...",
+  "BrowseButton": "Browse...",
+  "FileBrowserTip": "Select a Subnautica or Below Zero game folder.",
+  "EnableFullscreen": "Enable Fullscreen",
+  "AutoLoadMats": "Auto Load Materials"
 }
