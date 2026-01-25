@@ -1,34 +1,31 @@
-﻿using UnityEngine.UI;
+﻿using AbyssEditor.Scripts.SaveSystem;
+using AbyssEditor.UI;
 using SFB;
 using UnityEngine;
-using UnityEngine.Assertions;
-using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
-namespace AbyssEditor.UI {
+namespace AbyssEditor.Scripts.UI.Windows {
     public class UISettingsWindow : UIWindow {
 
         private void Start()
         {
             OnFullscreenToggle(true);
             OnAutoLoadMaterialsToggle(true);
+            UpdatePathDisplay(Preferences.data.gamePath);
         }
 
         public void BrowseGamePath() {
             string[] paths = StandaloneFileBrowser.OpenFolderPanel("Select a Subnautica or Below Zero game folder.", Application.persistentDataPath, false);
 
             if (paths.Length != 0) {
-                Globals.SetGamePath(paths[0], true);
-                UpdatePathDisplay(paths[0]);
-
-                if(SceneManager.GetActiveScene().buildIndex == 0)
-                {
-                    SceneManager.LoadScene("AbyssEditor");
-                }
+                Preferences.data.gamePath = paths[0];
+                Preferences.SavePreferences();
+                UpdatePathDisplay(Preferences.data.gamePath);
             }
         }
         public override void EnableWindow()
         {
-            UpdatePathDisplay(Globals.instance.gamePath);
+            UpdatePathDisplay(Preferences.data.gamePath);
             base.EnableWindow();
         }
         private void UpdatePathDisplay(string path) => transform.GetChild(1).GetChild(1).GetComponent<Text>().text = path;

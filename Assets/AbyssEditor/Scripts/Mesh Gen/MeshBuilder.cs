@@ -63,7 +63,7 @@ namespace AbyssEditor {
 
             CreateBuffers(resolution);
 
-            int numThreads = Mathf.CeilToInt ((resolution.x) / (float) Globals.threadGroupSize);
+            int numThreads = Mathf.CeilToInt ((resolution.x) / (float) Globals.THREAD_GROUP_SIZE);
 
             //if (!typeGrid.IsCreated) typeGrid = new byte[resolution.x * resolution.y * resolution.z];
 

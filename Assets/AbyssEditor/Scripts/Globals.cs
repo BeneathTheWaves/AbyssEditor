@@ -1,4 +1,5 @@
 using System.IO;
+using AbyssEditor.Scripts.SaveSystem;
 using AbyssEditor.UI;
 using UnityEngine;
 
@@ -13,21 +14,20 @@ namespace AbyssEditor {
         public Material simpleMapMat;
         public Material boundaryGizmoMat;
         public Color[] brushColors;
-        public string gamePath;
         public bool belowzero;
         public string userBatchOutputPath;
         public bool autoLoadMats;
 
         private GameObject[] boundaryPlanes;
 
-        public string batchSourcePath { get { return Path.Combine(gamePath, gameDataFolder, dataToUnmanaged, gameExportWindow, "CompiledOctreesCache"); } }
+        public string batchSourcePath { get { return Path.Combine(Preferences.data.gamePath, gameDataFolder, dataToUnmanaged, gameExportWindow, "CompiledOctreesCache"); } }
         public string batchOutputPath { get { return exportIntoGame ? batchSourcePath : userBatchOutputPath; } }
         public string gameDataFolder { get { return belowzero ? "SubnauticaZero_Data" : "Subnautica_Data"; } }
         public string gameExportWindow { get { return belowzero ? "Expansion" : "Build18"; } }
-        public string resourcesSourcePath { get { return Path.Combine(gamePath, gameDataFolder); } }
+        public string resourcesSourcePath { get { return Path.Combine(Preferences.data.gamePath, gameDataFolder); } }
         public string blocktypeStringsFilename { get { return belowzero ? "blocktypeStringsBZ" : "blocktypeStrings"; } }
         
-        public const int threadGroupSize = 8;
+        public const int THREAD_GROUP_SIZE = 8;
 
         public static string sourcePathKey = "gamePath";
         public static string outputPathKey = "outputPath";
@@ -48,7 +48,7 @@ namespace AbyssEditor {
             return instance.batchMat;
         }
         public static void BakeSimpleMapMaterial() {
-            string filename = Path.Combine(instance.gamePath, instance.gameDataFolder, dataToUnmanaged, instance.gameExportWindow, "biomemap.png");
+            string filename = Path.Combine(Preferences.data.gamePath, instance.gameDataFolder, dataToUnmanaged, instance.gameExportWindow, "biomemap.png");
 
             if (File.Exists(filename)) {
                 byte[] fileData = File.ReadAllBytes(filename);
@@ -60,26 +60,6 @@ namespace AbyssEditor {
         }
         public static Material GetSimpleMapMat() {
             return instance.simpleMapMat;
-        }
-
-        public static void SetGamePath(string path, bool save) {
-            if(instance == null)
-            {
-                instance = FindObjectOfType<Globals>();
-            }
-
-            instance.gamePath = path;
-            string[] splitdirs = path.Split(Path.DirectorySeparatorChar);
-            instance.belowzero = splitdirs[splitdirs.Length - 1] == "SubnauticaZero";
-            
-            if (save)
-                SaveData.WriteKey(sourcePathKey, path);
-        }
-        public static void SetBatchOutputPath(string path, bool save) {
-            instance.userBatchOutputPath = path;
-
-            if (save)
-                SaveData.WriteKey(outputPathKey, path);
         }
 
         public static int LinearIndex(int x, int y, int z, int dim) {
@@ -115,7 +95,7 @@ namespace AbyssEditor {
                 planes = instance.boundaryPlanes;
             }
 
-            Vector3 worldCenter = VoxelWorld.regionSize * VoxelWorld.OCTREE_WIDTH * VoxelWorld.CONTAINERS_PER_SIDE / 2;
+            Vector3 worldCenter = VoxelWorld.regionSize * (VoxelWorld.OCTREE_WIDTH * VoxelWorld.CONTAINERS_PER_SIDE) / 2;
 
             planes[0].transform.position = new Vector3(worldCenter.x, 0, worldCenter.z);
             planes[0].transform.localScale = new Vector3(worldCenter.x * .2f, 1, worldCenter.z * .2f);

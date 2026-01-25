@@ -73,12 +73,15 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelGrids.Brushes
             handle.Complete();
         }
 
+        /// <summary>
+        /// yes, somehow its like 5x faster to copy an array with a job lmao
+        /// </summary>
         [BurstCompile]
         protected struct ArrayCopyJob : IJobFor
         {
             //Copy into
-            [NativeDisableContainerSafetyRestriction] public NativeArray<byte> densityGrid;
-            [NativeDisableContainerSafetyRestriction] public NativeArray<byte> typeGrid;
+            [NativeDisableParallelForRestriction] public NativeArray<byte> densityGrid;
+            [NativeDisableParallelForRestriction] public NativeArray<byte> typeGrid;
             
             [ReadOnly] public int dim;
             //read from

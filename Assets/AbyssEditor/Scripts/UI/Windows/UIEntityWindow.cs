@@ -371,7 +371,7 @@
                 using (BinaryReader binaryReader = new BinaryReader(fileStream))
                 {
                     int num = binaryReader.ReadInt32();
-                    Debug.Log(string.Format("PrefabDatabase::LoadPrefabDatabase(count: {0})", num));
+                    Debug.Log(string.V1Format("PrefabDatabase::LoadPrefabDatabase(count: {0})", num));
                     for (int i = 0; i < num; i++)
                     {
                         string classId = binaryReader.ReadString();

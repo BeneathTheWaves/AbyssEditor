@@ -1,7 +1,9 @@
-﻿using UnityEngine;
+﻿using AbyssEditor.Scripts.SaveSystem;
+using AbyssEditor.UI;
+using UnityEngine;
 using UnityEngine.UI;
 
-namespace AbyssEditor.UI {
+namespace AbyssEditor.Scripts.UI {
     public class EditorUI : MonoBehaviour {
         public static EditorUI inst;
         [SerializeField] RectTransform statusBar;
@@ -14,7 +16,7 @@ namespace AbyssEditor.UI {
 
         private void Start()
         {
-            if(string.IsNullOrEmpty(Globals.instance.gamePath))
+            if(string.IsNullOrEmpty(Preferences.data.gamePath))
             {
                 UIWindow.ShowWindow("Button_Settings");
             }

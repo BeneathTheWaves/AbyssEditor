@@ -40,15 +40,6 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelGrids.Brushes
         
         public override void OnJobCompleteCleanup()
         {
-            /*
-            int innerSize = VoxelGrid.GetGridInnerSize();
-            for (int i = 0; i < innerSize; i++)
-            {
-                Vector3Int voxel = BrushUtils.Managed.GetVoxelFromIndex(i);
-                VoxelGrid.SetVoxel(grid.densityGrid, voxel.x, voxel.y, voxel.z, job.resultingDensities[i]);
-                VoxelGrid.SetVoxel(grid.typeGrid, voxel.x, voxel.y, voxel.z, job.resultingTypes[i]);
-            }
-            */
             ProcessCopyJob(grid.densityGrid, grid.typeGrid, job.resultingDensities, job.resultingTypes);
 
             ReturnPooledNativeArray(job.resultingDensities);
