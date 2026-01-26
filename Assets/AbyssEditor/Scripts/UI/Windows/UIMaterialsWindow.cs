@@ -1,11 +1,17 @@
 using System.Collections;
 using System.Collections.Generic;
+using AbyssEditor.Scripts;
 using AbyssEditor.Scripts.Asset_Loading;
 using AbyssEditor.Scripts.TerrainMaterials;
 using AbyssEditor.Scripts.UI;
 using UnityEngine;
 using UnityEngine.UI;
 using AbyssEditor.TerrainMaterials;
+using TMPro;
+using UnityEngine.UIElements;
+using UnityEngine.UIElements;
+using Button = UnityEngine.UI.Button;
+using Image = UnityEngine.UI.Image;
 
 namespace AbyssEditor.UI
 {
@@ -16,11 +22,14 @@ namespace AbyssEditor.UI
         public Transform gridParent;
         public Sprite favoritedButton;
         public Sprite unfavoritedButton;
-        public Toggle showFavoritesOnlyToggle;
-
+        public GameObject showFavoritesOnlyToggle;
+        
+        public GameObject scrollView;
+        public GameObject loadMatsButton;
+        
         private GameObject matIconPrefab;
         private List<UIBlocktypeIconDisplay> icons;
-
+        
         private bool showFavoritedOnly;
 
         private void Start()
@@ -33,7 +42,7 @@ namespace AbyssEditor.UI
         public override void EnableWindow()
         {
             base.EnableWindow();
-            transform.GetChild(1).GetChild(0).GetComponent<Text>().text = $"Load {(Globals.instance.belowzero ? "BZ" : "SN")} materials";
+            loadMatsButton.transform.Find("Text (TMP)").GetComponent<TextMeshProUGUI>().text = Globals.instance.belowzero ? Language.main.Get("LoadmatsBZ") : Language.main.Get("LoadmatsSN");
         }
 
         public void LoadMaterials()
@@ -43,8 +52,8 @@ namespace AbyssEditor.UI
                 EditorUI.DisplayErrorMessage("Please select a valid game path");
                 return;
             }
-            transform.GetChild(1).gameObject.SetActive(false);
-            transform.GetChild(2).gameObject.SetActive(true);
+            loadMatsButton.SetActive(false);
+            scrollView.SetActive(true);
 
             if (!SnMaterialLoader.instance.contentLoaded)
             {
@@ -82,7 +91,7 @@ namespace AbyssEditor.UI
             icons = new List<UIBlocktypeIconDisplay>();
 
             int successCount = 0;
-            int errorCount = 0;
+            
             foreach (BlocktypeMaterial mat in SnMaterialLoader.instance.blocktypesData)
             {
                 if (mat != null && mat.ExistsInGame)
@@ -92,14 +101,9 @@ namespace AbyssEditor.UI
                     icons.Add(newicon);
                     successCount++;
                 }
-                else
-                {
-                    errorCount++;
-                }
             }
-            GetComponentInChildren<UnityEngine.UIElements.ScrollView>().scrollOffset = new Vector2(0, 0);
+            //scrollView.GetComponent<ScrollView>().scrollOffset = new Vector2(0, 0);
             DebugOverlay.LogMessage($"Finished loading {successCount} materials.");
-            if (errorCount > 0) DebugOverlay.LogError($"Failed to load {errorCount} materials!");
         }
 
         private class UIBlocktypeIconDisplay

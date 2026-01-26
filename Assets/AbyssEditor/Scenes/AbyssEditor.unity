@@ -8020,6 +8020,12 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 893934819}
   m_CullTransparentMesh: 0
+--- !u!1 &897840639 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5329754387889649688, guid: 0997b6ab075533dcda6df4752139a070,
+    type: 3}
+  m_PrefabInstance: {fileID: 1137588036}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &901307061
 GameObject:
   m_ObjectHideFlags: 0
@@ -10460,6 +10466,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 33013333068547001, guid: 0997b6ab075533dcda6df4752139a070,
         type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 33013333068547001, guid: 0997b6ab075533dcda6df4752139a070,
+        type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 1903376151}
@@ -10473,17 +10484,20 @@ PrefabInstance:
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
       value: AbyssEditor.UI.UIMaterialsWindow, AbyssEditor
       objectReference: {fileID: 0}
+    - target: {fileID: 1870902846956054472, guid: 0997b6ab075533dcda6df4752139a070,
+        type: 3}
+      propertyPath: m_Name
+      value: Text (TMP)
+      objectReference: {fileID: 0}
     - target: {fileID: 3763673233831873964, guid: 0997b6ab075533dcda6df4752139a070,
         type: 3}
       propertyPath: m_text
-      value: 'Loadmats
-
-'
+      value: TEXT SET VIA SCRIPT
       objectReference: {fileID: 0}
     - target: {fileID: 3763673233831873964, guid: 0997b6ab075533dcda6df4752139a070,
         type: 3}
       propertyPath: m_fontSize
-      value: 32
+      value: 25.5
       objectReference: {fileID: 0}
     - target: {fileID: 4035729016778751066, guid: 0997b6ab075533dcda6df4752139a070,
         type: 3}
@@ -10498,7 +10512,12 @@ PrefabInstance:
     - target: {fileID: 5329754387889649688, guid: 0997b6ab075533dcda6df4752139a070,
         type: 3}
       propertyPath: m_Name
-      value: Button
+      value: LoadButton
+      objectReference: {fileID: 0}
+    - target: {fileID: 5329754387889649688, guid: 0997b6ab075533dcda6df4752139a070,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6078628164898721530, guid: 0997b6ab075533dcda6df4752139a070,
         type: 3}
@@ -12448,18 +12467,12 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e2c328837f4e0447fad29745be12d9ce, type: 3}
---- !u!114 &1432232863 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 2679229158502272807, guid: e2c328837f4e0447fad29745be12d9ce,
+--- !u!1 &1432232863 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3597617751272678702, guid: e2c328837f4e0447fad29745be12d9ce,
     type: 3}
   m_PrefabInstance: {fileID: 1432232862}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9085046f02f69544eb97fd06b6048fe2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!224 &1432232864 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 4852627724447651362, guid: e2c328837f4e0447fad29745be12d9ce,
@@ -16670,6 +16683,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1825340963}
   - component: {fileID: 1825340964}
+  - component: {fileID: 1825340965}
   m_Layer: 0
   m_Name: Counter Sun
   m_TagString: Untagged
@@ -16757,6 +16771,35 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &1825340965
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1825340962}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 474bcb49853aa07438625e644c072ee6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.RenderPipelines.Universal.Runtime::UnityEngine.Rendering.Universal.UniversalAdditionalLightData
+  m_UsePipelineSettings: 1
+  m_AdditionalLightsShadowResolutionTier: 2
+  m_CustomShadowLayers: 0
+  m_LightCookieSize: {x: 1, y: 1}
+  m_LightCookieOffset: {x: 0, y: 0}
+  m_SoftShadowQuality: 0
+  m_RenderingLayersMask:
+    serializedVersion: 0
+    m_Bits: 1
+  m_ShadowRenderingLayersMask:
+    serializedVersion: 0
+    m_Bits: 1
+  m_Version: 4
+  m_LightLayerMask: 1
+  m_ShadowLayerMask: 1
+  m_RenderingLayers: 1
+  m_ShadowRenderingLayers: 1
 --- !u!1 &1826992991
 GameObject:
   m_ObjectHideFlags: 0
@@ -17653,8 +17696,8 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2067864424}
-  - {fileID: 259139632}
   - {fileID: 1137588037}
+  - {fileID: 259139632}
   m_Father: {fileID: 393502020}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
@@ -17678,6 +17721,8 @@ MonoBehaviour:
   favoritedButton: {fileID: 21300000, guid: a1a9404ea5c252c4ab14daebed0242c2, type: 3}
   unfavoritedButton: {fileID: 21300000, guid: 8e4d7247e91ee714b9b7f8113b012127, type: 3}
   showFavoritesOnlyToggle: {fileID: 1432232863}
+  scrollView: {fileID: 259139631}
+  loadMatsButton: {fileID: 897840639}
 --- !u!114 &1903376152
 MonoBehaviour:
   m_ObjectHideFlags: 0
