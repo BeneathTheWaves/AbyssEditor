@@ -50,7 +50,6 @@ namespace AbyssEditor.Scripts.UI.Windows {
             sunIntensity.SetValue(Preferences.data.sunIntensity);
 
             brushLight = Brush.GetBrushLight();
-            brushLightToggle.onValueChanged.AddListener(UpdateBrushLight);
             brushLightToggle.SetIsOnWithoutNotify(Preferences.data.enableBrushLight);
 
             UpdateSunRotation();
@@ -60,7 +59,7 @@ namespace AbyssEditor.Scripts.UI.Windows {
         private string FormatScalar(float lerpedVal) => lerpedVal.ToString("0.00");
 
         // getting commands from UI
-        void UpdateBrushLight(bool value)
+        public void UpdateBrushLight(bool value)
         {
             brushLight.enabled = value;
             Preferences.data.enableBrushLight = value;

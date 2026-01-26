@@ -52,9 +52,9 @@ namespace AbyssEditor.UI
             }
         }
 
-        public void SetShowFavoritedOnly()
+        public void SetShowFavoritedOnly(bool value)
         {
-            showFavoritedOnly = showFavoritesOnlyToggle.isOn;
+            showFavoritedOnly = value;
             UpdateFilter();
         }
 
