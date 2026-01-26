@@ -2,32 +2,28 @@
 using AbyssEditor.UI;
 using UnityEngine;
 using UnityEngine.UI;
+
 namespace AbyssEditor.Scripts.UI.Windows {
     public class UILightWindow : UIWindow {
-        public Light[] sunLights;
-        // Two things:
-        // 1. Rotate the sun around X and Y axis with a hybrid slider
-        public UIHybridInput rotationPitchSlider;
-        public UIHybridInput rotationYawSlider;
+        public UIHybridInput sunPitch;
+        public UIHybridInput sunYaw;
         public UIHybridInput sunR;
         public UIHybridInput sunG;
         public UIHybridInput sunB;
         public UIHybridInput sunIntensity;
-        public Transform sunTransform;
-        // 2. Enable/disable brush light
+        
         public Toggle brushLightToggle;
-        Light brushLight;
 
         private void Start() {
-            rotationPitchSlider.OnValueUpdated += UpdateSunRotation;
-            rotationPitchSlider.OnEndDragging += SavePreferences;
-            rotationPitchSlider.formatFunction = FormatAngle;
-            rotationPitchSlider.SetValue(Preferences.data.sunPitch);
+            sunPitch.OnValueUpdated += UpdateSunRotation;
+            sunPitch.OnEndDragging += SavePreferences;
+            sunPitch.formatFunction = FormatAngle;
+            sunPitch.SetValue(Preferences.data.sunPitch);
 
-            rotationYawSlider.OnValueUpdated += UpdateSunRotation;
-            rotationYawSlider.OnEndDragging += SavePreferences;
-            rotationYawSlider.formatFunction = FormatAngle;
-            rotationYawSlider.SetValue(Preferences.data.sunYaw);
+            sunYaw.OnValueUpdated += UpdateSunRotation;
+            sunYaw.OnEndDragging += SavePreferences;
+            sunYaw.formatFunction = FormatAngle;
+            sunYaw.SetValue(Preferences.data.sunYaw);
 
             sunR.OnValueUpdated += UpdateSunColor;
             sunR.OnEndDragging += SavePreferences;
@@ -48,11 +44,8 @@ namespace AbyssEditor.Scripts.UI.Windows {
             sunIntensity.OnEndDragging += SavePreferences;
             sunIntensity.formatFunction = FormatScalar;
             sunIntensity.SetValue(Preferences.data.sunIntensity);
-
-            brushLight = Brush.GetBrushLight();
+            
             brushLightToggle.SetIsOnWithoutNotify(Preferences.data.enableBrushLight);
-
-            UpdateSunRotation();
         }
 
         private string FormatAngle(float lerpedVal) => $"{Mathf.RoundToInt(lerpedVal)} deg";
@@ -61,38 +54,35 @@ namespace AbyssEditor.Scripts.UI.Windows {
         // getting commands from UI
         public void UpdateBrushLight(bool value)
         {
-            brushLight.enabled = value;
-            Preferences.data.enableBrushLight = value;
-            Preferences.SavePreferences();
+            LightingManager.main.UpdateBrushLight(value);
+            SavePreferences();
         }
-        
-        void UpdateSunRotation() => sunTransform.eulerAngles = new Vector3(rotationPitchSlider.LerpedValue, rotationYawSlider.LerpedValue, 0);
+
+        void UpdateSunRotation()
+        {
+            LightingManager.main.UpdateSunRotation(sunPitch.LerpedValue, sunYaw.LerpedValue);
+        }
 
         void UpdateSunColor()
         {
-            foreach (var light in sunLights)
-            {
-                light.color = new Color(sunR.LerpedValue, sunG.LerpedValue, sunB.LerpedValue);
-            }
-        }
-
-        void SavePreferences()
-        {
-            Preferences.data.sunPitch = rotationPitchSlider.LerpedValue;
-            Preferences.data.sunYaw = rotationYawSlider.LerpedValue;
-            Preferences.data.sunColorR = sunR.LerpedValue;
-            Preferences.data.sunColorG = sunG.LerpedValue;
-            Preferences.data.sunColorB = sunB.LerpedValue;
-            Preferences.data.sunIntensity = sunIntensity.LerpedValue;
-            Preferences.SavePreferences();
+            LightingManager.main.UpdateSunColor(sunR.LerpedValue, sunG.LerpedValue, sunB.LerpedValue);
         }
 
         void UpdateSunIntensity()
         {
-            foreach (var light in sunLights)
-            {
-                light.intensity = sunIntensity.LerpedValue;
-            }
+            LightingManager.main.UpdateSunIntensity(sunIntensity.LerpedValue);
+        }
+
+        void SavePreferences()
+        {
+            Preferences.data.sunPitch = sunPitch.LerpedValue;
+            Preferences.data.sunYaw = sunYaw.LerpedValue;
+            Preferences.data.sunColorR = sunR.LerpedValue;
+            Preferences.data.sunColorG = sunG.LerpedValue;
+            Preferences.data.sunColorB = sunB.LerpedValue;
+            Preferences.data.sunIntensity = sunIntensity.LerpedValue;
+            
+            Preferences.SavePreferences();
         }
     }
 }
