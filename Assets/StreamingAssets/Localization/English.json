@@ -29,5 +29,6 @@
   //Materials
   "MaterialsTitle": "Materials",
   "OnlyShowFavorites": "Only Show Favorites",
-  "Loadmats": "Load SN materials"
+  "LoadmatsSN": "Load SN materials",
+  "LoadmatsBZ": "Load BZ materials"
 }
