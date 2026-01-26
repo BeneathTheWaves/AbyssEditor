@@ -16,7 +16,10 @@ namespace AbyssEditor.Scripts.SaveSystem
     public class PreferencesMainFormat : DataFormatSnapshot
     {
         public readonly int configVersion = 1;//Latest Version!!!
-        public string gamePath = "";
+        
+        //Materials
+        public bool showFavoritedOnly = false;
+        public HashSet<int> favoritedMaterials = new();//must instantiate, forces newtonsoft to initialize the list
         
         //Lighting Tab
         public float sunPitch = 60f;
@@ -27,6 +30,8 @@ namespace AbyssEditor.Scripts.SaveSystem
         public float sunColorB = 1f;
         public float sunIntensity = 0.5f;
         
+        //Settings
+        public string gamePath = "";
         public bool fullscreen = false;
         public bool autoLoadMaterials = true;
     }

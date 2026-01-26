@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using AbyssEditor.Scripts;
 using AbyssEditor.Scripts.Asset_Loading;
+using AbyssEditor.Scripts.SaveSystem;
 using AbyssEditor.Scripts.TerrainMaterials;
 using AbyssEditor.Scripts.UI;
 using UnityEngine;
@@ -12,6 +13,7 @@ using UnityEngine.UIElements;
 using UnityEngine.UIElements;
 using Button = UnityEngine.UI.Button;
 using Image = UnityEngine.UI.Image;
+using Toggle = UnityEngine.UI.Toggle;
 
 namespace AbyssEditor.UI
 {
@@ -22,7 +24,7 @@ namespace AbyssEditor.UI
         public Transform gridParent;
         public Sprite favoritedButton;
         public Sprite unfavoritedButton;
-        public GameObject showFavoritesOnlyToggle;
+        public Toggle showFavoritesOnlyToggle;
         
         public GameObject scrollView;
         public GameObject loadMatsButton;
@@ -37,6 +39,9 @@ namespace AbyssEditor.UI
             main = this;
             if (matIconPrefab == null)
                 matIconPrefab = Resources.Load<GameObject>("UI Material Icon");
+            
+            showFavoritedOnly = Preferences.data.showFavoritedOnly;
+            showFavoritesOnlyToggle.SetIsOnWithoutNotify(Preferences.data.showFavoritedOnly);
         }
 
         public override void EnableWindow()
@@ -64,6 +69,8 @@ namespace AbyssEditor.UI
         public void SetShowFavoritedOnly(bool value)
         {
             showFavoritedOnly = value;
+            Preferences.data.showFavoritedOnly = value;
+            Preferences.SavePreferences();
             UpdateFilter();
         }
 
@@ -73,6 +80,7 @@ namespace AbyssEditor.UI
                 return;
             foreach (var icon in icons)
             {
+                Debug.Log(showFavoritedOnly);
                 icon.gameObject.SetActive(showFavoritedOnly ? icon.Favorited : true);
             }
         }
@@ -104,6 +112,8 @@ namespace AbyssEditor.UI
             }
             //scrollView.GetComponent<ScrollView>().scrollOffset = new Vector2(0, 0);
             DebugOverlay.LogMessage($"Finished loading {successCount} materials.");
+
+            UpdateFilter();
         }
 
         private class UIBlocktypeIconDisplay
@@ -118,12 +128,21 @@ namespace AbyssEditor.UI
                 get
                 {
                     if (!favorited.HasValue)
-                        favorited = PlayerPrefs.GetInt($"FavoritedBlockType_{mat.blocktype}") == 1;
+                        favorited = Preferences.data.favoritedMaterials.Contains(mat.blocktype);
                     return favorited.Value;
                 }
                 set
                 {
-                    PlayerPrefs.SetInt($"FavoritedBlockType_{mat.blocktype}", value ? 1 : 0);
+                    if (value)
+                    {
+                        Preferences.data.favoritedMaterials.Add(mat.blocktype);
+                    }
+                    else
+                    {
+                        Preferences.data.favoritedMaterials.Remove(mat.blocktype);
+                    }
+                    Preferences.SavePreferences();
+                    //PlayerPrefs.SetInt($"FavoritedBlockType_{mat.blocktype}", value ? 1 : 0);
                     favorited = value;
                 }
             }

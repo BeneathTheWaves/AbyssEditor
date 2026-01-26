@@ -8348,7 +8348,7 @@ GameObject:
   m_Component:
   - component: {fileID: 946578686}
   m_Layer: 5
-  m_Name: FullscreenGroup (1)
+  m_Name: AutoLoadMatsGroup
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -11082,7 +11082,7 @@ PrefabInstance:
     - target: {fileID: 3597617751272678702, guid: e2c328837f4e0447fad29745be12d9ce,
         type: 3}
       propertyPath: m_Name
-      value: FullscreenToggle
+      value: AutoLoadMatsToggle
       objectReference: {fileID: 0}
     - target: {fileID: 4852627724447651362, guid: e2c328837f4e0447fad29745be12d9ce,
         type: 3}
@@ -12275,6 +12275,18 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 1350181377}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1367032028 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2679229158502272807, guid: e2c328837f4e0447fad29745be12d9ce,
+    type: 3}
+  m_PrefabInstance: {fileID: 1191266718}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9085046f02f69544eb97fd06b6048fe2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1382223142
 GameObject:
   m_ObjectHideFlags: 0
@@ -12335,8 +12347,13 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 2679229158502272807, guid: e2c328837f4e0447fad29745be12d9ce,
         type: 3}
+      propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679229158502272807, guid: e2c328837f4e0447fad29745be12d9ce,
+        type: 3}
       propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
-      value: 6
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2679229158502272807, guid: e2c328837f4e0447fad29745be12d9ce,
         type: 3}
@@ -12352,6 +12369,16 @@ PrefabInstance:
         type: 3}
       propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
       value: AbyssEditor.UI.UIMaterialsWindow, AbyssEditor
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679229158502272807, guid: e2c328837f4e0447fad29745be12d9ce,
+        type: 3}
+      propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_BoolArgument
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679229158502272807, guid: e2c328837f4e0447fad29745be12d9ce,
+        type: 3}
+      propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
     - target: {fileID: 3597617751272678702, guid: e2c328837f4e0447fad29745be12d9ce,
         type: 3}
@@ -12463,18 +12490,24 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e2c328837f4e0447fad29745be12d9ce, type: 3}
---- !u!1 &1432232863 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 3597617751272678702, guid: e2c328837f4e0447fad29745be12d9ce,
-    type: 3}
-  m_PrefabInstance: {fileID: 1432232862}
-  m_PrefabAsset: {fileID: 0}
 --- !u!224 &1432232864 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 4852627724447651362, guid: e2c328837f4e0447fad29745be12d9ce,
     type: 3}
   m_PrefabInstance: {fileID: 1432232862}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1432232865 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2679229158502272807, guid: e2c328837f4e0447fad29745be12d9ce,
+    type: 3}
+  m_PrefabInstance: {fileID: 1432232862}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9085046f02f69544eb97fd06b6048fe2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1433409865
 GameObject:
   m_ObjectHideFlags: 0
@@ -15881,7 +15914,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: '::'
   sunTransform: {fileID: 1092007918}
-  brushLight: {fileID: 0}
   sunLights:
   - {fileID: 1092007917}
   - {fileID: 1825340964}
@@ -17734,7 +17766,7 @@ MonoBehaviour:
   gridParent: {fileID: 619994615}
   favoritedButton: {fileID: 21300000, guid: a1a9404ea5c252c4ab14daebed0242c2, type: 3}
   unfavoritedButton: {fileID: 21300000, guid: 8e4d7247e91ee714b9b7f8113b012127, type: 3}
-  showFavoritesOnlyToggle: {fileID: 1432232863}
+  showFavoritesOnlyToggle: {fileID: 1432232865}
   scrollView: {fileID: 259139631}
   loadMatsButton: {fileID: 897840639}
 --- !u!114 &1903376152
@@ -18526,7 +18558,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gamePathText: {fileID: 688303526}
   fullscreenToggleButton: {fileID: 187013557}
-  autoLoadMaterialsToggleButton: {fileID: 0}
+  autoLoadMaterialsToggleButton: {fileID: 1367032028}
 --- !u!114 &1935572878
 MonoBehaviour:
   m_ObjectHideFlags: 0
