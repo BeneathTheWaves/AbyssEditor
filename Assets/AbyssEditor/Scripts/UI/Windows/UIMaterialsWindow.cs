@@ -140,7 +140,7 @@ namespace AbyssEditor.UI
                 }
 
                 string title = $"{mat.blocktype}) {materialName}";
-                gameObject.GetComponentInChildren<Text>().text = title;
+                gameObject.GetComponentInChildren<TextMeshProUGUI>().text = title;
 
                 gameObject.GetComponent<Button>().onClick.AddListener(OnMaterialSelected);
 
