@@ -7,9 +7,7 @@ namespace AbyssEditor.Scripts.UI.Windows {
     public class UILightWindow : UIWindow {
         public UIHybridInput sunPitch;
         public UIHybridInput sunYaw;
-        public UIHybridInput sunR;
-        public UIHybridInput sunG;
-        public UIHybridInput sunB;
+        public UIColorPicker sunColor;
         public UIHybridInput sunIntensity;
         
         public Toggle brushLightToggle;
@@ -25,21 +23,10 @@ namespace AbyssEditor.Scripts.UI.Windows {
             sunYaw.formatFunction = FormatAngle;
             sunYaw.SetValue(Preferences.data.sunYaw);
 
-            sunR.OnValueUpdated += UpdateSunColor;
-            sunR.OnEndDragging += SavePreferences;
-            sunR.formatFunction = FormatScalar;
-            sunR.SetValue(Preferences.data.sunColorR);
-
-            sunG.OnValueUpdated += UpdateSunColor;
-            sunG.OnEndDragging += SavePreferences;
-            sunG.formatFunction = FormatScalar;
-            sunG.SetValue(Preferences.data.sunColorG);
-
-            sunB.OnValueUpdated += UpdateSunColor;
-            sunB.OnEndDragging += SavePreferences;
-            sunB.formatFunction = FormatScalar;
-            sunB.SetValue(Preferences.data.sunColorB);
-
+            sunColor.onColorChanged += UpdateSunColor;
+            sunColor.onColorChanged += SavePreferences;
+            sunColor.color = new Color(Preferences.data.sunColorR, Preferences.data.sunColorG, Preferences.data.sunColorB, 1f);
+            
             sunIntensity.OnValueUpdated += UpdateSunIntensity;
             sunIntensity.OnEndDragging += SavePreferences;
             sunIntensity.formatFunction = FormatScalar;
@@ -65,7 +52,8 @@ namespace AbyssEditor.Scripts.UI.Windows {
 
         void UpdateSunColor()
         {
-            LightingManager.main.UpdateSunColor(sunR.LerpedValue, sunG.LerpedValue, sunB.LerpedValue);
+            LightingManager.main.UpdateSunColor(sunColor.color.r, sunColor.color.g, sunColor.color.b);
+            
         }
 
         void UpdateSunIntensity()
@@ -77,9 +65,9 @@ namespace AbyssEditor.Scripts.UI.Windows {
         {
             Preferences.data.sunPitch = sunPitch.LerpedValue;
             Preferences.data.sunYaw = sunYaw.LerpedValue;
-            Preferences.data.sunColorR = sunR.LerpedValue;
-            Preferences.data.sunColorG = sunG.LerpedValue;
-            Preferences.data.sunColorB = sunB.LerpedValue;
+            Preferences.data.sunColorR = sunColor.color.r;
+            Preferences.data.sunColorG = sunColor.color.g;
+            Preferences.data.sunColorB = sunColor.color.b;
             Preferences.data.sunIntensity = sunIntensity.LerpedValue;
             
             Preferences.SavePreferences();

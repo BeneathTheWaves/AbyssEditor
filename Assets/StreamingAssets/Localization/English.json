@@ -7,6 +7,9 @@
   "CreatorCredit": "Original Creator: Eterna",
   "Maintainers": "Active Maintainers: Jbeast291, Kallie23\nPast Contributors: Esper, Lyonic, Metious,  ",
   
+  //Color Picker
+  "HexPlaceholderText": "Hex Value",
+  
   //Lighting
   "LightingTitle": "Lighting",
   "SunPitch": "Sun Pitch",

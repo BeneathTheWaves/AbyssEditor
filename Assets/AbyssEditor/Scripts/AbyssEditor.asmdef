@@ -12,7 +12,9 @@
         "Unity.InputSystem",
         "Unity.Mathematics",
         "Unity.TextMeshPro",
-        "UnityEngine.UI"
+        "UnityEngine.UI",
+        "HSVPicker.Editors",
+        "HSVPicker"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
