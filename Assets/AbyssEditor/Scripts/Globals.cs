@@ -16,7 +16,6 @@ namespace AbyssEditor {
         public Color[] brushColors;
         public bool belowzero;
         public string userBatchOutputPath;
-        public bool autoLoadMats;
 
         private GameObject[] boundaryPlanes;
 

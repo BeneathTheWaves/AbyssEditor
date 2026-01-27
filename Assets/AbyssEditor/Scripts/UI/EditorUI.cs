@@ -1,4 +1,5 @@
 ﻿using AbyssEditor.Scripts.SaveSystem;
+using AbyssEditor.Scripts.TerrainMaterials;
 using AbyssEditor.UI;
 using UnityEngine;
 using UnityEngine.UI;
@@ -23,6 +24,11 @@ namespace AbyssEditor.Scripts.UI {
             else
             {
                 UIWindow.ShowWindow("Button_LoadBatch");
+            }
+
+            if (Preferences.data.autoLoadMaterials)
+            {
+                MaterialIconGenerator.main.GenerateMaterialIcons();
             }
         }
 

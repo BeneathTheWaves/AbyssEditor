@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using AbyssEditor.Scripts.Asset_Loading;
+using AbyssEditor.Scripts.UI;
 using AbyssEditor.TerrainMaterials;
 using UnityEngine;
 
@@ -201,6 +202,6 @@ namespace AbyssEditor.Scripts.TerrainMaterials
             }
 
             return blocktypes.Count > 0;
-        } 
+        }
     }
 }

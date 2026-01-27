@@ -41,11 +41,14 @@ namespace AbyssEditor.Scripts.UI.Windows {
         public void OnFullscreenToggle(bool value)
         {
             Screen.fullScreenMode = (value ? FullScreenMode.ExclusiveFullScreen : FullScreenMode.Windowed);
+            Preferences.data.fullscreen = value;
+            Preferences.SavePreferences();
         }
 
         public void OnAutoLoadMaterialsToggle(bool value)
         {
-            Globals.instance.autoLoadMats = value;
+            Preferences.data.autoLoadMaterials = value;
+            Preferences.SavePreferences();
         }
     }
 }
