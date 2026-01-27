@@ -1,8 +1,9 @@
-﻿using UnityEngine;
+﻿using TMPro;
+using UnityEngine;
 using UnityEngine.UI;
 public class UILogOverlayMessageInstance : MonoBehaviour
 {
-    [SerializeField] private Text text;
+    [SerializeField] private TextMeshProUGUI text;
     [SerializeField] private float lifetimeDuration;
     [SerializeField] private float fadeOutDuration;
 
