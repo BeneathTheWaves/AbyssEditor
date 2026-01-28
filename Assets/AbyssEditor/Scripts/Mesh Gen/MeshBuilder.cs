@@ -51,9 +51,22 @@ namespace AbyssEditor {
         void ReleaseBuffers() {
             if (faceBuffer != null) {
                 faceBuffer.Release();
+                faceBuffer = null;
+            }
+
+            if (densityBuffer != null) {
                 densityBuffer.Release();
+                densityBuffer = null;
+            }
+
+            if (typeBuffer != null) {
                 typeBuffer.Release();
+                typeBuffer = null;
+            }
+
+            if (triCountBuffer != null) {
                 triCountBuffer.Release();
+                triCountBuffer = null;
             }
         }
 

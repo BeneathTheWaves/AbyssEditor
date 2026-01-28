@@ -13,7 +13,7 @@ namespace AbyssEditor.VoxelTech
         Vector3Int octreeIndex;
 
         // density data
-        public Octree octree;
+        //public Octree octree;
         public VoxelGrid grid;
 
         // other objects
@@ -46,14 +46,13 @@ namespace AbyssEditor.VoxelTech
             meshObj.transform.localPosition = Vector3.zero;
         }
 
-        public void SetOctree(Octree _octree)
+        public void SetOctree(Octree octree)
         {
-            octree = _octree;
-            meshObj.name = $"OctreeMesh-{_octree.Index}";
-            RasterizeOctree();
+            meshObj.name = $"OctreeMesh-{octree.Index}";
+            RasterizeOctree(octree);
         }
 
-        public void RasterizeOctree()
+        public void RasterizeOctree(Octree octree)
         {
             int _res = VoxelWorld.RESOLUTION;
             NativeArray<byte> tempTypes = new NativeArray<byte>(_res * _res * _res, Allocator.Temp);

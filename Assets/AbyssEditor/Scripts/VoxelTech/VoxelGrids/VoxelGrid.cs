@@ -14,6 +14,7 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelGrids {
     public class VoxelGrid
     {
         public const int GRID_PADDING = 1;
+        public static int GRID_FULL_SIDE = VoxelWorld.RESOLUTION + 2;
         
         public NativeArray<byte> densityGrid;
         public NativeArray<byte> typeGrid;
@@ -24,25 +25,23 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelGrids {
         
         public static NativeArray<int3> neighboursToCheckInSmooth;
 
-        public VoxelGrid(NativeArray<byte> _coreDensity, NativeArray<byte> _coreTypes, Vector3Int _octreeIndex, Vector3Int _batchIndex) {
-            
-            int _fullSide = VoxelWorld.RESOLUTION + 2;
-            int leng = _fullSide * _fullSide * _fullSide;
-            densityGrid = new NativeArray<byte>(leng, Allocator.Persistent);
-            typeGrid = new NativeArray<byte>(leng, Allocator.Persistent);
-            
-            const int so = 1;
+        public VoxelGrid(NativeArray<byte> _coreDensity, NativeArray<byte> _coreTypes, Vector3Int _octreeIndex, Vector3Int _batchIndex)
+        {
 
+            int gridSize = GetFullGridSize();
+            densityGrid = new NativeArray<byte>(gridSize, Allocator.Persistent);
+            typeGrid = new NativeArray<byte>(gridSize, Allocator.Persistent);
+            
             for (int z = 0; z < VoxelWorld.RESOLUTION; z++) {
                 for (int y = 0; y < VoxelWorld.RESOLUTION; y++) {
                     for (int x = 0; x < VoxelWorld.RESOLUTION; x++) {
-                        SetVoxel(densityGrid, x + so, y + so, z + so, GetCoreVoxel(_coreDensity, x, y, z));
-                        SetVoxel(typeGrid, x + so, y + so, z + so, GetCoreVoxel(_coreTypes, x, y, z));
+                        SetVoxel(densityGrid, x + GRID_PADDING, y + GRID_PADDING, z + GRID_PADDING, GetCoreVoxel(_coreDensity, x, y, z));
+                        SetVoxel(typeGrid, x + GRID_PADDING, y + GRID_PADDING, z + GRID_PADDING, GetCoreVoxel(_coreTypes, x, y, z));
                     }
                 }
             }
 
-            fullGridDim = Vector3Int.one * _fullSide;
+            fullGridDim = Vector3Int.one * GRID_FULL_SIDE;
 
             octreeIndex = _octreeIndex;
             batchIndex = _batchIndex;
@@ -188,33 +187,6 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelGrids {
                     break;
             }
         }
-        void VoxelAdd(int x, int y, int z, int increment, byte newSolidVoxelType) {
-            // encode density into addition-friendly format
-            int distanceValue = GetVoxel(densityGrid, x, y, z);
-            if (distanceValue == 0) {
-                distanceValue = GetVoxel(typeGrid, x, y, z) == 0 ? 0 : 252;
-            }
-
-            // run with it
-            bool solidChanged = (distanceValue >= 126) != (distanceValue + increment >= 126);
-            distanceValue += increment;
-
-            // decode density back into normal storage format
-            if (distanceValue >= 252 || distanceValue <= 0) {
-                // 'far' node
-                SetVoxel(densityGrid, x, y, z, 0);
-            } else {
-                SetVoxel(densityGrid, x, y, z, (byte)distanceValue);
-            }
-
-            if (solidChanged) {
-                if (distanceValue >= 126) {
-                    SetVoxel(typeGrid, x, y, z, newSolidVoxelType);
-                } else {
-                    SetVoxel(typeGrid, x, y, z, 0);
-                }
-            }
-        }
         
         //TODO: MIGRATE THIS TO BRUSH UTILS
         public static float SampleDensity_Sphere_Squared(Vector3 sample, Vector3 origin, float radius)
@@ -264,6 +236,16 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelGrids {
                 }
             }
         }
+        
+        /// <summary>
+        /// This should be called when closing the player to free the memory
+        /// </summary>
+        internal void DisposeGrids()
+        {
+            densityGrid.Dispose();
+            typeGrid.Dispose();
+            Debug.Log("DISPOSED GRID");
+        }
 
         /// <summary>
         /// Precompute the neighbors to check when smoothing to reduce needed calls
@@ -284,10 +266,19 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelGrids {
                     }
                 }
             }
-//
             neighboursToCheckInSmooth = new NativeArray<int3>(offsets.ToArray(), Allocator.Persistent);
         }
 
+        
+        /// <summary>
+        /// Get the number of voxels within the grid.
+        /// </summary>
+        /// <returns>the number of voxels excluding the padding of 1 voxel that is present in each direction</returns>
+        private static int GetFullGridSize()
+        {
+            return GRID_FULL_SIDE * GRID_FULL_SIDE * GRID_FULL_SIDE;
+        }
+        
         /// <summary>
         /// Get the number of voxels excluding the 1 voxel padding on each side
         /// </summary>

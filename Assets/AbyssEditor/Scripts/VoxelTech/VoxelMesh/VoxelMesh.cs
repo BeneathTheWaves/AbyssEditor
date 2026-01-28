@@ -155,6 +155,17 @@ namespace AbyssEditor.VoxelTech
             }
         }
 
+        /// <summary>
+        /// This should be called when closing the player to free the memory
+        /// </summary>
+        public void DisposeGrids()
+        {
+            foreach (PointContainer pointContainer in octreeContainers)
+            {
+                pointContainer.grid.DisposeGrids();
+            }
+        }
+
         public Vector3Int GetBatchMinBound()
         {
             Vector3Int min = (batchIndex - VoxelWorld.startBatch) *

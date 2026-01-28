@@ -352,18 +352,9 @@ namespace AbyssEditor.Octrees {
 
                 return childrenIdentical &&
                        data == other.data;
-                //Mathf.Approximately(size, other.size) && 
-                //data.type == other.data.type && 
-                //data.signedDist == other.data.signedDist;
             }
         }
     }
-
-    public enum NodeRank {
-        Root,
-        Branch,
-        Leaf
-    } 
 
     public class OctNodeData {
         

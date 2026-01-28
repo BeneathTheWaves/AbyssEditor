@@ -176,7 +176,20 @@ namespace AbyssEditor.VoxelTech {
 
             return false;
         }
-
+        
+        /// <summary>
+        /// We HAVE TO free the native arrays before the game closes (especially in the editor) as it will cause a memory leak if we don't.
+        /// </summary>
+        void OnApplicationQuit()
+        {
+            Debug.Log("Disposing Native Arrays");
+            foreach (VoxelMesh mesh in meshes)
+            {
+                mesh.DisposeGrids();
+            }
+            BrushJob.DisposePool();
+            VoxelGrid.neighboursToCheckInSmooth.Dispose();
+        }
 
         private int GetLabel(Vector3Int globalBatchIndex) {
             return GetLabel(globalBatchIndex.x, globalBatchIndex.y, globalBatchIndex.z);
