@@ -149,8 +149,7 @@ namespace AbyssEditor.VoxelTech
                     for (int x = 0; x < 5; x++)
                     {
                         PointContainer _container = octreeContainers[Globals.LinearIndex(x, y, z, octreeCounts)];
-                        nodes[z, y, x].DeRasterizeGrid(_container.grid.densityGrid, _container.grid.typeGrid,
-                            VoxelWorld.RESOLUTION + 2, 5 - VoxelWorld.LEVEL_OF_DETAIL);
+                        nodes[z, y, x].DeRasterizeGrid(_container.grid.densityGrid, _container.grid.typeGrid, VoxelGrid.GRID_PADDING, 5 - VoxelWorld.LEVEL_OF_DETAIL);
                     }
                 }
             }

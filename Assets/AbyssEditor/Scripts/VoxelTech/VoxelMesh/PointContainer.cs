@@ -56,12 +56,13 @@ namespace AbyssEditor.VoxelTech
         public void RasterizeOctree()
         {
             int _res = VoxelWorld.RESOLUTION;
-            byte[] tempTypes = new byte[_res * _res * _res];
-            byte[] tempDensities = new byte[_res * _res * _res];
+            NativeArray<byte> tempTypes = new NativeArray<byte>(_res * _res * _res, Allocator.Temp);
+            NativeArray<byte> tempDensities = new NativeArray<byte>(_res * _res * _res, Allocator.Temp);
 
             octree.Rasterize(tempDensities, tempTypes, _res, 5 - VoxelWorld.LEVEL_OF_DETAIL);
 
             grid = new VoxelGrid(tempDensities, tempTypes, octreeIndex, batchIndex);
+            //Note: we free the temporary arrays within the voxel grid once we initialize the grid
         }
         
         public BrushJob ApplyJobBasedDensityAction(Brush.BrushStroke stroke)

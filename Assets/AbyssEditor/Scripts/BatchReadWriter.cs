@@ -5,8 +5,10 @@ using System.IO;
 using System.Text;
 using AbyssEditor.Octrees;
 using AbyssEditor.Scripts.UI;
+using AbyssEditor.Scripts.VoxelTech.VoxelGrids;
 using AbyssEditor.UI;
 using AbyssEditor.VoxelTech;
+using Unity.Collections;
 using UnityEngine;
 
 namespace AbyssEditor {
@@ -295,13 +297,34 @@ namespace AbyssEditor {
             foreach (VoxelMesh batch in metaspace.meshes) {
                 batch.UpdateOctreeDensity();
             }
-    	    
+            
+            //we can reuse this array for each grid over and over since they are the same size.
+            int _res = VoxelWorld.RESOLUTION;
+            NativeArray<byte> tempTypes = new NativeArray<byte>(_res * _res * _res, Allocator.Persistent);
+            NativeArray<byte> tempDensities = new NativeArray<byte>(_res * _res * _res, Allocator.Persistent);
+            
             foreach (VoxelMesh batch in metaspace.meshes) {
                 Octree[,,] nodes = batch.nodes;
                 // load original nodes from file?
                 NodeContainer container = new NodeContainer();
                 yield return StartCoroutine(ReadBatchCoroutine(container.Callback, batch.batchIndex, false, false) );
                 Octree[,,] originalNodes = container.nodes;
+
+                //we need to rasterize and then de-rasterize the Octree, ik it sounds stupid
+                for (int z = 0; z < 5; z++) {
+                    for (int y = 0; y < 5; y++) {
+                        for (int x = 0; x < 5; x++) {
+                            //
+                            
+                            originalNodes[x, y, z].Rasterize(tempDensities, tempTypes, _res, 5 - VoxelWorld.LEVEL_OF_DETAIL);
+                            
+                            originalNodes[x, y, z].DeRasterizeGrid(tempDensities, tempTypes, 0, 5 - VoxelWorld.LEVEL_OF_DETAIL);
+                        }
+                    }
+                }
+                
+                tempTypes.Dispose();
+                tempDensities.Dispose();
 
                 // get changed octrees data
                 List<Octree> batchChanges = new List<Octree>();
@@ -372,5 +395,6 @@ namespace AbyssEditor {
             nodes = _nodes;
             return true;
         }
+
     }
 }

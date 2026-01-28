@@ -53,11 +53,12 @@ namespace AbyssEditor.Octrees {
             return node.ContainsPoint(p);
         }
 
-        public void Rasterize(byte[] densityGrid, byte[] typeGrid, int side, int maxHeight) {
+        public void Rasterize(NativeArray<byte> densityGrid, NativeArray<byte> typeGrid, int side, int maxHeight) {
             node.RasterizeTree(densityGrid, typeGrid, side, node.position, 0, maxHeight);
         }
-        public void DeRasterizeGrid(NativeArray<byte> densityGrid, NativeArray<byte> typeGrid, int side, int maxHeight) {
-            node.DeRasterizeGrid(densityGrid, typeGrid, side, node.position, 0, maxHeight);
+        
+        public void DeRasterizeGrid(NativeArray<byte> densityGrid, NativeArray<byte> typeGrid, int gridPadding, int maxHeight) {
+            node.DeRasterizeGrid(densityGrid, typeGrid, gridPadding, node.position, 0, maxHeight);
         }
 
 
@@ -216,7 +217,7 @@ namespace AbyssEditor.Octrees {
             }
 
             
-            public void RasterizeTree(byte[] densityGrid, byte[] typeGrid, int thisCubeSize, Vector3 octreeOrigin, int height, int maxHeight) {
+            public void RasterizeTree(NativeArray<byte> densityGrid, NativeArray<byte> typeGrid, int thisCubeSize, Vector3 octreeOrigin, int height, int maxHeight) {
 
                 if (children != null && height < maxHeight) {
                     for (int b = 0; b < 8; b++) {
@@ -238,12 +239,12 @@ namespace AbyssEditor.Octrees {
                 }
             }
 
-            public void DeRasterizeGrid(NativeArray<byte> densityGrid, NativeArray<byte> typeGrid, int gridSide, Vector3 octreeOrigin, int height, int maxHeight) {
+            public void DeRasterizeGrid(NativeArray<byte> densityGrid, NativeArray<byte> typeGrid, int gridPadding, Vector3 octreeOrigin, int height, int maxHeight) {
                 if (size > 1 && height < maxHeight) {
                     Subdivide();
 
                     for (int b = 0; b < 8; b++) {
-                        children[b].DeRasterizeGrid(densityGrid, typeGrid, gridSide, octreeOrigin, height + 1, maxHeight);
+                        children[b].DeRasterizeGrid(densityGrid, typeGrid, gridPadding, octreeOrigin, height + 1, maxHeight);
                     }
 
                     data = new OctNodeData(MostCommonChildType(), AverageChildDensity(), 0);
@@ -253,8 +254,8 @@ namespace AbyssEditor.Octrees {
                 else {
                     Vector3 localPos = position - octreeOrigin;
 
-                    byte type = VoxelGrid.GetVoxel(typeGrid, (int)localPos.x + 1, (int)localPos.y + 1, (int)localPos.z + 1);
-                    byte signedDist = VoxelGrid.GetVoxel(densityGrid, (int)localPos.x + 1, (int)localPos.y + 1, (int)localPos.z + 1);
+                    byte type = VoxelGrid.GetVoxel(typeGrid, (int)localPos.x + gridPadding, (int)localPos.y + gridPadding, (int)localPos.z + gridPadding, gridPadding);
+                    byte signedDist = VoxelGrid.GetVoxel(densityGrid, (int)localPos.x + gridPadding, (int)localPos.y + gridPadding, (int)localPos.z + gridPadding, gridPadding);
                     data = new OctNodeData(type, signedDist, 0);
                 }
             }
@@ -348,10 +349,12 @@ namespace AbyssEditor.Octrees {
                         childrenIdentical &= children[b].IdenticalTo(other.children[b]);
                     }
                 }
+
                 return childrenIdentical &&
-                size == other.size && 
-                data.type == other.data.type && 
-                data.signedDist == other.data.signedDist;
+                       data == other.data;
+                //Mathf.Approximately(size, other.size) && 
+                //data.type == other.data.type && 
+                //data.signedDist == other.data.signedDist;
             }
         }
     }

@@ -11,7 +11,10 @@ using Unity.Mathematics;
 using UnityEngine;
 
 namespace AbyssEditor.Scripts.VoxelTech.VoxelGrids {
-    public class VoxelGrid {
+    public class VoxelGrid
+    {
+        public const int GRID_PADDING = 1;
+        
         public NativeArray<byte> densityGrid;
         public NativeArray<byte> typeGrid;
         public Vector3Int fullGridDim;
@@ -21,7 +24,7 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelGrids {
         
         public static NativeArray<int3> neighboursToCheckInSmooth;
 
-        public VoxelGrid(byte[] _coreDensity, byte[] _coreTypes, Vector3Int _octreeIndex, Vector3Int _batchIndex) {
+        public VoxelGrid(NativeArray<byte> _coreDensity, NativeArray<byte> _coreTypes, Vector3Int _octreeIndex, Vector3Int _batchIndex) {
             
             int _fullSide = VoxelWorld.RESOLUTION + 2;
             int leng = _fullSide * _fullSide * _fullSide;
@@ -43,15 +46,22 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelGrids {
 
             octreeIndex = _octreeIndex;
             batchIndex = _batchIndex;
+            
+            _coreDensity.Dispose();
+            _coreTypes.Dispose();
         }
 
+        public static byte GetVoxel(NativeArray<byte> array, int x, int y, int z, int padding) {
+            return array[Globals.LinearIndex(x, y, z, VoxelWorld.RESOLUTION + padding*2)];
+        }
+        
         public static byte GetVoxel(NativeArray<byte> array, int x, int y, int z) {
-            return array[Globals.LinearIndex(x, y, z, VoxelWorld.RESOLUTION + 2)];
+            return array[Globals.LinearIndex(x, y, z, VoxelWorld.RESOLUTION + GRID_PADDING*2)];
         }
         public static void SetVoxel(NativeArray<byte> array, int x, int y, int z, byte val) {
-            array[Globals.LinearIndex(x, y, z, VoxelWorld.RESOLUTION + 2)] = val;
+            array[Globals.LinearIndex(x, y, z, VoxelWorld.RESOLUTION + GRID_PADDING*2)] = val;
         }
-        public static byte GetCoreVoxel(byte[] array, int x, int y, int z) {
+        public static byte GetCoreVoxel(NativeArray<byte> array, int x, int y, int z) {
             return array[Globals.LinearIndex(x, y, z, VoxelWorld.RESOLUTION)];
         }
 
