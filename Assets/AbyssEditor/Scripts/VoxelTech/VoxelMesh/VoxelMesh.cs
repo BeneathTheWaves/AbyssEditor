@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Numerics;
 using AbyssEditor.Octrees;
+using AbyssEditor.Scripts;
 using AbyssEditor.Scripts.TerrainMaterials;
 using AbyssEditor.Scripts.VoxelTech.VoxelGrids;
 using AbyssEditor.Scripts.VoxelTech.VoxelGrids.Brushes;
