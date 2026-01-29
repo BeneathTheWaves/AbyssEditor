@@ -9,16 +9,19 @@ using Unity.Collections;
 using UnityEngine;
 
 namespace AbyssEditor.Scripts {
-    public class BatchReadWriter : MonoBehaviour {
+    public class BatchReadWriter : MonoBehaviour
+    {
         public static BatchReadWriter readWriter;
 
-        public delegate bool ReadFinishedCall(Octree[,,] nodes); 
+        public delegate bool ReadFinishedCall(Octree[,,] nodes);
 
-        void Awake() {
+        void Awake()
+        {
             readWriter = this;
         }
 
-        public IEnumerator ReadBatchCoroutine(ReadFinishedCall readFinishedCall, Vector3Int batchIndex, bool allowModded, bool generateEmpty) {
+        public IEnumerator ReadBatchCoroutine(ReadFinishedCall readFinishedCall, Vector3Int batchIndex, bool allowModded, bool generateEmpty)
+        {
             Vector3Int octreeDimensions = Vector3Int.one * VoxelWorld.CONTAINERS_PER_SIDE;
             if (batchIndex.x == 25) octreeDimensions.x = 3;
             if (batchIndex.z == 25) octreeDimensions.z = 3;
@@ -31,13 +34,14 @@ namespace AbyssEditor.Scripts {
             {
                 BinaryReader reader = new BinaryReader(File.Open(filePath, FileMode.Open));
                 reader.ReadInt32();
-                
+
                 // assemble a data array
                 int curr_pos = 0;
                 byte[] data = new byte[reader.BaseStream.Length - 4];
-                
+
                 long streamLength = reader.BaseStream.Length - 4;
-                while (curr_pos < streamLength) {
+                while (curr_pos < streamLength)
+                {
 
                     data[curr_pos] = reader.ReadByte();
                     curr_pos++;
@@ -45,8 +49,9 @@ namespace AbyssEditor.Scripts {
 
                 curr_pos = 0;
                 var sb = new StringBuilder();
-                while (curr_pos < data.Length && countOctrees < expectedOctrees) {
-                    
+                while (curr_pos < data.Length && countOctrees < expectedOctrees)
+                {
+
                     int x = countOctrees / (octreeDimensions.z * octreeDimensions.y);
                     int y = countOctrees % (octreeDimensions.z * octreeDimensions.y) / octreeDimensions.z;
                     int z = countOctrees % octreeDimensions.z;
@@ -55,7 +60,8 @@ namespace AbyssEditor.Scripts {
                     // record all nodes of this octree in an array
                     OctNodeData[] nodesOfThisOctree = new OctNodeData[nodeCount];
                     Vector3 batchOrigin = (batchIndex - VoxelWorld.startBatch) * (VoxelWorld.OCTREE_WIDTH * VoxelWorld.CONTAINERS_PER_SIDE);
-                    for (int i = 0; i < nodeCount; ++i) {
+                    for (int i = 0; i < nodeCount; ++i)
+                    {
                         byte type = data[curr_pos + 2 + i * 4];
                         byte signedDist = data[curr_pos + 3 + i * 4];
                         ushort childIndex = (ushort)(data[curr_pos + 5 + i * 4] * 256 + data[curr_pos + 4 + i * 4]);
@@ -69,23 +75,24 @@ namespace AbyssEditor.Scripts {
                     octrees[z, y, x] = octree;
 
                     curr_pos += (nodeCount * 4) + 2;
-                    countOctrees++; 
+                    countOctrees++;
                 }
-                
+
                 Debug.Log($"Batch '{batchIndex}' was loaded:\n{sb}");
 
-                
+
                 readFinishedCall(octrees);
                 reader.Close();
-            } 
-            
+            }
+
             // if no batch file
-            else {
+            else
+            {
                 DebugOverlay.LogMessage("no file for batch " + filePath);
                 // TODO: remove dependency
                 EditorUI.DisplayErrorMessage($"No file for batch {batchIndex.x}-{batchIndex.y}-{batchIndex.z}\n" +
                                              $"Created an empty batch", EditorUI.NotificationType.Warning);
-                
+
                 if (generateEmpty && batchIndex != new Vector3Int(0, 13, 17))
                 {
                     yield return ReadBatchCoroutine(readFinishedCall, new Vector3Int(0, 13, 17), false, false);
@@ -95,25 +102,28 @@ namespace AbyssEditor.Scripts {
                     readFinishedCall(null);
                 }
             }
-        } 
+        }
 
-        public bool QuickReadBatch(Vector3Int batchIndex, out int[,,] octrees) {
+        public bool QuickReadBatch(Vector3Int batchIndex, out int[,,] octrees)
+        {
             string batchname = string.Format(Path.DirectorySeparatorChar + "compiled-batch-{0}-{1}-{2}.optoctrees", batchIndex.x, batchIndex.y, batchIndex.z);
 
             octrees = new int[5, 5, 5];
 
-            if (File.Exists(Globals.instance.batchSourcePath + batchname)) {
+            if (File.Exists(Globals.instance.batchSourcePath + batchname))
+            {
 
                 BinaryReader reader = new BinaryReader(File.Open(Globals.instance.batchSourcePath + batchname, FileMode.Open));
                 reader.ReadInt32();
-                
+
                 // assemble a data array
                 int curr_pos = 0;
                 int countOctrees = 0;
-                
+
                 long streamLength = reader.BaseStream.Length - 4;
-                while (curr_pos < streamLength) {
-                    
+                while (curr_pos < streamLength)
+                {
+
                     int x = countOctrees / 25;
                     int y = countOctrees % 25 / 5;
                     int z = countOctrees % 5;
@@ -126,12 +136,12 @@ namespace AbyssEditor.Scripts {
                     reader.Read(buffer, 0, 3 + (nodeCount - 1) * 4);
 
                     curr_pos += (nodeCount * 4) + 2;
-                    countOctrees++; 
+                    countOctrees++;
                 }
 
                 reader.Close();
                 return true;
-            } 
+            }
             return false;
         }
 
@@ -160,13 +170,16 @@ namespace AbyssEditor.Scripts {
             return fileName;
         }
 
-        public void GenerateMaterialGallery(VoxelMesh batch) {
+        public void GenerateMaterialGallery(VoxelMesh batch)
+        {
 
             Octree[,,] octrees = new Octree[5, 5, 5];
 
             // form base
-            for (int z = 0; z < 5; z++) {
-                for (int x = 0; x < 5; x++) {
+            for (int z = 0; z < 5; z++)
+            {
+                for (int x = 0; x < 5; x++)
+                {
 
                     List<OctNodeData> nodes = new List<OctNodeData>();
 
@@ -176,13 +189,15 @@ namespace AbyssEditor.Scripts {
                     octree.Write(nodes.ToArray());
                     octrees[z, 0, x] = octree;
 
-                } 
+                }
             }
 
             byte type = 1;
             // material layer
-            for (int z = 0; z < 5; z++) {
-                for (int x = 0; x < 5; x++) {
+            for (int z = 0; z < 5; z++)
+            {
+                for (int x = 0; x < 5; x++)
+                {
 
                     List<OctNodeData> nodes = new List<OctNodeData>();
 
@@ -195,69 +210,85 @@ namespace AbyssEditor.Scripts {
                     octree.Write(nodes.ToArray());
                     octrees[z, 1, x] = octree;
 
-                } 
+                }
             }
 
             // empty nodes
-            for (int y = 2; y < 5; y++) {
-                for (int z = 0; z < 5; z++) {
-                    for (int x = 0; x < 5; x++) {
+            for (int y = 2; y < 5; y++)
+            {
+                for (int z = 0; z < 5; z++)
+                {
+                    for (int x = 0; x < 5; x++)
+                    {
 
                         List<OctNodeData> nodes = new List<OctNodeData>();
-                        
+
                         nodes.Add(new OctNodeData(0, 0, 0));
 
                         Octree octree = new Octree(x, y, z, VoxelWorld.OCTREE_WIDTH, batch.transform.position);
                         octree.Write(nodes.ToArray());
                         octrees[z, y, x] = octree;
 
-                    } 
+                    }
                 }
             }
             batch.OctreesReadCallback(octrees);
         }
 
-        public void MatGalleryAction(ref List<OctNodeData> nodes, int node, Vector3Int octree, ref byte nextType, int depth) {
+        public void MatGalleryAction(ref List<OctNodeData> nodes, int node, Vector3Int octree, ref byte nextType, int depth)
+        {
 
-            if (depth < 1) {
+            if (depth < 1)
+            {
                 ushort childIndex = (ushort)nodes.Count;
 
                 OctNodeData newdata = new OctNodeData(nodes[node].type, nodes[node].signedDist, childIndex);
                 nodes[node] = newdata;
 
-                for (int b = 0; b < 8; b++) {
-                    if (IsBottomNode(b)) {
+                for (int b = 0; b < 8; b++)
+                {
+                    if (IsBottomNode(b))
+                    {
                         nodes.Add(new OctNodeData(nextType++, 0, 0));
-                    } else {
+                    }
+                    else
+                    {
                         nodes.Add(new OctNodeData(0, 0, 0));
                     }
                 }
 
                 // once children are in place, work with them
-                for (int b = 0; b < 8; b++) {
+                for (int b = 0; b < 8; b++)
+                {
 
-                    if (IsBottomNode(b)) {
+                    if (IsBottomNode(b))
+                    {
                         MatGalleryAction(ref nodes, childIndex + b, octree, ref nextType, depth + 1);
                     }
                 }
             }
         }
 
-        bool IsBottomNode(int b) {
+        bool IsBottomNode(int b)
+        {
             return b < 2 || b == 4 || b == 5;
         }
 
-        public bool WriteOptoctrees(Vector3 batchIndex, Octree[,,] octrees) { 
+        public bool WriteOptoctrees(Vector3 batchIndex, Octree[,,] octrees)
+        {
             string batchname = string.Format(Path.DirectorySeparatorChar + "compiled-batch-{0}-{1}-{2}.optoctrees", batchIndex.x, batchIndex.y, batchIndex.z);
-            
+
             DebugOverlay.LogMessage($"Writing {batchname} to {Globals.instance.batchOutputPath}");
 
             BinaryWriter writer = new BinaryWriter(File.Open(Globals.instance.batchOutputPath + batchname, FileMode.OpenOrCreate));
             writer.Write(4);
-                
-            for (int z = 0; z < 5; z++) {
-                for (int y = 0; y < 5; y++) {
-                    for (int x = 0; x < 5; x++) {
+
+            for (int z = 0; z < 5; z++)
+            {
+                for (int y = 0; y < 5; y++)
+                {
+                    for (int x = 0; x < 5; x++)
+                    {
                         WriteOctree(writer, octrees[x, y, z]);
                     }
                 }
@@ -266,63 +297,42 @@ namespace AbyssEditor.Scripts {
             writer.Close();
             return true;
         }
-        
-        public IEnumerator WriteOctreePatchCoroutine(VoxelMetaspace metaspace) {
+
+        public IEnumerator WriteOctreePatchCoroutine(VoxelMetaspace metaspace)
+        {
             DebugOverlay.LogMessage($"Writing {metaspace.meshes.Length} batch patches as {Globals.instance.batchOutputPath}");
 
             BinaryWriter writer = new BinaryWriter(File.Open(Globals.instance.batchOutputPath, FileMode.Create));
             // write version
             writer.Write(0u);
 
-            foreach (VoxelMesh batch in metaspace.meshes) {
+            foreach (VoxelMesh batch in metaspace.meshes)
+            {
                 batch.UpdateOctreeDensity();
             }
-            
+
             //we will reuse this array for each grid over and over since they are the same size.
             int res = VoxelWorld.RESOLUTION;
             NativeArray<byte> tempTypes = new NativeArray<byte>(res * res * res, Allocator.Persistent);
             NativeArray<byte> tempDensities = new NativeArray<byte>(res * res * res, Allocator.Persistent);
-            
-            foreach (VoxelMesh batch in metaspace.meshes) {
+
+            foreach (VoxelMesh batch in metaspace.meshes)
+            {
                 Octree[,,] nodes = batch.nodes;
                 // load original nodes from file?
                 NodeContainer container = new NodeContainer();
-                yield return StartCoroutine(ReadBatchCoroutine(container.Callback, batch.batchIndex, false, false) );
+                yield return StartCoroutine(ReadBatchCoroutine(container.Callback, batch.batchIndex, false, false));
                 Octree[,,] originalNodes = container.nodes;
 
-                //we need to rasterize and then de-rasterize the Octree, ik it sounds stupid
-                //But the de-raster process form the grids forms a different grid than was originally inputted
-                //So to make the data match, we must rasterize and de-rasterize the batches we load to compare them with the modified grids
-                for (int z = 0; z < 5; z++) {
-                    for (int y = 0; y < 5; y++) {
-                        for (int x = 0; x < 5; x++) {
-                            //
-                            
-                            originalNodes[x, y, z].Rasterize(tempDensities, tempTypes, res, 5 - VoxelWorld.LEVEL_OF_DETAIL);
-                            
-                            originalNodes[x, y, z].DeRasterizeGrid(tempDensities, tempTypes, 0, 5 - VoxelWorld.LEVEL_OF_DETAIL);
-                        }
-                    }
-                }
+                RasterDeRasterizeBatch(tempDensities, tempTypes, originalNodes);
 
                 // get changed octrees data
-                List<Octree> batchChanges = new List<Octree>();
-                for (int z = 0; z < 5; z++) {
-                    for (int y = 0; y < 5; y++) {
-                        for (int x = 0; x < 5; x++) {
-                            if (originalNodes == null)
-                            {
-                                batchChanges.Add(nodes[x, y, z]);
-                            }
-                            else if (!nodes[x, y, z].IdenticalTo(originalNodes[x, y, z])) {
-                                batchChanges.Add(nodes[x, y, z]);
-                            }
-                        } 
-                    }
-                }
+                List<Octree> batchChanges = GetChangedOctrees(nodes, originalNodes);
+
 
                 DebugOverlay.LogMessage($"Patch contains {batchChanges.Count} changed octrees.");
-                if (batchChanges.Count != 0) {
+                if (batchChanges.Count != 0)
+                {
                     // start of batch write
                     writer.Write((short)batch.batchIndex.x);
                     writer.Write((short)batch.batchIndex.y);
@@ -331,21 +341,23 @@ namespace AbyssEditor.Scripts {
                     // num octrees to replace
                     writer.Write((byte)batchChanges.Count);
 
-                    foreach (Octree change in batchChanges) {
+                    foreach (Octree change in batchChanges)
+                    {
                         if (change.Index > 125) DebugOverlay.LogMessage("found an octree index > 125");
                         writer.Write(change.Index);
                         WriteOctree(writer, change);
                     }
                 }
             }
-            
+
             tempTypes.Dispose();
             tempDensities.Dispose();
 
             writer.Close();
         }
 
-        void WriteOctree(BinaryWriter writer, Octree octree) {
+        void WriteOctree(BinaryWriter writer, Octree octree)
+        {
             //assemble the octnode array
             OctNodeData[] nodes = octree.Read();
 
@@ -354,7 +366,8 @@ namespace AbyssEditor.Scripts {
             writer.Write(numNodes);
 
             // write type, signedDist, childIndex of each octree
-            for (int i = 0; i < nodes.Length; i++) {
+            for (int i = 0; i < nodes.Length; i++)
+            {
                 if (nodes[i].IsBelowSurface() && nodes[i].type == 0)
                 {
                     Debug.Log($"Found odd node: {nodes}");
@@ -362,6 +375,57 @@ namespace AbyssEditor.Scripts {
                 writer.Write((byte)(nodes[i].IsBelowSurface() && nodes[i].type == 0 ? 1 : nodes[i].type));
                 writer.Write(nodes[i].signedDist);
                 writer.Write(nodes[i].childPosition);
+            }
+        }
+
+        /// <summary>
+        /// Compare two octrees and return the octrees that are different.
+        /// Essentially a diff algorithm.
+        /// </summary>
+        /// <param name="newNodes">The new nodes of a batch that were generated from a grid</param>
+        /// <param name="originalNodes">The original nodes of a batch</param>
+        /// <returns></returns>
+        List<Octree> GetChangedOctrees(Octree[,,] newNodes, Octree[,,] originalNodes)
+        {
+            List<Octree> batchChanges = new List<Octree>();
+            for (int z = 0; z < 5; z++)
+            {
+                for (int y = 0; y < 5; y++)
+                {
+                    for (int x = 0; x < 5; x++)
+                    {
+                        if (originalNodes == null)// the original batch didn't exist so add all octrees
+                        {
+                            batchChanges.Add(newNodes[x, y, z]);
+                        }
+                        else if (!newNodes[x, y, z].IdenticalTo(originalNodes[x, y, z]))
+                        {
+                            batchChanges.Add(newNodes[x, y, z]);
+                        }
+                    }
+                }
+            }
+            return batchChanges;
+        }
+
+        /// <summary>
+        /// The octrees loaded from a game batch contain a different shape octree than the one that DeRasterizeGrid generates when converting from the density grid back to octrees.
+        /// This function is so that when comparing the octree form from the original batches to the one generated from the grid, they both start from the same base.
+        /// We are trying to make the data we are comparing match essentially.
+        /// </summary>
+        /// <param name="tempDensities">Temporary Densities to use, mainly so that new arrays don't need to be allocated for this operation</param>
+        /// <param name="tempTypes">Temporary Types to use, mainly so that new arrays don't need to be allocated for this operation</param>
+        /// <param name="originalNodes">Original nodes that are directly from a loaded batch, otherwise this isn't going to do much</param>
+        void RasterDeRasterizeBatch(NativeArray<byte> tempDensities, NativeArray<byte> tempTypes, Octree[,,] originalNodes)
+        {
+            //if this becomes a performance issue there is nothing stopping it from becoming a unity job operation, each octree only looks at itself and its grid
+            if (originalNodes != null)
+            {
+                foreach (Octree node in originalNodes)
+                {
+                    node.Rasterize(tempDensities, tempTypes, VoxelWorld.RESOLUTION, 5 - VoxelWorld.LEVEL_OF_DETAIL);
+                    node.DeRasterizeGrid(tempDensities, tempTypes, 0, 5 - VoxelWorld.LEVEL_OF_DETAIL);
+                }
             }
         }
     }
