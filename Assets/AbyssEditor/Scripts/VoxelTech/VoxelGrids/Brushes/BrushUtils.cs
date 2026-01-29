@@ -68,35 +68,5 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelGrids.Brushes
                 arr[voxel.x + voxel.y * voxelGridResolution + voxel.z * voxelGridResolution * voxelGridResolution] = val;
             }
         }
-        
-        
-        public static class Managed
-        {
-            public static float SampleDensity_Sphere_Squared(Vector3 sample, Vector3 origin, float radius)
-            {
-                return radius * radius - (sample - origin).sqrMagnitude;
-            }
-            
-            /// <summary>
-            /// Gets the voxel within the non-padded region of the grid based on the index from a IJobFor.
-            /// 0,0,0 would actually be 1,1,1 of the padded grid
-            /// </summary>
-            /// <returns></returns>
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            public static Vector3Int GetVoxelFromIndex(int index)
-            {
-                // Map linear index to 3D inner coordinates
-                int innerSide = VoxelWorld.RESOLUTION;
-                int z = index / (innerSide * innerSide);
-                int y = (index / innerSide) % innerSide;
-                int x = index % innerSide;
-
-                x += 1 ;
-                y += 1;
-                z += 1;
-                
-                return new Vector3Int(x, y, z);
-            }
-        }
     }
 }
