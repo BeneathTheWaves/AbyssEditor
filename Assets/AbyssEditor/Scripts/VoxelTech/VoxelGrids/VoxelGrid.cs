@@ -1,12 +1,9 @@
-﻿using System;
+﻿
 using System.Collections.Generic;
 using AbyssEditor.Octrees;
 using AbyssEditor.Scripts.VoxelTech.VoxelGrids.Brushes;
 using AbyssEditor.VoxelTech;
-using Unity.Burst;
 using Unity.Collections;
-using Unity.Collections.LowLevel.Unsafe;
-using Unity.Jobs;
 using Unity.Mathematics;
 using UnityEngine;
 
@@ -138,24 +135,27 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelGrids {
 
         public BrushJob ApplyJobBasedDensityFunction(Brush.BrushStroke stroke, Vector3 gridOrigin)
         {
-
-            BrushJob brushJob;
+            BrushJob brushJob = null;
             
             if (stroke.brushMode == BrushMode.Smooth)
             {
                 brushJob = new SmoothJob(this, stroke.brushLocation, stroke.brushRadius, stroke.strength, gridOrigin);
-                brushJob.StartJob();
-                return brushJob;
             }
             
-            if (stroke.brushMode == BrushMode.Add || stroke.brushMode == BrushMode.Remove )
+            else if (stroke.brushMode == BrushMode.Add || stroke.brushMode == BrushMode.Remove )
             {
                 bool shouldRemoveDensity = stroke.brushMode == BrushMode.Remove;
                 brushJob = new AddSubJob(this, stroke.brushLocation, stroke.brushRadius, stroke.strength, Brush.selectedType, gridOrigin, shouldRemoveDensity);
-                brushJob.StartJob();
-                return brushJob;
             }
-            return null;
+
+            else if (stroke.brushMode == BrushMode.Paint)
+            {
+                brushJob = new PaintJob(this, stroke.brushLocation, stroke.brushRadius, Brush.selectedType, gridOrigin);
+            }
+
+            brushJob?.StartJob();
+
+            return brushJob;
         }
 
         public void ApplyDensityFunction(Brush.BrushStroke stroke, Vector3 gridOrigin) {
@@ -177,9 +177,6 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelGrids {
 
         public void ApplyGridAction(int x, int y, int z, Vector3 gridOrigin, Brush.BrushStroke brushStroke) {
             switch (brushStroke.brushMode) {
-                case BrushMode.Paint:
-                    DensityAction_Paint(x, y, z, gridOrigin, brushStroke);
-                    break;
                 case BrushMode.Flatten:
                     DensityAction_Flatten(x, y, z, gridOrigin, brushStroke);
                     break;
@@ -197,17 +194,6 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelGrids {
         public static float SampleDensity_Plane(Vector3 sample, Vector3 origin, Vector3 normal) {
             float d = -(origin.x * normal.x + origin.y * normal.y + origin.z * normal.z);
             return -(sample.x * normal.x + sample.y * normal.y + sample.z * normal.z + d);
-        }
-        
-        void DensityAction_Paint(int x, int y, int z, Vector3 gridOrigin, Brush.BrushStroke stroke) {
-
-            // Paint voxels on the intersection of mesh and brush
-            // offset sample position because full grid
-            float functionDensity = SampleDensity_Sphere_Squared(new Vector3(x - 1, y - 1, z - 1) + gridOrigin, stroke.brushLocation, stroke.brushRadius);
-
-            if (functionDensity > 0 && GetVoxel(densityGrid, x, y, z) > 0) {
-                SetVoxel(typeGrid, x, y, z, Brush.selectedType);
-            }
         }
         
         void DensityAction_Flatten(int x, int y, int z, Vector3 gridOrigin, Brush.BrushStroke stroke) {
@@ -244,7 +230,6 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelGrids {
         {
             densityGrid.Dispose();
             typeGrid.Dispose();
-            Debug.Log("DISPOSED GRID");
         }
 
         /// <summary>

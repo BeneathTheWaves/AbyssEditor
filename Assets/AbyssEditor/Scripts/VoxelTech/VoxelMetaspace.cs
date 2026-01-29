@@ -105,11 +105,14 @@ namespace AbyssEditor.VoxelTech {
         
         public void ApplyDensityAction(Brush.BrushStroke stroke) {
 
-            if (Brush.activeMode == BrushMode.Smooth || Brush.activeMode == BrushMode.Add || Brush.activeMode == BrushMode.Remove)
+            if (Brush.activeMode == BrushMode.Smooth || Brush.activeMode == BrushMode.Add || Brush.activeMode == BrushMode.Remove || Brush.activeMode == BrushMode.Paint)
             {
                 ApplyJobBasedDensityAction(stroke);
                 return;
             }
+            
+            System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch();
+            sw.Start();
             
             List<VoxelMesh> modifiedMeshes = new List<VoxelMesh>();
             foreach(VoxelMesh mesh in meshes) {
@@ -118,6 +121,11 @@ namespace AbyssEditor.VoxelTech {
                     modifiedMeshes.Add(mesh);
                 }
             }
+            
+            sw.Stop();
+            double elapsedMs = (double)sw.ElapsedTicks / System.Diagnostics.Stopwatch.Frequency * 1000.0;
+            DebugOverlay.LogMessage($"Completed Brush Job in {(elapsedMs):F4}ms");
+            
             foreach(VoxelMesh mesh in modifiedMeshes) {
                 mesh.UpdateMeshesAfterBrush(stroke);
             }

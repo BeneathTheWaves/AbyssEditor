@@ -116,7 +116,6 @@ namespace AbyssEditor.VoxelTech
         
         public void ApplyDensityAction(Brush.BrushStroke stroke)
         {
-            System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch();
             foreach (PointContainer container in octreeContainers)
             {
                 Bounds bounds = container.bounds;
@@ -125,7 +124,6 @@ namespace AbyssEditor.VoxelTech
                     container.ApplyDensityAction(stroke);
                 }
             }
-            DebugOverlay.LogMessage($"Brush Operation in {sw.ElapsedMilliseconds}ms");
         }
 
         public void UpdateMeshesAfterBrush(Brush.BrushStroke stroke)
