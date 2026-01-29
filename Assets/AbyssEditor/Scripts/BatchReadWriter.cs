@@ -311,6 +311,8 @@ namespace AbyssEditor {
                 Octree[,,] originalNodes = container.nodes;
 
                 //we need to rasterize and then de-rasterize the Octree, ik it sounds stupid
+                //But the de-raster process form the grids forms a different grid than was originally inputted
+                //So to make the data match, we must rasterize and de-rasterize the batches we load to compare them with the modified grids
                 for (int z = 0; z < 5; z++) {
                     for (int y = 0; y < 5; y++) {
                         for (int x = 0; x < 5; x++) {

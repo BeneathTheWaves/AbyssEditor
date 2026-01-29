@@ -13,7 +13,6 @@ namespace AbyssEditor.VoxelTech
         Vector3Int octreeIndex;
 
         // density data
-        //public Octree octree;
         public VoxelGrid grid;
 
         // other objects
@@ -61,7 +60,8 @@ namespace AbyssEditor.VoxelTech
             octree.Rasterize(tempDensities, tempTypes, _res, 5 - VoxelWorld.LEVEL_OF_DETAIL);
 
             grid = new VoxelGrid(tempDensities, tempTypes, octreeIndex, batchIndex);
-            //Note: we free the temporary arrays within the voxel grid once we initialize the grid
+            //Note: we free the temporary arrays within the voxel grid once we initialize the grid to its padding
+            //WE MAY want to change this so we don't have to do that tho :)
         }
         
         public BrushJob ApplyJobBasedDensityAction(Brush.BrushStroke stroke)

@@ -28,7 +28,7 @@ namespace AbyssEditor.UI {
 
         public static void ShowWindow(string buttonName)
         {
-            Button[] buttons = FindObjectsOfType<Button>();
+            Button[] buttons = FindObjectsByType<Button>(FindObjectsSortMode.None);
 
             foreach(Button button in buttons)
             {

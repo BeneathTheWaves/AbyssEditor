@@ -15,7 +15,7 @@ namespace AbyssEditor.Scripts.SaveSystem.Loaders
             {
                 dataMainFormatV1Data = JsonConvert.DeserializeObject<PreferencesMainFormat>(raw);
             }
-            catch (JsonReaderException ex)
+            catch (JsonReaderException)
             {
                 Debug.LogError($"Failed to load version information for {Preferences.PREFERENCES_FILE_NAME}, creating a new default...");
                 return null;

@@ -44,7 +44,7 @@ namespace AbyssEditor {
         }
 
         public static Light GetBrushLight() {
-            Brush brush = FindObjectOfType<Brush>();
+            Brush brush = FindFirstObjectByType<Brush>();
             if (brush.brushAreaObject == null) {
                 brush.CreateBrushObject();
                 brush.DisableBrushGizmo();

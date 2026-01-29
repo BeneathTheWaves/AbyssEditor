@@ -14,7 +14,7 @@ public class DebugOverlay : MonoBehaviour
     
     private static void CheckInstance()
     {
-        if (instance == null) instance = FindObjectOfType<DebugOverlay>();
+        if (instance == null) instance = FindFirstObjectByType<DebugOverlay>();
     }
 
     public static void LogMessage(string message)
