@@ -25,7 +25,7 @@ namespace AbyssEditor.Scripts.UI.Windows {
 
             sunColor.onColorChanged += UpdateSunColor;
             sunColor.onColorChanged += SavePreferences;
-            sunColor.color = new Color(Preferences.data.sunColorR, Preferences.data.sunColorG, Preferences.data.sunColorB, 1f);
+            sunColor.SetInitialColor(new Color(Preferences.data.sunColorR, Preferences.data.sunColorG, Preferences.data.sunColorB));
             
             sunIntensity.OnValueUpdated += UpdateSunIntensity;
             sunIntensity.OnEndDragging += SavePreferences;
@@ -53,7 +53,6 @@ namespace AbyssEditor.Scripts.UI.Windows {
         void UpdateSunColor()
         {
             LightingManager.main.UpdateSunColor(sunColor.color.r, sunColor.color.g, sunColor.color.b);
-            
         }
 
         void UpdateSunIntensity()

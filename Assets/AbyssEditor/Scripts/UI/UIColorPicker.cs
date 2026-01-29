@@ -1,87 +1,71 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Events;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class UIColorPicker : MonoBehaviour
+namespace AbyssEditor.Scripts.UI
 {
-    public Color color;
-
-    private GameObject pickerAsset;
-    private Button pickerButton;
-    private Image pickerImage;
-    
-    public event Action onColorChanged;
-    
-    private GameObject pickerObject;
-
-    private void Awake()
+    public class UIColorPicker : MonoBehaviour
     {
-        if (pickerAsset == null)
+        public Color color;
+
+        private GameObject pickerAsset;
+        private Button pickerButton;
+        private Image pickerImage;
+    
+        public event Action onColorChanged;
+    
+        private GameObject pickerObject;
+
+        private void Awake()
         {
-            pickerAsset = Resources.Load<GameObject>("UI/Color Picker");
+            if (pickerAsset == null)
+            {
+                pickerAsset = Resources.Load<GameObject>("UI/Color Picker");
+            }
         }
-    }
     
-    private void Start()
-    {
-        pickerButton = GetComponent<Button>();
-        pickerButton.onClick.AddListener(OnButtonClick);
+        private void Start()
+        {
+            pickerButton = GetComponent<Button>();
+            pickerButton.onClick.AddListener(OnButtonClick);
         
-        pickerImage = GetComponent<Image>();
-        pickerImage.color = color;
-    }
+            pickerImage = GetComponent<Image>();
 
-    private void OnButtonClick()
-    {
-        if (pickerObject != null)
-        {
-            Destroy(pickerObject);
         }
-        else
-        {
-            SpawnPicker();
-        }
-    }
 
-    private void OnPickerColorChanged(Color newColor)
-    {
-        color = newColor;
-        pickerImage.color = newColor;
-        onColorChanged?.Invoke();
-    }
+        public void SetInitialColor(Color initialColor)
+        {
+            color = initialColor;
+            pickerImage.color = initialColor;
+        }
+
+        private void OnButtonClick()
+        {
+            if (pickerObject != null)
+            {
+                Destroy(pickerObject);
+            }
+            else
+            {
+                SpawnPicker();
+            }
+        }
+
+        private void OnPickerColorChanged(Color newColor)
+        {
+            color = newColor;
+            pickerImage.color = newColor;
+            onColorChanged?.Invoke();
+        }
     
-    private void SpawnPicker()
-    {
-        pickerObject = Instantiate(pickerAsset, this.transform.parent);
-        HSVPicker.ColorPicker colorPickerInstance = pickerObject.GetComponent<HSVPicker.ColorPicker>();
-        colorPickerInstance.CurrentColor = color;
-        colorPickerInstance.onValueChanged.AddListener(OnPickerColorChanged);
-    }
-    
-    bool IsPointerOverPicker()
-    {
-        PointerEventData data = new PointerEventData(EventSystem.current)
+        private void SpawnPicker()
         {
-            position = Input.mousePosition
-        };
-
-        var results = new List<RaycastResult>();
-        EventSystem.current.RaycastAll(data, results);
-
-        foreach (var r in results)
-        {
-            if (r.gameObject.transform.IsChildOf(pickerObject.transform))
-                return true;
+            pickerObject = Instantiate(pickerAsset, this.transform.parent);
+            HSVPicker.ColorPicker colorPickerInstance = pickerObject.GetComponent<HSVPicker.ColorPicker>();
+            colorPickerInstance.CurrentColor = color;
+            colorPickerInstance.onValueChanged.AddListener(OnPickerColorChanged);
         }
-
-        return false;
-    }
-
-    public void OnPointerClick(PointerEventData eventData)
-    {
-        Debug.Log("OnPointerClick");
     }
 }
