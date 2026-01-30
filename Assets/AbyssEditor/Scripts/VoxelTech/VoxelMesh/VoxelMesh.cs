@@ -132,15 +132,25 @@ namespace AbyssEditor.VoxelTech
 
         public void UpdateMeshesAfterBrush(Brush.BrushStroke stroke)
         {
+
+            
             foreach (PointContainer container in pointContainers)
             {
                 Bounds bounds = container.bounds;
                 if (OctreeRaycasting.DistanceToBox(stroke.brushLocation, bounds.min, bounds.max) <= stroke.brushRadius)
                 {
+                    System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch();
+                    sw.Start();
                     container.UpdateFullGrid();
+                    sw.Stop();
+                    double elapsedMs = (double)sw.ElapsedTicks / System.Diagnostics.Stopwatch.Frequency * 1000.0;
+                    DebugOverlay.LogMessage($"Assigning neighbor data took {(elapsedMs):F4}ms");
+                    
+                    
                     container.UpdateMesh();
                 }
             }
+
         }
 
         public void UpdateOctreeDensity()

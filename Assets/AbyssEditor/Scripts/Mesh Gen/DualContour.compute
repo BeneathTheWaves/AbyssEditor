@@ -28,8 +28,7 @@ struct Face {
 };
 
 // Fill beforehand, source data
-RWStructuredBuffer<int> density;
-RWStructuredBuffer<int> pointTypes;
+StructuredBuffer<uint> voxels;
 
 // Output
 AppendStructuredBuffer<Face> faces;
@@ -49,6 +48,14 @@ bool checkBoundsAll(int3 pos) {
 bool checkBoundsOuterMesh(int3 pos) {
     return pos.x > 0 && pos.y > 0 && pos.z > 0 && pos.x < 35 && pos.y < 35 && pos.z < 35;
 }
+
+void ReadVoxel(uint idx, out int density, out int type)
+{
+    uint v = voxels[idx];
+    density = int(v & 0xFF);          // lower 8 bits
+    type    = int((v >> 8) & 0xFF);   // next 8 bits
+}
+
 
 Face MakeFace(int3 p1, int3 p2, int d1, int d2, int dir, int type) {
     Face face;
@@ -107,9 +114,9 @@ Face MakeFace(int3 p1, int3 p2, int d1, int d2, int dir, int type) {
             break;
     }
 
-    float3 delta = (p2 - p1);
-    float length = sqrt(delta.x * delta.x + delta.y * delta.y + delta.z * delta.z);
-    float3 normalized = delta / length;
+    float3 delta = p2 - p1;
+    float invLen = rsqrt(dot(delta, delta));
+    float3 normalized = delta * invLen;
 
     float3 intx;
     if (d1 == d2 && d1 == 0) intx = (p1 + p2) / (uint)2;
@@ -142,8 +149,10 @@ int FindBestType(uint x, uint y, uint z) {
     for (int k = 0; k < 2; k++) {
         for (int j = 0; j < 2; j++) {
             for (int i = 0; i < 2; i++) {
-                if (pointTypes[linearIndex(x + i, y + j, z + k)] != 0) {
-                    return pointTypes[linearIndex(x + i, y + j, z + k)];
+                int d, t;
+                ReadVoxel(linearIndex(x + i, y + j, z + k), d, t);
+                if (t != 0) {
+                    return t;
                 }
             }
         }
@@ -157,8 +166,9 @@ void DualContour(int3 id : SV_DispatchThreadID) {
     if (checkBoundsAll(id)) {
 
         // action per each cell
-        int faceType = pointTypes[linearIndex(id.x, id.y, id.z)];
-        int faceSignedDist = density[linearIndex(id.x, id.y, id.z)];
+        int faceSignedDist;
+        int faceType;
+        ReadVoxel(linearIndex(id.x, id.y, id.z), faceSignedDist, faceType);
 
         if (isBelowSurface(faceType, faceSignedDist)) {
             for (int dir = 0; dir < 6; dir++) {
@@ -166,8 +176,9 @@ void DualContour(int3 id : SV_DispatchThreadID) {
                 int3 id1 = int3(id.x + dirV.x, id.y + dirV.y, id.z + dirV.z);
 
                 if (checkBoundsAll(id1)) {
-                    int density1 = density[linearIndex(id1.x, id1.y, id1.z)];
-                    int type1 = pointTypes[linearIndex(id1.x, id1.y, id1.z)];
+                    int density1;
+                    int type1;
+                    ReadVoxel(linearIndex(id1.x, id1.y, id1.z), density1, type1);
 
                     if (!isBelowSurface(type1, density1)) {
                         faces.Append(MakeFace(id, id1, faceSignedDist, density1, dir, faceType));

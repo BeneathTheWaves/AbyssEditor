@@ -11,8 +11,7 @@ namespace AbyssEditor {
         
         // Compute stuff
         public ComputeShader shader;
-        ComputeBuffer densityBuffer;
-        ComputeBuffer typeBuffer;
+        ComputeBuffer voxelBuffer;
         ComputeBuffer faceBuffer; 
         ComputeBuffer triCountBuffer;
 
@@ -35,15 +34,13 @@ namespace AbyssEditor {
             // Always create buffers in editor (since buffers are released immediately to prevent memory leak)
             // Otherwise, only create if null or if size has changed
             bool bufferSizeChanged = false;
-            if (densityBuffer != null) bufferSizeChanged = numPoints != densityBuffer.count;
+            if (voxelBuffer != null) bufferSizeChanged = numPoints != voxelBuffer.count;
 
-            if (Application.isPlaying == false || (densityBuffer == null || bufferSizeChanged)) {
+            if (Application.isPlaying == false || (voxelBuffer == null || bufferSizeChanged)) {
 
                 ReleaseBuffers();
-                
+                voxelBuffer = new ComputeBuffer(numPoints, sizeof(uint));
                 faceBuffer = new ComputeBuffer (maxFaceCount, Face.GetStride(), ComputeBufferType.Append);
-                densityBuffer = new ComputeBuffer (numPoints, sizeof (int));
-                typeBuffer = new ComputeBuffer (numPoints, sizeof (int));
                 triCountBuffer = new ComputeBuffer (1, sizeof (int), ComputeBufferType.Raw);
             }
         }
@@ -54,14 +51,10 @@ namespace AbyssEditor {
                 faceBuffer = null;
             }
 
-            if (densityBuffer != null) {
-                densityBuffer.Release();
-                densityBuffer = null;
-            }
-
-            if (typeBuffer != null) {
-                typeBuffer.Release();
-                typeBuffer = null;
+            if (voxelBuffer != null)
+            {
+                voxelBuffer.Release();
+                voxelBuffer = null;
             }
 
             if (triCountBuffer != null) {
@@ -71,25 +64,24 @@ namespace AbyssEditor {
         }
 
         public Mesh GenerateMesh(NativeArray<byte> densityGrid, NativeArray<byte> typeGrid, Vector3Int resolution, Vector3 offset, out int[] blocktypes) {
-
             // Setting data inside shader
 
             CreateBuffers(resolution);
 
             int numThreads = Mathf.CeilToInt ((resolution.x) / (float) Globals.THREAD_GROUP_SIZE);
-
-            //if (!typeGrid.IsCreated) typeGrid = new byte[resolution.x * resolution.y * resolution.z];
-
-            int[] densityIntGrid = densityGrid.Select(x => (int)x).ToArray();
-            int[] typeIntGrid = typeGrid.Select(x => (int)x).ToArray();
-
-            typeBuffer.SetData(typeIntGrid);
-            densityBuffer.SetData(densityIntGrid);
-            faceBuffer.SetCounterValue (0);
+            
+            int numPoints = densityGrid.Length;
+            
+            uint[] packed = new uint[numPoints];
+            for (int i = 0; i < numPoints; i++) {
+                packed[i] = (uint)(densityGrid[i] | (typeGrid[i] << 8));
+            }
+            
+            voxelBuffer.SetData(packed);
+            faceBuffer.SetCounterValue(0);
 
             int kernel = 0;
-            shader.SetBuffer(kernel, "pointTypes", typeBuffer);
-            shader.SetBuffer (kernel, "density", densityBuffer);
+            shader.SetBuffer(kernel, "voxels", voxelBuffer);
             shader.SetBuffer (kernel, "faces", faceBuffer);
 
             shader.SetInt ("numPointsX", resolution.x);
@@ -114,6 +106,9 @@ namespace AbyssEditor {
         } 
 
         Mesh MakeMeshes(Face[] faces, Vector3Int resolution, Vector3 offset, out int[] blocktypes) {
+            
+            System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch();
+            sw.Start();
             
             // calculate vertex positions
             VoxelVertex[] verticesOfNodes = new VoxelVertex[resolution.x * resolution.y * resolution.z];
@@ -158,7 +153,6 @@ namespace AbyssEditor {
 
             int submeshCount = blocktypes.Length;
             int nextStart = 0;
-            List<SubMeshDescriptor> subMeshes = new List<SubMeshDescriptor>();
             
             Mesh mesh = new Mesh();
             mesh.subMeshCount = submeshCount;
@@ -203,87 +197,8 @@ namespace AbyssEditor {
 
             mesh.RecalculateNormals();
             mesh.RecalculateTangents();
-            return mesh;
-        }
-
-        public void ProcessSimpleBatch(Vector3[] vertices, int[] triangles, Vector3[] normals, Vector2[] uvs, ref int lastFace, int[,,] octrees, Vector3 offset) {
-            for (int z = 0; z < 5; z++) {
-                for (int y = 0; y < 5; y++) {
-                    for (int x = 0; x < 5; x++) {
-
-                        if (octrees[z, y, x] != 0) {
-                            Vector3 o = new Vector3(x, y, z) + offset;
-                            if (x == 4 || octrees[z, y, x + 1] == 0) {
-                                AddFaceToMesh(vertices, triangles, normals, uvs, ref lastFace, Vector3.forward, Vector3.up, o + Vector3.right);
-                            }
-                            if (x == 0 || octrees[z, y, x - 1] == 0) {
-                                AddFaceToMesh(vertices, triangles, normals, uvs, ref lastFace, Vector3.up, Vector3.forward, o);
-                            }
-                            if (y == 4 || octrees[z, y + 1, x] == 0) {
-                                AddFaceToMesh(vertices, triangles, normals, uvs, ref lastFace, Vector3.right, Vector3.forward, o + Vector3.up);
-                            }
-                            if (y == 0 || octrees[z, y - 1, x] == 0) {
-                                AddFaceToMesh(vertices, triangles, normals, uvs, ref lastFace, Vector3.forward, Vector3.right, o);
-                            }
-                            if (z == 4 || octrees[z + 1, y, x] == 0) {
-                                AddFaceToMesh(vertices, triangles, normals, uvs, ref lastFace, Vector3.up, Vector3.right, o + Vector3.forward);
-                            }
-                            if (z == 0 || octrees[z - 1, y, x] == 0) {
-                                AddFaceToMesh(vertices, triangles, normals, uvs, ref lastFace, Vector3.right, Vector3.up, o);
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        void AddFaceToMesh(Vector3[] vertices, int[] triangles, Vector3[] normals, Vector2[] uvs, ref int start, Vector3 a, Vector3 b, Vector3 o) {
-
-            vertices[start] = o + b;
-            vertices[start + 1] = o + a + b;
-            vertices[start + 2] = o + a;
-            vertices[start + 3] = o;
-
-            triangles[start] = start;
-            triangles[start + 1] = start + 1;
-            triangles[start + 2] = start + 2;
-            triangles[start + 3] = start + 3;
-
-            Vector3 n = Vector3.Cross(a, b);
-            normals[start] = n;
-            normals[start + 1] = n;
-            normals[start + 2] = n;
-            normals[start + 3] = n;
-
-            uvs[start] = new Vector2(vertices[start].x / 125f, vertices[start].z / 125f);
-            uvs[start + 1] = new Vector2(vertices[start + 1].x / 125f, vertices[start + 1].z / 125f);
-            uvs[start + 2] = new Vector2(vertices[start + 2].x / 125f, vertices[start + 2].z / 125f);
-            uvs[start + 3] = new Vector2(vertices[start + 3].x / 125f, vertices[start + 3].z / 125f);
-
-            start += 4;
-            if (start > 65532) {
-                WrapMeshIntoGameObject(vertices, triangles, normals, uvs, ref start);
-            }
-        }
-
-        public void WrapMeshIntoGameObject(Vector3[] vertices, int[] indices, Vector3[] normals, Vector2[] uvs, ref int start) {
             
-            Mesh mesh = new Mesh();
-            mesh.vertices = vertices;
-            mesh.normals = normals;
-            mesh.uv = uvs;
-            mesh.SetIndices(indices, MeshTopology.Quads, 0, false);
-            mesh.RecalculateNormals();
-
-            GameObject go = new GameObject("SimpleMapMesh");
-            go.AddComponent<MeshFilter>().mesh = mesh;
-            go.AddComponent<MeshRenderer>().material = Globals.GetSimpleMapMat();
-
-            start = 0;
-            Array.Clear(vertices, 0, 65536);
-            Array.Clear(indices, 0, 65536);
-            Array.Clear(normals, 0, 65536);
-            Array.Clear(uvs, 0, 65536);
+            return mesh;
         }
 
         struct Face : IComparable {
