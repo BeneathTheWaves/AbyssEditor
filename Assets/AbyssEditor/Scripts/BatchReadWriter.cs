@@ -104,47 +104,6 @@ namespace AbyssEditor.Scripts {
             }
         }
 
-        public bool QuickReadBatch(Vector3Int batchIndex, out int[,,] octrees)
-        {
-            string batchname = string.Format(Path.DirectorySeparatorChar + "compiled-batch-{0}-{1}-{2}.optoctrees", batchIndex.x, batchIndex.y, batchIndex.z);
-
-            octrees = new int[5, 5, 5];
-
-            if (File.Exists(Globals.instance.batchSourcePath + batchname))
-            {
-
-                BinaryReader reader = new BinaryReader(File.Open(Globals.instance.batchSourcePath + batchname, FileMode.Open));
-                reader.ReadInt32();
-
-                // assemble a data array
-                int curr_pos = 0;
-                int countOctrees = 0;
-
-                long streamLength = reader.BaseStream.Length - 4;
-                while (curr_pos < streamLength)
-                {
-
-                    int x = countOctrees / 25;
-                    int y = countOctrees % 25 / 5;
-                    int z = countOctrees % 5;
-
-                    int nodeCount = reader.ReadByte() + reader.ReadByte() * 256;
-
-                    octrees[z, y, x] = reader.ReadByte();
-
-                    byte[] buffer = new byte[3 + (nodeCount - 1) * 4];
-                    reader.Read(buffer, 0, 3 + (nodeCount - 1) * 4);
-
-                    curr_pos += (nodeCount * 4) + 2;
-                    countOctrees++;
-                }
-
-                reader.Close();
-                return true;
-            }
-            return false;
-        }
-
         public static string GetPath(Vector3Int batchIndex, bool allowModded, out bool isModded)
         {
             var fileName = string.Format("compiled-batch-{0}-{1}-{2}.optoctrees", batchIndex.x, batchIndex.y, batchIndex.z);
@@ -170,110 +129,6 @@ namespace AbyssEditor.Scripts {
             return fileName;
         }
 
-        public void GenerateMaterialGallery(VoxelMesh batch)
-        {
-
-            Octree[,,] octrees = new Octree[5, 5, 5];
-
-            // form base
-            for (int z = 0; z < 5; z++)
-            {
-                for (int x = 0; x < 5; x++)
-                {
-
-                    List<OctNodeData> nodes = new List<OctNodeData>();
-
-                    nodes.Add(new OctNodeData(37, 0, 0));
-
-                    Octree octree = new Octree(x, 0, z, VoxelWorld.OCTREE_WIDTH, batch.transform.position);
-                    octree.Write(nodes.ToArray());
-                    octrees[z, 0, x] = octree;
-
-                }
-            }
-
-            byte type = 1;
-            // material layer
-            for (int z = 0; z < 5; z++)
-            {
-                for (int x = 0; x < 5; x++)
-                {
-
-                    List<OctNodeData> nodes = new List<OctNodeData>();
-
-                    Vector3Int octreeIndex = new Vector3Int(x, 1, z);
-                    nodes.Add(new OctNodeData(0, 0, 0));
-
-                    MatGalleryAction(ref nodes, 0, octreeIndex, ref type, 0);
-
-                    Octree octree = new Octree(x, 1, z, VoxelWorld.OCTREE_WIDTH, batch.transform.position);
-                    octree.Write(nodes.ToArray());
-                    octrees[z, 1, x] = octree;
-
-                }
-            }
-
-            // empty nodes
-            for (int y = 2; y < 5; y++)
-            {
-                for (int z = 0; z < 5; z++)
-                {
-                    for (int x = 0; x < 5; x++)
-                    {
-
-                        List<OctNodeData> nodes = new List<OctNodeData>();
-
-                        nodes.Add(new OctNodeData(0, 0, 0));
-
-                        Octree octree = new Octree(x, y, z, VoxelWorld.OCTREE_WIDTH, batch.transform.position);
-                        octree.Write(nodes.ToArray());
-                        octrees[z, y, x] = octree;
-
-                    }
-                }
-            }
-            batch.OctreesReadCallback(octrees);
-        }
-
-        public void MatGalleryAction(ref List<OctNodeData> nodes, int node, Vector3Int octree, ref byte nextType, int depth)
-        {
-
-            if (depth < 1)
-            {
-                ushort childIndex = (ushort)nodes.Count;
-
-                OctNodeData newdata = new OctNodeData(nodes[node].type, nodes[node].signedDist, childIndex);
-                nodes[node] = newdata;
-
-                for (int b = 0; b < 8; b++)
-                {
-                    if (IsBottomNode(b))
-                    {
-                        nodes.Add(new OctNodeData(nextType++, 0, 0));
-                    }
-                    else
-                    {
-                        nodes.Add(new OctNodeData(0, 0, 0));
-                    }
-                }
-
-                // once children are in place, work with them
-                for (int b = 0; b < 8; b++)
-                {
-
-                    if (IsBottomNode(b))
-                    {
-                        MatGalleryAction(ref nodes, childIndex + b, octree, ref nextType, depth + 1);
-                    }
-                }
-            }
-        }
-
-        bool IsBottomNode(int b)
-        {
-            return b < 2 || b == 4 || b == 5;
-        }
-
         public bool WriteOptoctrees(Vector3 batchIndex, Octree[,,] octrees)
         {
             string batchname = string.Format(Path.DirectorySeparatorChar + "compiled-batch-{0}-{1}-{2}.optoctrees", batchIndex.x, batchIndex.y, batchIndex.z);
@@ -297,6 +152,8 @@ namespace AbyssEditor.Scripts {
             writer.Close();
             return true;
         }
+        
+        
 
         public IEnumerator WriteOctreePatchCoroutine(VoxelMetaspace metaspace)
         {
@@ -439,6 +296,5 @@ namespace AbyssEditor.Scripts {
             this.nodes = originalNodes;
             return true;
         }
-
     }
 }

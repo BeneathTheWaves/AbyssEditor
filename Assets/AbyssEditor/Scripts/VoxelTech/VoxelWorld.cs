@@ -65,59 +65,6 @@ namespace AbyssEditor {
             metaspace = GetComponent<VoxelMetaspace>();
         }
 
-        // public static methods
-        public static void LoadSimpleMap() {
-            world.StartCoroutine(world.SimpleMapLoadCoroutine());
-        }
-        private IEnumerator SimpleMapLoadCoroutine() {
-
-            Vector3Int start = new Vector3Int(0, 0, 0);
-            Vector3Int end = new Vector3Int(32, 20, 32);
-            Vector3Int res = end - start;
-
-            int lastFace = 0;
-            Vector3[] vertices = new Vector3[65536];
-            Vector3[] normals = new Vector3[65536];
-            int[] faceIndices = new int[65536];
-            Vector2[] uvs = new Vector2[65536];
-
-            Globals.BakeSimpleMapMaterial();
-
-            for (int y = start.y; y <= end.y; y++) {
-                for (int z = start.z; z <= end.z; z++) {
-                    for (int x = start.x; x <= end.x; x++) {
-                        Vector3Int bIndex = new Vector3Int(x, y, z);
-                        int[,,] octrees;
-
-                        if (BatchReadWriter.readWriter.QuickReadBatch(bIndex, out octrees)) {
-                            MeshBuilder.builder.ProcessSimpleBatch(vertices, faceIndices, normals, uvs, ref lastFace, octrees, bIndex * 5);
-                        }
-                    }
-                }
-
-                if (lastFace != 0) {
-                    MeshBuilder.builder.WrapMeshIntoGameObject(vertices, faceIndices, normals, uvs, ref lastFace);
-                }
-                
-                yield return null;
-            }
-
-            OnRegionLoaded?.Invoke();
-            Camera.main.gameObject.SendMessage("OnRegionLoad");
-        }
-
-        /*
-        public static void LoadWorld() {
-            LEVEL_OF_DETAIL = 4;
-            // very laggy :(
-            LoadRegion(new Vector3Int(0, 0, 0), new Vector3Int(25, 20, 25), true);
-        }
-        public static void LoadSingleBatch(Vector3Int batch) {
-            LEVEL_OF_DETAIL = 1;
-            LoadRegion(batch, batch, true);
-        }
-        */
-
         public static void LoadRegion(Vector3Int _start, Vector3Int _end, bool allowModded)
         {
             if (aRegionIsLoaded) {
