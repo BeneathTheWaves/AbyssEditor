@@ -27,10 +27,9 @@ namespace AbyssEditor.VoxelTech
             batchIndex = _batchIndex;
             int fullGridSide = VoxelWorld.RESOLUTION + 2;
             // assume bounds has a center relative to game object origin
-            Vector3Int batchOriginOffset = (batchIndex - VoxelWorld.startBatch) *
-                                           (VoxelWorld.OCTREE_WIDTH * VoxelWorld.CONTAINERS_PER_SIDE);
+            
             bounds = new Bounds(
-                batchOriginOffset + octreeIndex * VoxelWorld.RESOLUTION + Vector3.one * fullGridSide / 2,
+                VoxelWorld.GetBatchOrigin(_batchIndex) + octreeIndex * VoxelWorld.RESOLUTION + Vector3.one * fullGridSide / 2,
                 Vector3.one * fullGridSide);
 
             CreateMeshObject(_voxelandTf);

@@ -1,4 +1,5 @@
 ﻿using AbyssEditor.Scripts.UI;
+using AbyssEditor.VoxelTech;
 using SFB;
 using UnityEngine;
 using UnityEngine.UI;
@@ -11,7 +12,7 @@ namespace AbyssEditor.UI {
         GameObject checkboxGroup => transform.GetChild(2).GetChild(1).gameObject;
 
         public void Export() {
-            if (!VoxelWorld.aRegionIsLoaded) {
+            if (VoxelMetaspace.metaspace.meshes.Count == 0) {
                 EditorUI.DisplayErrorMessage("Nothing to export!");
                 return;
             }
@@ -88,14 +89,16 @@ namespace AbyssEditor.UI {
 
             base.EnableWindow();
         }
+        
+        //TODO: this code might be the most fucking awful thing i have read in my life jesus christ
         private void SetFileCountStrings() {
-            if (!VoxelWorld.aRegionIsLoaded) {
+            if (VoxelMetaspace.metaspace.meshes.Count == 0) {
                 transform.GetChild(2).GetChild(0).GetChild(2).GetChild(0).GetComponent<Text>().text = "No batches loaded";
                 transform.GetChild(2).GetChild(0).GetChild(2).GetChild(1).gameObject.SetActive(false);
                 return;
             }
 
-            int batchCount = VoxelWorld.regionSize.x * VoxelWorld.regionSize.y * VoxelWorld.regionSize.z;
+            int batchCount = VoxelMetaspace.metaspace.meshes.Count;
             if (batchCount == 1)
                 transform.GetChild(2).GetChild(0).GetChild(2).GetChild(0).GetComponent<Text>().text = "1 file";
             else

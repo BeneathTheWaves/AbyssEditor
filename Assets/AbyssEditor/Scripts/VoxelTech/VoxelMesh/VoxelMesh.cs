@@ -13,11 +13,14 @@ namespace AbyssEditor.VoxelTech
 {
     public class VoxelMesh : MonoBehaviour
     {
-        internal PointContainer[] octreeContainers;
+        internal PointContainer[] pointContainers;
+        public bool pointContainersLoaded = false;
         public Octree[,,] nodes;
         public Vector3Int batchIndex;
         public Vector3Int octreeCounts;
 
+        GameObject[] BoundaryPlanes;
+        
         public void Create(Vector3Int _batchIndex)
         {
             batchIndex = _batchIndex;
@@ -27,7 +30,7 @@ namespace AbyssEditor.VoxelTech
             if (_batchIndex.x == 25) octreeCounts.x = 3;
             if (_batchIndex.z == 25) octreeCounts.z = 3;
 
-            octreeContainers = new PointContainer[octreeCounts.x * octreeCounts.y * octreeCounts.z];
+            pointContainers = new PointContainer[octreeCounts.x * octreeCounts.y * octreeCounts.z];
 
             for (int z = 0; z < octreeCounts.z; z++)
             {
@@ -35,7 +38,7 @@ namespace AbyssEditor.VoxelTech
                 {
                     for (int x = 0; x < octreeCounts.x; x++)
                     {
-                        octreeContainers[Globals.LinearIndex(x, y, z, octreeCounts)] =
+                        pointContainers[Globals.LinearIndex(x, y, z, octreeCounts)] =
                             new PointContainer(transform, new Vector3Int(x, y, z), batchIndex);
                     }
                 }
@@ -45,7 +48,8 @@ namespace AbyssEditor.VoxelTech
         private void SetupGameObject()
         {
             const int octreeSide = VoxelWorld.OCTREE_WIDTH;
-            transform.position = (batchIndex - VoxelWorld.startBatch) * octreeSide * 5;
+
+            transform.position = batchIndex * (Vector3Int.one * VoxelWorld.BATCH_WIDTH);
 
             BoxCollider coll = gameObject.AddComponent<BoxCollider>();
             gameObject.layer = 1;
@@ -64,37 +68,37 @@ namespace AbyssEditor.VoxelTech
                 {
                     for (int x = 0; x < octreeCounts.x; x++)
                     {
-                        octreeContainers[Globals.LinearIndex(x, y, z, octreeCounts)].SetOctree(nodes[z, y, x]);
+                        pointContainers[Globals.LinearIndex(x, y, z, octreeCounts)].SetOctree(nodes[z, y, x]);
                     }
                 }
             }
-
+            pointContainersLoaded = true;
             return true;
         }
 
         public void Regenerate()
         {
-            for (int i = 0; i < octreeContainers.Length; i++)
+            for (int i = 0; i < pointContainers.Length; i++)
             {
-                octreeContainers[i].UpdateMesh();
+                pointContainers[i].UpdateMesh();
             }
         }
 
         public VoxelGrid GetVoxelGrid(Vector3Int containerIndex)
         {
-            return octreeContainers[
+            return pointContainers[
                 Globals.LinearIndex(containerIndex.x, containerIndex.y, containerIndex.z, octreeCounts)].grid;
         }
 
         public GameObject GetContainerObject(Vector3Int containerIndex)
         {
-            return octreeContainers[
+            return pointContainers[
                 Globals.LinearIndex(containerIndex.x, containerIndex.y, containerIndex.z, octreeCounts)].meshObj;
         }
 
         public void UpdateFullGrids()
         {
-            foreach (PointContainer container in octreeContainers)
+            foreach (PointContainer container in pointContainers)
             {
                 container.UpdateFullGrid();
             }
@@ -104,7 +108,7 @@ namespace AbyssEditor.VoxelTech
 
         public void ApplyJobBasedDensityFunction(Brush.BrushStroke stroke, List<BrushJob> brushActions)
         {
-            foreach (PointContainer container in octreeContainers)
+            foreach (PointContainer container in pointContainers)
             {
                 Bounds bounds = container.bounds;
                 if (OctreeRaycasting.DistanceToBox(stroke.brushLocation, bounds.min, bounds.max) <= stroke.brushRadius)
@@ -116,7 +120,7 @@ namespace AbyssEditor.VoxelTech
         
         public void ApplyDensityAction(Brush.BrushStroke stroke)
         {
-            foreach (PointContainer container in octreeContainers)
+            foreach (PointContainer container in pointContainers)
             {
                 Bounds bounds = container.bounds;
                 if (OctreeRaycasting.DistanceToBox(stroke.brushLocation, bounds.min, bounds.max) <= stroke.brushRadius)
@@ -128,7 +132,7 @@ namespace AbyssEditor.VoxelTech
 
         public void UpdateMeshesAfterBrush(Brush.BrushStroke stroke)
         {
-            foreach (PointContainer container in octreeContainers)
+            foreach (PointContainer container in pointContainers)
             {
                 Bounds bounds = container.bounds;
                 if (OctreeRaycasting.DistanceToBox(stroke.brushLocation, bounds.min, bounds.max) <= stroke.brushRadius)
@@ -147,7 +151,7 @@ namespace AbyssEditor.VoxelTech
                 {
                     for (int x = 0; x < 5; x++)
                     {
-                        PointContainer _container = octreeContainers[Globals.LinearIndex(x, y, z, octreeCounts)];
+                        PointContainer _container = pointContainers[Globals.LinearIndex(x, y, z, octreeCounts)];
                         nodes[z, y, x].DeRasterizeGrid(_container.grid.densityGrid, _container.grid.typeGrid, VoxelGrid.GRID_PADDING, 5 - VoxelWorld.LEVEL_OF_DETAIL);
                     }
                 }
@@ -159,7 +163,7 @@ namespace AbyssEditor.VoxelTech
         /// </summary>
         public void DisposeGrids()
         {
-            foreach (PointContainer pointContainer in octreeContainers)
+            foreach (PointContainer pointContainer in pointContainers)
             {
                 pointContainer.grid.DisposeGrids();
             }
@@ -167,16 +171,74 @@ namespace AbyssEditor.VoxelTech
 
         public Vector3Int GetBatchMinBound()
         {
-            Vector3Int min = (batchIndex - VoxelWorld.startBatch) *
-                             (VoxelWorld.OCTREE_WIDTH * VoxelWorld.CONTAINERS_PER_SIDE);
+            Vector3Int min = VoxelWorld.GetBatchOrigin(batchIndex);//(batchIndex - VoxelWorld.startBatch) * (VoxelWorld.OCTREE_WIDTH * VoxelWorld.CONTAINERS_PER_SIDE);
             return min;
         }
 
         public Vector3Int GetBatchMaxBound()
         {
-            Vector3Int max = (batchIndex - VoxelWorld.startBatch + Vector3Int.one) *
-                             (VoxelWorld.OCTREE_WIDTH * VoxelWorld.CONTAINERS_PER_SIDE);
+            Vector3Int max = VoxelWorld.GetBatchOrigin(batchIndex) * VoxelWorld.BATCH_WIDTH;//(batchIndex - VoxelWorld.startBatch + Vector3Int.one) * (VoxelWorld.OCTREE_WIDTH * VoxelWorld.CONTAINERS_PER_SIDE);
             return max;
+        }
+        
+        public void RedrawBoundaryPlanes()
+        {
+            if (BoundaryPlanes == null) {
+                BoundaryPlanes = new GameObject[6];
+                for(int c = 0; c < 6; c++) {
+                    BoundaryPlanes[c] = GameObject.CreatePrimitive(PrimitiveType.Plane);
+                    BoundaryPlanes[c].transform.SetParent(transform);
+                    BoundaryPlanes[c].GetComponent<MeshRenderer>().material = Globals.instance.boundaryGizmoMat;
+                }
+                
+                // bottom
+                BoundaryPlanes[0].transform.eulerAngles = Vector3.zero;
+                // top
+                BoundaryPlanes[1].transform.eulerAngles = Vector3.right * 180;
+                // left
+                BoundaryPlanes[2].transform.eulerAngles = Vector3.forward * -90;
+                // right
+                BoundaryPlanes[3].transform.eulerAngles = Vector3.forward * 90;
+                // back
+                BoundaryPlanes[4].transform.eulerAngles = Vector3.right * 90;
+                // forward
+                BoundaryPlanes[5].transform.eulerAngles = Vector3.right * -90;
+            }
+            bool[] neighbors = GetActiveNeighboringMeshes();
+            for (int i = 0; i < neighbors.Length; i++)
+            {
+                BoundaryPlanes[i].SetActive(!neighbors[i]);
+            }
+            
+            float halfPos = VoxelWorld.BATCH_WIDTH / 2f;
+            
+            BoundaryPlanes[0].transform.localPosition = new Vector3(halfPos, 0, halfPos);
+            BoundaryPlanes[1].transform.localPosition = new Vector3(halfPos, VoxelWorld.BATCH_WIDTH, halfPos);
+            BoundaryPlanes[2].transform.localPosition = new Vector3(0, halfPos, halfPos);
+            BoundaryPlanes[3].transform.localPosition = new Vector3(VoxelWorld.BATCH_WIDTH, halfPos, halfPos);
+            BoundaryPlanes[4].transform.localPosition = new Vector3(halfPos, halfPos, 0);
+            BoundaryPlanes[5].transform.localPosition = new Vector3(halfPos, halfPos, VoxelWorld.BATCH_WIDTH);
+            
+            foreach (GameObject plane in BoundaryPlanes)
+            {
+                //planes have a width of 10 just from their mesh
+                plane.transform.localScale = new Vector3(VoxelWorld.BATCH_WIDTH * 0.1f, 1, VoxelWorld.BATCH_WIDTH * 0.1f);
+            }
+        }
+
+        
+        public bool[] GetActiveNeighboringMeshes()
+        {
+            bool[] neighboringMeshes = new bool[6];
+            
+            neighboringMeshes[0] = VoxelMetaspace.metaspace.BatchLoaded(batchIndex + Vector3Int.down);
+            neighboringMeshes[1] = VoxelMetaspace.metaspace.BatchLoaded(batchIndex + Vector3Int.up);
+            neighboringMeshes[2] = VoxelMetaspace.metaspace.BatchLoaded(batchIndex + Vector3Int.left);
+            neighboringMeshes[3] = VoxelMetaspace.metaspace.BatchLoaded(batchIndex + Vector3Int.right);
+            neighboringMeshes[4] = VoxelMetaspace.metaspace.BatchLoaded(batchIndex + Vector3Int.back);
+            neighboringMeshes[5] = VoxelMetaspace.metaspace.BatchLoaded(batchIndex + Vector3Int.forward);
+            
+            return neighboringMeshes;
         }
     }
 }

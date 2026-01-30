@@ -5,6 +5,8 @@ namespace AbyssEditor
 {
     public class CameraControls : MonoBehaviour
     {
+        public static CameraControls main;
+        
         public bool moveLock = true;
 
         public bool dragging;
@@ -15,7 +17,7 @@ namespace AbyssEditor
         public float accSprintMultiplier = 4; // how much faster you go when "sprinting"
         public float lookSensitivity = 1; // mouse look sensitivity
         public float dampingCoefficient = 5; // how quickly you break to a halt after you stop your input
-
+        
         Vector3 velocity; // current velocity
 
 #if UNITY_STANDALONE_LINUX || UNITY_EDITOR_LINUX
@@ -38,22 +40,29 @@ namespace AbyssEditor
             }
         }
 
+        private void Awake()
+        {
+            main = this;
+        }
+        
         private void Start()
         {
             brush = GetComponent<Brush>();
         }
 
-        private void OnRegionLoad()
+        public void OnRegionLoad(Vector3Int startBatch, Vector3Int endBatch)
         {
             moveLock = false;
             transform.parent.rotation = Quaternion.Euler(new Vector3(30, -135, 0));
-            PoseCamera();
+            PoseCamera(startBatch, endBatch);
         }
 
-        public void PoseCamera()
+        public void PoseCamera(Vector3 startBatch, Vector3 endBatch)
         {
-            Camera.main.transform.parent.position = (VoxelWorld.endBatch - VoxelWorld.startBatch + Vector3.one + Vector3.up) * VoxelWorld.OCTREE_WIDTH * VoxelWorld.CONTAINERS_PER_SIDE / 2;
-            Camera.main.transform.LookAt(Vector3.zero);
+            Vector3 regionCenter = (startBatch + endBatch) * 0.5f;
+            
+            Camera.main.transform.parent.position = (regionCenter + Vector3.one + Vector3.up) * VoxelWorld.BATCH_WIDTH;
+            Camera.main.transform.LookAt(regionCenter);
         }
 
         void OnDisable() => HoldingRMB = false;

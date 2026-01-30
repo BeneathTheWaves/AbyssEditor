@@ -70,11 +70,13 @@ namespace AbyssEditor.Scripts.TerrainMaterials
             
             if (updateMeshesOnLoad) {
                 VoxelWorld.StartMetaspaceRegenerate(12, totalTasks);
+                /*
                 while (VoxelWorld.loadInProgress) {
                     matRequest.SetStatus(VoxelWorld.loadingState);
                     matRequest.SetProgress(VoxelWorld.loadingProgress);
                     yield return null;
                 }
+                */
                 updateMeshesOnLoad = false;
             }
             matRequest.Complete();

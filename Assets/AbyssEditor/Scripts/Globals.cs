@@ -17,8 +17,6 @@ namespace AbyssEditor {
         public bool belowzero;
         public string userBatchOutputPath;
 
-        private GameObject[] boundaryPlanes;
-
         public string batchSourcePath { get { return Path.Combine(Preferences.data.gamePath, gameDataFolder, dataToUnmanaged, gameExportWindow, "CompiledOctreesCache"); } }
         public string batchOutputPath { get { return exportIntoGame ? batchSourcePath : userBatchOutputPath; } }
         public string gameDataFolder { get { return belowzero ? "SubnauticaZero_Data" : "Subnautica_Data"; } }
@@ -27,9 +25,7 @@ namespace AbyssEditor {
         public string blocktypeStringsFilename { get { return belowzero ? "blocktypeStringsBZ" : "blocktypeStrings"; } }
         
         public const int THREAD_GROUP_SIZE = 8;
-
-        public static string sourcePathKey = "gamePath";
-        public static string outputPathKey = "outputPath";
+        
         public static string dataToUnmanaged = Path.Combine("StreamingAssets", "SNUnmanagedData");
         public static string dataToAddressables = Path.Combine("StreamingAssets", "aa", "StandaloneWindows64");
         public bool exportIntoGame;
@@ -46,17 +42,7 @@ namespace AbyssEditor {
         public static Material GetBatchMat() {
             return instance.batchMat;
         }
-        public static void BakeSimpleMapMaterial() {
-            string filename = Path.Combine(Preferences.data.gamePath, instance.gameDataFolder, dataToUnmanaged, instance.gameExportWindow, "biomemap.png");
-
-            if (File.Exists(filename)) {
-                byte[] fileData = File.ReadAllBytes(filename);
-                Texture2D mapTexture = new Texture2D(2, 2);
-                if (ImageConversion.LoadImage(mapTexture, fileData, false)) {
-                    instance.simpleMapMat.mainTexture = mapTexture;
-                }
-            }
-        }
+        
         public static Material GetSimpleMapMat() {
             return instance.simpleMapMat;
         }
@@ -66,53 +52,6 @@ namespace AbyssEditor {
         }
         public static int LinearIndex(int x, int y, int z, Vector3Int dim) {
             return x + y * dim.x + z * dim.x * dim.y;
-        }
-
-        public static void RedrawBoundaryPlanes() {
-            GameObject[] planes;
-            if (instance.boundaryPlanes == null) {
-                planes = new GameObject[6];
-                instance.boundaryPlanes = planes;
-                for(int c = 0; c < 6; c++) {
-                    planes[c] = GameObject.CreatePrimitive(PrimitiveType.Plane);
-                    planes[c].transform.SetParent(instance.transform);
-                    planes[c].GetComponent<MeshRenderer>().material = instance.boundaryGizmoMat;
-                }
-                // bottom
-                planes[0].transform.eulerAngles = Vector3.zero;
-                // top
-                planes[1].transform.eulerAngles = Vector3.right * 180;
-                // left
-                planes[2].transform.eulerAngles = Vector3.forward * -90;
-                // right
-                planes[3].transform.eulerAngles = Vector3.forward * 90;
-                // back
-                planes[4].transform.eulerAngles = Vector3.right * 90;
-                // forward
-                planes[5].transform.eulerAngles = Vector3.right * -90;
-            } else {
-                planes = instance.boundaryPlanes;
-            }
-
-            Vector3 worldCenter = VoxelWorld.regionSize * (VoxelWorld.OCTREE_WIDTH * VoxelWorld.CONTAINERS_PER_SIDE) / 2;
-
-            planes[0].transform.position = new Vector3(worldCenter.x, 0, worldCenter.z);
-            planes[0].transform.localScale = new Vector3(worldCenter.x * .2f, 1, worldCenter.z * .2f);
-
-            planes[1].transform.position = new Vector3(worldCenter.x, worldCenter.y * 2, worldCenter.z);
-            planes[1].transform.localScale = new Vector3(worldCenter.x * .2f, 1, worldCenter.z * .2f);
-
-            planes[2].transform.position = new Vector3(0, worldCenter.y, worldCenter.z);
-            planes[2].transform.localScale = new Vector3(worldCenter.y * .2f, 1, worldCenter.z * .2f);
-
-            planes[3].transform.position = new Vector3(worldCenter.x * 2, worldCenter.y, worldCenter.z);
-            planes[3].transform.localScale = new Vector3(worldCenter.y * .2f, 1, worldCenter.z * .2f);
-
-            planes[4].transform.position = new Vector3(worldCenter.x, worldCenter.y, 0);
-            planes[4].transform.localScale = new Vector3(worldCenter.x * .2f, 1, worldCenter.y * .2f);
-
-            planes[5].transform.position = new Vector3(worldCenter.x, worldCenter.y, worldCenter.z * 2);
-            planes[5].transform.localScale = new Vector3(worldCenter.x * .2f, 1, worldCenter.y * .2f);
         }
 
         public static void UpdateBoundaries(Vector3 newPos, float radius) {

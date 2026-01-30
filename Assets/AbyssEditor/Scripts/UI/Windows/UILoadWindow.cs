@@ -41,11 +41,8 @@ namespace AbyssEditor.UI {
         }
 
         IEnumerator LoadCoroutine(Vector3Int start, Vector3Int end) {
-            VoxelWorld.LoadRegion(start, end, moddedBatchesCheckbox.check);
-            while (VoxelWorld.loadInProgress) {
-                EditorUI.UpdateStatusBar(VoxelWorld.loadingState, VoxelWorld.loadingProgress);
-                yield return null;
-            }
+            VoxelWorld.world.LoadRegion(start, end, moddedBatchesCheckbox.check);
+            yield return null;
             EditorUI.DisableStatusBar();
         }
 

@@ -75,19 +75,19 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelGrids {
                         VoxelGrid neigGrid;
                         Vector3Int neigOffset = NeighbourOffsetFromVoxel(x, y, z);
                         Vector3Int neigOctreeIndex = octreeIndex + neigOffset;
-                        if (!VoxelMetaspace.OctreeExists(neigOctreeIndex, batchIndex)) {
+                        if (!VoxelMetaspace.metaspace.OctreeExists(neigOctreeIndex, batchIndex)) {
                             Vector3Int neigBatchIndex = batchIndex + neigOffset;
-                            if (!VoxelMetaspace.BatchExists(neigBatchIndex)) {
+                            if (!VoxelMetaspace.metaspace.BatchLoaded(neigBatchIndex)) {
                                 continue;
                             }
                             else {
                                 // Get grid from neighbouring VoxelMesh
-                                neigGrid = VoxelMetaspace.metaspace.GetVoxelGrid(neigBatchIndex, IndexMod(neigOctreeIndex, 5));
+                                neigGrid = VoxelMetaspace.metaspace.TryGetVoxelGrid(neigBatchIndex, IndexMod(neigOctreeIndex, 5));
                                 neighbourMap[(neigOffset.x + 1) + (neigOffset.y + 1) * 3 + (neigOffset.z + 1) * 9] = true;
                             }
                         } else {
                             // Get grid from neighbouring container
-                            neigGrid = VoxelMetaspace.metaspace.GetVoxelGrid(batchIndex, neigOctreeIndex);
+                            neigGrid = VoxelMetaspace.metaspace.TryGetVoxelGrid(batchIndex, neigOctreeIndex);
                             neighbourMap[(neigOffset.x + 1) + (neigOffset.y + 1) * 3 + (neigOffset.z + 1) * 9] = true;
                         }
 

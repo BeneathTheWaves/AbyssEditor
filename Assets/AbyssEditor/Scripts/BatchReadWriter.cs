@@ -6,6 +6,7 @@ using AbyssEditor.Octrees;
 using AbyssEditor.Scripts.UI;
 using AbyssEditor.VoxelTech;
 using Unity.Collections;
+using UnityEditor;
 using UnityEngine;
 
 namespace AbyssEditor.Scripts {
@@ -48,7 +49,7 @@ namespace AbyssEditor.Scripts {
                 }
 
                 curr_pos = 0;
-                var sb = new StringBuilder();
+                //var sb = new StringBuilder();
                 while (curr_pos < data.Length && countOctrees < expectedOctrees)
                 {
 
@@ -59,7 +60,8 @@ namespace AbyssEditor.Scripts {
                     int nodeCount = data[curr_pos + 1] * 256 + data[curr_pos];
                     // record all nodes of this octree in an array
                     OctNodeData[] nodesOfThisOctree = new OctNodeData[nodeCount];
-                    Vector3 batchOrigin = (batchIndex - VoxelWorld.startBatch) * (VoxelWorld.OCTREE_WIDTH * VoxelWorld.CONTAINERS_PER_SIDE);
+                    Vector3 batchOrigin = (batchIndex) * (VoxelWorld.BATCH_WIDTH);
+                    
                     for (int i = 0; i < nodeCount; ++i)
                     {
                         byte type = data[curr_pos + 2 + i * 4];
@@ -70,7 +72,7 @@ namespace AbyssEditor.Scripts {
                     }
 
                     Octree octree = new Octree(x, y, z, VoxelWorld.OCTREE_WIDTH, batchOrigin);
-                    sb.AppendLine($"(x: {x}, y: {y}, z: {z}, root size: {VoxelWorld.OCTREE_WIDTH}, origin: {batchOrigin})");
+                    //sb.AppendLine($"(x: {x}, y: {y}, z: {z}, root size: {VoxelWorld.OCTREE_WIDTH}, origin: {batchOrigin})");
                     octree.Write(nodesOfThisOctree);
                     octrees[z, y, x] = octree;
 
@@ -78,9 +80,8 @@ namespace AbyssEditor.Scripts {
                     countOctrees++;
                 }
 
-                Debug.Log($"Batch '{batchIndex}' was loaded:\n{sb}");
-
-
+                Debug.Log($"Batch '{batchIndex}' was loaded!");
+                
                 readFinishedCall(octrees);
                 reader.Close();
             }
@@ -152,12 +153,23 @@ namespace AbyssEditor.Scripts {
             writer.Close();
             return true;
         }
-        
-        
+
+        /*
+        public IEnumerator ReadOctreePatchCoroutine(string filePath)
+        {
+            
+            if (!File.Exists(filePath))
+            {
+                
+            }
+            BinaryReader reader = new BinaryReader(File.Open(filePath, FileMode.Open));
+            uint version = reader.ReadUInt32();
+        }
+        */
 
         public IEnumerator WriteOctreePatchCoroutine(VoxelMetaspace metaspace)
         {
-            DebugOverlay.LogMessage($"Writing {metaspace.meshes.Length} batch patches as {Globals.instance.batchOutputPath}");
+            DebugOverlay.LogMessage($"Writing {metaspace.meshes.Count} batch patches as {Globals.instance.batchOutputPath}");
 
             BinaryWriter writer = new BinaryWriter(File.Open(Globals.instance.batchOutputPath, FileMode.Create));
             // write version

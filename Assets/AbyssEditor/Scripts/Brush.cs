@@ -87,7 +87,7 @@ namespace AbyssEditor {
                 DrawBrushGizmo(hit.point, hit.normal);
                 if (doAction) {
                     if (activeMode == BrushMode.Eyedropper) {
-                        SetBrushMaterial(VoxelWorld.SampleBlocktype(hit.point, ray));
+                        SetBrushMaterial(VoxelWorld.world.SampleBlocktype(hit.point, ray));
                     } else {
                         if (stroke.ReadyForNextAction()) {
 
@@ -116,7 +116,7 @@ namespace AbyssEditor {
             if (activeMode == BrushMode.Eyedropper) {
                 brushAreaObject.transform.localScale = Vector3.one * 2;
             } else {
-                brushAreaObject.transform.localScale = Vector3.one * 2 * brushSize;
+                brushAreaObject.transform.localScale = Vector3.one * (2 * brushSize);
             }
         }
         public void DisableBrushGizmo() {

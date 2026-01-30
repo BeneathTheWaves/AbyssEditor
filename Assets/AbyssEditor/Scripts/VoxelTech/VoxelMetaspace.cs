@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using AbyssEditor.Scripts;
 using AbyssEditor.Scripts.TerrainMaterials;
 using AbyssEditor.Scripts.VoxelTech.VoxelGrids;
@@ -11,61 +12,40 @@ namespace AbyssEditor.VoxelTech {
     public class VoxelMetaspace : MonoBehaviour
     {
         public static VoxelMetaspace metaspace;
-        public VoxelMesh[] meshes;
-        public VoxelMesh this[Vector3Int index] {
-            get {
-                return meshes[GetLabel(index)];
-            }
-        }
-
-        public bool allowModded;
-
-        // loading fields
-        public bool loadInProgress = false;
-        public float loadingProgress;
-        public string loadingState;
+        
+        public List<VoxelMesh> meshes = new();
 
         void Awake() {
             metaspace = this;
             VoxelGrid.PrecomputeNeighborOffsets();
         }
 
-        public void Create(int numBatches) {
-            meshes = new VoxelMesh[numBatches];
-
+        public void AddRegion(Vector3Int startBatch, Vector3Int endBatch) {
             if (!SnMaterialLoader.instance.contentLoaded) {
                 SnMaterialLoader.instance.updateMeshesOnLoad = true;
             }
 
-            for (int y = VoxelWorld.startBatch.y; y <= VoxelWorld.endBatch.y; y++) {
-                for (int z = VoxelWorld.startBatch.z; z <= VoxelWorld.endBatch.z; z++) {
-                    for (int x = VoxelWorld.startBatch.x; x <= VoxelWorld.endBatch.x; x++) {
-                        
-                        Vector3Int coords = new Vector3Int(x, y, z);
-                        VoxelMesh batchComponent = new GameObject($"batch-{x}-{y}-{z}").AddComponent<VoxelMesh>();
-                        batchComponent.Create(coords);
-                        int label = GetLabel(coords);
-                        meshes[label] = batchComponent;
-                    }
-                }   
-            }
-        }
-        public void Clear() {
-            for (int y = VoxelWorld.startBatch.y; y <= VoxelWorld.endBatch.y; y++) {
-                for (int z = VoxelWorld.startBatch.z; z <= VoxelWorld.endBatch.z; z++) {
-                    for (int x = VoxelWorld.startBatch.x; x <= VoxelWorld.endBatch.x; x++) {
-                        Destroy(meshes[GetLabel(x, y, z)].gameObject);
-                    }
+            foreach (Vector3Int batchIndex in startBatch.IterateTo(endBatch))
+            {
+                VoxelMesh voxelMesh = TryGetVoxelMesh(batchIndex);
+                
+                if(!voxelMesh)
+                {
+                    voxelMesh = new GameObject($"batch-{batchIndex.x}-{batchIndex.y}-{batchIndex.z}").AddComponent<VoxelMesh>();
+                    voxelMesh.Create(batchIndex);
+                    meshes.Add(voxelMesh);
                 }
             }
         }
 
-        public VoxelGrid GetVoxelGrid(Vector3Int globalBatchIndex, Vector3Int containerIndex) => meshes[GetLabel(globalBatchIndex)].GetVoxelGrid(containerIndex);
-        public void GetVoxel(Vector3Int voxel, Vector3Int octree, Vector3Int batch, out byte density, out byte type)
+        public VoxelGrid TryGetVoxelGrid(Vector3Int batchIndex, Vector3Int containerIndex)
         {
-            GetVoxelGrid(batch, octree).GetVoxel(voxel.x, voxel.y, voxel.z, out byte density2, out byte type2);
-            density = density2;
-            type = type2;
+            VoxelMesh mesh = TryGetVoxelMesh(batchIndex);
+            if (mesh != null)
+            {
+                return mesh.GetVoxelGrid(containerIndex);
+            }
+            return null;
         }
         
         public void ApplyJobBasedDensityAction(Brush.BrushStroke stroke)
@@ -131,59 +111,54 @@ namespace AbyssEditor.VoxelTech {
             }
         }
 
-        public IEnumerator RegionReadCoroutine(bool allowModded) {
-            // sets + rasterizes all octrees
-            loadInProgress = true;
-            float endLabel = GetLabel(VoxelWorld.endBatch) + 1;
-            foreach (VoxelMesh mesh in meshes) {
-                loadingProgress = GetLabel(mesh.batchIndex) / (endLabel * 3);
+        public IEnumerator RegionReadCoroutine(bool allowModded, Vector3Int startBatch, Vector3Int endBatch) {
+            foreach (Vector3Int batchIndex in startBatch.IterateTo(endBatch))
+            {
+                VoxelMesh mesh = TryGetVoxelMesh(batchIndex);
+                
                 BatchReadWriter.GetPath(mesh.batchIndex, allowModded, out bool isModded);
-                loadingState = $"Reading {(isModded ? "modded" : "")} batch {mesh.batchIndex}";
+                
                 yield return BatchReadWriter.readWriter.ReadBatchCoroutine(mesh.OctreesReadCallback, mesh.batchIndex, allowModded, true);
             }
 
-            yield return RegenerateMeshesCoroutine(1, 3);
+            yield return RegenerateMeshesCoroutine();
         }
 
-        public IEnumerator RegenerateMeshesCoroutine(int tasksDone, int totalTasks) {
-            // redistribute full grids
-            loadInProgress = true;
-            float endLabel = GetLabel(VoxelWorld.endBatch) + 1;
+        public IEnumerator RegenerateMeshesCoroutine() {
             foreach (VoxelMesh mesh in meshes) {
-                loadingProgress = (GetLabel(mesh.batchIndex) / (endLabel * totalTasks)) + ((float)tasksDone) / totalTasks;
-                loadingState = $"Joining batch {mesh.batchIndex}";
                 mesh.UpdateFullGrids();
                 yield return null;
             }
-            // generate meshes
+
             foreach (VoxelMesh mesh in meshes) {
-                loadingProgress = (GetLabel(mesh.batchIndex) / (endLabel * totalTasks)) + ((float)tasksDone + 1) / totalTasks;
-                loadingState = $"Creating mesh for {mesh.batchIndex}";
                 mesh.Regenerate();
                 yield return null;
             }
-            loadInProgress = false;
         }
-
-        public static bool VoxelExists(int x, int y, int z) {
-            return x >= 1 && x < VoxelWorld.RESOLUTION + 1 && y >= 1 && y < VoxelWorld.RESOLUTION + 1 && z >= 1 && z < VoxelWorld.RESOLUTION + 1;
-        }
-        public static bool OctreeExists(Vector3Int treeIndex, Vector3Int batchIndex) {
-            if (!BatchExists(batchIndex)) return false;
-            Vector3Int dimensions = metaspace[batchIndex].octreeCounts;
+        
+        public bool OctreeExists(Vector3Int treeIndex, Vector3Int batchIndex)
+        {
+            VoxelMesh mesh = TryGetVoxelMesh(batchIndex);
+            if (!mesh) return false;
+            
+            Vector3Int dimensions = mesh.octreeCounts;
             return (treeIndex.x >= 0 && treeIndex.x < dimensions.x && treeIndex.y >= 0 && treeIndex.y < dimensions.y && treeIndex.z >= 0 && treeIndex.z < dimensions.z);
         }
-        public static bool BatchExists(Vector3Int batchIndex) {
-            if (batchIndex.x >= VoxelWorld.startBatch.x && batchIndex.x <= VoxelWorld.endBatch.x
-                                                   && batchIndex.y >= VoxelWorld.startBatch.y &&
-                                                   batchIndex.y <= VoxelWorld.endBatch.y
-                                                   && batchIndex.z >= VoxelWorld.startBatch.z &&
-                                                   batchIndex.z <= VoxelWorld.endBatch.z)
+        
+        public bool BatchLoaded(Vector3Int batchIndex) {
+            if(meshes.FirstOrDefault(mesh => mesh.batchIndex == batchIndex))
             {
-                return metaspace[batchIndex].nodes != null;
+                return true;
             }
-
             return false;
+        }
+
+        public void ReloadBoundaries()
+        {
+            foreach (VoxelMesh mesh in meshes)
+            {
+                mesh.RedrawBoundaryPlanes();
+            }
         }
         
         /// <summary>
@@ -196,20 +171,13 @@ namespace AbyssEditor.VoxelTech {
             {
                 mesh.DisposeGrids();
             }
-            BrushJob.DisposePool();
+            BrushJob.DisposeNativeArrayPool();
             VoxelGrid.neighboursToCheckInSmooth.Dispose();
         }
 
-        private int GetLabel(Vector3Int globalBatchIndex) {
-            return GetLabel(globalBatchIndex.x, globalBatchIndex.y, globalBatchIndex.z);
-        }
-        private int GetLabel(int x, int y, int z) {
-            int localX = x - VoxelWorld.startBatch.x;
-            int localY = y - VoxelWorld.startBatch.y;
-            int localZ = z - VoxelWorld.startBatch.z;
-            Vector3Int regionSize = VoxelWorld.endBatch - VoxelWorld.startBatch + Vector3Int.one;
-
-            return localY * regionSize.x * regionSize.z + localZ * regionSize.x + localX;
+        public VoxelMesh TryGetVoxelMesh(Vector3Int batchIndex)
+        {
+            return meshes.FirstOrDefault(mesh => mesh.batchIndex == batchIndex);
         }
     }
 }

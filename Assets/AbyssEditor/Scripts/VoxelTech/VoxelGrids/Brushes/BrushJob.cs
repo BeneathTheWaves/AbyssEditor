@@ -62,7 +62,7 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelGrids.Brushes
         /// <summary>
         /// 
         /// </summary>
-        public static void DisposePool()
+        public static void DisposeNativeArrayPool()
         {
             foreach (NativeArray<byte> jobArray in pooledResultArrays)
             {

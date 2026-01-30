@@ -11,7 +11,7 @@ using AbyssEditor.VoxelTech;
 namespace AbyssEditor {
     public static class ExportFBX {
         public static IEnumerator ExportMetaspaceAsync(VoxelMetaspace metaspace, string fbxFilePath) {
-
+            /*
             Stopwatch sw = new Stopwatch();
             sw.Start();
 
@@ -42,11 +42,12 @@ namespace AbyssEditor {
 
             sw.Stop();
             DebugOverlay.LogMessage($"Exporting fbx scene took {sw.ElapsedMilliseconds / 1000f}s");
+            */
             yield break;
         }
 
         private static IEnumerator CreateNodeFromMetaspace(FbxManager fbxManager, VoxelMetaspace metaspace, string fbxFilePath, FbxNode node) {
-
+            /*
             if (metaspace.meshes.Length == 0) {
                 yield break;
             }
@@ -95,10 +96,11 @@ namespace AbyssEditor {
             }
 
             EditorUI.DisableStatusBar();
+            */
+            yield break;
         }
 
         private static FbxMesh CreateNodeFromUnityMesh(FbxManager fbxManager, Mesh mesh) {
-
             FbxMesh fbxMesh = FbxMesh.Create(fbxManager, mesh.name);
 
             for (int i = 0; i < mesh.vertexCount; i++) {
