@@ -1,11 +1,15 @@
 ﻿
 using System.Collections.Generic;
+using System.Numerics;
+using System.Threading;
 using AbyssEditor.Octrees;
 using AbyssEditor.Scripts.VoxelTech.VoxelGrids.Brushes;
 using AbyssEditor.VoxelTech;
 using Unity.Collections;
+using Unity.Jobs;
 using Unity.Mathematics;
 using UnityEngine;
+using Vector3 = UnityEngine.Vector3;
 
 namespace AbyssEditor.Scripts.VoxelTech.VoxelGrids {
     public class VoxelGrid
@@ -21,10 +25,10 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelGrids {
         bool[] neighbourMap;
         
         public static NativeArray<int3> neighboursToCheckInSmooth;
+        public static Vector3Int[] paddingVoxels;
 
         public VoxelGrid(NativeArray<byte> _coreDensity, NativeArray<byte> _coreTypes, Vector3Int _octreeIndex, Vector3Int _batchIndex)
         {
-
             int gridSize = GetFullGridSize();
             densityGrid = new NativeArray<byte>(gridSize, Allocator.Persistent);
             typeGrid = new NativeArray<byte>(gridSize, Allocator.Persistent);
@@ -54,70 +58,86 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelGrids {
         public static byte GetVoxel(NativeArray<byte> array, int x, int y, int z) {
             return array[Globals.LinearIndex(x, y, z, VoxelWorld.RESOLUTION + GRID_PADDING*2)];
         }
+        
+        public static byte GetVoxel(NativeArray<byte> array, Vector3Int voxel) {
+            return array[Globals.LinearIndex(voxel.x, voxel.y, voxel.z, VoxelWorld.RESOLUTION + GRID_PADDING * 2)];
+        }
+        
         public static void SetVoxel(NativeArray<byte> array, int x, int y, int z, byte val) {
             array[Globals.LinearIndex(x, y, z, VoxelWorld.RESOLUTION + GRID_PADDING*2)] = val;
         }
+        
+        public static void SetVoxel(NativeArray<byte> array, Vector3Int voxel, byte val) {
+            array[Globals.LinearIndex(voxel.x, voxel.y, voxel.z, VoxelWorld.RESOLUTION + GRID_PADDING*2)] = val;
+        }
+        
         public static byte GetCoreVoxel(NativeArray<byte> array, int x, int y, int z) {
             return array[Globals.LinearIndex(x, y, z, VoxelWorld.RESOLUTION)];
         }
 
-        public void UpdateFullGrid() {
-
-            int _fullSide = VoxelWorld.RESOLUTION + 2;
-            neighbourMap = new bool[27];
-            neighbourMap[13] = true;
-            for (int z = 0; z < _fullSide; z++) {
-                for (int y = 0; y < _fullSide; y++) {
-                    for (int x = 0; x < _fullSide; x++) {
-                        if (NeighbourOffsetFromVoxel(x, y, z) == Vector3Int.zero) {
-                            continue;
-                        }
-                        VoxelGrid neigGrid;
-                        Vector3Int neigOffset = NeighbourOffsetFromVoxel(x, y, z);
-                        Vector3Int neigOctreeIndex = octreeIndex + neigOffset;
-                        if (!VoxelMetaspace.metaspace.OctreeExists(neigOctreeIndex, batchIndex)) {
-                            Vector3Int neigBatchIndex = batchIndex + neigOffset;
-                            if (!VoxelMetaspace.metaspace.BatchLoaded(neigBatchIndex)) {
-                                continue;
-                            }
-                            else {
-                                // Get grid from neighbouring VoxelMesh
-                                neigGrid = VoxelMetaspace.metaspace.TryGetVoxelGrid(neigBatchIndex, IndexMod(neigOctreeIndex, 5));
-                                neighbourMap[(neigOffset.x + 1) + (neigOffset.y + 1) * 3 + (neigOffset.z + 1) * 9] = true;
-                            }
-                        } else {
-                            // Get grid from neighbouring container
-                            neigGrid = VoxelMetaspace.metaspace.TryGetVoxelGrid(batchIndex, neigOctreeIndex);
-                            neighbourMap[(neigOffset.x + 1) + (neigOffset.y + 1) * 3 + (neigOffset.z + 1) * 9] = true;
-                        }
-
-                        Vector3Int sample = new Vector3Int(x, y, z);
-                        if (x == 0) sample.x = VoxelWorld.RESOLUTION;
-                        else if (x == VoxelWorld.RESOLUTION + 1) sample.x = 1;
-                        
-                        if (y == 0) sample.y = VoxelWorld.RESOLUTION;
-                        else if (y == VoxelWorld.RESOLUTION + 1) sample.y = 1;
-
-                        if (z == 0) sample.z = VoxelWorld.RESOLUTION;
-                        else if (z == VoxelWorld.RESOLUTION + 1) sample.z = 1;
-
-                        SetVoxel(densityGrid, x, y, z, GetVoxel(neigGrid.densityGrid, sample.x, sample.y, sample.z));
-                        SetVoxel(typeGrid, x, y, z, GetVoxel(neigGrid.typeGrid, sample.x, sample.y, sample.z));
-                    }
-                }
+        public void NeighborDataUpdate() {
+            //neighbourMap = new bool[27];
+            //neighbourMap[13] = true;
+            foreach (Vector3Int voxel in paddingVoxels)
+            { 
+                UpdateNeighborVoxel(voxel);
             }
         }
 
-        internal static Vector3Int NeighbourOffsetFromVoxel(int x, int y, int z) {
-            Vector3Int offset = Vector3Int.zero;
-            if (x <= 0) offset.x = -1;
-            else if (x >= VoxelWorld.RESOLUTION + 1) offset.x = 1;
+        private void UpdateNeighborVoxel(Vector3Int voxel)
+        {
+            VoxelGrid neighborGrid;
+            Vector3Int neigOffset = NeighbourVoxelOffsetFromGrid(voxel.x, voxel.y, voxel.z);
+            //int neighborIndex = (neigOffset.x + 1) + (neigOffset.y + 1) * 3 + (neigOffset.z + 1) * 9;
 
-            if (y <= 0) offset.y = -1;
-            else if (y >= VoxelWorld.RESOLUTION + 1) offset.y = 1;
+            Vector3Int neigOctreeIndex = octreeIndex + neigOffset;
+
+            if (!VoxelMetaspace.metaspace.OctreeExists(neigOctreeIndex, batchIndex))
+            {
+                Vector3Int neigBatchIndex = batchIndex + neigOffset;
+                if (!VoxelMetaspace.metaspace.BatchLoaded(neigBatchIndex))
+                {
+                    return;
+                }
+                else
+                {
+                    // Get grid from neighbouring VoxelMesh
+                    neighborGrid = VoxelMetaspace.metaspace.TryGetVoxelGrid(neigBatchIndex, IndexMod(neigOctreeIndex, 5));
+                    //neighbourMap[neighborIndex] = true;
+                }
+            }
+            else
+            {
+                // Get grid from neighbouring container
+                neighborGrid = VoxelMetaspace.metaspace.TryGetVoxelGrid(batchIndex, neigOctreeIndex);
+                //neighbourMap[neighborIndex] = true;
+            }
+
+            Vector3Int sample = new Vector3Int(voxel.x, voxel.y, voxel.z);
+            if (voxel.x == 0) sample.x = VoxelWorld.RESOLUTION;
+            else if (voxel.x == VoxelWorld.RESOLUTION + 1) sample.x = 1;
+
+            if (voxel.y == 0) sample.y = VoxelWorld.RESOLUTION;
+            else if (voxel.y == VoxelWorld.RESOLUTION + 1) sample.y = 1;
+
+            if (voxel.z == 0) sample.z = VoxelWorld.RESOLUTION;
+            else if (voxel.z == VoxelWorld.RESOLUTION + 1) sample.z = 1;
+
+            SetVoxel(densityGrid, voxel, GetVoxel(neighborGrid.densityGrid, sample));
+            SetVoxel(typeGrid, voxel, GetVoxel(neighborGrid.typeGrid, sample));
+        }
+        
+
+        internal static Vector3Int NeighbourVoxelOffsetFromGrid(int x, int y, int z) {
+            Vector3Int offset = Vector3Int.zero;
+            if (x <= 0) offset.x = -1;                                                                                                
+            else if (x >= VoxelWorld.RESOLUTION + GRID_PADDING) offset.x = 1;
+
+            if (y <= 0) offset.y = -1;                                                                                                              
+            else if (y >= VoxelWorld.RESOLUTION + GRID_PADDING) offset.y = 1;
 
             if (z <= 0) offset.z = -1;
-            else if (z >= VoxelWorld.RESOLUTION + 1) offset.z = 1;
+            else if (z >= VoxelWorld.RESOLUTION + GRID_PADDING) offset.z = 1;
 
             return offset;
         }
@@ -166,10 +186,11 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelGrids {
             for (int z = offset; z < fullSide; z++) {
                 for (int y = offset; y < fullSide; y++) {
                     for (int x = offset; x < fullSide; x++) {
-                        Vector3Int neigOffset = NeighbourOffsetFromVoxel(x, y, z);
-                        if (neighbourMap[(neigOffset.x + 1) + (neigOffset.y + 1) * 3 + (neigOffset.z + 1) * 9]) { 
+                        //Vector3Int neigOffset = NeighbourOffsetFromVoxel(x, y, z);
+                        ApplyGridAction(x, y, z, gridOrigin, stroke);
+                        /*if (neighbourMap[(neigOffset.x + 1) + (neigOffset.y + 1) * 3 + (neigOffset.z + 1) * 9]) { 
                             ApplyGridAction(x, y, z, gridOrigin, stroke);
-                        }
+                        }*/
                     }
                 }
             }
@@ -254,7 +275,27 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelGrids {
             neighboursToCheckInSmooth = new NativeArray<int3>(offsets.ToArray(), Allocator.Persistent);
         }
 
-        
+        /// <summary>
+        /// Precompute the neighbors to check when updating the internal neighboring voxel data
+        /// </summary>
+        internal static void PrecomputePaddingVoxels()
+        {
+            int _fullSide = VoxelWorld.RESOLUTION + 2;
+            
+            List<Vector3Int> offsets = new List<Vector3Int>();
+            for (int z = 0; z < _fullSide; z++) {
+                for (int y = 0; y < _fullSide; y++) {
+                    for (int x = 0; x < _fullSide; x++) {
+                        if (NeighbourVoxelOffsetFromGrid(x, y, z) == Vector3Int.zero) {
+                            continue;
+                        }
+                        offsets.Add(new Vector3Int(x, y, z));
+                    }
+                }
+            }
+            paddingVoxels = offsets.ToArray();
+        }
+
         /// <summary>
         /// Get the number of voxels within the grid.
         /// </summary>

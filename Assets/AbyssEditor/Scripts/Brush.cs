@@ -94,7 +94,7 @@ namespace AbyssEditor {
                             if (stroke.strokeLength == 0) stroke.FirstStroke(hit.point, hit.normal, brushSize, brushStrength, activeMode);
                             else stroke.ContinueStroke(hit.point, activeMode);
 
-                            VoxelMetaspace.metaspace.ApplyDensityAction(stroke);
+                            VoxelMetaspace.metaspace.ApplyJobBasedDensityAction(stroke);
                         }
                     }
                 } else {

@@ -6,6 +6,7 @@ using AbyssEditor.Scripts.TerrainMaterials;
 using AbyssEditor.Scripts.VoxelTech.VoxelGrids;
 using AbyssEditor.Scripts.VoxelTech.VoxelGrids.Brushes;
 using AbyssEditor.TerrainMaterials;
+using Unity.Jobs;
 using UnityEngine;
 using Vector3 = UnityEngine.Vector3;
 
@@ -100,13 +101,13 @@ namespace AbyssEditor.VoxelTech
         {
             foreach (PointContainer container in pointContainers)
             {
-                container.UpdateFullGrid();
+                container.UpdateNeighborData();
             }
         }
 
         public void Write() => BatchReadWriter.readWriter.WriteOptoctrees(batchIndex, nodes);
 
-        public void ApplyJobBasedDensityFunction(Brush.BrushStroke stroke, List<BrushJob> brushActions)
+        public void ApplyJobBasedDensityFunction(Brush.BrushStroke stroke, List<BrushJob> brushActions, List<PointContainer> modifiedContainers)
         {
             foreach (PointContainer container in pointContainers)
             {
@@ -114,43 +115,9 @@ namespace AbyssEditor.VoxelTech
                 if (OctreeRaycasting.DistanceToBox(stroke.brushLocation, bounds.min, bounds.max) <= stroke.brushRadius)
                 {
                     brushActions.Add(container.ApplyJobBasedDensityAction(stroke));
+                    modifiedContainers.Add(container);
                 }
             }
-        }
-        
-        public void ApplyDensityAction(Brush.BrushStroke stroke)
-        {
-            foreach (PointContainer container in pointContainers)
-            {
-                Bounds bounds = container.bounds;
-                if (OctreeRaycasting.DistanceToBox(stroke.brushLocation, bounds.min, bounds.max) <= stroke.brushRadius)
-                {
-                    container.ApplyDensityAction(stroke);
-                }
-            }
-        }
-
-        public void UpdateMeshesAfterBrush(Brush.BrushStroke stroke)
-        {
-
-            
-            foreach (PointContainer container in pointContainers)
-            {
-                Bounds bounds = container.bounds;
-                if (OctreeRaycasting.DistanceToBox(stroke.brushLocation, bounds.min, bounds.max) <= stroke.brushRadius)
-                {
-                    System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch();
-                    sw.Start();
-                    container.UpdateFullGrid();
-                    sw.Stop();
-                    double elapsedMs = (double)sw.ElapsedTicks / System.Diagnostics.Stopwatch.Frequency * 1000.0;
-                    DebugOverlay.LogMessage($"Assigning neighbor data took {(elapsedMs):F4}ms");
-                    
-                    
-                    container.UpdateMesh();
-                }
-            }
-
         }
 
         public void UpdateOctreeDensity()

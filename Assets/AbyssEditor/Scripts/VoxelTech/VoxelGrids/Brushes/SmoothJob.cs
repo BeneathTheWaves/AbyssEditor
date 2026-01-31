@@ -49,8 +49,8 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelGrids.Brushes
         [BurstCompile]
         private struct DensitySmoothJob : IJobFor
         {
-            [ReadOnly] public NativeArray<byte> densityGrid;
-            [ReadOnly] public NativeArray<byte> typeGrid;
+            [NativeDisableContainerSafetyRestriction] public NativeArray<byte> densityGrid;
+            [NativeDisableContainerSafetyRestriction] public NativeArray<byte> typeGrid;
             
             [ReadOnly] public float3 gridOrigin;
             [ReadOnly] public float3 brushLocation;

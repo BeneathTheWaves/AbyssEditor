@@ -1,13 +1,15 @@
-﻿using AbyssEditor.Octrees;
+﻿using System.Threading;
+using AbyssEditor.Octrees;
 using AbyssEditor.Scripts.TerrainMaterials;
 using AbyssEditor.Scripts.VoxelTech.VoxelGrids;
 using AbyssEditor.Scripts.VoxelTech.VoxelGrids.Brushes;
 using Unity.Collections;
+using Unity.Jobs;
 using UnityEngine;
 
 namespace AbyssEditor.VoxelTech
 {
-    internal class PointContainer
+    public class PointContainer
     {
         Vector3Int batchIndex;
         Vector3Int octreeIndex;
@@ -19,7 +21,10 @@ namespace AbyssEditor.VoxelTech
         public Bounds bounds;
         public GameObject meshObj;
 
-        public Mesh mesh => meshObj.GetComponent<MeshFilter>().mesh;
+        private Mesh mesh;
+        private MeshFilter meshFilter;
+        private MeshRenderer meshRenderer;
+        private MeshCollider meshCollider;
 
         public PointContainer(Transform _voxelandTf, Vector3Int _octreeIndex, Vector3Int _batchIndex)
         {
@@ -38,8 +43,9 @@ namespace AbyssEditor.VoxelTech
         void CreateMeshObject(Transform _voxelandTf)
         {
             meshObj = new GameObject($"OctreeMesh-");
-            meshObj.AddComponent<MeshFilter>();
-            meshObj.AddComponent<MeshRenderer>();
+            meshFilter = meshObj.AddComponent<MeshFilter>();
+            meshRenderer = meshObj.AddComponent<MeshRenderer>();
+            meshCollider = meshObj.AddComponent<MeshCollider>();
             meshObj.transform.SetParent(_voxelandTf);
             meshObj.transform.localPosition = Vector3.zero;
         }
@@ -69,55 +75,35 @@ namespace AbyssEditor.VoxelTech
                 return grid.ApplyJobBasedDensityFunction(stroke, octreeIndex * VoxelWorld.OCTREE_WIDTH + meshObj.transform.position);
             return null;
         }
-
-        public void ApplyDensityAction(Brush.BrushStroke stroke)
-        {
-            if (grid != null)
-                grid.ApplyDensityFunction(stroke, octreeIndex * VoxelWorld.OCTREE_WIDTH + meshObj.transform.position);
-        }
-
+        
         public void UpdateMesh()
         {
-            NativeArray<byte> _tempDensities;
-            NativeArray<byte> _tempTypes;
-            if (grid == null) return;
-            grid.GetFullGrids(out _tempDensities, out _tempTypes);
+            grid.GetFullGrids(out NativeArray<byte> _tempDensities, out NativeArray<byte> _tempTypes);
 
             int[] blocktypes;
             Vector3 offset = octreeIndex * VoxelWorld.RESOLUTION;
-            Mesh containerMesh =
-                MeshBuilder.builder.GenerateMesh(_tempDensities, _tempTypes, grid.fullGridDim, offset, out blocktypes);
+            mesh = MeshBuilder.builder.GenerateMesh(_tempDensities, _tempTypes, grid.fullGridDim, offset, out blocktypes);
 
             // update data
-            if (containerMesh.triangles.Length > 0)
+            if (mesh.triangles.Length > 0)
             {
-                meshObj.GetComponent<MeshFilter>().sharedMesh = containerMesh;
+                meshFilter.sharedMesh = mesh;
 
-                MeshCollider coll = meshObj.GetComponent<MeshCollider>();
-                if (!coll)
-                {
-                    meshObj.AddComponent<MeshCollider>();
-                }
-                else
-                {
-                    coll.sharedMesh = containerMesh;
-                }
-
-                MeshRenderer renderer = meshObj.GetComponent<MeshRenderer>();
+                meshCollider.sharedMesh = mesh;
+                
                 Material[] materials = new Material[blocktypes.Length];
                 for (int b = 0; b < blocktypes.Length; b++)
                 {
                     materials[b] = SnMaterialLoader.GetMaterialForType(blocktypes[b]);
                 }
 
-                renderer.materials = materials;
+                meshRenderer.materials = materials;
             }
         }
 
-        public void UpdateFullGrid()
+        public void UpdateNeighborData()
         {
-            if (grid != null)
-                grid.UpdateFullGrid();
+            grid.NeighborDataUpdate();
         }
 
         public byte SampleBlocktype(Vector3 worldPoint)

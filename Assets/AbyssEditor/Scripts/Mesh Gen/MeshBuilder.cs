@@ -129,7 +129,7 @@ namespace AbyssEditor {
             Vector3 vertexOffsetSum = Vector3.one * -0.5f + offset;
             float scaleFactor = Mathf.Pow(2, VoxelWorld.LEVEL_OF_DETAIL);
             foreach (int blocktype in blocktypes) {
-
+                
                 foreach (Face meshFace in submeshFaces[blocktype]) {
                     for (int v = 0; v < 4; v++) {
                         Vector3 dcCube = meshFace[v];
@@ -155,6 +155,7 @@ namespace AbyssEditor {
             int nextStart = 0;
             
             Mesh mesh = new Mesh();
+            mesh.MarkDynamic();
             mesh.subMeshCount = submeshCount;
             mesh.vertices = vertices.ToArray();
             

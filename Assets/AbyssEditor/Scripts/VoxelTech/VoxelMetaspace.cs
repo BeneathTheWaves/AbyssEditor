@@ -1,11 +1,13 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using AbyssEditor.Scripts;
 using AbyssEditor.Scripts.TerrainMaterials;
 using AbyssEditor.Scripts.VoxelTech.VoxelGrids;
 using AbyssEditor.Scripts.VoxelTech.VoxelGrids.Brushes;
 using AbyssEditor.TerrainMaterials;
+using Unity.Jobs;
 using UnityEngine;
 
 namespace AbyssEditor.VoxelTech {
@@ -18,6 +20,7 @@ namespace AbyssEditor.VoxelTech {
         void Awake() {
             metaspace = this;
             VoxelGrid.PrecomputeNeighborOffsets();
+            VoxelGrid.PrecomputePaddingVoxels();
         }
 
         public void AddRegion(Vector3Int startBatch, Vector3Int endBatch) {
@@ -53,12 +56,11 @@ namespace AbyssEditor.VoxelTech {
             System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch();
             sw.Start();
             
-            List<VoxelMesh> modifiedMeshes = new List<VoxelMesh>();
-            List<BrushJob> brushJobs = new List<BrushJob>();
+            List<PointContainer> modifiedContainers = new List<PointContainer>(8);
+            List<BrushJob> brushJobs = new List<BrushJob>(8);
             foreach(VoxelMesh mesh in meshes) {
                 if (OctreeRaycasting.DistanceToBox(stroke.brushLocation, mesh.GetBatchMinBound(), mesh.GetBatchMaxBound()) <= stroke.brushRadius) {
-                    mesh.ApplyJobBasedDensityFunction(stroke, brushJobs);
-                    modifiedMeshes.Add(mesh);
+                    mesh.ApplyJobBasedDensityFunction(stroke, brushJobs, modifiedContainers);
                 }
             }
 
@@ -68,7 +70,7 @@ namespace AbyssEditor.VoxelTech {
                 brushJob.jobHandle.Complete();
             }
             
-            //Then update grid
+            //cleanup job arrays (if any)
             foreach (BrushJob brushJob in brushJobs)
             {
                 brushJob.OnJobCompleteCleanup();
@@ -76,39 +78,21 @@ namespace AbyssEditor.VoxelTech {
             
             sw.Stop();
             double elapsedMs = (double)sw.ElapsedTicks / System.Diagnostics.Stopwatch.Frequency * 1000.0;
-            DebugOverlay.LogMessage($"Completed Brush Job in {(elapsedMs):F4}ms with {brushJobs.Count} Scheduled");
+            DebugOverlay.LogMessage($"Completed Brush Job in {elapsedMs:F4}ms with {brushJobs.Count} Scheduled");
             
-            foreach(VoxelMesh mesh in modifiedMeshes) {
-                mesh.UpdateMeshesAfterBrush(stroke);
-            }
-        }
-        
-        public void ApplyDensityAction(Brush.BrushStroke stroke) {
-
-            if (Brush.activeMode == BrushMode.Smooth || Brush.activeMode == BrushMode.Add || Brush.activeMode == BrushMode.Remove || Brush.activeMode == BrushMode.Paint)
+            
+            sw.Restart();
+            foreach (PointContainer pointContainer in modifiedContainers)
             {
-                ApplyJobBasedDensityAction(stroke);
-                return;
+                pointContainer.UpdateNeighborData();
             }
             
-            System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch();
-            sw.Start();
-            
-            List<VoxelMesh> modifiedMeshes = new List<VoxelMesh>();
-            foreach(VoxelMesh mesh in meshes) {
-                if (OctreeRaycasting.DistanceToBox(stroke.brushLocation, mesh.GetBatchMinBound(), mesh.GetBatchMaxBound()) <= stroke.brushRadius) {
-                    mesh.ApplyDensityAction(stroke);
-                    modifiedMeshes.Add(mesh);
-                }
+            foreach(PointContainer pointContainer in modifiedContainers) {
+                pointContainer.UpdateMesh();
             }
-            
             sw.Stop();
-            double elapsedMs = (double)sw.ElapsedTicks / System.Diagnostics.Stopwatch.Frequency * 1000.0;
-            DebugOverlay.LogMessage($"Completed Brush Job in {(elapsedMs):F4}ms");
-            
-            foreach(VoxelMesh mesh in modifiedMeshes) {
-                mesh.UpdateMeshesAfterBrush(stroke);
-            }
+            double elapsedMs3 = (double)sw.ElapsedTicks / System.Diagnostics.Stopwatch.Frequency * 1000.0;
+            DebugOverlay.LogMessage($"Neighbor Copy/Mesh Rebuild took {elapsedMs3:F4}ms");
         }
 
         public IEnumerator RegionReadCoroutine(bool allowModded, Vector3Int startBatch, Vector3Int endBatch) {
