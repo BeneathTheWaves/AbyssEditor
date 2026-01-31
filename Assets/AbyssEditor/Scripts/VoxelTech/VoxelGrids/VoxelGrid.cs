@@ -36,8 +36,8 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelGrids {
             for (int z = 0; z < VoxelWorld.RESOLUTION; z++) {
                 for (int y = 0; y < VoxelWorld.RESOLUTION; y++) {
                     for (int x = 0; x < VoxelWorld.RESOLUTION; x++) {
-                        SetVoxel(densityGrid, x + GRID_PADDING, y + GRID_PADDING, z + GRID_PADDING, GetCoreVoxel(_coreDensity, x, y, z));
-                        SetVoxel(typeGrid, x + GRID_PADDING, y + GRID_PADDING, z + GRID_PADDING, GetCoreVoxel(_coreTypes, x, y, z));
+                        SetVoxel(densityGrid, x + GRID_PADDING, y + GRID_PADDING, z + GRID_PADDING, GetVoxel(_coreDensity, x, y, z, 0));
+                        SetVoxel(typeGrid, x + GRID_PADDING, y + GRID_PADDING, z + GRID_PADDING, GetVoxel(_coreTypes, x, y, z, 0));
                     }
                 }
             }
@@ -54,11 +54,6 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelGrids {
         public static byte GetVoxel(NativeArray<byte> array, int x, int y, int z, int padding) {
             return array[Globals.LinearIndex(x, y, z, VoxelWorld.RESOLUTION + padding*2)];
         }
-        
-        public static byte GetVoxel(NativeArray<byte> array, int x, int y, int z) {
-            return array[Globals.LinearIndex(x, y, z, VoxelWorld.RESOLUTION + GRID_PADDING*2)];
-        }
-        
         public static byte GetVoxel(NativeArray<byte> array, Vector3Int voxel) {
             return array[Globals.LinearIndex(voxel.x, voxel.y, voxel.z, VoxelWorld.RESOLUTION + GRID_PADDING * 2)];
         }
@@ -69,10 +64,6 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelGrids {
         
         public static void SetVoxel(NativeArray<byte> array, Vector3Int voxel, byte val) {
             array[Globals.LinearIndex(voxel.x, voxel.y, voxel.z, VoxelWorld.RESOLUTION + GRID_PADDING*2)] = val;
-        }
-        
-        public static byte GetCoreVoxel(NativeArray<byte> array, int x, int y, int z) {
-            return array[Globals.LinearIndex(x, y, z, VoxelWorld.RESOLUTION)];
         }
 
         public void NeighborDataUpdate() {

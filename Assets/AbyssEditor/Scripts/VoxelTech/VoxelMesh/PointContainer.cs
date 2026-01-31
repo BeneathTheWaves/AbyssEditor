@@ -113,7 +113,7 @@ namespace AbyssEditor.VoxelTech
             int y = (int)localPoint.y;
             int z = (int)localPoint.z;
 
-            return VoxelGrid.GetVoxel(grid.typeGrid, x + 1, y + 1, z + 1);
+            return VoxelGrid.GetVoxel(grid.typeGrid, x + 1, y + 1, z + 1, VoxelGrid.GRID_PADDING);
         }
     }
 }
