@@ -87,31 +87,25 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelGrids {
         private void UpdateNeighborVoxel(Vector3Int voxel)
         {
             VoxelGrid neighborGrid;
-            Vector3Int neigOffset = NeighbourVoxelOffsetFromGrid(voxel.x, voxel.y, voxel.z);
-            //int neighborIndex = (neigOffset.x + 1) + (neigOffset.y + 1) * 3 + (neigOffset.z + 1) * 9;
+            Vector3Int neighbourGridOffset = NeighbourGridOffsetFromPaddedVoxel(voxel);
 
-            Vector3Int neigOctreeIndex = octreeIndex + neigOffset;
-
-            if (!VoxelMetaspace.metaspace.OctreeExists(neigOctreeIndex, batchIndex))
+            Vector3Int neighborContainerIndex = octreeIndex + neighbourGridOffset;
+            Vector3Int neighborBatchIndex = batchIndex;
+            
+            if (neighborContainerIndex.x < 0 || neighborContainerIndex.y < 0 || neighborContainerIndex.z < 0 ||
+                neighborContainerIndex.x >= VoxelWorld.CONTAINERS_PER_SIDE || neighborContainerIndex.y >= VoxelWorld.CONTAINERS_PER_SIDE || neighborContainerIndex.z >= VoxelWorld.CONTAINERS_PER_SIDE) 
             {
-                Vector3Int neigBatchIndex = batchIndex + neigOffset;
-                if (!VoxelMetaspace.metaspace.BatchLoaded(neigBatchIndex))
+                //outside the current batch
+                neighborBatchIndex = NeighbourBatchFromPaddedVoxel(voxel.x, voxel.y, voxel.z);
+                if (!VoxelMetaspace.metaspace.BatchLoaded(neighborBatchIndex))
                 {
                     return;
                 }
-                else
-                {
-                    // Get grid from neighbouring VoxelMesh
-                    neighborGrid = VoxelMetaspace.metaspace.TryGetVoxelGrid(neigBatchIndex, IndexMod(neigOctreeIndex, 5));
-                    //neighbourMap[neighborIndex] = true;
-                }
+                
+                neighborContainerIndex = IndexMod(neighborContainerIndex, 5);
             }
-            else
-            {
-                // Get grid from neighbouring container
-                neighborGrid = VoxelMetaspace.metaspace.TryGetVoxelGrid(batchIndex, neigOctreeIndex);
-                //neighbourMap[neighborIndex] = true;
-            }
+            
+            neighborGrid = VoxelMetaspace.metaspace.TryGetVoxelGrid(neighborBatchIndex, neighborContainerIndex);
 
             Vector3Int sample = new Vector3Int(voxel.x, voxel.y, voxel.z);
             if (voxel.x == 0) sample.x = VoxelWorld.RESOLUTION;
@@ -128,29 +122,38 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelGrids {
         }
         
 
-        internal static Vector3Int NeighbourVoxelOffsetFromGrid(int x, int y, int z) {
+        internal static Vector3Int NeighbourGridOffsetFromPaddedVoxel(Vector3Int voxel) {
             Vector3Int offset = Vector3Int.zero;
-            if (x <= 0) offset.x = -1;                                                                                                
-            else if (x >= VoxelWorld.RESOLUTION + GRID_PADDING) offset.x = 1;
+            if (voxel.x <= 0) offset.x = -1;                                                                                                
+            else if (voxel.x >= VoxelWorld.RESOLUTION + GRID_PADDING) offset.x = 1;
 
-            if (y <= 0) offset.y = -1;                                                                                                              
-            else if (y >= VoxelWorld.RESOLUTION + GRID_PADDING) offset.y = 1;
+            if (voxel.y <= 0) offset.y = -1;                                                                                                              
+            else if (voxel.y >= VoxelWorld.RESOLUTION + GRID_PADDING) offset.y = 1;
 
-            if (z <= 0) offset.z = -1;
-            else if (z >= VoxelWorld.RESOLUTION + GRID_PADDING) offset.z = 1;
+            if (voxel.z <= 0) offset.z = -1;
+            else if (voxel.z >= VoxelWorld.RESOLUTION + GRID_PADDING) offset.z = 1;
 
             return offset;
+        }
+        
+        /// <summary>
+        /// Gets a batch from a voxel.
+        /// Uses absolute positioning for calculations
+        /// </summary>
+        internal Vector3Int NeighbourBatchFromPaddedVoxel(int x, int y, int z)
+        {
+            Vector3Int batchPos = batchIndex * VoxelWorld.BATCH_WIDTH;
+            Vector3Int octreePos = batchPos + (octreeIndex * VoxelWorld.OCTREE_WIDTH);
+            int voxelWidth = 32 / VoxelWorld.RESOLUTION;
+            Vector3Int voxelPos = octreePos + new Vector3Int((x - 1) * voxelWidth, (y - 1) * voxelWidth, (z - 1) * voxelWidth);
+            
+            return new Vector3Int(voxelPos.x / VoxelWorld.BATCH_WIDTH, voxelPos.y / VoxelWorld.BATCH_WIDTH, voxelPos.z / VoxelWorld.BATCH_WIDTH);
         }
         
         internal static Vector3Int IndexMod(Vector3Int octreeIndex, int mod) => new Vector3Int((octreeIndex.x + mod) % mod, (octreeIndex.y + mod) % mod, (octreeIndex.z + mod) % mod);
         public void GetFullGrids(out NativeArray<byte> _fullDensityGrid, out NativeArray<byte> _fullTypeGrid) {
             _fullDensityGrid =   densityGrid;
             _fullTypeGrid =      typeGrid;
-        }
-        public void GetVoxel(int x, int y, int z, out byte density, out byte type)
-        {
-            density = GetVoxel(densityGrid, x, y, z);
-            type = GetVoxel(typeGrid, x, y, z);
         }
 
         public BrushJob ApplyJobBasedDensityFunction(Brush.BrushStroke stroke, Vector3 gridOrigin)
@@ -177,41 +180,8 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelGrids {
 
             return brushJob;
         }
-
-        public void ApplyDensityFunction(Brush.BrushStroke stroke, Vector3 gridOrigin) {
-
-            const int offset = 1;
-            int fullSide = VoxelWorld.RESOLUTION + 2 - offset;
-            
-            for (int z = offset; z < fullSide; z++) {
-                for (int y = offset; y < fullSide; y++) {
-                    for (int x = offset; x < fullSide; x++) {
-                        //Vector3Int neigOffset = NeighbourOffsetFromVoxel(x, y, z);
-                        ApplyGridAction(x, y, z, gridOrigin, stroke);
-                        /*if (neighbourMap[(neigOffset.x + 1) + (neigOffset.y + 1) * 3 + (neigOffset.z + 1) * 9]) { 
-                            ApplyGridAction(x, y, z, gridOrigin, stroke);
-                        }*/
-                    }
-                }
-            }
-        }
-
-        public void ApplyGridAction(int x, int y, int z, Vector3 gridOrigin, Brush.BrushStroke brushStroke) {
-            switch (brushStroke.brushMode) {
-                case BrushMode.Flatten:
-                    DensityAction_Flatten(x, y, z, gridOrigin, brushStroke);
-                    break;
-                default:
-                    break;
-            }
-        }
         
-        //TODO: MIGRATE THIS TO BRUSH UTILS
-        public static float SampleDensity_Sphere_Squared(Vector3 sample, Vector3 origin, float radius)
-        {
-            return radius * radius - (sample - origin).sqrMagnitude;
-        }
-        
+        /*
         public static float SampleDensity_Plane(Vector3 sample, Vector3 origin, Vector3 normal) {
             float d = -(origin.x * normal.x + origin.y * normal.y + origin.z * normal.z);
             return -(sample.x * normal.x + sample.y * normal.y + sample.z * normal.z + d);
@@ -243,6 +213,7 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelGrids {
                 }
             }
         }
+        */
         
         /// <summary>
         /// This should be called when closing the player to free the memory
@@ -286,7 +257,7 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelGrids {
             for (int z = 0; z < _fullSide; z++) {
                 for (int y = 0; y < _fullSide; y++) {
                     for (int x = 0; x < _fullSide; x++) {
-                        if (NeighbourVoxelOffsetFromGrid(x, y, z) == Vector3Int.zero) {
+                        if (NeighbourGridOffsetFromPaddedVoxel(new Vector3Int(x, y, z)) == Vector3Int.zero) {
                             continue;
                         }
                         offsets.Add(new Vector3Int(x, y, z));

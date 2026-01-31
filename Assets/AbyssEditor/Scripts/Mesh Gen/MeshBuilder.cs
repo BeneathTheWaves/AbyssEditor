@@ -114,6 +114,7 @@ namespace AbyssEditor {
             VoxelVertex[] verticesOfNodes = new VoxelVertex[resolution.x * resolution.y * resolution.z];
             List<Vector3> vertices = new List<Vector3>();
 
+            //Get the types within the mesh
             Dictionary<int, List<Face>> submeshFaces = new Dictionary<int, List<Face>>();
             foreach (Face face in faces) {
                 List<Face> value;
@@ -153,9 +154,8 @@ namespace AbyssEditor {
 
             int submeshCount = blocktypes.Length;
             int nextStart = 0;
-            
+
             Mesh mesh = new Mesh();
-            mesh.MarkDynamic();
             mesh.subMeshCount = submeshCount;
             mesh.vertices = vertices.ToArray();
             

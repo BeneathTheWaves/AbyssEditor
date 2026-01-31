@@ -52,7 +52,7 @@ namespace AbyssEditor.VoxelTech
 
         public void SetOctree(Octree octree)
         {
-            meshObj.name = $"OctreeMesh-{octree.Index}";
+            meshObj.name = $"OctreeMesh-{octree.index}";
             RasterizeOctree(octree);
         }
 

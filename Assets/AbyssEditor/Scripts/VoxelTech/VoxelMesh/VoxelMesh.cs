@@ -91,12 +91,6 @@ namespace AbyssEditor.VoxelTech
                 Globals.LinearIndex(containerIndex.x, containerIndex.y, containerIndex.z, octreeCounts)].grid;
         }
 
-        public GameObject GetContainerObject(Vector3Int containerIndex)
-        {
-            return pointContainers[
-                Globals.LinearIndex(containerIndex.x, containerIndex.y, containerIndex.z, octreeCounts)].meshObj;
-        }
-
         public void UpdateFullGrids()
         {
             foreach (PointContainer container in pointContainers)

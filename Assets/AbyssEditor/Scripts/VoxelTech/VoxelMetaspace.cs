@@ -120,15 +120,6 @@ namespace AbyssEditor.VoxelTech {
             }
         }
         
-        public bool OctreeExists(Vector3Int treeIndex, Vector3Int batchIndex)
-        {
-            VoxelMesh mesh = TryGetVoxelMesh(batchIndex);
-            if (!mesh) return false;
-            
-            Vector3Int dimensions = mesh.octreeCounts;
-            return (treeIndex.x >= 0 && treeIndex.x < dimensions.x && treeIndex.y >= 0 && treeIndex.y < dimensions.y && treeIndex.z >= 0 && treeIndex.z < dimensions.z);
-        }
-        
         public bool BatchLoaded(Vector3Int batchIndex) {
             if(meshes.FirstOrDefault(mesh => mesh.batchIndex == batchIndex))
             {
