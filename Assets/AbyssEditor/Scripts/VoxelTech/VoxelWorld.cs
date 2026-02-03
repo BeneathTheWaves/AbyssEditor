@@ -40,9 +40,15 @@ namespace AbyssEditor {
             StartCoroutine(RegionLoadCoroutine(allowModded, startBatch, endBatch));
         }
 
-        public static void ApplyOctreePatch()
+        public void LoadOctreePatch(string filePath)
         {
-            
+            StartCoroutine(OctreePatchCoroutine(filePath));
+        }
+        
+        IEnumerator OctreePatchCoroutine(string filePath)
+        {
+
+            yield return StartCoroutine(VoxelMetaspace.metaspace.OctreePatchReadCoroutine(filePath));
         }
         
         IEnumerator RegionLoadCoroutine(bool allowModded, Vector3Int startBatch, Vector3Int endBatch)

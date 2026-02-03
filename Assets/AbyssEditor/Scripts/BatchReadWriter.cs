@@ -15,6 +15,8 @@ namespace AbyssEditor.Scripts {
         public static BatchReadWriter readWriter;
 
         public delegate bool ReadFinishedCall(Octree[,,] nodes);
+        
+        public delegate bool PatchReadFinishedCall( Dictionary<Vector3Int, Octree[,,]> patchedBatches );
 
         void Awake()
         {
@@ -49,7 +51,6 @@ namespace AbyssEditor.Scripts {
                 }
 
                 curr_pos = 0;
-                //var sb = new StringBuilder();
                 while (curr_pos < data.Length && countOctrees < expectedOctrees)
                 {
 
@@ -72,7 +73,6 @@ namespace AbyssEditor.Scripts {
                     }
 
                     Octree octree = new Octree(x, y, z, VoxelWorld.OCTREE_WIDTH, batchOrigin);
-                    //sb.AppendLine($"(x: {x}, y: {y}, z: {z}, root size: {VoxelWorld.OCTREE_WIDTH}, origin: {batchOrigin})");
                     octree.Write(nodesOfThisOctree);
                     octrees[z, y, x] = octree;
 
@@ -157,15 +157,118 @@ namespace AbyssEditor.Scripts {
         /*
         public IEnumerator ReadOctreePatchCoroutine(string filePath)
         {
-            
             if (!File.Exists(filePath))
             {
-                
+                EditorUI.DisplayErrorMessage("nonexistent .optoctreepatch file!");
+                yield break;
             }
             BinaryReader reader = new BinaryReader(File.Open(filePath, FileMode.Open));
             uint version = reader.ReadUInt32();
+
+            //each batch
+            while (reader.BaseStream.Position < reader.BaseStream.Length)
+            {
+                //First read the batch its from
+                short batchIndexX = reader.ReadInt16();
+                short batchIndexY = reader.ReadInt16();
+                short batchIndexZ = reader.ReadInt16();
+                Debug.Log("Batch To Modify: " + new Vector3Int(batchIndexX, batchIndexY, batchIndexZ));
+                
+                //Next get how many octrees to replace
+                byte modifiedOctreeCount = reader.ReadByte();
+                Debug.Log("Modified Octrees: " + new Vector3Int(batchIndexX, batchIndexY, batchIndexZ));
+                
+                for (int i = 0; i < modifiedOctreeCount; i++)
+                {
+                    //Get Octree index that was modified
+                    OctNodeData[] nodesOfThisOctree = new OctNodeData[nodeCount];
+                    Vector3 batchOrigin = (batchIndex) * (VoxelWorld.BATCH_WIDTH);
+                }
+                
+                
+            }
+            
+
+            
+
+        }*/
+        public IEnumerator ReadOctreePatchCoroutine(PatchReadFinishedCall readFinishedCall, string filePath)
+        {
+            using var reader = new BinaryReader(File.OpenRead(filePath));
+
+            uint version = reader.ReadUInt32();
+            if (version == uint.MaxValue)
+            {
+                Debug.LogError("Invalid patch file");
+                yield break;
+            }
+
+            Dictionary<Vector3Int, Octree[,,]> modifiedBatches = new Dictionary<Vector3Int, Octree[,,]>();
+
+            int res = VoxelWorld.RESOLUTION;
+            NativeArray<byte> tempTypes = new NativeArray<byte>(res * res * res, Allocator.Persistent);
+            NativeArray<byte> tempDensities = new NativeArray<byte>(res * res * res, Allocator.Persistent);
+            
+            while (reader.BaseStream.Position < reader.BaseStream.Length)
+            {
+                short bx = reader.ReadInt16();
+                short by = reader.ReadInt16();
+                short bz = reader.ReadInt16();
+                Vector3Int batchIndex = new Vector3Int(bx, by, bz);
+
+                byte octreeCount = reader.ReadByte();
+
+                // Load original batch
+                NodeContainer container = new NodeContainer();
+                yield return StartCoroutine(
+                    ReadBatchCoroutine(container.Callback, batchIndex, true, true)
+                );
+
+                Octree[,,] batchOctrees = container.nodes;
+                RasterDeRasterizeBatch(tempDensities, tempTypes, batchOctrees);
+
+                for (int i = 0; i < octreeCount; i++)
+                {
+                    byte octreeIndex = reader.ReadByte();
+                    ushort nodeCount = reader.ReadUInt16();
+
+                    OctNodeData[] nodes = new OctNodeData[nodeCount];
+
+                    for (int n = 0; n < nodeCount; n++)
+                    {
+                        byte type = reader.ReadByte();
+                        byte dist = reader.ReadByte();
+                        ushort child = reader.ReadUInt16();
+                        nodes[n] = new OctNodeData(type, dist, child);
+                    }
+
+                    // Convert octreeIndex → z,y,x
+                    int z = octreeIndex % 5;
+                    int y = (octreeIndex / 5) % 5;
+                    int x = octreeIndex / 25;
+                    
+                    Octree octree = new Octree(
+                        x, y, z,
+                        VoxelWorld.OCTREE_WIDTH,
+                        batchIndex * VoxelWorld.BATCH_WIDTH
+                    );
+
+                    octree.Write(nodes);
+                    batchOctrees[z, y, x] = octree;
+                }
+
+                modifiedBatches.Add(batchIndex, batchOctrees);
+                
+                // At this point the batch is patched
+                Debug.Log($"Patched batch {batchIndex}");
+            }
+            tempTypes.Dispose();
+            tempDensities.Dispose();
+            
+            reader.Close();
+            
+            readFinishedCall(modifiedBatches);
         }
-        */
 
         public IEnumerator WriteOctreePatchCoroutine(VoxelMetaspace metaspace)
         {
@@ -306,6 +409,17 @@ namespace AbyssEditor.Scripts {
         public bool Callback(Octree[,,] originalNodes) {
             if (originalNodes is null) return false;
             this.nodes = originalNodes;
+            return true;
+        }
+    }
+    
+    [System.Serializable]
+    public class PatchContainer {
+        public Dictionary<Vector3Int, Octree[,,]> modifiedBatches;
+
+        public bool Callback(Dictionary<Vector3Int, Octree[,,]> modifiedBatches) {
+            if (modifiedBatches is null) return false;
+            this.modifiedBatches = modifiedBatches;
             return true;
         }
     }

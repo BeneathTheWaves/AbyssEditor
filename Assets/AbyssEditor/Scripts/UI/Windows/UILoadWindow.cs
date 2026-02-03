@@ -48,9 +48,15 @@ namespace AbyssEditor.UI {
         {
             string[] paths = StandaloneFileBrowser.OpenFilePanel(Language.main.Get("PatchSelectFileBrowserTip"), Application.persistentDataPath, "", false);
 
-            if (paths.Length != 0) {
-                Debug.Log(paths[0]);
+            if (paths.Length == 0 || !paths[0].ToLower().EndsWith(".optoctreepatch"))
+            {
+                EditorUI.DisplayErrorMessage("Please select a valid file!");
+                return;
             }
+            
+            Debug.Log(paths[0]);
+            
+            VoxelWorld.world.LoadOctreePatch(paths[0]);
         }
         
         public void LoadBatch() {
@@ -71,15 +77,9 @@ namespace AbyssEditor.UI {
             // assume user wants to load a single batch if only 1 is correct
             if (!startEntered) startBatchIndex = endBatchIndex; 
             if (!endEntered) endBatchIndex = startBatchIndex;
-
-            EditorUI.inst.StartCoroutine(LoadCoroutine(startBatchIndex, endBatchIndex));
+            
+            VoxelWorld.world.LoadRegion(startBatchIndex, endBatchIndex, moddedBatchesCheckbox.isOn);
             base.DisableWindow();
-        }
-
-        IEnumerator LoadCoroutine(Vector3Int start, Vector3Int end) {
-            VoxelWorld.world.LoadRegion(start, end, moddedBatchesCheckbox.isOn);
-            yield return null;
-            EditorUI.DisableStatusBar();
         }
 
         private bool TryParseBatchString(string s, out Vector3Int index) {

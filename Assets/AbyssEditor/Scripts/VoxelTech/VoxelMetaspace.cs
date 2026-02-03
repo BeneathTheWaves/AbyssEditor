@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using AbyssEditor.Octrees;
 using AbyssEditor.Scripts;
 using AbyssEditor.Scripts.TerrainMaterials;
 using AbyssEditor.Scripts.VoxelTech.VoxelGrids;
@@ -107,6 +108,40 @@ namespace AbyssEditor.VoxelTech {
 
             yield return RegenerateMeshesCoroutine();
         }
+        
+        public IEnumerator OctreePatchReadCoroutine(string filepath) {
+            
+            PatchContainer patchContainer = new PatchContainer();
+            yield return BatchReadWriter.readWriter.ReadOctreePatchCoroutine(patchContainer.Callback, filepath);
+
+            Vector3Int startBatch = new Vector3Int(-100, -100, -100);
+            Vector3Int endBatch = Vector3Int.zero; 
+            foreach (Vector3Int modifiedBatch in patchContainer.modifiedBatches.Keys)
+            {
+                if (!patchContainer.modifiedBatches.TryGetValue(modifiedBatch, out Octree[,,] nodes))
+                {
+                    continue;
+                }
+                if (startBatch == new Vector3Int(-100, -100, -100))
+                {
+                    startBatch = modifiedBatch;
+                }
+                
+                //TODO: THIS IS SCUFFED ASF RN SMH TS PMO ONG ONG FRFR NO CAPA LAPA HI KOOKOO
+                AddRegion(modifiedBatch, modifiedBatch);
+                
+                VoxelMesh mesh = TryGetVoxelMesh(modifiedBatch);
+                
+                mesh.OctreesReadCallback(nodes);
+                endBatch = modifiedBatch;
+            }
+
+            yield return RegenerateMeshesCoroutine();
+            
+            ReloadBoundaries();
+            
+            CameraControls.main.OnRegionLoad(startBatch, endBatch);
+        }
 
         public IEnumerator RegenerateMeshesCoroutine() {
             foreach (VoxelMesh mesh in meshes) {
@@ -154,5 +189,7 @@ namespace AbyssEditor.VoxelTech {
         {
             return meshes.FirstOrDefault(mesh => mesh.batchIndex == batchIndex);
         }
+        
+        
     }
 }
