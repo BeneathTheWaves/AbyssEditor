@@ -46,7 +46,7 @@ namespace AbyssEditor.UI {
 
         public void OnSelectFileButton()
         {
-            string[] paths = StandaloneFileBrowser.OpenFilePanel(Language.main.Get("PatchSelectFileBrowserTip"), Application.persistentDataPath, ".optoctreepatch", false);
+            string[] paths = StandaloneFileBrowser.OpenFilePanel(Language.main.Get("PatchSelectFileBrowserTip"), Application.persistentDataPath, "", false);
 
             if (paths.Length != 0) {
                 Debug.Log(paths[0]);

@@ -14,7 +14,8 @@
         "Unity.TextMeshPro",
         "UnityEngine.UI",
         "HSVPicker.Editors",
-        "HSVPicker"
+        "HSVPicker",
+        "StandaloneFileBrowser"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
