@@ -296,8 +296,6 @@ namespace AbyssEditor.Scripts {
                 yield return StartCoroutine(ReadBatchCoroutine(container.Callback, batch.batchIndex, false, false));
                 Octree[,,] originalNodes = container.nodes;
 
-                RasterDeRasterizeBatch(tempDensities, tempTypes, originalNodes);
-
                 // get changed octrees data
                 List<Octree> batchChanges = GetChangedOctrees(nodes, originalNodes);
 
