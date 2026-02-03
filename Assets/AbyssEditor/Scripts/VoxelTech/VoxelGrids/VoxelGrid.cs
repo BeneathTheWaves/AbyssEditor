@@ -112,7 +112,6 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelGrids {
             SetVoxel(typeGrid, voxel, GetVoxel(neighborGrid.typeGrid, sample));
         }
         
-
         internal static Vector3Int NeighbourGridOffsetFromPaddedVoxel(Vector3Int voxel) {
             Vector3Int offset = Vector3Int.zero;
             if (voxel.x <= 0) offset.x = -1;                                                                                                
@@ -142,6 +141,7 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelGrids {
         }
         
         internal static Vector3Int IndexMod(Vector3Int octreeIndex, int mod) => new Vector3Int((octreeIndex.x + mod) % mod, (octreeIndex.y + mod) % mod, (octreeIndex.z + mod) % mod);
+        
         public void GetFullGrids(out NativeArray<byte> _fullDensityGrid, out NativeArray<byte> _fullTypeGrid) {
             _fullDensityGrid =   densityGrid;
             _fullTypeGrid =      typeGrid;

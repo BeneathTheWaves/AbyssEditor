@@ -20,7 +20,7 @@ namespace AbyssEditor.VoxelTech
         public Vector3Int batchIndex;
         public Vector3Int octreeCounts;
 
-        GameObject[] BoundaryPlanes;
+        GameObject[] boundaryPlanes;
         
         public void Create(Vector3Int _batchIndex)
         {
@@ -154,43 +154,43 @@ namespace AbyssEditor.VoxelTech
         
         public void RedrawBoundaryPlanes()
         {
-            if (BoundaryPlanes == null) {
-                BoundaryPlanes = new GameObject[6];
+            if (boundaryPlanes == null) {
+                boundaryPlanes = new GameObject[6];
                 for(int c = 0; c < 6; c++) {
-                    BoundaryPlanes[c] = GameObject.CreatePrimitive(PrimitiveType.Plane);
-                    BoundaryPlanes[c].transform.SetParent(transform);
-                    BoundaryPlanes[c].GetComponent<MeshRenderer>().material = Globals.instance.boundaryGizmoMat;
+                    boundaryPlanes[c] = GameObject.CreatePrimitive(PrimitiveType.Plane);
+                    boundaryPlanes[c].transform.SetParent(transform);
+                    boundaryPlanes[c].GetComponent<MeshRenderer>().material = Globals.instance.boundaryGizmoMat;
                 }
                 
                 // bottom
-                BoundaryPlanes[0].transform.eulerAngles = Vector3.zero;
+                boundaryPlanes[0].transform.eulerAngles = Vector3.zero;
                 // top
-                BoundaryPlanes[1].transform.eulerAngles = Vector3.right * 180;
+                boundaryPlanes[1].transform.eulerAngles = Vector3.right * 180;
                 // left
-                BoundaryPlanes[2].transform.eulerAngles = Vector3.forward * -90;
+                boundaryPlanes[2].transform.eulerAngles = Vector3.forward * -90;
                 // right
-                BoundaryPlanes[3].transform.eulerAngles = Vector3.forward * 90;
+                boundaryPlanes[3].transform.eulerAngles = Vector3.forward * 90;
                 // back
-                BoundaryPlanes[4].transform.eulerAngles = Vector3.right * 90;
+                boundaryPlanes[4].transform.eulerAngles = Vector3.right * 90;
                 // forward
-                BoundaryPlanes[5].transform.eulerAngles = Vector3.right * -90;
+                boundaryPlanes[5].transform.eulerAngles = Vector3.right * -90;
             }
             bool[] neighbors = GetActiveNeighboringMeshes();
             for (int i = 0; i < neighbors.Length; i++)
             {
-                BoundaryPlanes[i].SetActive(!neighbors[i]);
+                boundaryPlanes[i].SetActive(!neighbors[i]);
             }
             
             float halfPos = VoxelWorld.BATCH_WIDTH / 2f;
             
-            BoundaryPlanes[0].transform.localPosition = new Vector3(halfPos, 0, halfPos);
-            BoundaryPlanes[1].transform.localPosition = new Vector3(halfPos, VoxelWorld.BATCH_WIDTH, halfPos);
-            BoundaryPlanes[2].transform.localPosition = new Vector3(0, halfPos, halfPos);
-            BoundaryPlanes[3].transform.localPosition = new Vector3(VoxelWorld.BATCH_WIDTH, halfPos, halfPos);
-            BoundaryPlanes[4].transform.localPosition = new Vector3(halfPos, halfPos, 0);
-            BoundaryPlanes[5].transform.localPosition = new Vector3(halfPos, halfPos, VoxelWorld.BATCH_WIDTH);
+            boundaryPlanes[0].transform.localPosition = new Vector3(halfPos, 0, halfPos);
+            boundaryPlanes[1].transform.localPosition = new Vector3(halfPos, VoxelWorld.BATCH_WIDTH, halfPos);
+            boundaryPlanes[2].transform.localPosition = new Vector3(0, halfPos, halfPos);
+            boundaryPlanes[3].transform.localPosition = new Vector3(VoxelWorld.BATCH_WIDTH, halfPos, halfPos);
+            boundaryPlanes[4].transform.localPosition = new Vector3(halfPos, halfPos, 0);
+            boundaryPlanes[5].transform.localPosition = new Vector3(halfPos, halfPos, VoxelWorld.BATCH_WIDTH);
             
-            foreach (GameObject plane in BoundaryPlanes)
+            foreach (GameObject plane in boundaryPlanes)
             {
                 //planes have a width of 10 just from their mesh
                 plane.transform.localScale = new Vector3(VoxelWorld.BATCH_WIDTH * 0.1f, 1, VoxelWorld.BATCH_WIDTH * 0.1f);

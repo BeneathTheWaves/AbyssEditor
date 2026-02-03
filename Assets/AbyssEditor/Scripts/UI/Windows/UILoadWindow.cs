@@ -7,12 +7,20 @@ namespace AbyssEditor.UI {
     public class UILoadWindow : UIWindow
     {
         public UICheckbox moddedBatchesCheckbox;
+        public Carousel carouselLoadMethod;
 
         private void Start()
         {
             moddedBatchesCheckbox.SetState(false);
+            
+            carouselLoadMethod.onOptionSelected+=ChangeLoadMethod;
         }
 
+        private void ChangeLoadMethod(string method)
+        {
+            Debug.Log(method);
+        }
+        
         public void LoadBatch() {
 
             if (!Globals.CheckIsGamePathValid()) {

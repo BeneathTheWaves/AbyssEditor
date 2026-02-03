@@ -26,27 +26,27 @@ namespace AbyssEditor.VoxelTech
         private MeshRenderer meshRenderer;
         private MeshCollider meshCollider;
 
-        public PointContainer(Transform _voxelandTf, Vector3Int _octreeIndex, Vector3Int _batchIndex)
+        public PointContainer(Transform batchTransform, Vector3Int octreeIndex, Vector3Int batchIndex)
         {
-            octreeIndex = _octreeIndex;
-            batchIndex = _batchIndex;
+            this.octreeIndex = octreeIndex;
+            this.batchIndex = batchIndex;
             int fullGridSide = VoxelWorld.RESOLUTION + 2;
             // assume bounds has a center relative to game object origin
             
             bounds = new Bounds(
-                VoxelWorld.GetBatchOrigin(_batchIndex) + octreeIndex * VoxelWorld.RESOLUTION + Vector3.one * fullGridSide / 2,
+                VoxelWorld.GetBatchOrigin(batchIndex) + this.octreeIndex * VoxelWorld.RESOLUTION + Vector3.one * fullGridSide / 2,
                 Vector3.one * fullGridSide);
 
-            CreateMeshObject(_voxelandTf);
+            CreateMeshObject(batchTransform);
         }
 
-        void CreateMeshObject(Transform _voxelandTf)
+        void CreateMeshObject(Transform batchTransform)
         {
             meshObj = new GameObject($"OctreeMesh-");
             meshFilter = meshObj.AddComponent<MeshFilter>();
             meshRenderer = meshObj.AddComponent<MeshRenderer>();
             meshCollider = meshObj.AddComponent<MeshCollider>();
-            meshObj.transform.SetParent(_voxelandTf);
+            meshObj.transform.SetParent(batchTransform);
             meshObj.transform.localPosition = Vector3.zero;
         }
 
