@@ -11,7 +11,19 @@
   "HexPlaceholderText": "Hex Value",
   
   //Loading
-  "LoadBatchesWindow": "Load Batches",
+  "LoadBatchesWindow": "Import Batches",
+  "BaseGame": "Base Game",
+  "TerrainPatcher": "Terrain Patcher",
+    //Loading .optoctree
+    "batchRange": "Enter a range of batches",
+    "BatchRange_Hint": "Starting and ending coordinates are interchangeable. Leave one field empty to load a single batch",
+    "LoadModdedBatches": "Load Modded Batches",
+    "LoadBatchButton": "Load Batch(es)",
+    //Loading .optoctreePatch
+    "patcherTitle": "Select an .optoctreepatch",
+    "patcherTitle_Hint": "These patch files are used with terrain patcher. Loading them again can allow further edits",
+    "OpenFileBrowser": "Open File Browser",
+    "PatchSelectFileBrowserTip": "Select an .optoctreepatch file!",
   
   //Lighting
   "LightingTitle": "Lighting",
