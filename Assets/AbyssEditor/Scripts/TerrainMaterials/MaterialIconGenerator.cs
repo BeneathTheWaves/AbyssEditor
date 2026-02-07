@@ -1,10 +1,10 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using AbyssEditor.Scripts.Asset_Loading;
+using AbyssEditor.Scripts.TaskSystem;
 using AbyssEditor.Scripts.UI;
 using AbyssEditor.TerrainMaterials;
-using AbyssEditor.UI;
+using AbyssEditor.VoxelTech;
 using UnityEngine;
 using MonoBehaviour = UnityEngine.MonoBehaviour;
 
@@ -52,24 +52,31 @@ namespace AbyssEditor.Scripts.TerrainMaterials
         
         private IEnumerator GenerateMaterialIconsAsync(Action onCompleteCallback = null)
         {
+            bool updateMeshesOnLoad = VoxelMetaspace.metaspace.meshes.Count != 0;
+
+            int extraReloadMeshPhase = 0;
+            if(updateMeshesOnLoad)
+            {
+                extraReloadMeshPhase = 1;//add another phase for loading meshes :p
+            }
+            
+            EditorProcessHandle statusHandle = TaskManager.main.GetEditorProcessHandle(2 + extraReloadMeshPhase);// load mats and update icons
             if (!SnMaterialLoader.instance.contentLoaded)
             {
-                MaterialRequest matLoadCoroutine = SnMaterialLoader.instance.LoadMaterialsFromGameAsync();
-                while (!matLoadCoroutine.IsDone)
-                {
-                    EditorUI.UpdateStatusBar(matLoadCoroutine.Status, matLoadCoroutine.Progress);
-                    yield return null;
-                }
+                yield return SnMaterialLoader.instance.LoadMaterialsFromGameAsync(updateMeshesOnLoad, statusHandle);
             }
-
-            EditorUI.DisableStatusBar();
 
             BlocktypeMaterial[] blockTypes = SnMaterialLoader.instance.blocktypesData;
 
             int successCount = 0;
             
-            foreach (BlocktypeMaterial mat in blockTypes)
+            for (int i = 0; i < blockTypes.Length; i++)
             {
+                BlocktypeMaterial mat = blockTypes[i];
+                
+                statusHandle.SetStatus($"Generating Icon For {i}");
+                statusHandle.SetProgress((float) i / blockTypes.Length);
+                
                 if (mat != null && mat.ExistsInGame)
                 {
                     GameObject newIconGameObj = Instantiate(matIconPrefab, this.transform);
@@ -84,6 +91,8 @@ namespace AbyssEditor.Scripts.TerrainMaterials
             {
                 onCompleteCallback();
             }
+            
+            statusHandle.CompletePhase();
         }
     }
 }

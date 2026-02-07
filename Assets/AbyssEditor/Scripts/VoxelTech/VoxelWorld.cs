@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Numerics;
 using AbyssEditor.Scripts;
+using AbyssEditor.Scripts.TaskSystem;
 using AbyssEditor.VoxelTech;
 using UnityEngine;
 using Vector3 = UnityEngine.Vector3;
@@ -53,10 +54,8 @@ namespace AbyssEditor {
         
         IEnumerator RegionLoadCoroutine(bool allowModded, Vector3Int startBatch, Vector3Int endBatch)
         {
-            int batchCount = GetBatchCountInRegion(startBatch, endBatch);
-            
             VoxelMetaspace.metaspace.AddRegion(startBatch, endBatch);
-
+            
             yield return StartCoroutine(VoxelMetaspace.metaspace.RegionReadCoroutine(allowModded, startBatch, endBatch));
             
             VoxelMetaspace.metaspace.ReloadBoundaries();
@@ -70,10 +69,18 @@ namespace AbyssEditor {
         IEnumerator ExportRegionCoroutine(int mode) {
             switch (mode) {
                 case 0:
+                    //TODO: THIS SHOULD BE IN ITS OWN FUNCTION PROBABLY
+                    EditorProcessHandle statusHandle = TaskManager.main.GetEditorProcessHandle(1);
+                    int meshCount = VoxelMetaspace.metaspace.meshes.Count;
+                    int meshIndex = 0;
                     foreach (VoxelMesh batch in VoxelMetaspace.metaspace.meshes) {
+                        statusHandle.SetProgress((float)meshIndex/meshCount);
+                        statusHandle.SetStatus($"Writing {batch}");
                         batch.Write();
                         yield return null;
+                        meshIndex++;
                     }
+                    statusHandle.CompletePhase();
                     break;
                 case 1:
                     yield return StartCoroutine(BatchReadWriter.readWriter.WriteOctreePatchCoroutine(VoxelMetaspace.metaspace));
@@ -129,18 +136,5 @@ namespace AbyssEditor {
             const int batchSide = OCTREE_WIDTH * CONTAINERS_PER_SIDE;
             return new Vector3Int(Mathf.FloorToInt(p.x / batchSide), Mathf.FloorToInt(p.y / batchSide), Mathf.FloorToInt(p.z / batchSide));
         }
-
-        public static int GetBatchCountInRegion(Vector3Int startBatch, Vector3Int endBatch)
-        {
-            Vector3Int size = new Vector3Int(
-                Mathf.Abs(endBatch.x - startBatch.x) + 1,
-                Mathf.Abs(endBatch.y - startBatch.y) + 1,
-                Mathf.Abs(endBatch.z - startBatch.z) + 1
-            );
-            
-            return size.x * size.y * size.z;
-        }
-
-        public static Coroutine StartMetaspaceRegenerate(int tasksDone, int tasksTotal) => world.StartCoroutine(VoxelMetaspace.metaspace.RegenerateMeshesCoroutine());
     }
 }

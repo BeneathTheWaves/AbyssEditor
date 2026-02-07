@@ -2,9 +2,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-using AbyssEditor.Scripts.Asset_Loading;
-using AbyssEditor.Scripts.UI;
+using AbyssEditor.Scripts.TaskSystem;
 using AbyssEditor.TerrainMaterials;
+using AbyssEditor.VoxelTech;
 using UnityEngine;
 
 namespace AbyssEditor.Scripts.TerrainMaterials
@@ -15,27 +15,17 @@ namespace AbyssEditor.Scripts.TerrainMaterials
         Dictionary<string, List<int>> materialBlocktypes;
         public bool contentLoaded = false;
 
-        // TODO: remove later and rework into some loader task system
-        public bool updateMeshesOnLoad;
-
         void Awake() {
             instance = this;
         }
 
-        public MaterialRequest LoadMaterialsFromGameAsync()
+        //NOTE: the status handle needs to check if another processPhase is needed for reloading meshes before this is called
+        public IEnumerator LoadMaterialsFromGameAsync(bool updateMeshesOnLoad, EditorProcessHandle statusHandle)
         {
-            MaterialRequest matRequest = new MaterialRequest();
-            StartCoroutine(LoadMaterialContent(matRequest));
-            return matRequest;
-        }
-
-        private IEnumerator LoadMaterialContent(MaterialRequest matRequest)
-        {
-            matRequest.SetStatus("Loading material names");
-            matRequest.SetProgress(0);
+            statusHandle.SetStatus("Loading material names");
+            statusHandle.SetProgress(0);
             
             int totalTasks = 12;
-            if (updateMeshesOnLoad) totalTasks += 3;
 
             System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch();
             sw.Start();
@@ -43,8 +33,8 @@ namespace AbyssEditor.Scripts.TerrainMaterials
             sw.Stop();
             DebugOverlay.LogMessage($"Loaded material names in {sw.ElapsedMilliseconds}ms");
             
-            matRequest.SetStatus("Getting assets");
-            matRequest.SetProgress(1f / totalTasks);
+            statusHandle.SetStatus("Getting assets");
+            statusHandle.SetProgress(1f / totalTasks);
 
             sw.Restart();
             List<AssetStudio.Texture2D> textureAssets = new List<AssetStudio.Texture2D>();
@@ -53,13 +43,13 @@ namespace AbyssEditor.Scripts.TerrainMaterials
             sw.Stop();
             DebugOverlay.LogMessage($"Got assets in {sw.ElapsedMilliseconds}ms");
             
-            matRequest.SetStatus("Setting materials");
-            matRequest.SetProgress(4f / totalTasks);
+            statusHandle.SetStatus("Setting materials");
+            statusHandle.SetProgress(4f / totalTasks);
             sw.Restart();
             SetMaterials(materialAssets.ToArray());
             yield return null;
-            matRequest.SetStatus("Setting textures");
-            matRequest.SetProgress(8f / totalTasks);
+            statusHandle.SetStatus("Setting textures");
+            statusHandle.SetProgress(8f / totalTasks);
             yield return null;
             SetTextures(textureAssets.ToArray());
             sw.Stop();
@@ -68,18 +58,12 @@ namespace AbyssEditor.Scripts.TerrainMaterials
             DebugOverlay.LogMessage($"Set assets in {sw.ElapsedMilliseconds}ms");
             contentLoaded = true;
             
-            if (updateMeshesOnLoad) {
-                VoxelWorld.StartMetaspaceRegenerate(12, totalTasks);
-                /*
-                while (VoxelWorld.loadInProgress) {
-                    matRequest.SetStatus(VoxelWorld.loadingState);
-                    matRequest.SetProgress(VoxelWorld.loadingProgress);
-                    yield return null;
-                }
-                */
-                updateMeshesOnLoad = false;
+            if (updateMeshesOnLoad)
+            {
+                VoxelMetaspace.metaspace.StartCoroutine(VoxelMetaspace.metaspace.RegenerateMeshesCoroutine(statusHandle));
             }
-            matRequest.Complete();
+            
+            statusHandle.CompletePhase();
         }
 
         private IEnumerator GetMaterialAssetsAsync(List<AssetStudio.Texture2D> textureAssets, List<AssetStudio.Material> materialAssets) {

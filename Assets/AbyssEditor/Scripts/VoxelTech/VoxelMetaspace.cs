@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using AbyssEditor.Octrees;
 using AbyssEditor.Scripts;
+using AbyssEditor.Scripts.TaskSystem;
 using AbyssEditor.Scripts.TerrainMaterials;
 using AbyssEditor.Scripts.VoxelTech.VoxelGrids;
 using AbyssEditor.Scripts.VoxelTech.VoxelGrids.Brushes;
@@ -25,10 +26,6 @@ namespace AbyssEditor.VoxelTech {
         }
 
         public void AddRegion(Vector3Int startBatch, Vector3Int endBatch) {
-            if (!SnMaterialLoader.instance.contentLoaded) {
-                SnMaterialLoader.instance.updateMeshesOnLoad = true;
-            }
-
             foreach (Vector3Int batchIndex in startBatch.IterateTo(endBatch))
             {
                 VoxelMesh voxelMesh = TryGetVoxelMesh(batchIndex);
@@ -96,33 +93,53 @@ namespace AbyssEditor.VoxelTech {
             DebugOverlay.LogMessage($"Neighbor Copy/Mesh Rebuild took {elapsedMs3:F4}ms");
         }
 
-        public IEnumerator RegionReadCoroutine(bool allowModded, Vector3Int startBatch, Vector3Int endBatch) {
+        public IEnumerator RegionReadCoroutine(bool allowModded, Vector3Int startBatch, Vector3Int endBatch, EditorProcessHandle statusHandle = null) {
+            if(statusHandle == null) { statusHandle = TaskManager.main.GetEditorProcessHandle(2); }
+
+            int batchCount = startBatch.GetNumberOfPointsInRegion(endBatch);
+            int readCount = 0;
+            
             foreach (Vector3Int batchIndex in startBatch.IterateTo(endBatch))
             {
+                statusHandle.SetProgress((float)readCount/batchCount);
+                statusHandle.SetStatus($"Reading {batchIndex}");
+                readCount++;
+                
                 VoxelMesh mesh = TryGetVoxelMesh(batchIndex);
                 
                 BatchReadWriter.GetPath(mesh.batchIndex, allowModded, out bool isModded);
                 
                 yield return BatchReadWriter.readWriter.ReadBatchCoroutine(mesh.OctreesReadCallback, mesh.batchIndex, allowModded, true);
             }
+            statusHandle.CompletePhase();
 
-            yield return RegenerateMeshesCoroutine();
+            yield return RegenerateMeshesCoroutine(statusHandle);
         }
         
-        public IEnumerator OctreePatchReadCoroutine(string filepath) {
+        public IEnumerator OctreePatchReadCoroutine(string filepath, EditorProcessHandle statusHandle = null) {
+            if(statusHandle == null) { statusHandle = TaskManager.main.GetEditorProcessHandle(3); }    
             
             PatchContainer patchContainer = new PatchContainer();
-            yield return BatchReadWriter.readWriter.ReadOctreePatchCoroutine(patchContainer.Callback, filepath);
+            
+            yield return BatchReadWriter.readWriter.ReadOctreePatchCoroutine(patchContainer.Callback, filepath, statusHandle);
 
-            Vector3Int startBatch = new Vector3Int(-100, -100, -100);
-            Vector3Int endBatch = Vector3Int.zero; 
+            Vector3Int startBatch = new Vector3Int(-1000, -1000, -1000);
+            Vector3Int endBatch = Vector3Int.zero;
+
+            int batchCount = patchContainer.modifiedBatches.Keys.Count;
+            int readIndex = 0;
+            
             foreach (Vector3Int modifiedBatch in patchContainer.modifiedBatches.Keys)
             {
+                statusHandle.SetStatus($"Applying {modifiedBatch}");
+                statusHandle.SetProgress((float)readIndex/batchCount);
+                readIndex++;
+                
                 if (!patchContainer.modifiedBatches.TryGetValue(modifiedBatch, out Octree[,,] nodes))
                 {
                     continue;
                 }
-                if (startBatch == new Vector3Int(-100, -100, -100))
+                if (startBatch == new Vector3Int(-1000, -1000, -1000))
                 {
                     startBatch = modifiedBatch;
                 }
@@ -134,25 +151,44 @@ namespace AbyssEditor.VoxelTech {
                 
                 mesh.OctreesReadCallback(nodes);
                 endBatch = modifiedBatch;
+                yield return null;
             }
+            statusHandle.CompletePhase();
 
-            yield return RegenerateMeshesCoroutine();
+            yield return RegenerateMeshesCoroutine(statusHandle);
             
             ReloadBoundaries();
             
             CameraControls.main.OnRegionLoad(startBatch, endBatch);
         }
 
-        public IEnumerator RegenerateMeshesCoroutine() {
+        public IEnumerator RegenerateMeshesCoroutine(EditorProcessHandle statusHandle = null)
+        {
+            if (statusHandle == null) { statusHandle = TaskManager.main.GetEditorProcessHandle(1); }
+            
+            int totalTasks = meshes.Count * 2;
+            int completedTasks = 0;
+            
             foreach (VoxelMesh mesh in meshes) {
                 mesh.UpdateFullGrids();
+                
+                statusHandle.SetStatus($"Updating Grid(s) for {mesh.batchIndex}");
+                completedTasks++;
+                statusHandle.SetProgress((float) completedTasks / totalTasks);
+                
                 yield return null;
             }
 
             foreach (VoxelMesh mesh in meshes) {
                 mesh.Regenerate();
+                
+                statusHandle.SetStatus($"Regenerating mesh(es) for {mesh.batchIndex}");
+                completedTasks++;
+                statusHandle.SetProgress((float) completedTasks / totalTasks);
+                
                 yield return null;
             }
+            statusHandle.CompletePhase();
         }
         
         public bool BatchLoaded(Vector3Int batchIndex) {

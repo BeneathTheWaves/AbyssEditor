@@ -51,8 +51,8 @@ namespace AbyssEditor.UI {
             else {
             }
 
-            VoxelWorld.OnRegionExported += EditorUI.DisableStatusBar;
-            EditorUI.UpdateStatusBar("Exporting...", 1);
+            //VoxelWorld.OnRegionExported += EditorUI.DisableStatusBar;
+            //EditorUI.UpdateStatusBar("Exporting...", 1);
 
             VoxelWorld.ExportRegion(modeSelection.selection);
         }

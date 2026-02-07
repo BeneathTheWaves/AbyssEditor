@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using AbyssEditor.Octrees;
+using AbyssEditor.Scripts.TaskSystem;
 using AbyssEditor.Scripts.UI;
 using AbyssEditor.VoxelTech;
 using Unity.Collections;
@@ -80,7 +81,7 @@ namespace AbyssEditor.Scripts {
                     countOctrees++;
                 }
 
-                Debug.Log($"Batch '{batchIndex}' was loaded!");
+                //Debug.Log($"Batch '{batchIndex}' was loaded!");
                 
                 readFinishedCall(octrees);
                 reader.Close();
@@ -89,7 +90,7 @@ namespace AbyssEditor.Scripts {
             // if no batch file
             else
             {
-                DebugOverlay.LogMessage("no file for batch " + filePath);
+                //DebugOverlay.LogMessage("no file for batch " + filePath);
                 // TODO: remove dependency
                 EditorUI.DisplayErrorMessage($"No file for batch {batchIndex.x}-{batchIndex.y}-{batchIndex.z}\n" +
                                              $"Created an empty batch", EditorUI.NotificationType.Warning);
@@ -153,143 +154,144 @@ namespace AbyssEditor.Scripts {
             writer.Close();
             return true;
         }
-
-        /*
-        public IEnumerator ReadOctreePatchCoroutine(string filePath)
+        
+        public IEnumerator ReadOctreePatchCoroutine(PatchReadFinishedCall readFinishedCall, string filePath, EditorProcessHandle statusHandle)
         {
             if (!File.Exists(filePath))
             {
-                EditorUI.DisplayErrorMessage("nonexistent .optoctreepatch file!");
+                Debug.LogError($"Patch file not found: {filePath}");
                 yield break;
             }
+
             BinaryReader reader = new BinaryReader(File.Open(filePath, FileMode.Open));
-            uint version = reader.ReadUInt32();
-
-            //each batch
-            while (reader.BaseStream.Position < reader.BaseStream.Length)
-            {
-                //First read the batch its from
-                short batchIndexX = reader.ReadInt16();
-                short batchIndexY = reader.ReadInt16();
-                short batchIndexZ = reader.ReadInt16();
-                Debug.Log("Batch To Modify: " + new Vector3Int(batchIndexX, batchIndexY, batchIndexZ));
-                
-                //Next get how many octrees to replace
-                byte modifiedOctreeCount = reader.ReadByte();
-                Debug.Log("Modified Octrees: " + new Vector3Int(batchIndexX, batchIndexY, batchIndexZ));
-                
-                for (int i = 0; i < modifiedOctreeCount; i++)
-                {
-                    //Get Octree index that was modified
-                    OctNodeData[] nodesOfThisOctree = new OctNodeData[nodeCount];
-                    Vector3 batchOrigin = (batchIndex) * (VoxelWorld.BATCH_WIDTH);
-                }
-                
-                
-            }
-            
-
-            
-
-        }*/
-        public IEnumerator ReadOctreePatchCoroutine(PatchReadFinishedCall readFinishedCall, string filePath)
-        {
-            using var reader = new BinaryReader(File.OpenRead(filePath));
 
             uint version = reader.ReadUInt32();
             if (version == uint.MaxValue)
             {
                 Debug.LogError("Invalid patch file");
+                reader.Close();
                 yield break;
             }
 
-            Dictionary<Vector3Int, Octree[,,]> modifiedBatches = new Dictionary<Vector3Int, Octree[,,]>();
+            //cache entire patch payload
+            int curr_pos = 0;
+            long payloadLength = reader.BaseStream.Length - 4;
+            byte[] data = new byte[payloadLength];
+
+            while (curr_pos < payloadLength)
+            {
+                data[curr_pos++] = reader.ReadByte();
+            }
+
+            int batchesToRead = GetBatchCountFromPatchBytes(data);
+            int currentBatchIndex = 0;
+
+            reader.Close();
+            curr_pos = 0;
+
+            Dictionary<Vector3Int, Octree[,,]> modifiedBatches = new();
 
             int res = VoxelWorld.RESOLUTION;
-            NativeArray<byte> tempTypes = new NativeArray<byte>(res * res * res, Allocator.Persistent);
-            NativeArray<byte> tempDensities = new NativeArray<byte>(res * res * res, Allocator.Persistent);
-            
-            while (reader.BaseStream.Position < reader.BaseStream.Length)
-            {
-                short bx = reader.ReadInt16();
-                short by = reader.ReadInt16();
-                short bz = reader.ReadInt16();
-                Vector3Int batchIndex = new Vector3Int(bx, by, bz);
+            NativeArray<byte> tempTypes = new(res * res * res, Allocator.Persistent);
+            NativeArray<byte> tempDensities = new(res * res * res, Allocator.Persistent);
 
-                byte octreeCount = reader.ReadByte();
+            //iterate cached data
+            while (curr_pos < data.Length)
+            {
+                short bx = (short)(data[curr_pos] | (data[curr_pos + 1] << 8));
+                short by = (short)(data[curr_pos + 2] | (data[curr_pos + 3] << 8));
+                short bz = (short)(data[curr_pos + 4] | (data[curr_pos + 5] << 8));
+                curr_pos += 6;
+
+                Vector3Int batchIndex = new(bx, by, bz);
+
+                byte octreeCount = data[curr_pos++];
 
                 // Load original batch
                 NodeContainer container = new NodeContainer();
-                yield return StartCoroutine(
-                    ReadBatchCoroutine(container.Callback, batchIndex, true, true)
-                );
 
+                statusHandle.SetProgress((float)currentBatchIndex / batchesToRead);
+                statusHandle.SetStatus($"Reading patched {batchIndex}");
+                currentBatchIndex++;
+                
+                yield return StartCoroutine(ReadBatchCoroutine(container.Callback, batchIndex, true, true));
+                
                 Octree[,,] batchOctrees = container.nodes;
                 RasterDeRasterizeBatch(tempDensities, tempTypes, batchOctrees);
 
                 for (int i = 0; i < octreeCount; i++)
                 {
-                    byte octreeIndex = reader.ReadByte();
-                    ushort nodeCount = reader.ReadUInt16();
+                    byte octreeIndex = data[curr_pos++];
+                    ushort nodeCount = (ushort)(data[curr_pos] | (data[curr_pos + 1] << 8));
+                    curr_pos += 2;
 
                     OctNodeData[] nodes = new OctNodeData[nodeCount];
 
                     for (int n = 0; n < nodeCount; n++)
                     {
-                        byte type = reader.ReadByte();
-                        byte dist = reader.ReadByte();
-                        ushort child = reader.ReadUInt16();
+                        byte type = data[curr_pos];
+                        byte dist = data[curr_pos + 1];
+                        ushort child = (ushort)(data[curr_pos + 2] | (data[curr_pos + 3] << 8));
+
                         nodes[n] = new OctNodeData(type, dist, child);
+                        curr_pos += 4;
                     }
 
-                    // Convert octreeIndex → z,y,x
+                    // octreeIndex z,y,x
                     int z = octreeIndex % 5;
                     int y = (octreeIndex / 5) % 5;
                     int x = octreeIndex / 25;
-                    
-                    Octree octree = new Octree(
-                        x, y, z,
-                        VoxelWorld.OCTREE_WIDTH,
-                        batchIndex * VoxelWorld.BATCH_WIDTH
-                    );
+
+                    Octree octree = new Octree(x, y, z, VoxelWorld.OCTREE_WIDTH, batchIndex * VoxelWorld.BATCH_WIDTH);
 
                     octree.Write(nodes);
                     batchOctrees[z, y, x] = octree;
                 }
 
                 modifiedBatches.Add(batchIndex, batchOctrees);
-                
-                // At this point the batch is patched
-                Debug.Log($"Patched batch {batchIndex}");
+                //Debug.Log($"Patched batch {batchIndex}");
             }
+
             tempTypes.Dispose();
             tempDensities.Dispose();
-            
-            reader.Close();
-            
             readFinishedCall(modifiedBatches);
+            
+            statusHandle.CompletePhase();
         }
 
-        public IEnumerator WriteOctreePatchCoroutine(VoxelMetaspace metaspace)
+        public IEnumerator WriteOctreePatchCoroutine(VoxelMetaspace metaspace, EditorProcessHandle statusHandle = null)
         {
+            if (statusHandle == null) statusHandle = TaskManager.main.GetEditorProcessHandle(2);
+            
             DebugOverlay.LogMessage($"Writing {metaspace.meshes.Count} batch patches as {Globals.instance.batchOutputPath}");
 
             BinaryWriter writer = new BinaryWriter(File.Open(Globals.instance.batchOutputPath, FileMode.Create));
             // write version
             writer.Write(0u);
 
+            int meshCount = metaspace.meshes.Count;
+            int meshIndex = 0;
             foreach (VoxelMesh batch in metaspace.meshes)
             {
+                statusHandle.SetProgress((float)meshIndex / meshCount);
+                statusHandle.SetStatus($"Generating Octree {batch.batchIndex}");
                 batch.UpdateOctreeDensity();
+                yield return null;
+                meshIndex++;
             }
+            statusHandle.CompletePhase();
 
             //we will reuse this array for each grid over and over since they are the same size.
             int res = VoxelWorld.RESOLUTION;
             NativeArray<byte> tempTypes = new NativeArray<byte>(res * res * res, Allocator.Persistent);
             NativeArray<byte> tempDensities = new NativeArray<byte>(res * res * res, Allocator.Persistent);
 
+            meshIndex = 0;
             foreach (VoxelMesh batch in metaspace.meshes)
             {
+                statusHandle.SetProgress((float)meshIndex / meshCount);
+                statusHandle.SetStatus($"Writing patch {batch.batchIndex}");
+                
                 Octree[,,] nodes = batch.nodes;
                 // load original nodes from file?
                 NodeContainer container = new NodeContainer();
@@ -298,8 +300,7 @@ namespace AbyssEditor.Scripts {
 
                 // get changed octrees data
                 List<Octree> batchChanges = GetChangedOctrees(nodes, originalNodes);
-
-
+                
                 DebugOverlay.LogMessage($"Patch contains {batchChanges.Count} changed octrees.");
                 if (batchChanges.Count != 0)
                 {
@@ -318,7 +319,9 @@ namespace AbyssEditor.Scripts {
                         WriteOctree(writer, change);
                     }
                 }
+                meshIndex++;
             }
+            statusHandle.CompletePhase();
 
             tempTypes.Dispose();
             tempDensities.Dispose();
@@ -397,6 +400,36 @@ namespace AbyssEditor.Scripts {
                     node.DeRasterizeGrid(tempDensities, tempTypes, 0, 5 - VoxelWorld.LEVEL_OF_DETAIL);
                 }
             }
+        }
+        
+        int GetBatchCountFromPatchBytes(byte[] data)
+        {
+            int pos = 0;
+            int batchCount = 0;
+
+            while (pos < data.Length)
+            {
+                //batch index
+                pos += 6;
+
+                byte octreeCount = data[pos++];
+                batchCount++;
+
+                for (int i = 0; i < octreeCount; i++)
+                {
+                    //octreeIndex
+                    pos += 1;
+
+                    // read nodeCount
+                    ushort nodeCount = (ushort)(data[pos] | (data[pos + 1] << 8));
+                    pos += 2;
+
+                    //nodes
+                    pos += nodeCount * 4;
+                }
+            }
+
+            return batchCount;
         }
     }
 

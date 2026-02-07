@@ -28,5 +28,21 @@ namespace AbyssEditor.Scripts
                 }
             }
         }
+        
+        /// <summary>
+        /// Returns the number of integer grid points inside the axis-aligned box
+        /// defined by the start and end positions, inclusive.
+        /// </summary>
+        public static int GetNumberOfPointsInRegion(this Vector3Int start, Vector3Int end)
+        {
+            int xCount = Mathf.Abs(end.x - start.x) + 1;
+            int yCount = Mathf.Abs(end.y - start.y) + 1;
+            int zCount = Mathf.Abs(end.z - start.z) + 1;
+
+            return xCount * yCount * zCount;
+        }
+
+
+
     }
 }
