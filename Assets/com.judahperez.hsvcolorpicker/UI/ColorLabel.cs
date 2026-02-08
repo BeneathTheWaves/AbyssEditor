@@ -1,8 +1,7 @@
-﻿using UnityEngine;
-using UnityEngine.UI;
+﻿using com.judahperez.hsvcolorpicker.Enums;
 using TMPro;
-
-namespace HSVPicker
+using UnityEngine;
+namespace com.judahperez.hsvcolorpicker.UI
 {
 
     [RequireComponent(typeof(TMP_Text))]

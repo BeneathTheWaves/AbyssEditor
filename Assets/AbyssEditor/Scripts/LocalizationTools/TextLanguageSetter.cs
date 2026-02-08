@@ -1,16 +1,18 @@
-using AbyssEditor.Scripts;
+using AbyssEditor.Scripts.Essentials;
 using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 
-public class TextLanguageSetter : MonoBehaviour
+namespace AbyssEditor.Scripts.LocalizationTools
 {
-    private TextMeshProUGUI text;
-    private string key;
-    void Start()
+    public class TextLanguageSetter : MonoBehaviour
     {
-        text = GetComponent<TextMeshProUGUI>();
-        key = text.text;
-        text.text = Language.main.Get(key);
+        private TextMeshProUGUI text;
+        private string key;
+        void Start()
+        {
+            text = GetComponent<TextMeshProUGUI>();
+            key = text.text;
+            text.text = Language.main.Get(key);
+        }
     }
 }

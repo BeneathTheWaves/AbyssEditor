@@ -1,6 +1,9 @@
 ﻿using UnityEngine.Events;
 
-public class SliderOnChangeEndEvent : UnityEvent<float>
+namespace com.judahperez.hsvcolorpicker.Events
 {
+    public class SliderOnChangeEndEvent : UnityEvent<float>
+    {
 
+    }
 }

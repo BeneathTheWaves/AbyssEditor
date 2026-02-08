@@ -1,9 +1,12 @@
-﻿using UnityEngine;
-using System;
+﻿using System;
+using UnityEngine;
 using UnityEngine.Events;
 
-[Serializable]
-public class ColorChangedEvent : UnityEvent<Color>
+namespace com.judahperez.hsvcolorpicker.Events
 {
+    [Serializable]
+    public class ColorChangedEvent : UnityEvent<Color>
+    {
 
+    }
 }

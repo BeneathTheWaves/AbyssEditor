@@ -1,11 +1,9 @@
-using System;
 using System.Collections.Generic;
+using AbyssEditor.Scripts.VoxelTech;
 using AbyssEditor.Scripts.VoxelTech.VoxelGrids;
-using AbyssEditor.VoxelTech;
 using Unity.Collections;
 using UnityEngine;
-
-namespace AbyssEditor.Octrees {
+namespace AbyssEditor.Scripts.Octrees {
     [System.Serializable]
     public class Octree {
         

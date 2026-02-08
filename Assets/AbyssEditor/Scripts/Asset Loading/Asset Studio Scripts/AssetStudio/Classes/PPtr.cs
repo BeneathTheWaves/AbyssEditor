@@ -1,6 +1,5 @@
 ﻿using System;
-
-namespace AssetStudio
+namespace AbyssEditor.Scripts.Asset_Loading.Asset_Studio_Scripts.AssetStudio.Classes
 {
     public sealed class PPtr<T> where T : Object
     {

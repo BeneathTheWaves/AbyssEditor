@@ -2,8 +2,7 @@
 using System.Runtime.InteropServices;
 using System.Text;
 using Microsoft.Win32.SafeHandles;
-
-namespace AssetStudio.PInvoke
+namespace AbyssEditor.Scripts.Asset_Loading.Asset_Studio_Scripts.AssetStudio.PInvoke
 {
     // Generally the technique from Steamworks.NET
     public class Utf8StringHandle : SafeHandleZeroOrMinusOneIsInvalid

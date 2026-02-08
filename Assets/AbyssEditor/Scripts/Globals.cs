@@ -1,9 +1,7 @@
 using System.IO;
 using AbyssEditor.Scripts.SaveSystem;
-using AbyssEditor.UI;
 using UnityEngine;
-
-namespace AbyssEditor {
+namespace AbyssEditor.Scripts {
     public class Globals : MonoBehaviour {
 
         public static Globals instance;

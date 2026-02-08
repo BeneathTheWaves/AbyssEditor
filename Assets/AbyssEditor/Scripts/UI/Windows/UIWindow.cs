@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 
-namespace AbyssEditor.UI {
+namespace AbyssEditor.Scripts.UI.Windows {
     public class UIWindow : MonoBehaviour {
         bool windowActive = false;
         public virtual void DisableWindow() {

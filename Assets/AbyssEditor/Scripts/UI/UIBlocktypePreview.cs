@@ -1,8 +1,7 @@
-﻿using AbyssEditor.TerrainMaterials;
+﻿using AbyssEditor.Scripts.TerrainMaterials;
 using UnityEngine;
 using UnityEngine.UI;
-
-namespace AbyssEditor.UI
+namespace AbyssEditor.Scripts.UI
 {
 	internal class UIBlocktypePreview : MonoBehaviour
 	{

@@ -1,10 +1,9 @@
 // LzmaEncoder.cs
 
 using System;
-
-namespace SevenZip.Compression.LZMA
+using AbyssEditor.Scripts.Asset_Loading.Asset_Studio_Scripts.AssetStudio._7zip.Compress.RangeCoder;
+namespace AbyssEditor.Scripts.Asset_Loading.Asset_Studio_Scripts.AssetStudio._7zip.Compress.LZMA
 {
-	using RangeCoder;
 
 	public class Encoder : ICoder, ISetCoderProperties, IWriteCoderProperties
 	{
@@ -837,7 +836,7 @@ namespace SevenZip.Compression.LZMA
 				}
 
 				UInt32 numAvailableBytesFull = _matchFinder.GetNumAvailableBytes() + 1;
-				numAvailableBytesFull = Math.Min(kNumOpts - 1 - cur, numAvailableBytesFull);
+				numAvailableBytesFull = System.Math.Min(kNumOpts - 1 - cur, numAvailableBytesFull);
 				numAvailableBytes = numAvailableBytesFull;
 
 				if (numAvailableBytes < 2)
@@ -847,7 +846,7 @@ namespace SevenZip.Compression.LZMA
 				if (!nextIsChar && matchByte != currentByte)
 				{
 					// try Literal + rep0
-					UInt32 t = Math.Min(numAvailableBytesFull - 1, _numFastBytes);
+					UInt32 t = System.Math.Min(numAvailableBytesFull - 1, _numFastBytes);
 					UInt32 lenTest2 = _matchFinder.GetMatchLen(0, reps[0], t);
 					if (lenTest2 >= 2)
 					{
@@ -907,7 +906,7 @@ namespace SevenZip.Compression.LZMA
 					// if (_maxMode)
 					if (lenTest < numAvailableBytesFull)
 					{
-						UInt32 t = Math.Min(numAvailableBytesFull - 1 - lenTest, _numFastBytes);
+						UInt32 t = System.Math.Min(numAvailableBytesFull - 1 - lenTest, _numFastBytes);
 						UInt32 lenTest2 = _matchFinder.GetMatchLen((Int32)lenTest, reps[repIndex], t);
 						if (lenTest2 >= 2)
 						{
@@ -982,7 +981,7 @@ namespace SevenZip.Compression.LZMA
 						{
 							if (lenTest < numAvailableBytesFull)
 							{
-								UInt32 t = Math.Min(numAvailableBytesFull - 1 - lenTest, _numFastBytes);
+								UInt32 t = System.Math.Min(numAvailableBytesFull - 1 - lenTest, _numFastBytes);
 								UInt32 lenTest2 = _matchFinder.GetMatchLen((Int32)lenTest, curBack, t);
 								if (lenTest2 >= 2)
 								{

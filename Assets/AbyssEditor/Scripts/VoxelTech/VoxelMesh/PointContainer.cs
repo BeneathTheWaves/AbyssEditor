@@ -1,13 +1,11 @@
-﻿using System.Threading;
-using AbyssEditor.Octrees;
+﻿using AbyssEditor.Scripts.Mesh_Gen;
+using AbyssEditor.Scripts.Octrees;
 using AbyssEditor.Scripts.TerrainMaterials;
 using AbyssEditor.Scripts.VoxelTech.VoxelGrids;
 using AbyssEditor.Scripts.VoxelTech.VoxelGrids.Brushes;
 using Unity.Collections;
-using Unity.Jobs;
 using UnityEngine;
-
-namespace AbyssEditor.VoxelTech
+namespace AbyssEditor.Scripts.VoxelTech.VoxelMesh
 {
     public class PointContainer
     {

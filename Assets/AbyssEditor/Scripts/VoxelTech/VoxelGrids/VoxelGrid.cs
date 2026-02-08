@@ -1,12 +1,6 @@
-﻿
-using System.Collections.Generic;
-using System.Numerics;
-using System.Threading;
-using AbyssEditor.Octrees;
+﻿using System.Collections.Generic;
 using AbyssEditor.Scripts.VoxelTech.VoxelGrids.Brushes;
-using AbyssEditor.VoxelTech;
 using Unity.Collections;
-using Unity.Jobs;
 using Unity.Mathematics;
 using UnityEngine;
 using Vector3 = UnityEngine.Vector3;

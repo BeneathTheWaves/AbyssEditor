@@ -3,8 +3,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
-
-namespace HSVPicker
+namespace com.judahperez.hsvcolorpicker.UtilityScripts
 {
 	[AddComponentMenu("UI/BoxSlider", 35)]
 	[RequireComponent(typeof(RectTransform))]

@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
-
-namespace AbyssEditor.TerrainMaterials
+namespace AbyssEditor.Scripts.TerrainMaterials
 {
     public class BlocktypeMaterial {
         public string originalName;

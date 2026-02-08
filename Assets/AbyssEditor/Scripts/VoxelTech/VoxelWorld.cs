@@ -1,16 +1,12 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.Numerics;
-using AbyssEditor.Scripts;
 using AbyssEditor.Scripts.BatchOutline;
 using AbyssEditor.Scripts.TaskSystem;
-using AbyssEditor.UI;
-using AbyssEditor.VoxelTech;
+using AbyssEditor.Scripts.UI;
 using UnityEngine;
 using Vector3 = UnityEngine.Vector3;
 
-namespace AbyssEditor {
+namespace AbyssEditor.Scripts.VoxelTech {
     public class VoxelWorld : MonoBehaviour {
         // constants
         // LOD. 0-5 lod => 32-1 resolution
@@ -75,7 +71,7 @@ namespace AbyssEditor {
                     EditorProcessHandle statusHandle = TaskManager.main.GetEditorProcessHandle(1);
                     int meshCount = VoxelMetaspace.metaspace.meshes.Count;
                     int meshIndex = 0;
-                    foreach (VoxelMesh batch in VoxelMetaspace.metaspace.meshes) {
+                    foreach (VoxelMesh.VoxelMesh batch in VoxelMetaspace.metaspace.meshes) {
                         statusHandle.SetProgress((float)meshIndex/meshCount);
                         statusHandle.SetStatus($"Writing {batch}");
                         batch.Write();
@@ -111,7 +107,7 @@ namespace AbyssEditor {
                 return SampleBlocktype(newPoint, cameraRay, retryCount + 1);
             }
 
-            VoxelMesh batch = VoxelMetaspace.metaspace.TryGetVoxelMesh(batchIndex);
+            VoxelMesh.VoxelMesh batch = VoxelMetaspace.metaspace.TryGetVoxelMesh(batchIndex);
 
             Vector3 _local = hitPoint - batchIndex * (OCTREE_WIDTH * CONTAINERS_PER_SIDE); 
             int x = (int)_local.x / OCTREE_WIDTH;

@@ -3,7 +3,7 @@
 Distributed under MIT license.
 See file LICENSE for detail or copy at https://opensource.org/licenses/MIT
 */
-namespace Org.Brotli.Dec
+namespace AbyssEditor.Scripts.Asset_Loading.Asset_Studio_Scripts.AssetStudio.Brotli
 {
 	/// <summary>Unchecked exception used internally.</summary>
 	[System.Serializable]

@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-
-namespace HSVPicker
+namespace com.judahperez.hsvcolorpicker.UI
 {
     public class ColorPresets : MonoBehaviour
     {

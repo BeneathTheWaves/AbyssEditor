@@ -1,39 +1,42 @@
 ﻿using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
-public class UILogOverlayMessageInstance : MonoBehaviour
+
+namespace AbyssEditor.Scripts.UI
 {
-    [SerializeField] private TextMeshProUGUI text;
-    [SerializeField] private float lifetimeDuration;
-    [SerializeField] private float fadeOutDuration;
-
-    private float timeSpawned;
-    private Color textColor;
-
-    public void InitializeMessage(string message, Color color)
+    public class UILogOverlayMessageInstance : MonoBehaviour
     {
-        text.text = message;
-        text.color = color;
-        timeSpawned = Time.time;
-        textColor = color;
-    }
+        [SerializeField] private TextMeshProUGUI text;
+        [SerializeField] private float lifetimeDuration;
+        [SerializeField] private float fadeOutDuration;
 
-    public void ResetTimer()
-    {
-        timeSpawned = Time.time;
-    }
+        private float timeSpawned;
+        private Color textColor;
 
-    private void Update()
-    {
-        if (Time.time > timeSpawned + lifetimeDuration)
+        public void InitializeMessage(string message, Color color)
         {
-            if (Time.time > timeSpawned + lifetimeDuration + fadeOutDuration)
+            text.text = message;
+            text.color = color;
+            timeSpawned = Time.time;
+            textColor = color;
+        }
+
+        public void ResetTimer()
+        {
+            timeSpawned = Time.time;
+        }
+
+        private void Update()
+        {
+            if (Time.time > timeSpawned + lifetimeDuration)
             {
-                Destroy(gameObject);
-                return;
+                if (Time.time > timeSpawned + lifetimeDuration + fadeOutDuration)
+                {
+                    Destroy(gameObject);
+                    return;
+                }
+                var alpha = 1f - ((Time.time - timeSpawned - lifetimeDuration) / fadeOutDuration);
+                text.color = new Color(textColor.r, textColor.g, textColor.b, alpha);
             }
-            var alpha = 1f - ((Time.time - timeSpawned - lifetimeDuration) / fadeOutDuration);
-            text.color = new Color(textColor.r, textColor.g, textColor.b, alpha);
         }
     }
 }

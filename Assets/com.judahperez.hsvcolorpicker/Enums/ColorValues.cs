@@ -1,13 +1,14 @@
-﻿using UnityEngine;
-
-public enum ColorValues
+﻿namespace com.judahperez.hsvcolorpicker.Enums
 {
-    R,
-    G,
-    B,
-    A,
+    public enum ColorValues
+    {
+        R,
+        G,
+        B,
+        A,
 
-    Hue,
-    Saturation,
-    Value
+        Hue,
+        Saturation,
+        Value
+    }
 }

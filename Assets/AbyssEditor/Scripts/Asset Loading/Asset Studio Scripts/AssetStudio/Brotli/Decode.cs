@@ -3,7 +3,7 @@
 Distributed under MIT license.
 See file LICENSE for detail or copy at https://opensource.org/licenses/MIT
 */
-namespace Org.Brotli.Dec
+namespace AbyssEditor.Scripts.Asset_Loading.Asset_Studio_Scripts.AssetStudio.Brotli
 {
 	/// <summary>API for Brotli decompression.</summary>
 	internal sealed class Decode
@@ -42,52 +42,52 @@ namespace Org.Brotli.Dec
 			)(0x040005)) };
 
 		/// <summary>Decodes a number in the range [0..255], by reading 1 - 11 bits.</summary>
-		private static int DecodeVarLenUnsignedByte(Org.Brotli.Dec.BitReader br)
+		private static int DecodeVarLenUnsignedByte(BitReader br)
 		{
-			if (Org.Brotli.Dec.BitReader.ReadBits(br, 1) != 0)
+			if (BitReader.ReadBits(br, 1) != 0)
 			{
-				int n = Org.Brotli.Dec.BitReader.ReadBits(br, 3);
+				int n = BitReader.ReadBits(br, 3);
 				if (n == 0)
 				{
 					return 1;
 				}
 				else
 				{
-					return Org.Brotli.Dec.BitReader.ReadBits(br, n) + (1 << n);
+					return BitReader.ReadBits(br, n) + (1 << n);
 				}
 			}
 			return 0;
 		}
 
-		private static void DecodeMetaBlockLength(Org.Brotli.Dec.BitReader br, Org.Brotli.Dec.State state)
+		private static void DecodeMetaBlockLength(BitReader br, State state)
 		{
-			state.inputEnd = Org.Brotli.Dec.BitReader.ReadBits(br, 1) == 1;
+			state.inputEnd = BitReader.ReadBits(br, 1) == 1;
 			state.metaBlockLength = 0;
 			state.isUncompressed = false;
 			state.isMetadata = false;
-			if (state.inputEnd && Org.Brotli.Dec.BitReader.ReadBits(br, 1) != 0)
+			if (state.inputEnd && BitReader.ReadBits(br, 1) != 0)
 			{
 				return;
 			}
-			int sizeNibbles = Org.Brotli.Dec.BitReader.ReadBits(br, 2) + 4;
+			int sizeNibbles = BitReader.ReadBits(br, 2) + 4;
 			if (sizeNibbles == 7)
 			{
 				state.isMetadata = true;
-				if (Org.Brotli.Dec.BitReader.ReadBits(br, 1) != 0)
+				if (BitReader.ReadBits(br, 1) != 0)
 				{
-					throw new Org.Brotli.Dec.BrotliRuntimeException("Corrupted reserved bit");
+					throw new BrotliRuntimeException("Corrupted reserved bit");
 				}
-				int sizeBytes = Org.Brotli.Dec.BitReader.ReadBits(br, 2);
+				int sizeBytes = BitReader.ReadBits(br, 2);
 				if (sizeBytes == 0)
 				{
 					return;
 				}
 				for (int i = 0; i < sizeBytes; i++)
 				{
-					int bits = Org.Brotli.Dec.BitReader.ReadBits(br, 8);
+					int bits = BitReader.ReadBits(br, 8);
 					if (bits == 0 && i + 1 == sizeBytes && sizeBytes > 1)
 					{
-						throw new Org.Brotli.Dec.BrotliRuntimeException("Exuberant nibble");
+						throw new BrotliRuntimeException("Exuberant nibble");
 					}
 					state.metaBlockLength |= bits << (i * 8);
 				}
@@ -96,10 +96,10 @@ namespace Org.Brotli.Dec
 			{
 				for (int i = 0; i < sizeNibbles; i++)
 				{
-					int bits = Org.Brotli.Dec.BitReader.ReadBits(br, 4);
+					int bits = BitReader.ReadBits(br, 4);
 					if (bits == 0 && i + 1 == sizeNibbles && sizeNibbles > 4)
 					{
-						throw new Org.Brotli.Dec.BrotliRuntimeException("Exuberant nibble");
+						throw new BrotliRuntimeException("Exuberant nibble");
 					}
 					state.metaBlockLength |= bits << (i * 4);
 				}
@@ -107,12 +107,12 @@ namespace Org.Brotli.Dec
 			state.metaBlockLength++;
 			if (!state.inputEnd)
 			{
-				state.isUncompressed = Org.Brotli.Dec.BitReader.ReadBits(br, 1) == 1;
+				state.isUncompressed = BitReader.ReadBits(br, 1) == 1;
 			}
 		}
 
 		/// <summary>Decodes the next Huffman code from bit-stream.</summary>
-		private static int ReadSymbol(int[] table, int offset, Org.Brotli.Dec.BitReader br)
+		private static int ReadSymbol(int[] table, int offset, BitReader br)
 		{
 			int val = (int)((long)(((ulong)br.accumulator) >> br.bitOffset));
 			offset += val & HuffmanTableMask;
@@ -130,12 +130,12 @@ namespace Org.Brotli.Dec
 			return table[offset] & unchecked((int)(0xFFFF));
 		}
 
-		private static int ReadBlockLength(int[] table, int offset, Org.Brotli.Dec.BitReader br)
+		private static int ReadBlockLength(int[] table, int offset, BitReader br)
 		{
-			Org.Brotli.Dec.BitReader.FillBitWindow(br);
+			BitReader.FillBitWindow(br);
 			int code = ReadSymbol(table, offset, br);
-			int n = Org.Brotli.Dec.Prefix.BlockLengthNBits[code];
-			return Org.Brotli.Dec.Prefix.BlockLengthOffset[code] + Org.Brotli.Dec.BitReader.ReadBits(br, n);
+			int n = Prefix.BlockLengthNBits[code];
+			return Prefix.BlockLengthOffset[code] + BitReader.ReadBits(br, n);
 		}
 
 		private static int TranslateShortCodes(int code, int[] ringBuffer, int index)
@@ -177,7 +177,7 @@ namespace Org.Brotli.Dec
 			}
 		}
 
-		private static void ReadHuffmanCodeLengths(int[] codeLengthCodeLengths, int numSymbols, int[] codeLengths, Org.Brotli.Dec.BitReader br)
+		private static void ReadHuffmanCodeLengths(int[] codeLengthCodeLengths, int numSymbols, int[] codeLengths, BitReader br)
 		{
 			int symbol = 0;
 			int prevCodeLen = DefaultCodeLength;
@@ -185,11 +185,11 @@ namespace Org.Brotli.Dec
 			int repeatCodeLen = 0;
 			int space = 32768;
 			int[] table = new int[32];
-			Org.Brotli.Dec.Huffman.BuildHuffmanTable(table, 0, 5, codeLengthCodeLengths, CodeLengthCodes);
+			Huffman.BuildHuffmanTable(table, 0, 5, codeLengthCodeLengths, CodeLengthCodes);
 			while (symbol < numSymbols && space > 0)
 			{
-				Org.Brotli.Dec.BitReader.ReadMoreInput(br);
-				Org.Brotli.Dec.BitReader.FillBitWindow(br);
+				BitReader.ReadMoreInput(br);
+				BitReader.FillBitWindow(br);
 				int p = (int)(((long)(((ulong)br.accumulator) >> br.bitOffset))) & 31;
 				br.bitOffset += table[p] >> 16;
 				int codeLen = table[p] & unchecked((int)(0xFFFF));
@@ -222,11 +222,11 @@ namespace Org.Brotli.Dec
 						repeat -= 2;
 						repeat <<= extraBits;
 					}
-					repeat += Org.Brotli.Dec.BitReader.ReadBits(br, extraBits) + 3;
+					repeat += BitReader.ReadBits(br, extraBits) + 3;
 					int repeatDelta = repeat - oldRepeat;
 					if (symbol + repeatDelta > numSymbols)
 					{
-						throw new Org.Brotli.Dec.BrotliRuntimeException("symbol + repeatDelta > numSymbols");
+						throw new BrotliRuntimeException("symbol + repeatDelta > numSymbols");
 					}
 					// COV_NF_LINE
 					for (int i = 0; i < repeatDelta; i++)
@@ -241,29 +241,29 @@ namespace Org.Brotli.Dec
 			}
 			if (space != 0)
 			{
-				throw new Org.Brotli.Dec.BrotliRuntimeException("Unused space");
+				throw new BrotliRuntimeException("Unused space");
 			}
 			// COV_NF_LINE
 			// TODO: Pass max_symbol to Huffman table builder instead?
-			Org.Brotli.Dec.Utils.FillWithZeroes(codeLengths, symbol, numSymbols - symbol);
+			Utils.FillWithZeroes(codeLengths, symbol, numSymbols - symbol);
 		}
 
 		// TODO: Use specialized versions for smaller tables.
-		internal static void ReadHuffmanCode(int alphabetSize, int[] table, int offset, Org.Brotli.Dec.BitReader br)
+		internal static void ReadHuffmanCode(int alphabetSize, int[] table, int offset, BitReader br)
 		{
 			bool ok = true;
 			int simpleCodeOrSkip;
-			Org.Brotli.Dec.BitReader.ReadMoreInput(br);
+			BitReader.ReadMoreInput(br);
 			// TODO: Avoid allocation.
 			int[] codeLengths = new int[alphabetSize];
-			simpleCodeOrSkip = Org.Brotli.Dec.BitReader.ReadBits(br, 2);
+			simpleCodeOrSkip = BitReader.ReadBits(br, 2);
 			if (simpleCodeOrSkip == 1)
 			{
 				// Read symbols, codes & code lengths directly.
 				int maxBitsCounter = alphabetSize - 1;
 				int maxBits = 0;
 				int[] symbols = new int[4];
-				int numSymbols = Org.Brotli.Dec.BitReader.ReadBits(br, 2) + 1;
+				int numSymbols = BitReader.ReadBits(br, 2) + 1;
 				while (maxBitsCounter != 0)
 				{
 					maxBitsCounter >>= 1;
@@ -273,7 +273,7 @@ namespace Org.Brotli.Dec
 				// Utils.fillWithZeroes(codeLengths, 0, alphabetSize);
 				for (int i = 0; i < numSymbols; i++)
 				{
-					symbols[i] = Org.Brotli.Dec.BitReader.ReadBits(br, maxBits) % alphabetSize;
+					symbols[i] = BitReader.ReadBits(br, maxBits) % alphabetSize;
 					codeLengths[symbols[i]] = 2;
 				}
 				codeLengths[symbols[0]] = 1;
@@ -301,7 +301,7 @@ namespace Org.Brotli.Dec
 					default:
 					{
 						ok = symbols[0] != symbols[1] && symbols[0] != symbols[2] && symbols[0] != symbols[3] && symbols[1] != symbols[2] && symbols[1] != symbols[3] && symbols[2] != symbols[3];
-						if (Org.Brotli.Dec.BitReader.ReadBits(br, 1) == 1)
+						if (BitReader.ReadBits(br, 1) == 1)
 						{
 							codeLengths[symbols[2]] = 3;
 							codeLengths[symbols[3]] = 3;
@@ -323,7 +323,7 @@ namespace Org.Brotli.Dec
 				for (int i = simpleCodeOrSkip; i < CodeLengthCodes && space > 0; i++)
 				{
 					int codeLenIdx = CodeLengthCodeOrder[i];
-					Org.Brotli.Dec.BitReader.FillBitWindow(br);
+					BitReader.FillBitWindow(br);
 					int p = (int)((long)(((ulong)br.accumulator) >> br.bitOffset)) & 15;
 					// TODO: Demultiplex FIXED_TABLE.
 					br.bitOffset += FixedTable[p] >> 16;
@@ -340,33 +340,33 @@ namespace Org.Brotli.Dec
 			}
 			if (!ok)
 			{
-				throw new Org.Brotli.Dec.BrotliRuntimeException("Can't readHuffmanCode");
+				throw new BrotliRuntimeException("Can't readHuffmanCode");
 			}
 			// COV_NF_LINE
-			Org.Brotli.Dec.Huffman.BuildHuffmanTable(table, offset, HuffmanTableBits, codeLengths, alphabetSize);
+			Huffman.BuildHuffmanTable(table, offset, HuffmanTableBits, codeLengths, alphabetSize);
 		}
 
-		private static int DecodeContextMap(int contextMapSize, byte[] contextMap, Org.Brotli.Dec.BitReader br)
+		private static int DecodeContextMap(int contextMapSize, byte[] contextMap, BitReader br)
 		{
-			Org.Brotli.Dec.BitReader.ReadMoreInput(br);
+			BitReader.ReadMoreInput(br);
 			int numTrees = DecodeVarLenUnsignedByte(br) + 1;
 			if (numTrees == 1)
 			{
-				Org.Brotli.Dec.Utils.FillWithZeroes(contextMap, 0, contextMapSize);
+				Utils.FillWithZeroes(contextMap, 0, contextMapSize);
 				return numTrees;
 			}
-			bool useRleForZeros = Org.Brotli.Dec.BitReader.ReadBits(br, 1) == 1;
+			bool useRleForZeros = BitReader.ReadBits(br, 1) == 1;
 			int maxRunLengthPrefix = 0;
 			if (useRleForZeros)
 			{
-				maxRunLengthPrefix = Org.Brotli.Dec.BitReader.ReadBits(br, 4) + 1;
+				maxRunLengthPrefix = BitReader.ReadBits(br, 4) + 1;
 			}
-			int[] table = new int[Org.Brotli.Dec.Huffman.HuffmanMaxTableSize];
+			int[] table = new int[Huffman.HuffmanMaxTableSize];
 			ReadHuffmanCode(numTrees + maxRunLengthPrefix, table, 0, br);
 			for (int i = 0; i < contextMapSize; )
 			{
-				Org.Brotli.Dec.BitReader.ReadMoreInput(br);
-				Org.Brotli.Dec.BitReader.FillBitWindow(br);
+				BitReader.ReadMoreInput(br);
+				BitReader.FillBitWindow(br);
 				int code = ReadSymbol(table, 0, br);
 				if (code == 0)
 				{
@@ -375,12 +375,12 @@ namespace Org.Brotli.Dec
 				}
 				else if (code <= maxRunLengthPrefix)
 				{
-					int reps = (1 << code) + Org.Brotli.Dec.BitReader.ReadBits(br, code);
+					int reps = (1 << code) + BitReader.ReadBits(br, code);
 					while (reps != 0)
 					{
 						if (i >= contextMapSize)
 						{
-							throw new Org.Brotli.Dec.BrotliRuntimeException("Corrupted context map");
+							throw new BrotliRuntimeException("Corrupted context map");
 						}
 						// COV_NF_LINE
 						contextMap[i] = 0;
@@ -394,21 +394,21 @@ namespace Org.Brotli.Dec
 					i++;
 				}
 			}
-			if (Org.Brotli.Dec.BitReader.ReadBits(br, 1) == 1)
+			if (BitReader.ReadBits(br, 1) == 1)
 			{
 				InverseMoveToFrontTransform(contextMap, contextMapSize);
 			}
 			return numTrees;
 		}
 
-		private static void DecodeBlockTypeAndLength(Org.Brotli.Dec.State state, int treeType)
+		private static void DecodeBlockTypeAndLength(State state, int treeType)
 		{
-			Org.Brotli.Dec.BitReader br = state.br;
+			BitReader br = state.br;
 			int[] ringBuffers = state.blockTypeRb;
 			int offset = treeType * 2;
-			Org.Brotli.Dec.BitReader.FillBitWindow(br);
-			int blockType = ReadSymbol(state.blockTypeTrees, treeType * Org.Brotli.Dec.Huffman.HuffmanMaxTableSize, br);
-			state.blockLength[treeType] = ReadBlockLength(state.blockLenTrees, treeType * Org.Brotli.Dec.Huffman.HuffmanMaxTableSize, br);
+			BitReader.FillBitWindow(br);
+			int blockType = ReadSymbol(state.blockTypeTrees, treeType * Huffman.HuffmanMaxTableSize, br);
+			state.blockLength[treeType] = ReadBlockLength(state.blockLenTrees, treeType * Huffman.HuffmanMaxTableSize, br);
 			if (blockType == 1)
 			{
 				blockType = ringBuffers[offset + 1] + 1;
@@ -429,7 +429,7 @@ namespace Org.Brotli.Dec
 			ringBuffers[offset + 1] = blockType;
 		}
 
-		private static void DecodeLiteralBlockSwitch(Org.Brotli.Dec.State state)
+		private static void DecodeLiteralBlockSwitch(State state)
 		{
 			DecodeBlockTypeAndLength(state, 0);
 			int literalBlockType = state.blockTypeRb[1];
@@ -437,23 +437,23 @@ namespace Org.Brotli.Dec
 			state.literalTreeIndex = state.contextMap[state.contextMapSlice] & unchecked((int)(0xFF));
 			state.literalTree = state.hGroup0.trees[state.literalTreeIndex];
 			int contextMode = state.contextModes[literalBlockType];
-			state.contextLookupOffset1 = Org.Brotli.Dec.Context.LookupOffsets[contextMode];
-			state.contextLookupOffset2 = Org.Brotli.Dec.Context.LookupOffsets[contextMode + 1];
+			state.contextLookupOffset1 = Context.LookupOffsets[contextMode];
+			state.contextLookupOffset2 = Context.LookupOffsets[contextMode + 1];
 		}
 
-		private static void DecodeCommandBlockSwitch(Org.Brotli.Dec.State state)
+		private static void DecodeCommandBlockSwitch(State state)
 		{
 			DecodeBlockTypeAndLength(state, 1);
 			state.treeCommandOffset = state.hGroup1.trees[state.blockTypeRb[3]];
 		}
 
-		private static void DecodeDistanceBlockSwitch(Org.Brotli.Dec.State state)
+		private static void DecodeDistanceBlockSwitch(State state)
 		{
 			DecodeBlockTypeAndLength(state, 2);
 			state.distContextMapSlice = state.blockTypeRb[5] << DistanceContextBits;
 		}
 
-		private static void MaybeReallocateRingBuffer(Org.Brotli.Dec.State state)
+		private static void MaybeReallocateRingBuffer(State state)
 		{
 			int newSize = state.maxRingBufferSize;
 			if ((long)newSize > state.expectedTotalSize)
@@ -473,7 +473,7 @@ namespace Org.Brotli.Dec
 			{
 				return;
 			}
-			int ringBufferSizeWithSlack = newSize + Org.Brotli.Dec.Dictionary.MaxTransformedWordLength;
+			int ringBufferSizeWithSlack = newSize + Dictionary.MaxTransformedWordLength;
 			byte[] newBuffer = new byte[ringBufferSizeWithSlack];
 			if (state.ringBuffer != null)
 			{
@@ -499,15 +499,15 @@ namespace Org.Brotli.Dec
 
 		/// <summary>Reads next metablock header.</summary>
 		/// <param name="state">decoding state</param>
-		private static void ReadMetablockInfo(Org.Brotli.Dec.State state)
+		private static void ReadMetablockInfo(State state)
 		{
-			Org.Brotli.Dec.BitReader br = state.br;
+			BitReader br = state.br;
 			if (state.inputEnd)
 			{
-				state.nextRunningState = Org.Brotli.Dec.RunningState.Finished;
+				state.nextRunningState = RunningState.Finished;
 				state.bytesToWrite = state.pos;
 				state.bytesWritten = 0;
-				state.runningState = Org.Brotli.Dec.RunningState.Write;
+				state.runningState = RunningState.Write;
 				return;
 			}
 			// TODO: Reset? Do we need this?
@@ -517,7 +517,7 @@ namespace Org.Brotli.Dec
 			state.hGroup1.trees = null;
 			state.hGroup2.codes = null;
 			state.hGroup2.trees = null;
-			Org.Brotli.Dec.BitReader.ReadMoreInput(br);
+			BitReader.ReadMoreInput(br);
 			DecodeMetaBlockLength(br, state);
 			if (state.metaBlockLength == 0 && !state.isMetadata)
 			{
@@ -525,12 +525,12 @@ namespace Org.Brotli.Dec
 			}
 			if (state.isUncompressed || state.isMetadata)
 			{
-				Org.Brotli.Dec.BitReader.JumpToByteBoundary(br);
-				state.runningState = state.isMetadata ? Org.Brotli.Dec.RunningState.ReadMetadata : Org.Brotli.Dec.RunningState.CopyUncompressed;
+				BitReader.JumpToByteBoundary(br);
+				state.runningState = state.isMetadata ? RunningState.ReadMetadata : RunningState.CopyUncompressed;
 			}
 			else
 			{
-				state.runningState = Org.Brotli.Dec.RunningState.CompressedBlockStart;
+				state.runningState = RunningState.CompressedBlockStart;
 			}
 			if (state.isMetadata)
 			{
@@ -543,23 +543,23 @@ namespace Org.Brotli.Dec
 			}
 		}
 
-		private static void ReadMetablockHuffmanCodesAndContextMaps(Org.Brotli.Dec.State state)
+		private static void ReadMetablockHuffmanCodesAndContextMaps(State state)
 		{
-			Org.Brotli.Dec.BitReader br = state.br;
+			BitReader br = state.br;
 			for (int i = 0; i < 3; i++)
 			{
 				state.numBlockTypes[i] = DecodeVarLenUnsignedByte(br) + 1;
 				state.blockLength[i] = 1 << 28;
 				if (state.numBlockTypes[i] > 1)
 				{
-					ReadHuffmanCode(state.numBlockTypes[i] + 2, state.blockTypeTrees, i * Org.Brotli.Dec.Huffman.HuffmanMaxTableSize, br);
-					ReadHuffmanCode(NumBlockLengthCodes, state.blockLenTrees, i * Org.Brotli.Dec.Huffman.HuffmanMaxTableSize, br);
-					state.blockLength[i] = ReadBlockLength(state.blockLenTrees, i * Org.Brotli.Dec.Huffman.HuffmanMaxTableSize, br);
+					ReadHuffmanCode(state.numBlockTypes[i] + 2, state.blockTypeTrees, i * Huffman.HuffmanMaxTableSize, br);
+					ReadHuffmanCode(NumBlockLengthCodes, state.blockLenTrees, i * Huffman.HuffmanMaxTableSize, br);
+					state.blockLength[i] = ReadBlockLength(state.blockLenTrees, i * Huffman.HuffmanMaxTableSize, br);
 				}
 			}
-			Org.Brotli.Dec.BitReader.ReadMoreInput(br);
-			state.distancePostfixBits = Org.Brotli.Dec.BitReader.ReadBits(br, 2);
-			state.numDirectDistanceCodes = NumDistanceShortCodes + (Org.Brotli.Dec.BitReader.ReadBits(br, 4) << state.distancePostfixBits);
+			BitReader.ReadMoreInput(br);
+			state.distancePostfixBits = BitReader.ReadBits(br, 2);
+			state.numDirectDistanceCodes = NumDistanceShortCodes + (BitReader.ReadBits(br, 4) << state.distancePostfixBits);
 			state.distancePostfixMask = (1 << state.distancePostfixBits) - 1;
 			int numDistanceCodes = state.numDirectDistanceCodes + (48 << state.distancePostfixBits);
 			// TODO: Reuse?
@@ -570,9 +570,9 @@ namespace Org.Brotli.Dec
 				int limit = System.Math.Min(i + 96, state.numBlockTypes[0]);
 				for (; i < limit; ++i)
 				{
-					state.contextModes[i] = unchecked((byte)(Org.Brotli.Dec.BitReader.ReadBits(br, 2) << 1));
+					state.contextModes[i] = unchecked((byte)(BitReader.ReadBits(br, 2) << 1));
 				}
-				Org.Brotli.Dec.BitReader.ReadMoreInput(br);
+				BitReader.ReadMoreInput(br);
 			}
 			// TODO: Reuse?
 			state.contextMap = new byte[state.numBlockTypes[0] << LiteralContextBits];
@@ -589,16 +589,16 @@ namespace Org.Brotli.Dec
 			// TODO: Reuse?
 			state.distContextMap = new byte[state.numBlockTypes[2] << DistanceContextBits];
 			int numDistTrees = DecodeContextMap(state.numBlockTypes[2] << DistanceContextBits, state.distContextMap, br);
-			Org.Brotli.Dec.HuffmanTreeGroup.Init(state.hGroup0, NumLiteralCodes, numLiteralTrees);
-			Org.Brotli.Dec.HuffmanTreeGroup.Init(state.hGroup1, NumInsertAndCopyCodes, state.numBlockTypes[1]);
-			Org.Brotli.Dec.HuffmanTreeGroup.Init(state.hGroup2, numDistanceCodes, numDistTrees);
-			Org.Brotli.Dec.HuffmanTreeGroup.Decode(state.hGroup0, br);
-			Org.Brotli.Dec.HuffmanTreeGroup.Decode(state.hGroup1, br);
-			Org.Brotli.Dec.HuffmanTreeGroup.Decode(state.hGroup2, br);
+			HuffmanTreeGroup.Init(state.hGroup0, NumLiteralCodes, numLiteralTrees);
+			HuffmanTreeGroup.Init(state.hGroup1, NumInsertAndCopyCodes, state.numBlockTypes[1]);
+			HuffmanTreeGroup.Init(state.hGroup2, numDistanceCodes, numDistTrees);
+			HuffmanTreeGroup.Decode(state.hGroup0, br);
+			HuffmanTreeGroup.Decode(state.hGroup1, br);
+			HuffmanTreeGroup.Decode(state.hGroup2, br);
 			state.contextMapSlice = 0;
 			state.distContextMapSlice = 0;
-			state.contextLookupOffset1 = Org.Brotli.Dec.Context.LookupOffsets[state.contextModes[0]];
-			state.contextLookupOffset2 = Org.Brotli.Dec.Context.LookupOffsets[state.contextModes[0] + 1];
+			state.contextLookupOffset1 = Context.LookupOffsets[state.contextModes[0]];
+			state.contextLookupOffset2 = Context.LookupOffsets[state.contextModes[0] + 1];
 			state.literalTreeIndex = 0;
 			state.literalTree = state.hGroup0.trees[0];
 			state.treeCommandOffset = state.hGroup1.trees[0];
@@ -607,34 +607,34 @@ namespace Org.Brotli.Dec
 			state.blockTypeRb[1] = state.blockTypeRb[3] = state.blockTypeRb[5] = 0;
 		}
 
-		private static void CopyUncompressedData(Org.Brotli.Dec.State state)
+		private static void CopyUncompressedData(State state)
 		{
-			Org.Brotli.Dec.BitReader br = state.br;
+			BitReader br = state.br;
 			byte[] ringBuffer = state.ringBuffer;
 			// Could happen if block ends at ring buffer end.
 			if (state.metaBlockLength <= 0)
 			{
-				Org.Brotli.Dec.BitReader.Reload(br);
-				state.runningState = Org.Brotli.Dec.RunningState.BlockStart;
+				BitReader.Reload(br);
+				state.runningState = RunningState.BlockStart;
 				return;
 			}
 			int chunkLength = System.Math.Min(state.ringBufferSize - state.pos, state.metaBlockLength);
-			Org.Brotli.Dec.BitReader.CopyBytes(br, ringBuffer, state.pos, chunkLength);
+			BitReader.CopyBytes(br, ringBuffer, state.pos, chunkLength);
 			state.metaBlockLength -= chunkLength;
 			state.pos += chunkLength;
 			if (state.pos == state.ringBufferSize)
 			{
-				state.nextRunningState = Org.Brotli.Dec.RunningState.CopyUncompressed;
+				state.nextRunningState = RunningState.CopyUncompressed;
 				state.bytesToWrite = state.ringBufferSize;
 				state.bytesWritten = 0;
-				state.runningState = Org.Brotli.Dec.RunningState.Write;
+				state.runningState = RunningState.Write;
 				return;
 			}
-			Org.Brotli.Dec.BitReader.Reload(br);
-			state.runningState = Org.Brotli.Dec.RunningState.BlockStart;
+			BitReader.Reload(br);
+			state.runningState = RunningState.BlockStart;
 		}
 
-		private static bool WriteRingBuffer(Org.Brotli.Dec.State state)
+		private static bool WriteRingBuffer(State state)
 		{
 			/* Ignore custom dictionary bytes. */
 			if (state.bytesToIgnore != 0)
@@ -652,35 +652,35 @@ namespace Org.Brotli.Dec
 			return state.outputUsed < state.outputLength;
 		}
 
-		internal static void SetCustomDictionary(Org.Brotli.Dec.State state, byte[] data)
+		internal static void SetCustomDictionary(State state, byte[] data)
 		{
 			state.customDictionary = (data == null) ? new byte[0] : data;
 		}
 
 		/// <summary>Actual decompress implementation.</summary>
-		internal static void Decompress(Org.Brotli.Dec.State state)
+		internal static void Decompress(State state)
 		{
-			if (state.runningState == Org.Brotli.Dec.RunningState.Uninitialized)
+			if (state.runningState == RunningState.Uninitialized)
 			{
 				throw new System.InvalidOperationException("Can't decompress until initialized");
 			}
-			if (state.runningState == Org.Brotli.Dec.RunningState.Closed)
+			if (state.runningState == RunningState.Closed)
 			{
 				throw new System.InvalidOperationException("Can't decompress after close");
 			}
-			Org.Brotli.Dec.BitReader br = state.br;
+			BitReader br = state.br;
 			int ringBufferMask = state.ringBufferSize - 1;
 			byte[] ringBuffer = state.ringBuffer;
-			while (state.runningState != Org.Brotli.Dec.RunningState.Finished)
+			while (state.runningState != RunningState.Finished)
 			{
 				switch (state.runningState)
 				{
-					case Org.Brotli.Dec.RunningState.BlockStart:
+					case RunningState.BlockStart:
 					{
 						// TODO: extract cases to methods for the better readability.
 						if (state.metaBlockLength < 0)
 						{
-							throw new Org.Brotli.Dec.BrotliRuntimeException("Invalid metablock length");
+							throw new BrotliRuntimeException("Invalid metablock length");
 						}
 						ReadMetablockInfo(state);
 						/* Ring-buffer would be reallocated here. */
@@ -689,28 +689,28 @@ namespace Org.Brotli.Dec
 						continue;
 					}
 
-					case Org.Brotli.Dec.RunningState.CompressedBlockStart:
+					case RunningState.CompressedBlockStart:
 					{
 						ReadMetablockHuffmanCodesAndContextMaps(state);
-						state.runningState = Org.Brotli.Dec.RunningState.MainLoop;
-						goto case Org.Brotli.Dec.RunningState.MainLoop;
+						state.runningState = RunningState.MainLoop;
+						goto case RunningState.MainLoop;
 					}
 
-					case Org.Brotli.Dec.RunningState.MainLoop:
+					case RunningState.MainLoop:
 					{
 						// Fall through
 						if (state.metaBlockLength <= 0)
 						{
-							state.runningState = Org.Brotli.Dec.RunningState.BlockStart;
+							state.runningState = RunningState.BlockStart;
 							continue;
 						}
-						Org.Brotli.Dec.BitReader.ReadMoreInput(br);
+						BitReader.ReadMoreInput(br);
 						if (state.blockLength[1] == 0)
 						{
 							DecodeCommandBlockSwitch(state);
 						}
 						state.blockLength[1]--;
-						Org.Brotli.Dec.BitReader.FillBitWindow(br);
+						BitReader.FillBitWindow(br);
 						int cmdCode = ReadSymbol(state.hGroup1.codes, state.treeCommandOffset, br);
 						int rangeIdx = (int)(((uint)cmdCode) >> 6);
 						state.distanceCode = 0;
@@ -719,37 +719,37 @@ namespace Org.Brotli.Dec
 							rangeIdx -= 2;
 							state.distanceCode = -1;
 						}
-						int insertCode = Org.Brotli.Dec.Prefix.InsertRangeLut[rangeIdx] + (((int)(((uint)cmdCode) >> 3)) & 7);
-						int copyCode = Org.Brotli.Dec.Prefix.CopyRangeLut[rangeIdx] + (cmdCode & 7);
-						state.insertLength = Org.Brotli.Dec.Prefix.InsertLengthOffset[insertCode] + Org.Brotli.Dec.BitReader.ReadBits(br, Org.Brotli.Dec.Prefix.InsertLengthNBits[insertCode]);
-						state.copyLength = Org.Brotli.Dec.Prefix.CopyLengthOffset[copyCode] + Org.Brotli.Dec.BitReader.ReadBits(br, Org.Brotli.Dec.Prefix.CopyLengthNBits[copyCode]);
+						int insertCode = Prefix.InsertRangeLut[rangeIdx] + (((int)(((uint)cmdCode) >> 3)) & 7);
+						int copyCode = Prefix.CopyRangeLut[rangeIdx] + (cmdCode & 7);
+						state.insertLength = Prefix.InsertLengthOffset[insertCode] + BitReader.ReadBits(br, Prefix.InsertLengthNBits[insertCode]);
+						state.copyLength = Prefix.CopyLengthOffset[copyCode] + BitReader.ReadBits(br, Prefix.CopyLengthNBits[copyCode]);
 						state.j = 0;
-						state.runningState = Org.Brotli.Dec.RunningState.InsertLoop;
-						goto case Org.Brotli.Dec.RunningState.InsertLoop;
+						state.runningState = RunningState.InsertLoop;
+						goto case RunningState.InsertLoop;
 					}
 
-					case Org.Brotli.Dec.RunningState.InsertLoop:
+					case RunningState.InsertLoop:
 					{
 						// Fall through
 						if (state.trivialLiteralContext)
 						{
 							while (state.j < state.insertLength)
 							{
-								Org.Brotli.Dec.BitReader.ReadMoreInput(br);
+								BitReader.ReadMoreInput(br);
 								if (state.blockLength[0] == 0)
 								{
 									DecodeLiteralBlockSwitch(state);
 								}
 								state.blockLength[0]--;
-								Org.Brotli.Dec.BitReader.FillBitWindow(br);
+								BitReader.FillBitWindow(br);
 								ringBuffer[state.pos] = unchecked((byte)ReadSymbol(state.hGroup0.codes, state.literalTree, br));
 								state.j++;
 								if (state.pos++ == ringBufferMask)
 								{
-									state.nextRunningState = Org.Brotli.Dec.RunningState.InsertLoop;
+									state.nextRunningState = RunningState.InsertLoop;
 									state.bytesToWrite = state.ringBufferSize;
 									state.bytesWritten = 0;
-									state.runningState = Org.Brotli.Dec.RunningState.Write;
+									state.runningState = RunningState.Write;
 									break;
 								}
 							}
@@ -760,47 +760,47 @@ namespace Org.Brotli.Dec
 							int prevByte2 = ringBuffer[(state.pos - 2) & ringBufferMask] & unchecked((int)(0xFF));
 							while (state.j < state.insertLength)
 							{
-								Org.Brotli.Dec.BitReader.ReadMoreInput(br);
+								BitReader.ReadMoreInput(br);
 								if (state.blockLength[0] == 0)
 								{
 									DecodeLiteralBlockSwitch(state);
 								}
-								int literalTreeIndex = state.contextMap[state.contextMapSlice + (Org.Brotli.Dec.Context.Lookup[state.contextLookupOffset1 + prevByte1] | Org.Brotli.Dec.Context.Lookup[state.contextLookupOffset2 + prevByte2])] & unchecked((int)(0xFF));
+								int literalTreeIndex = state.contextMap[state.contextMapSlice + (Context.Lookup[state.contextLookupOffset1 + prevByte1] | Context.Lookup[state.contextLookupOffset2 + prevByte2])] & unchecked((int)(0xFF));
 								state.blockLength[0]--;
 								prevByte2 = prevByte1;
-								Org.Brotli.Dec.BitReader.FillBitWindow(br);
+								BitReader.FillBitWindow(br);
 								prevByte1 = ReadSymbol(state.hGroup0.codes, state.hGroup0.trees[literalTreeIndex], br);
 								ringBuffer[state.pos] = unchecked((byte)prevByte1);
 								state.j++;
 								if (state.pos++ == ringBufferMask)
 								{
-									state.nextRunningState = Org.Brotli.Dec.RunningState.InsertLoop;
+									state.nextRunningState = RunningState.InsertLoop;
 									state.bytesToWrite = state.ringBufferSize;
 									state.bytesWritten = 0;
-									state.runningState = Org.Brotli.Dec.RunningState.Write;
+									state.runningState = RunningState.Write;
 									break;
 								}
 							}
 						}
-						if (state.runningState != Org.Brotli.Dec.RunningState.InsertLoop)
+						if (state.runningState != RunningState.InsertLoop)
 						{
 							continue;
 						}
 						state.metaBlockLength -= state.insertLength;
 						if (state.metaBlockLength <= 0)
 						{
-							state.runningState = Org.Brotli.Dec.RunningState.MainLoop;
+							state.runningState = RunningState.MainLoop;
 							continue;
 						}
 						if (state.distanceCode < 0)
 						{
-							Org.Brotli.Dec.BitReader.ReadMoreInput(br);
+							BitReader.ReadMoreInput(br);
 							if (state.blockLength[2] == 0)
 							{
 								DecodeDistanceBlockSwitch(state);
 							}
 							state.blockLength[2]--;
-							Org.Brotli.Dec.BitReader.FillBitWindow(br);
+							BitReader.FillBitWindow(br);
 							state.distanceCode = ReadSymbol(state.hGroup2.codes, state.hGroup2.trees[state.distContextMap[state.distContextMapSlice + (state.copyLength > 4 ? 3 : state.copyLength - 2)] & unchecked((int)(0xFF))], br);
 							if (state.distanceCode >= state.numDirectDistanceCodes)
 							{
@@ -809,7 +809,7 @@ namespace Org.Brotli.Dec
 								state.distanceCode = (int)(((uint)state.distanceCode) >> state.distancePostfixBits);
 								int n = ((int)(((uint)state.distanceCode) >> 1)) + 1;
 								int offset = ((2 + (state.distanceCode & 1)) << n) - 4;
-								state.distanceCode = state.numDirectDistanceCodes + postfix + ((offset + Org.Brotli.Dec.BitReader.ReadBits(br, n)) << state.distancePostfixBits);
+								state.distanceCode = state.numDirectDistanceCodes + postfix + ((offset + BitReader.ReadBits(br, n)) << state.distancePostfixBits);
 							}
 						}
 						// Convert the distance code to the actual distance by possibly looking up past distances
@@ -817,7 +817,7 @@ namespace Org.Brotli.Dec
 						state.distance = TranslateShortCodes(state.distanceCode, state.distRb, state.distRbIdx);
 						if (state.distance < 0)
 						{
-							throw new Org.Brotli.Dec.BrotliRuntimeException("Negative distance");
+							throw new BrotliRuntimeException("Negative distance");
 						}
 						// COV_NF_LINE
 						if (state.maxDistance != state.maxBackwardDistance && state.pos < state.maxBackwardDistance)
@@ -831,7 +831,7 @@ namespace Org.Brotli.Dec
 						state.copyDst = state.pos;
 						if (state.distance > state.maxDistance)
 						{
-							state.runningState = Org.Brotli.Dec.RunningState.Transform;
+							state.runningState = RunningState.Transform;
 							continue;
 						}
 						if (state.distanceCode > 0)
@@ -841,15 +841,15 @@ namespace Org.Brotli.Dec
 						}
 						if (state.copyLength > state.metaBlockLength)
 						{
-							throw new Org.Brotli.Dec.BrotliRuntimeException("Invalid backward reference");
+							throw new BrotliRuntimeException("Invalid backward reference");
 						}
 						// COV_NF_LINE
 						state.j = 0;
-						state.runningState = Org.Brotli.Dec.RunningState.CopyLoop;
-						goto case Org.Brotli.Dec.RunningState.CopyLoop;
+						state.runningState = RunningState.CopyLoop;
+						goto case RunningState.CopyLoop;
 					}
 
-					case Org.Brotli.Dec.RunningState.CopyLoop:
+					case RunningState.CopyLoop:
 					{
 						// fall through
 						int src = (state.pos - state.distance) & ringBufferMask;
@@ -874,89 +874,89 @@ namespace Org.Brotli.Dec
 								state.j++;
 								if (state.pos++ == ringBufferMask)
 								{
-									state.nextRunningState = Org.Brotli.Dec.RunningState.CopyLoop;
+									state.nextRunningState = RunningState.CopyLoop;
 									state.bytesToWrite = state.ringBufferSize;
 									state.bytesWritten = 0;
-									state.runningState = Org.Brotli.Dec.RunningState.Write;
+									state.runningState = RunningState.Write;
 									break;
 								}
 							}
 						}
-						if (state.runningState == Org.Brotli.Dec.RunningState.CopyLoop)
+						if (state.runningState == RunningState.CopyLoop)
 						{
-							state.runningState = Org.Brotli.Dec.RunningState.MainLoop;
+							state.runningState = RunningState.MainLoop;
 						}
 						continue;
 					}
 
-					case Org.Brotli.Dec.RunningState.Transform:
+					case RunningState.Transform:
 					{
-						if (state.copyLength >= Org.Brotli.Dec.Dictionary.MinWordLength && state.copyLength <= Org.Brotli.Dec.Dictionary.MaxWordLength)
+						if (state.copyLength >= Dictionary.MinWordLength && state.copyLength <= Dictionary.MaxWordLength)
 						{
-							int offset = Org.Brotli.Dec.Dictionary.OffsetsByLength[state.copyLength];
+							int offset = Dictionary.OffsetsByLength[state.copyLength];
 							int wordId = state.distance - state.maxDistance - 1;
-							int shift = Org.Brotli.Dec.Dictionary.SizeBitsByLength[state.copyLength];
+							int shift = Dictionary.SizeBitsByLength[state.copyLength];
 							int mask = (1 << shift) - 1;
 							int wordIdx = wordId & mask;
 							int transformIdx = (int)(((uint)wordId) >> shift);
 							offset += wordIdx * state.copyLength;
-							if (transformIdx < Org.Brotli.Dec.Transform.Transforms.Length)
+							if (transformIdx < Transform.Transforms.Length)
 							{
-								int len = Org.Brotli.Dec.Transform.TransformDictionaryWord(ringBuffer, state.copyDst, Org.Brotli.Dec.Dictionary.GetData(), offset, state.copyLength, Org.Brotli.Dec.Transform.Transforms[transformIdx]);
+								int len = Transform.TransformDictionaryWord(ringBuffer, state.copyDst, Dictionary.GetData(), offset, state.copyLength, Transform.Transforms[transformIdx]);
 								state.copyDst += len;
 								state.pos += len;
 								state.metaBlockLength -= len;
 								if (state.copyDst >= state.ringBufferSize)
 								{
-									state.nextRunningState = Org.Brotli.Dec.RunningState.CopyWrapBuffer;
+									state.nextRunningState = RunningState.CopyWrapBuffer;
 									state.bytesToWrite = state.ringBufferSize;
 									state.bytesWritten = 0;
-									state.runningState = Org.Brotli.Dec.RunningState.Write;
+									state.runningState = RunningState.Write;
 									continue;
 								}
 							}
 							else
 							{
-								throw new Org.Brotli.Dec.BrotliRuntimeException("Invalid backward reference");
+								throw new BrotliRuntimeException("Invalid backward reference");
 							}
 						}
 						else
 						{
 							// COV_NF_LINE
-							throw new Org.Brotli.Dec.BrotliRuntimeException("Invalid backward reference");
+							throw new BrotliRuntimeException("Invalid backward reference");
 						}
 						// COV_NF_LINE
-						state.runningState = Org.Brotli.Dec.RunningState.MainLoop;
+						state.runningState = RunningState.MainLoop;
 						continue;
 					}
 
-					case Org.Brotli.Dec.RunningState.CopyWrapBuffer:
+					case RunningState.CopyWrapBuffer:
 					{
 						System.Array.Copy(ringBuffer, state.ringBufferSize, ringBuffer, 0, state.copyDst - state.ringBufferSize);
-						state.runningState = Org.Brotli.Dec.RunningState.MainLoop;
+						state.runningState = RunningState.MainLoop;
 						continue;
 					}
 
-					case Org.Brotli.Dec.RunningState.ReadMetadata:
+					case RunningState.ReadMetadata:
 					{
 						while (state.metaBlockLength > 0)
 						{
-							Org.Brotli.Dec.BitReader.ReadMoreInput(br);
+							BitReader.ReadMoreInput(br);
 							// Optimize
-							Org.Brotli.Dec.BitReader.ReadBits(br, 8);
+							BitReader.ReadBits(br, 8);
 							state.metaBlockLength--;
 						}
-						state.runningState = Org.Brotli.Dec.RunningState.BlockStart;
+						state.runningState = RunningState.BlockStart;
 						continue;
 					}
 
-					case Org.Brotli.Dec.RunningState.CopyUncompressed:
+					case RunningState.CopyUncompressed:
 					{
 						CopyUncompressedData(state);
 						continue;
 					}
 
-					case Org.Brotli.Dec.RunningState.Write:
+					case RunningState.Write:
 					{
 						if (!WriteRingBuffer(state))
 						{
@@ -974,18 +974,18 @@ namespace Org.Brotli.Dec
 
 					default:
 					{
-						throw new Org.Brotli.Dec.BrotliRuntimeException("Unexpected state " + state.runningState);
+						throw new BrotliRuntimeException("Unexpected state " + state.runningState);
 					}
 				}
 			}
-			if (state.runningState == Org.Brotli.Dec.RunningState.Finished)
+			if (state.runningState == RunningState.Finished)
 			{
 				if (state.metaBlockLength < 0)
 				{
-					throw new Org.Brotli.Dec.BrotliRuntimeException("Invalid metablock length");
+					throw new BrotliRuntimeException("Invalid metablock length");
 				}
-				Org.Brotli.Dec.BitReader.JumpToByteBoundary(br);
-				Org.Brotli.Dec.BitReader.CheckHealth(state.br, true);
+				BitReader.JumpToByteBoundary(br);
+				BitReader.CheckHealth(state.br, true);
 			}
 		}
 	}

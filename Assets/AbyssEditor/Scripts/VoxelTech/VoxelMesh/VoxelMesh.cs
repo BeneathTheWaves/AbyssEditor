@@ -1,16 +1,11 @@
 using System.Collections.Generic;
-using System.Numerics;
-using AbyssEditor.Octrees;
-using AbyssEditor.Scripts;
-using AbyssEditor.Scripts.TerrainMaterials;
+using AbyssEditor.Scripts.Octrees;
 using AbyssEditor.Scripts.VoxelTech.VoxelGrids;
 using AbyssEditor.Scripts.VoxelTech.VoxelGrids.Brushes;
-using AbyssEditor.TerrainMaterials;
-using Unity.Jobs;
 using UnityEngine;
 using Vector3 = UnityEngine.Vector3;
 
-namespace AbyssEditor.VoxelTech
+namespace AbyssEditor.Scripts.VoxelTech.VoxelMesh
 {
     public class VoxelMesh : MonoBehaviour
     {

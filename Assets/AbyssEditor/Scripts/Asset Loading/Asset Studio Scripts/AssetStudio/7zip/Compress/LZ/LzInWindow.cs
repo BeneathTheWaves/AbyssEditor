@@ -1,8 +1,7 @@
 // LzInWindow.cs
 
 using System;
-
-namespace SevenZip.Compression.LZ
+namespace AbyssEditor.Scripts.Asset_Loading.Asset_Studio_Scripts.AssetStudio._7zip.Compress.LZ
 {
 	public class InWindow
 	{

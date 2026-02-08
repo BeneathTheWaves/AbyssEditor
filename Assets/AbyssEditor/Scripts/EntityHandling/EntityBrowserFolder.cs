@@ -1,59 +1,63 @@
-﻿using AbyssEditor.UI;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
+using AbyssEditor.Scripts.UI;
+using AbyssEditor.Scripts.UI.Windows;
 using UnityEngine;
 
-public class EntityBrowserFolder : EntityBrowserEntryBase
+namespace AbyssEditor.Scripts.EntityHandling
 {
-    private string _name;
-
-    public EntityBrowserFolder(string path) : base(path)
+    public class EntityBrowserFolder : EntityBrowserEntryBase
     {
-        _name = System.IO.Path.GetFileName(path);
-        if (string.IsNullOrEmpty(_name))
+        private string _name;
+
+        public EntityBrowserFolder(string path) : base(path)
         {
-            _name = "Root";
-        }
-    }
-
-    public override string Name => _name;
-
-    public override Sprite Sprite => EntityDatabase.main.folderSprite;
-
-    public List<EntityBrowserEntryBase> Subentries { get; private set; } = new List<EntityBrowserEntryBase>();
-
-    public override void OnInteract()
-    {
-        UIEntityWindow.main.RenderFolder(this);
-    }
-
-    public void SortSubentries()
-    {
-        var sortedList = new List<EntityBrowserEntryBase>();
-        sortedList.AddRange(Subentries.Where(s => s is EntityBrowserFolder).OrderBy(s => s.Name).ToList());
-        sortedList.AddRange(Subentries.Where(s => !(s is EntityBrowserFolder)).OrderBy(s => s.Name).ToList());
-        Subentries = sortedList;
-    }
-
-    public List<EntityBrowserFolder> GetParentFolders()
-    {
-        var list = new List<EntityBrowserFolder>();
-        string workingPath = Path;
-        while (!string.IsNullOrEmpty(workingPath))
-        {
-            var indexOfLastSlash = workingPath.LastIndexOf('/');
-            if (indexOfLastSlash < 0) break;
-            workingPath = workingPath.Substring(0, indexOfLastSlash);
-            if (EntityDatabase.main.TryGetFolder(workingPath, out var folder))
+            _name = System.IO.Path.GetFileName(path);
+            if (string.IsNullOrEmpty(_name))
             {
-                list.Add(folder);
-            }
-            else
-            {
-                DebugOverlay.LogWarning($"Failed to find folder with path '{workingPath}'.");
+                _name = "Root";
             }
         }
-        list.Reverse();
-        return list;
+
+        public override string Name => _name;
+
+        public override Sprite Sprite => EntityDatabase.main.folderSprite;
+
+        public List<EntityBrowserEntryBase> Subentries { get; private set; } = new List<EntityBrowserEntryBase>();
+
+        public override void OnInteract()
+        {
+            UIEntityWindow.main.RenderFolder(this);
+        }
+
+        public void SortSubentries()
+        {
+            var sortedList = new List<EntityBrowserEntryBase>();
+            sortedList.AddRange(Subentries.Where(s => s is EntityBrowserFolder).OrderBy(s => s.Name).ToList());
+            sortedList.AddRange(Subentries.Where(s => !(s is EntityBrowserFolder)).OrderBy(s => s.Name).ToList());
+            Subentries = sortedList;
+        }
+
+        public List<EntityBrowserFolder> GetParentFolders()
+        {
+            var list = new List<EntityBrowserFolder>();
+            string workingPath = Path;
+            while (!string.IsNullOrEmpty(workingPath))
+            {
+                var indexOfLastSlash = workingPath.LastIndexOf('/');
+                if (indexOfLastSlash < 0) break;
+                workingPath = workingPath.Substring(0, indexOfLastSlash);
+                if (EntityDatabase.main.TryGetFolder(workingPath, out var folder))
+                {
+                    list.Add(folder);
+                }
+                else
+                {
+                    DebugOverlay.LogWarning($"Failed to find folder with path '{workingPath}'.");
+                }
+            }
+            list.Reverse();
+            return list;
+        }
     }
 }

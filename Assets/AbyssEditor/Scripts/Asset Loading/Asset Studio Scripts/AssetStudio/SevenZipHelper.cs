@@ -1,9 +1,7 @@
 using System;
 using System.IO;
-using SevenZip.Compression.LZMA;
-
-
-namespace AssetStudio
+using AbyssEditor.Scripts.Asset_Loading.Asset_Studio_Scripts.AssetStudio._7zip.Compress.LZMA;
+namespace AbyssEditor.Scripts.Asset_Loading.Asset_Studio_Scripts.AssetStudio
 {
     public static class SevenZipHelper
     {

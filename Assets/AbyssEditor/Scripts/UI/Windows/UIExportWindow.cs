@@ -1,10 +1,7 @@
-﻿using AbyssEditor.Scripts.UI;
-using AbyssEditor.VoxelTech;
-using SFB;
+﻿using AbyssEditor.Scripts.VoxelTech;
 using UnityEngine;
 using UnityEngine.UI;
-
-namespace AbyssEditor.UI {
+namespace AbyssEditor.Scripts.UI.Windows {
     public class UIExportWindow : UIWindow {
         UICheckbox checkbox;
         UIButtonSelect modeSelection;
@@ -20,7 +17,7 @@ namespace AbyssEditor.UI {
             switch (modeSelection.selection) {
                 case 0:
                     // Export some .optoctrees files
-                    string[] paths = StandaloneFileBrowser.OpenFolderPanel("Select export folder...", Application.dataPath, false);
+                    string[] paths = StandaloneFileBrowser.StandaloneFileBrowser.OpenFolderPanel("Select export folder...", Application.dataPath, false);
                     if (paths.Length == 0) {
                         // user cancels
                         return;
@@ -29,7 +26,7 @@ namespace AbyssEditor.UI {
                     break;
                 case 1:
                     // Save .optoctreepatch file
-                    string path = StandaloneFileBrowser.SaveFilePanel("Save patch as...", Application.dataPath, "TerrainPatch", "optoctreepatch");
+                    string path = StandaloneFileBrowser.StandaloneFileBrowser.SaveFilePanel("Save patch as...", Application.dataPath, "TerrainPatch", "optoctreepatch");
                     if (string.IsNullOrEmpty(path)) {
                         // user cancels
                         return;
@@ -38,7 +35,7 @@ namespace AbyssEditor.UI {
                     break;
                 case 2:
                     // Save .fbx file
-                    path = StandaloneFileBrowser.SaveFilePanel("Save mesh as...", Application.dataPath, "SubnauticaScene", "fbx");
+                    path = StandaloneFileBrowser.StandaloneFileBrowser.SaveFilePanel("Save mesh as...", Application.dataPath, "SubnauticaScene", "fbx");
                     if (string.IsNullOrEmpty(path)) {
                         // user cancels
                         return;

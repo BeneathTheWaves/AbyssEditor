@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
-
-namespace AbyssEditor.UI {
+namespace AbyssEditor.Scripts.UI {
     public class UIProgressBar : MonoBehaviour {
         Image barImage;
         public void SetFill(float amount) {

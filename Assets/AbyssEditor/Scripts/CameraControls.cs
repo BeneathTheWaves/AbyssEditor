@@ -1,7 +1,7 @@
-﻿using UnityEngine;
+﻿using AbyssEditor.Scripts.VoxelTech;
+using UnityEngine;
 using UnityEngine.EventSystems;
-
-namespace AbyssEditor
+namespace AbyssEditor.Scripts
 {
     public class CameraControls : MonoBehaviour
     {

@@ -1,6 +1,5 @@
-﻿using AbyssEditor.Scripts.SaveSystem;
-using AbyssEditor.UI;
-using SFB;
+﻿using AbyssEditor.Scripts.Essentials;
+using AbyssEditor.Scripts.SaveSystem;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -20,7 +19,7 @@ namespace AbyssEditor.Scripts.UI.Windows {
         }
 
         public void BrowseGamePath() {
-            string[] paths = StandaloneFileBrowser.OpenFolderPanel(Language.main.Get("FileBrowserTip"), Application.persistentDataPath, false);
+            string[] paths = StandaloneFileBrowser.StandaloneFileBrowser.OpenFolderPanel(Language.main.Get("FileBrowserTip"), Application.persistentDataPath, false);
 
             if (paths.Length != 0) {
                 Preferences.data.gamePath = paths[0];

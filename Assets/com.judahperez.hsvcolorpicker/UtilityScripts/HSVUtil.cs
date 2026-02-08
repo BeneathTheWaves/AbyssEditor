@@ -1,7 +1,6 @@
-﻿using UnityEngine;
-using System;
-
-namespace HSVPicker 
+﻿using System;
+using UnityEngine;
+namespace com.judahperez.hsvcolorpicker.UtilityScripts 
 {
 
 #region ColorUtilities

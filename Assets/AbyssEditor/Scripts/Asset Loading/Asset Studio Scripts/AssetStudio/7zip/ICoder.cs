@@ -1,8 +1,7 @@
 // ICoder.h
 
 using System;
-
-namespace SevenZip
+namespace AbyssEditor.Scripts.Asset_Loading.Asset_Studio_Scripts.AssetStudio._7zip
 {
 	/// <summary>
 	/// The exception that is thrown when an error in input stream occurs during decoding.
@@ -54,7 +53,7 @@ namespace SevenZip
 		/// <param name="progress">
 		/// callback progress reference.
 		/// </param>
-		/// <exception cref="SevenZip.DataErrorException">
+		/// <exception cref="DataErrorException">
 		/// if input stream is not valid
 		/// </exception>
 		void Code(System.IO.Stream inStream, System.IO.Stream outStream,

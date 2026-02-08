@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using static AssetStudio.ImportHelper;
+using AbyssEditor.Scripts.Asset_Loading.Asset_Studio_Scripts.AssetStudio.Classes;
+using static AbyssEditor.Scripts.Asset_Loading.Asset_Studio_Scripts.AssetStudio.ImportHelper;
+using Object = AbyssEditor.Scripts.Asset_Loading.Asset_Studio_Scripts.AssetStudio.Classes.Object;
 
-namespace AssetStudio
+namespace AbyssEditor.Scripts.Asset_Loading.Asset_Studio_Scripts.AssetStudio
 {
     public class AssetsManager
     {

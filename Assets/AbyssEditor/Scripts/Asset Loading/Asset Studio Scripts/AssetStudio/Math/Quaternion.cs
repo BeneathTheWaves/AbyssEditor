@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Runtime.InteropServices;
-
-namespace AssetStudio
+namespace AbyssEditor.Scripts.Asset_Loading.Asset_Studio_Scripts.AssetStudio.Math
 {
     [StructLayout(LayoutKind.Sequential, Pack = 4)]
     public struct Quaternion : IEquatable<Quaternion>

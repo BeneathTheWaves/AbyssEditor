@@ -2,8 +2,7 @@
 
 using System;
 using System.Collections;
-
-namespace SevenZip.CommandLineParser
+namespace AbyssEditor.Scripts.Asset_Loading.Asset_Studio_Scripts.AssetStudio._7zip.Common
 {
 	public enum SwitchType
 	{

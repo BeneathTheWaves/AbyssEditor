@@ -1,20 +1,23 @@
 ﻿using UnityEngine;
 
-public abstract class EntityPreviewBase
+namespace AbyssEditor.Scripts.EntityHandling
 {
-    public EntityData Entity { get; }
-
-    public EntityPreviewBase(EntityData entity)
+    public abstract class EntityPreviewBase
     {
-        Entity = entity;
-    }
+        public EntityData Entity { get; }
 
-    public abstract GameObject InstantiatePreview(EntityInstance entityInstance);
+        public EntityPreviewBase(EntityData entity)
+        {
+            Entity = entity;
+        }
 
-    protected void SetTransformFromEntityInstance(Transform transform, EntityInstance instance)
-    {
-        transform.position = instance.Position;
-        transform.rotation = instance.Rotation;
-        transform.localScale = instance.Scale;
+        public abstract GameObject InstantiatePreview(EntityInstance entityInstance);
+
+        protected void SetTransformFromEntityInstance(Transform transform, EntityInstance instance)
+        {
+            transform.position = instance.Position;
+            transform.rotation = instance.Rotation;
+            transform.localScale = instance.Scale;
+        }
     }
 }

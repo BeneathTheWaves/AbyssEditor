@@ -1,26 +1,30 @@
-﻿using UnityEngine;
+﻿using AbyssEditor.Scripts.EntityHandling;
+using UnityEngine;
 using UnityEngine.UI;
 
-public class EntityBrowserButton : MonoBehaviour
+namespace AbyssEditor.Scripts.UI.EntitySystem
 {
-    public Image image;
-    public Text text;
-    public RectTransform rectTransform;
-
-    private EntityBrowserEntryBase browserEntry;
-
-    public void OnInteract()
+    public class EntityBrowserButton : MonoBehaviour
     {
-        browserEntry?.OnInteract();
-    }
+        public Image image;
+        public Text text;
+        public RectTransform rectTransform;
 
-    public void SetBrowserEntry(EntityBrowserEntryBase browserEntry)
-    {
-        this.browserEntry = browserEntry;
-        if (browserEntry != null)
+        private EntityBrowserEntryBase browserEntry;
+
+        public void OnInteract()
         {
-            if (image) image.sprite = browserEntry.Sprite;
-            text.text = browserEntry.Name;
+            browserEntry?.OnInteract();
+        }
+
+        public void SetBrowserEntry(EntityBrowserEntryBase browserEntry)
+        {
+            this.browserEntry = browserEntry;
+            if (browserEntry != null)
+            {
+                if (image) image.sprite = browserEntry.Sprite;
+                text.text = browserEntry.Name;
+            }
         }
     }
 }

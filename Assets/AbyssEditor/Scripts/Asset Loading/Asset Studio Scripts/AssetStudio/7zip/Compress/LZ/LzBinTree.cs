@@ -1,8 +1,8 @@
 // LzBinTree.cs
 
 using System;
-
-namespace SevenZip.Compression.LZ
+using AbyssEditor.Scripts.Asset_Loading.Asset_Studio_Scripts.AssetStudio._7zip.Common;
+namespace AbyssEditor.Scripts.Asset_Loading.Asset_Studio_Scripts.AssetStudio._7zip.Compress.LZ
 {
 	public class BinTree : InWindow, IMatchFinder
 	{
@@ -212,7 +212,7 @@ namespace SevenZip.Compression.LZ
 							(_cyclicBufferPos - delta + _cyclicBufferSize)) << 1;
 
 				UInt32 pby1 = _bufferOffset + curMatch;
-				UInt32 len = Math.Min(len0, len1);
+				UInt32 len = System.Math.Min(len0, len1);
 				if (_bufferBase[pby1 + len] == _bufferBase[cur + len])
 				{
 					while(++len != lenLimit)
@@ -308,7 +308,7 @@ namespace SevenZip.Compression.LZ
 								(_cyclicBufferPos - delta + _cyclicBufferSize)) << 1;
 
 					UInt32 pby1 = _bufferOffset + curMatch;
-					UInt32 len = Math.Min(len0, len1);
+					UInt32 len = System.Math.Min(len0, len1);
 					if (_bufferBase[pby1 + len] == _bufferBase[cur + len])
 					{
 						while (++len != lenLimit)

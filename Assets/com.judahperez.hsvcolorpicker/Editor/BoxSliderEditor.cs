@@ -1,8 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using com.judahperez.hsvcolorpicker.UtilityScripts;
 using UnityEditor;
 using UnityEditor.UI;
-
-namespace HSVPicker.Editors
+namespace com.judahperez.hsvcolorpicker.Editor
 {
 	[CustomEditor(typeof(BoxSlider), true)]
 	[CanEditMultipleObjects]

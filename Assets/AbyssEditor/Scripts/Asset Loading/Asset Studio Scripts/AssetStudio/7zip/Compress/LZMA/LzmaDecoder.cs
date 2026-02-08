@@ -1,10 +1,9 @@
 // LzmaDecoder.cs
 
 using System;
-
-namespace SevenZip.Compression.LZMA
+using AbyssEditor.Scripts.Asset_Loading.Asset_Studio_Scripts.AssetStudio._7zip.Compress.RangeCoder;
+namespace AbyssEditor.Scripts.Asset_Loading.Asset_Studio_Scripts.AssetStudio._7zip.Compress.LZMA
 {
-	using RangeCoder;
 
 	public class Decoder : ICoder, ISetDecoderProperties // ,System.IO.Stream
 	{
@@ -169,8 +168,8 @@ namespace SevenZip.Compression.LZMA
 			if (m_DictionarySize != dictionarySize)
 			{
 				m_DictionarySize = dictionarySize;
-				m_DictionarySizeCheck = Math.Max(m_DictionarySize, 1);
-				uint blockSize = Math.Max(m_DictionarySizeCheck, (1 << 12));
+				m_DictionarySizeCheck = System.Math.Max(m_DictionarySize, 1);
+				uint blockSize = System.Math.Max(m_DictionarySizeCheck, (1 << 12));
 				m_OutWindow.Create(blockSize);
 			}
 		}

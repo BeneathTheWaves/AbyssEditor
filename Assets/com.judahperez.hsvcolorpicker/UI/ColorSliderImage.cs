@@ -1,6 +1,8 @@
-﻿using UnityEngine;
+﻿using com.judahperez.hsvcolorpicker.Enums;
+using com.judahperez.hsvcolorpicker.UtilityScripts;
+using UnityEngine;
 using UnityEngine.UI;
-namespace HSVPicker
+namespace com.judahperez.hsvcolorpicker.UI
 {
     [RequireComponent(typeof(RawImage)), ExecuteInEditMode()]
     public class ColorSliderImage : MonoBehaviour

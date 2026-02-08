@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using com.judahperez.hsvcolorpicker.UI;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -63,7 +64,7 @@ namespace AbyssEditor.Scripts.UI
         private void SpawnPicker()
         {
             pickerObject = Instantiate(pickerAsset, this.transform.parent);
-            HSVPicker.ColorPicker colorPickerInstance = pickerObject.GetComponent<HSVPicker.ColorPicker>();
+            ColorPicker colorPickerInstance = pickerObject.GetComponent<ColorPicker>();
             colorPickerInstance.CurrentColor = color;
             colorPickerInstance.onValueChanged.AddListener(OnPickerColorChanged);
         }

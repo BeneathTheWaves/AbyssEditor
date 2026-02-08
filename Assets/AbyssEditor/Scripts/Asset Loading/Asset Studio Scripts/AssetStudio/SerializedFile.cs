@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
-
-namespace AssetStudio
+using AbyssEditor.Scripts.Asset_Loading.Asset_Studio_Scripts.AssetStudio.Extensions;
+using Object = AbyssEditor.Scripts.Asset_Loading.Asset_Studio_Scripts.AssetStudio.Classes.Object;
+namespace AbyssEditor.Scripts.Asset_Loading.Asset_Studio_Scripts.AssetStudio
 {
     public class SerializedFile
     {

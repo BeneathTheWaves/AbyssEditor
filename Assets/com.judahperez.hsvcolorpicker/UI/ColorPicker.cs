@@ -1,6 +1,8 @@
-﻿using UnityEngine;
-
-namespace HSVPicker
+﻿using com.judahperez.hsvcolorpicker.Enums;
+using com.judahperez.hsvcolorpicker.Events;
+using com.judahperez.hsvcolorpicker.UtilityScripts;
+using UnityEngine;
+namespace com.judahperez.hsvcolorpicker.UI
 {
     [DefaultExecutionOrder(0)]
     public class ColorPicker : MonoBehaviour

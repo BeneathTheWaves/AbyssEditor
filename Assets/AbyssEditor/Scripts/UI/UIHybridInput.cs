@@ -2,9 +2,8 @@
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using UnityEngine.UI;
 
-namespace AbyssEditor.UI {
+namespace AbyssEditor.Scripts.UI {
     public class UIHybridInput : MonoBehaviour, IDragHandler, IEndDragHandler, IPointerClickHandler {
 
         public float LerpedValue {

@@ -1,11 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using AbyssEditor.Scripts.VoxelTech;
 using Unity.Collections;
 using UnityEngine;
 using UnityEngine.Rendering;
-
-namespace AbyssEditor {
+namespace AbyssEditor.Scripts.Mesh_Gen {
     public class MeshBuilder : MonoBehaviour {
         public static MeshBuilder builder;
         

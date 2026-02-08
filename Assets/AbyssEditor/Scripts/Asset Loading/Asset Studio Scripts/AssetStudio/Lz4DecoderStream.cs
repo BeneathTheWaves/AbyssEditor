@@ -4,8 +4,7 @@
 
 using System;
 using System.IO;
-
-namespace Lz4
+namespace AbyssEditor.Scripts.Asset_Loading.Asset_Studio_Scripts.AssetStudio
 {
     public class Lz4DecoderStream : Stream
     {

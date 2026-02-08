@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections;
-using AbyssEditor.Scripts;
-using AbyssEditor.Scripts.BatchOutline;
-using AbyssEditor.Scripts.UI;
+﻿using AbyssEditor.Scripts.BatchOutline;
+using AbyssEditor.Scripts.Essentials;
+using AbyssEditor.Scripts.VoxelTech;
 using TMPro;
-using SFB;
 using UnityEngine;
 using UnityEngine.UI;
-
-namespace AbyssEditor.UI {
+namespace AbyssEditor.Scripts.UI.Windows {
     public class UILoadWindow : UIWindow
     {
         public Carousel carouselLoadMethod;
@@ -60,7 +56,7 @@ namespace AbyssEditor.UI {
 
         public void OnSelectFileButton()
         {
-            string[] paths = StandaloneFileBrowser.OpenFilePanel(Language.main.Get("PatchSelectFileBrowserTip"), Application.persistentDataPath, "", false);
+            string[] paths = StandaloneFileBrowser.StandaloneFileBrowser.OpenFilePanel(Language.main.Get("PatchSelectFileBrowserTip"), Application.persistentDataPath, "", false);
 
             if (paths.Length == 0 || !paths[0].ToLower().EndsWith(".optoctreepatch"))
             {

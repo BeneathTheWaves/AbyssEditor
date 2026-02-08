@@ -3,7 +3,7 @@
 Distributed under MIT license.
 See file LICENSE for detail or copy at https://opensource.org/licenses/MIT
 */
-namespace Org.Brotli.Dec
+namespace AbyssEditor.Scripts.Asset_Loading.Asset_Studio_Scripts.AssetStudio.Brotli
 {
 	/// <summary>Contains a collection of huffman trees with the same alphabet size.</summary>
 	internal sealed class HuffmanTreeGroup
@@ -25,25 +25,25 @@ namespace Org.Brotli.Dec
 		/// <param name="group">POJO to be initialised</param>
 		/// <param name="alphabetSize">the maximal alphabet size in this group</param>
 		/// <param name="n">number of Huffman codes</param>
-		internal static void Init(Org.Brotli.Dec.HuffmanTreeGroup group, int alphabetSize, int n)
+		internal static void Init(HuffmanTreeGroup group, int alphabetSize, int n)
 		{
 			group.alphabetSize = alphabetSize;
-			group.codes = new int[n * Org.Brotli.Dec.Huffman.HuffmanMaxTableSize];
+			group.codes = new int[n * Huffman.HuffmanMaxTableSize];
 			group.trees = new int[n];
 		}
 
 		/// <summary>Decodes Huffman trees from input stream and constructs lookup tables.</summary>
 		/// <param name="group">target POJO</param>
 		/// <param name="br">data source</param>
-		internal static void Decode(Org.Brotli.Dec.HuffmanTreeGroup group, Org.Brotli.Dec.BitReader br)
+		internal static void Decode(HuffmanTreeGroup group, BitReader br)
 		{
 			int next = 0;
 			int n = group.trees.Length;
 			for (int i = 0; i < n; i++)
 			{
 				group.trees[i] = next;
-				Org.Brotli.Dec.Decode.ReadHuffmanCode(group.alphabetSize, group.codes, next, br);
-				next += Org.Brotli.Dec.Huffman.HuffmanMaxTableSize;
+				Brotli.Decode.ReadHuffmanCode(group.alphabetSize, group.codes, next, br);
+				next += Huffman.HuffmanMaxTableSize;
 			}
 		}
 	}

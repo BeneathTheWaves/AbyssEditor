@@ -1,6 +1,6 @@
 // Common/CRC.cs
 
-namespace SevenZip
+namespace AbyssEditor.Scripts.Asset_Loading.Asset_Studio_Scripts.AssetStudio._7zip.Common
 {
 	public class CRC
 	{

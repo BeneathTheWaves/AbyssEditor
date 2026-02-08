@@ -1,8 +1,7 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using System.Globalization;
-using System.Runtime.InteropServices;
-
-namespace System
+namespace AbyssEditor.Scripts.Asset_Loading.Asset_Studio_Scripts.AssetStudio.Math
 {
     /// <summary>
     /// Represents a half-precision floating point number. 

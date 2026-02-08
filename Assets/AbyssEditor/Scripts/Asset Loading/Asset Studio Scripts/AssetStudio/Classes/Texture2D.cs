@@ -1,6 +1,5 @@
-﻿using System;
-
-namespace AssetStudio
+﻿using AbyssEditor.Scripts.Asset_Loading.Asset_Studio_Scripts.AssetStudio.Extensions;
+namespace AbyssEditor.Scripts.Asset_Loading.Asset_Studio_Scripts.AssetStudio.Classes
 {
     public class StreamingInfo
     {

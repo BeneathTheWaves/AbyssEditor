@@ -1,15 +1,18 @@
 ﻿using UnityEngine;
 
-public class BasicEntityPreview : EntityPreviewBase
+namespace AbyssEditor.Scripts.EntityHandling
 {
-    public BasicEntityPreview(EntityData entity) : base(entity)
+    public class BasicEntityPreview : EntityPreviewBase
     {
-    }
+        public BasicEntityPreview(EntityData entity) : base(entity)
+        {
+        }
 
-    public override GameObject InstantiatePreview(EntityInstance entityInstance)
-    {
-        var cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
-        SetTransformFromEntityInstance(cube.transform, entityInstance);
-        return cube;
+        public override GameObject InstantiatePreview(EntityInstance entityInstance)
+        {
+            var cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            SetTransformFromEntityInstance(cube.transform, entityInstance);
+            return cube;
+        }
     }
 }

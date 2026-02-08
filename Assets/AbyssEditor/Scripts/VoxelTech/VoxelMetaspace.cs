@@ -1,23 +1,20 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
-using AbyssEditor.Octrees;
-using AbyssEditor.Scripts;
+using AbyssEditor.Scripts.Octrees;
 using AbyssEditor.Scripts.TaskSystem;
-using AbyssEditor.Scripts.TerrainMaterials;
+using AbyssEditor.Scripts.UI;
 using AbyssEditor.Scripts.VoxelTech.VoxelGrids;
 using AbyssEditor.Scripts.VoxelTech.VoxelGrids.Brushes;
-using AbyssEditor.TerrainMaterials;
-using Unity.Jobs;
+using AbyssEditor.Scripts.VoxelTech.VoxelMesh;
 using UnityEngine;
 
-namespace AbyssEditor.VoxelTech {
+namespace AbyssEditor.Scripts.VoxelTech {
     public class VoxelMetaspace : MonoBehaviour
     {
         public static VoxelMetaspace metaspace;
         
-        public List<VoxelMesh> meshes = new();
+        public List<VoxelMesh.VoxelMesh> meshes = new();
 
         void Awake() {
             metaspace = this;
@@ -28,11 +25,11 @@ namespace AbyssEditor.VoxelTech {
         public void AddRegion(Vector3Int startBatch, Vector3Int endBatch) {
             foreach (Vector3Int batchIndex in startBatch.IterateTo(endBatch))
             {
-                VoxelMesh voxelMesh = TryGetVoxelMesh(batchIndex);
+                VoxelMesh.VoxelMesh voxelMesh = TryGetVoxelMesh(batchIndex);
                 
                 if(!voxelMesh)
                 {
-                    voxelMesh = new GameObject($"batch-{batchIndex.x}-{batchIndex.y}-{batchIndex.z}").AddComponent<VoxelMesh>();
+                    voxelMesh = new GameObject($"batch-{batchIndex.x}-{batchIndex.y}-{batchIndex.z}").AddComponent<VoxelMesh.VoxelMesh>();
                     voxelMesh.Create(batchIndex);
                     meshes.Add(voxelMesh);
                 }
@@ -41,7 +38,7 @@ namespace AbyssEditor.VoxelTech {
 
         public VoxelGrid TryGetVoxelGrid(Vector3Int batchIndex, Vector3Int containerIndex)
         {
-            VoxelMesh mesh = TryGetVoxelMesh(batchIndex);
+            VoxelMesh.VoxelMesh mesh = TryGetVoxelMesh(batchIndex);
             if (mesh != null)
             {
                 return mesh.GetVoxelGrid(containerIndex);
@@ -56,7 +53,7 @@ namespace AbyssEditor.VoxelTech {
             
             List<PointContainer> modifiedContainers = new List<PointContainer>(8);
             List<BrushJob> brushJobs = new List<BrushJob>(8);
-            foreach(VoxelMesh mesh in meshes) {
+            foreach(VoxelMesh.VoxelMesh mesh in meshes) {
                 if (OctreeRaycasting.DistanceToBox(stroke.brushLocation, mesh.GetBatchMinBound(), mesh.GetBatchMaxBound()) <= stroke.brushRadius) {
                     mesh.ApplyJobBasedDensityFunction(stroke, brushJobs, modifiedContainers);
                 }
@@ -105,7 +102,7 @@ namespace AbyssEditor.VoxelTech {
                 statusHandle.SetStatus($"Reading {batchIndex}");
                 readCount++;
                 
-                VoxelMesh mesh = TryGetVoxelMesh(batchIndex);
+                VoxelMesh.VoxelMesh mesh = TryGetVoxelMesh(batchIndex);
                 
                 BatchReadWriter.GetPath(mesh.batchIndex, allowModded, out bool isModded);
                 
@@ -147,7 +144,7 @@ namespace AbyssEditor.VoxelTech {
                 //TODO: THIS IS SCUFFED ASF RN SMH TS PMO ONG ONG FRFR NO CAPA LAPA HI KOOKOO
                 AddRegion(modifiedBatch, modifiedBatch);
                 
-                VoxelMesh mesh = TryGetVoxelMesh(modifiedBatch);
+                VoxelMesh.VoxelMesh mesh = TryGetVoxelMesh(modifiedBatch);
                 
                 mesh.OctreesReadCallback(nodes);
                 endBatch = modifiedBatch;
@@ -169,7 +166,7 @@ namespace AbyssEditor.VoxelTech {
             int totalTasks = meshes.Count * 2;
             int completedTasks = 0;
             
-            foreach (VoxelMesh mesh in meshes) {
+            foreach (VoxelMesh.VoxelMesh mesh in meshes) {
                 mesh.UpdateFullGrids();
                 
                 statusHandle.SetStatus($"Updating Grid(s) for {mesh.batchIndex}");
@@ -179,7 +176,7 @@ namespace AbyssEditor.VoxelTech {
                 yield return null;
             }
 
-            foreach (VoxelMesh mesh in meshes) {
+            foreach (VoxelMesh.VoxelMesh mesh in meshes) {
                 mesh.Regenerate();
                 
                 statusHandle.SetStatus($"Regenerating mesh(es) for {mesh.batchIndex}");
@@ -201,7 +198,7 @@ namespace AbyssEditor.VoxelTech {
 
         public void ReloadBoundaries()
         {
-            foreach (VoxelMesh mesh in meshes)
+            foreach (VoxelMesh.VoxelMesh mesh in meshes)
             {
                 mesh.RedrawBoundaryPlanes();
             }
@@ -213,7 +210,7 @@ namespace AbyssEditor.VoxelTech {
         void OnApplicationQuit()
         {
             Debug.Log("Disposing Native Arrays");
-            foreach (VoxelMesh mesh in meshes)
+            foreach (VoxelMesh.VoxelMesh mesh in meshes)
             {
                 mesh.DisposeGrids();
             }
@@ -221,7 +218,7 @@ namespace AbyssEditor.VoxelTech {
             VoxelGrid.neighboursToCheckInSmooth.Dispose();
         }
 
-        public VoxelMesh TryGetVoxelMesh(Vector3Int batchIndex)
+        public VoxelMesh.VoxelMesh TryGetVoxelMesh(Vector3Int batchIndex)
         {
             return meshes.FirstOrDefault(mesh => mesh.batchIndex == batchIndex);
         }

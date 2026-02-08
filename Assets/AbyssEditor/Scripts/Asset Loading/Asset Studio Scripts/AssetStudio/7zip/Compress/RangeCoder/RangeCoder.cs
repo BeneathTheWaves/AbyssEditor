@@ -1,6 +1,5 @@
 using System;
-
-namespace SevenZip.Compression.RangeCoder
+namespace AbyssEditor.Scripts.Asset_Loading.Asset_Studio_Scripts.AssetStudio._7zip.Compress.RangeCoder
 {
 	class Encoder
 	{

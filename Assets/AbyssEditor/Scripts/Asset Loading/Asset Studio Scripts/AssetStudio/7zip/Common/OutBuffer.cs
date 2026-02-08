@@ -1,6 +1,6 @@
 // OutBuffer.cs
 
-namespace SevenZip.Buffer
+namespace AbyssEditor.Scripts.Asset_Loading.Asset_Studio_Scripts.AssetStudio._7zip.Common
 {
 	public class OutBuffer
 	{

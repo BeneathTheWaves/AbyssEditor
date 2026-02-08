@@ -1,4 +1,4 @@
-﻿namespace AssetStudio
+﻿namespace AbyssEditor.Scripts.Asset_Loading.Asset_Studio_Scripts.AssetStudio
 {
     public enum ClassIDType
     {

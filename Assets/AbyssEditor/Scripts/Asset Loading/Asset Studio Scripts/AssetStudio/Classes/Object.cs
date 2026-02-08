@@ -2,8 +2,7 @@
 using System.Collections.Specialized;
 using System.Linq;
 using System.Text;
-
-namespace AssetStudio
+namespace AbyssEditor.Scripts.Asset_Loading.Asset_Studio_Scripts.AssetStudio.Classes
 {
     public class Object
     {

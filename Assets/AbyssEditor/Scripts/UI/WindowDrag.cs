@@ -1,7 +1,7 @@
-﻿using UnityEngine;
+﻿using AbyssEditor.Scripts.UI.Windows;
+using UnityEngine;
 using UnityEngine.EventSystems;
-
-namespace AbyssEditor.UI {
+namespace AbyssEditor.Scripts.UI {
     public class WindowDrag : MonoBehaviour, IBeginDragHandler, IDragHandler {
         [SerializeField] RectTransform windowTf;
         Vector3 offset;

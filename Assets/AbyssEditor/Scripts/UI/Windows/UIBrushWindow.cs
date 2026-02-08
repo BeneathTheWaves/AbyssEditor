@@ -1,7 +1,6 @@
 ﻿using System;
 using AbyssEditor.Scripts.TerrainMaterials;
-
-namespace AbyssEditor.UI {
+namespace AbyssEditor.Scripts.UI.Windows {
     public class UIBrushWindow : UIWindow {
         UIButtonSelect modeSelector;
         UIHybridInput brushSizeSelector;

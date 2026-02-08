@@ -1,6 +1,6 @@
 // LzmaBase.cs
 
-namespace SevenZip.Compression.LZMA
+namespace AbyssEditor.Scripts.Asset_Loading.Asset_Studio_Scripts.AssetStudio._7zip.Compress.LZMA
 {
 	internal abstract class Base
 	{

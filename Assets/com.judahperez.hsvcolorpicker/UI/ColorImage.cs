@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
-
-namespace HSVPicker
+namespace com.judahperez.hsvcolorpicker.UI
 {
     [RequireComponent(typeof(Image))]
     public class ColorImage : MonoBehaviour

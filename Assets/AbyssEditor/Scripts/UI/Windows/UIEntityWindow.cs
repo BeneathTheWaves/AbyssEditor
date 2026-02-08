@@ -1,8 +1,10 @@
-﻿namespace AbyssEditor.UI
+﻿using System.Collections.Generic;
+using AbyssEditor.Scripts.EntityHandling;
+using AbyssEditor.Scripts.UI.EntitySystem;
+using UnityEngine;
+using UnityEngine.UI;
+namespace AbyssEditor.Scripts.UI.Windows
 {
-    using System.Collections.Generic;
-    using UnityEngine;
-    using UnityEngine.UI;
 
     public class UIEntityWindow : UIWindow
     {

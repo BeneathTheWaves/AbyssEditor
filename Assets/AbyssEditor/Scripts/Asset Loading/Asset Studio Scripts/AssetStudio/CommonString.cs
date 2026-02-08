@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
-
-namespace AssetStudio
+namespace AbyssEditor.Scripts.Asset_Loading.Asset_Studio_Scripts.AssetStudio
 {
     public static class CommonString
     {

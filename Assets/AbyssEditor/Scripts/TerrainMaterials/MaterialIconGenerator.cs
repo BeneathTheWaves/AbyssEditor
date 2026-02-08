@@ -3,8 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using AbyssEditor.Scripts.TaskSystem;
 using AbyssEditor.Scripts.UI;
-using AbyssEditor.TerrainMaterials;
-using AbyssEditor.VoxelTech;
+using AbyssEditor.Scripts.VoxelTech;
 using UnityEngine;
 using MonoBehaviour = UnityEngine.MonoBehaviour;
 

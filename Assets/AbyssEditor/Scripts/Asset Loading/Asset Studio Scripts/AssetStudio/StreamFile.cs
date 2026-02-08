@@ -1,6 +1,5 @@
 ﻿using System.IO;
-
-namespace AssetStudio
+namespace AbyssEditor.Scripts.Asset_Loading.Asset_Studio_Scripts.AssetStudio
 {
     public class StreamFile
     {

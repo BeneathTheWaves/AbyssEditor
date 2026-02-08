@@ -1,8 +1,10 @@
-﻿using UnityEngine;
+﻿using com.judahperez.hsvcolorpicker.Enums;
+using com.judahperez.hsvcolorpicker.Events;
+using com.judahperez.hsvcolorpicker.UtilityScripts;
+using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
-
-namespace HSVPicker
+namespace com.judahperez.hsvcolorpicker.UI
 {
     [RequireComponent(typeof(BoxSlider), typeof(RawImage)), ExecuteInEditMode()]
     [DefaultExecutionOrder(10)]

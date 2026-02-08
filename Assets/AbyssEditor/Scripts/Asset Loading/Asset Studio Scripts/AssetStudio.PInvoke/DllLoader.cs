@@ -3,8 +3,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
-
-namespace AssetStudio.PInvoke
+namespace AbyssEditor.Scripts.Asset_Loading.Asset_Studio_Scripts.AssetStudio.PInvoke
 {
     public static class DllLoader
     {

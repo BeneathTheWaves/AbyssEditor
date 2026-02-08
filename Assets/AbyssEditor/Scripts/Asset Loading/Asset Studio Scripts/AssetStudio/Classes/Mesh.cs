@@ -3,8 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-
-namespace AssetStudio
+using AbyssEditor.Scripts.Asset_Loading.Asset_Studio_Scripts.AssetStudio.Extensions;
+using AbyssEditor.Scripts.Asset_Loading.Asset_Studio_Scripts.AssetStudio.Math;
+namespace AbyssEditor.Scripts.Asset_Loading.Asset_Studio_Scripts.AssetStudio.Classes
 {
     public class MinMaxAABB
     {
@@ -927,7 +928,7 @@ namespace AssetStudio
                     var zsqr = 1 - x * x - y * y;
                     float z;
                     if (zsqr >= 0f)
-                        z = (float)Math.Sqrt(zsqr);
+                        z = (float)System.Math.Sqrt(zsqr);
                     else
                     {
                         z = 0;
@@ -957,7 +958,7 @@ namespace AssetStudio
                     var zsqr = 1 - x * x - y * y;
                     float z;
                     if (zsqr >= 0f)
-                        z = (float)Math.Sqrt(zsqr);
+                        z = (float)System.Math.Sqrt(zsqr);
                     else
                     {
                         z = 0;

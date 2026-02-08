@@ -1,7 +1,6 @@
-﻿using UnityEngine;
-using UnityEngine.UI;
-using TMPro;
-namespace HSVPicker
+﻿using TMPro;
+using UnityEngine;
+namespace com.judahperez.hsvcolorpicker.UI
 {
     [RequireComponent(typeof(TMP_InputField))]
     [DefaultExecutionOrder(10)]

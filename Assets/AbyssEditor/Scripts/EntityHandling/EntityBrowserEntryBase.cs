@@ -1,20 +1,23 @@
 ﻿using UnityEngine;
 
-public abstract class EntityBrowserEntryBase
+namespace AbyssEditor.Scripts.EntityHandling
 {
-    public string Path { get; }
-    public abstract string Name { get; }
-    public abstract Sprite Sprite { get; }
-
-    public EntityBrowserEntryBase(string path)
+    public abstract class EntityBrowserEntryBase
     {
-        Path = path;
-    }
+        public string Path { get; }
+        public abstract string Name { get; }
+        public abstract Sprite Sprite { get; }
 
-    public abstract void OnInteract();
+        public EntityBrowserEntryBase(string path)
+        {
+            Path = path;
+        }
 
-    public string GetParentFolder()
-    {
-        return PathUtils.GetParentDirectory(Path);
+        public abstract void OnInteract();
+
+        public string GetParentFolder()
+        {
+            return PathUtils.GetParentDirectory(Path);
+        }
     }
 }

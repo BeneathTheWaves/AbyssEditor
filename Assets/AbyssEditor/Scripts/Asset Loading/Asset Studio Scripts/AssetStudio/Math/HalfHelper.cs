@@ -1,6 +1,6 @@
-﻿using System.Runtime.InteropServices;
-
-namespace System
+﻿using System;
+using System.Runtime.InteropServices;
+namespace AbyssEditor.Scripts.Asset_Loading.Asset_Studio_Scripts.AssetStudio.Math
 {
     /// <summary>
     /// Helper class for Half conversions and some low level operations.

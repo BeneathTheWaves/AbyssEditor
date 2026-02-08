@@ -1,7 +1,5 @@
 using AbyssEditor.Scripts.SaveSystem;
 using AbyssEditor.Scripts.UI.Windows;
-using AbyssEditor.TerrainMaterials;
-using AbyssEditor.UI;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;

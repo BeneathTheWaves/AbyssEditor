@@ -1,7 +1,9 @@
-﻿using UnityEngine;
+﻿using com.judahperez.hsvcolorpicker.Enums;
+using com.judahperez.hsvcolorpicker.Events;
+using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
-namespace HSVPicker
+namespace com.judahperez.hsvcolorpicker.UI
 {
     /// <summary>
     /// Displays one of the color values of aColorPicker

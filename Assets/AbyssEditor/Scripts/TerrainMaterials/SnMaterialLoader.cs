@@ -2,10 +2,18 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using AbyssEditor.Scripts.Asset_Loading.Asset_Studio_Scripts.AssetStudio;
+using AbyssEditor.Scripts.Asset_Loading.Asset_Studio_Scripts.AssetStudio.Classes;
 using AbyssEditor.Scripts.TaskSystem;
-using AbyssEditor.TerrainMaterials;
-using AbyssEditor.VoxelTech;
+using AbyssEditor.Scripts.UI;
+using AbyssEditor.Scripts.VoxelTech;
 using UnityEngine;
+using Material = UnityEngine.Material;
+using MonoBehaviour = UnityEngine.MonoBehaviour;
+using Object = AbyssEditor.Scripts.Asset_Loading.Asset_Studio_Scripts.AssetStudio.Classes.Object;
+using TextAsset = UnityEngine.TextAsset;
+using Texture2D = UnityEngine.Texture2D;
+using TextureFormat = UnityEngine.TextureFormat;
 
 namespace AbyssEditor.Scripts.TerrainMaterials
 {
@@ -37,8 +45,8 @@ namespace AbyssEditor.Scripts.TerrainMaterials
             statusHandle.SetProgress(1f / totalTasks);
 
             sw.Restart();
-            List<AssetStudio.Texture2D> textureAssets = new List<AssetStudio.Texture2D>();
-            List<AssetStudio.Material> materialAssets = new List<AssetStudio.Material>();
+            List<Asset_Loading.Asset_Studio_Scripts.AssetStudio.Classes.Texture2D> textureAssets = new List<Asset_Loading.Asset_Studio_Scripts.AssetStudio.Classes.Texture2D>();
+            List<Asset_Loading.Asset_Studio_Scripts.AssetStudio.Classes.Material> materialAssets = new List<Asset_Loading.Asset_Studio_Scripts.AssetStudio.Classes.Material>();
             yield return StartCoroutine(GetMaterialAssetsAsync(textureAssets, materialAssets));
             sw.Stop();
             DebugOverlay.LogMessage($"Got assets in {sw.ElapsedMilliseconds}ms");
@@ -66,25 +74,25 @@ namespace AbyssEditor.Scripts.TerrainMaterials
             statusHandle.CompletePhase();
         }
 
-        private IEnumerator GetMaterialAssetsAsync(List<AssetStudio.Texture2D> textureAssets, List<AssetStudio.Material> materialAssets) {
+        private IEnumerator GetMaterialAssetsAsync(List<Asset_Loading.Asset_Studio_Scripts.AssetStudio.Classes.Texture2D> textureAssets, List<Asset_Loading.Asset_Studio_Scripts.AssetStudio.Classes.Material> materialAssets) {
 
             string bundleName = Path.DirectorySeparatorChar + "resources.assets";
             string resourcesPath = Globals.instance.resourcesSourcePath + bundleName;
             string[] files = { resourcesPath };
 
-            AssetStudio.AssetsManager assetManager = new AssetStudio.AssetsManager();
+            AssetsManager assetManager = new AssetsManager();
             assetManager.LoadFiles(files);
             
-            foreach (AssetStudio.SerializedFile file in assetManager.assetsFileList)
+            foreach (SerializedFile file in assetManager.assetsFileList)
             {
                 yield return new WaitForEndOfFrame();
-                foreach(AssetStudio.Object obj in file.Objects) {
-                    if (obj is AssetStudio.Texture2D textureAsset) {
+                foreach(Object obj in file.Objects) {
+                    if (obj is Asset_Loading.Asset_Studio_Scripts.AssetStudio.Classes.Texture2D textureAsset) {
                         textureAssets.Add(textureAsset);
                         continue;
                     }
 
-                    if (obj is AssetStudio.Material materialAsset) {
+                    if (obj is Asset_Loading.Asset_Studio_Scripts.AssetStudio.Classes.Material materialAsset) {
                         materialAssets.Add(materialAsset);
                     }
                 }
@@ -127,8 +135,8 @@ namespace AbyssEditor.Scripts.TerrainMaterials
             }
         }
 
-        private void SetTextures(AssetStudio.Texture2D[] textureAssets) {
-            foreach (AssetStudio.Texture2D textureAsset in textureAssets) {
+        private void SetTextures(Asset_Loading.Asset_Studio_Scripts.AssetStudio.Classes.Texture2D[] textureAssets) {
+            foreach (Asset_Loading.Asset_Studio_Scripts.AssetStudio.Classes.Texture2D textureAsset in textureAssets) {
                 List<int> blocktypes = new List<int>();
                 if (IsTextureNeeded(textureAsset.m_PathID, out blocktypes)) {
                     byte[] image_data = textureAsset.image_data.GetData();
@@ -144,11 +152,11 @@ namespace AbyssEditor.Scripts.TerrainMaterials
             }
         }
 
-        private void SetMaterials(AssetStudio.Material[] materialAssets) {
-            foreach (AssetStudio.Material materialAsset in materialAssets) {
+        private void SetMaterials(Asset_Loading.Asset_Studio_Scripts.AssetStudio.Classes.Material[] materialAssets) {
+            foreach (Asset_Loading.Asset_Studio_Scripts.AssetStudio.Classes.Material materialAsset in materialAssets) {
 
                 var texturePathIDs = new Dictionary<long, string>();
-                foreach(KeyValuePair<string, AssetStudio.UnityTexEnv> pair in materialAsset.m_SavedProperties.m_TexEnvs) {
+                foreach(KeyValuePair<string, UnityTexEnv> pair in materialAsset.m_SavedProperties.m_TexEnvs) {
                     long pathID = pair.Value.m_Texture.m_PathID;
                     if (pathID != 0 && !texturePathIDs.ContainsKey(pathID))
                         texturePathIDs.Add(pathID, pair.Key);

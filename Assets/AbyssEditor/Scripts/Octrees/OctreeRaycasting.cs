@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
-
-namespace AbyssEditor {
+namespace AbyssEditor.Scripts.Octrees {
     public static class OctreeRaycasting {
         public static bool RayIntersectsBox(Ray ray, Vector3 boxStart, Vector3 boxEnd) {
             

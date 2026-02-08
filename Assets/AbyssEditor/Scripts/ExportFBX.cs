@@ -1,14 +1,10 @@
-﻿using Autodesk.Fbx;
-using System.Diagnostics;
-using UnityEngine;
-using System.Collections.Generic;
-using System.Collections;
+﻿using System.Collections;
 using System.IO;
 using AbyssEditor.Scripts.UI;
-using AbyssEditor.UI;
-using AbyssEditor.VoxelTech;
-
-namespace AbyssEditor {
+using AbyssEditor.Scripts.VoxelTech;
+using Autodesk.Fbx;
+using UnityEngine;
+namespace AbyssEditor.Scripts {
     public static class ExportFBX {
         public static IEnumerator ExportMetaspaceAsync(VoxelMetaspace metaspace, string fbxFilePath) {
             /*

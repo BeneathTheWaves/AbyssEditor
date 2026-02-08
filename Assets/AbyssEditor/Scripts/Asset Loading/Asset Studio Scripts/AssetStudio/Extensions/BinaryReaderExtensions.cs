@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-
-namespace AssetStudio
+using AbyssEditor.Scripts.Asset_Loading.Asset_Studio_Scripts.AssetStudio.Math;
+namespace AbyssEditor.Scripts.Asset_Loading.Asset_Studio_Scripts.AssetStudio.Extensions
 {
     public static class BinaryReaderExtensions
     {

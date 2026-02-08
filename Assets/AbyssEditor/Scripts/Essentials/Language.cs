@@ -1,10 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using UnityEngine;
 using Newtonsoft.Json;
-
-namespace AbyssEditor.Scripts
+using UnityEngine;
+namespace AbyssEditor.Scripts.Essentials
 {
     /// <summary>
     /// This mirrors Subnautica's language system (but is more basic)
