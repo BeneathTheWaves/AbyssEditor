@@ -2,6 +2,7 @@
 
 using System;
 using System.Runtime.InteropServices;
+
 namespace StandaloneFileBrowser {
 
     public class StandaloneFileBrowserLinux : IStandaloneFileBrowser {

@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using com.judahperez.hsvcolorpicker.UI;
+using hsvcolorpicker.UI;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;

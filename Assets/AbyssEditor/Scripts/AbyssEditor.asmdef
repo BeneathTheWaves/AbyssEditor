@@ -15,7 +15,8 @@
         "UnityEngine.UI",
         "HSVPicker.Editors",
         "HSVPicker",
-        "StandaloneFileBrowser"
+        "StandaloneFileBrowser",
+        "AssetStudio"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
