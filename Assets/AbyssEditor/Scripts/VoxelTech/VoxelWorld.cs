@@ -3,7 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Numerics;
 using AbyssEditor.Scripts;
+using AbyssEditor.Scripts.BatchOutline;
 using AbyssEditor.Scripts.TaskSystem;
+using AbyssEditor.UI;
 using AbyssEditor.VoxelTech;
 using UnityEngine;
 using Vector3 = UnityEngine.Vector3;
@@ -59,8 +61,8 @@ namespace AbyssEditor {
             yield return StartCoroutine(VoxelMetaspace.metaspace.RegionReadCoroutine(allowModded, startBatch, endBatch));
             
             VoxelMetaspace.metaspace.ReloadBoundaries();
-
-            CameraControls.main.OnRegionLoad(startBatch, endBatch);
+            
+            BatchOutlineManager.main.ResetLoadOutlines();
         }
 
         public static void ExportRegion(int mode) {

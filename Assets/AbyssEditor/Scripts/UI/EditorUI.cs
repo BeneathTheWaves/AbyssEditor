@@ -7,7 +7,6 @@ using UnityEngine.UI;
 namespace AbyssEditor.Scripts.UI {
     public class EditorUI : MonoBehaviour {
         public static EditorUI inst;
-        [SerializeField] RectTransform statusBar;
         public GameObject errorPrefab;
         public Color[] uiColors;
 
@@ -48,6 +47,7 @@ namespace AbyssEditor.Scripts.UI {
             }
 
             // clear previous error if it exists
+            /*
             if (inst.statusBar.parent.childCount > 1)
             {
                 Destroy(inst.statusBar.parent.GetChild(1).gameObject);
@@ -57,6 +57,7 @@ namespace AbyssEditor.Scripts.UI {
             go.transform.GetComponentInChildren<Text>().text = message;
             go.transform.GetChild(1).GetComponent<Image>().color = inst.uiColors[(int) type];
             go.transform.SetAsLastSibling();
+            */
         }
 
         public enum NotificationType

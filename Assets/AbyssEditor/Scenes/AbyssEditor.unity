@@ -5690,10 +5690,10 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 1700388832}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 265.20773, y: -100}
-  m_SizeDelta: {x: 470.41547, y: 80}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 80}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &599742336
 MonoBehaviour:
@@ -7946,7 +7946,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &796148568
 RectTransform:
   m_ObjectHideFlags: 0
@@ -8470,7 +8470,19 @@ MonoBehaviour:
       m_Calls: []
   m_OnValueChanged:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1935773491}
+        m_TargetAssemblyTypeName: AbyssEditor.UI.UILoadWindow, AbyssEditor
+        m_MethodName: OnEndEditInputField
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   m_OnTouchScreenKeyboardStatusChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -11787,10 +11799,10 @@ RectTransform:
   - {fileID: 211883814}
   m_Father: {fileID: 796148568}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 49.9217}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 265.20773, y: -174.96085}
+  m_SizeDelta: {x: 470.41547, y: 49.9217}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1190405978
 GameObject:
@@ -11931,7 +11943,19 @@ MonoBehaviour:
       m_Calls: []
   m_OnValueChanged:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1935773491}
+        m_TargetAssemblyTypeName: AbyssEditor.UI.UILoadWindow, AbyssEditor
+        m_MethodName: OnEndEditInputField
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   m_OnTouchScreenKeyboardStatusChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -12898,10 +12922,10 @@ RectTransform:
   - {fileID: 1516120335}
   m_Father: {fileID: 1700388832}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 265.20773, y: -285}
-  m_SizeDelta: {x: 470.41547, y: 50}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1293787410
 GameObject:
@@ -12936,10 +12960,10 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 1700388832}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 265.20773, y: -30}
-  m_SizeDelta: {x: 470.41547, y: 40}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 40}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1293787412
 MonoBehaviour:
@@ -16476,7 +16500,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1700388832
 RectTransform:
   m_ObjectHideFlags: 0
@@ -16544,6 +16568,7 @@ GameObject:
   - component: {fileID: 1700670805}
   - component: {fileID: 1700670806}
   - component: {fileID: 1700670807}
+  - component: {fileID: 1700670808}
   m_Layer: 0
   m_Name: Managers
   m_TagString: Untagged
@@ -16564,7 +16589,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   contentLoaded: 0
-  updateMeshesOnLoad: 0
 --- !u!4 &1700670799
 Transform:
   m_ObjectHideFlags: 0
@@ -16690,6 +16714,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: AbyssEditor::AbyssEditor.Scripts.TaskSystem.TaskManager
   processDisplayHolder: {fileID: 2130005548}
   taskStatusDisplayPrefab: {fileID: 3971635786554476026, guid: c151955ebb86226b7bdadb5d037557f6,
+    type: 3}
+--- !u!114 &1700670808
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1700670797}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ae1d369ac0b04c438be39045b5e748be, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: AbyssEditor::AbyssEditor.Scripts.BatchOutline.BatchOutlineManager
+  batchOutlinePrefab: {fileID: 5752002096844307865, guid: 806761e8e820f76328dd83f48abd9dfb,
     type: 3}
 --- !u!1 &1707018376
 GameObject:
@@ -17137,10 +17175,10 @@ RectTransform:
   - {fileID: 836246863}
   m_Father: {fileID: 1700388832}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 265.20773, y: -170}
-  m_SizeDelta: {x: 470.41547, y: 40}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 40}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1794218645
 GameObject:
@@ -17174,10 +17212,10 @@ RectTransform:
   - {fileID: 729578199}
   m_Father: {fileID: 1700388832}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 30, y: -250}
-  m_SizeDelta: {x: 470.41547, y: 50}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 50}
   m_Pivot: {x: 0, y: 0}
 --- !u!1 &1807321426
 GameObject:
@@ -18452,10 +18490,10 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 796148568}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 80}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 265.20773, y: -100}
+  m_SizeDelta: {x: 470.41547, y: 80}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1911361612
 MonoBehaviour:
@@ -18986,6 +19024,7 @@ MonoBehaviour:
   moddedBatchesCheckbox: {fileID: 1169740470}
   optoctreePatchGroup: {fileID: 796148567}
   selectFileButton: {fileID: 211883815}
+  batchLoadOutlines: []
 --- !u!114 &1935773492
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -20231,10 +20270,10 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 796148568}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 40}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 265.20773, y: -30}
+  m_SizeDelta: {x: 470.41547, y: 40}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2093938537
 MonoBehaviour:

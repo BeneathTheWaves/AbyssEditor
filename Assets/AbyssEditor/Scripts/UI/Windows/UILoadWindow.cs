@@ -1,5 +1,7 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using AbyssEditor.Scripts;
+using AbyssEditor.Scripts.BatchOutline;
 using AbyssEditor.Scripts.UI;
 using TMPro;
 using SFB;
@@ -29,6 +31,18 @@ namespace AbyssEditor.UI {
             selectFileButton.onClick.AddListener(OnSelectFileButton);
         }
 
+        public override void EnableWindow()
+        {
+            base.EnableWindow();
+            OnEndEditInputField();
+        }
+        
+        public override void DisableWindow()
+        {
+            base.DisableWindow();
+            BatchOutlineManager.main.ResetLoadOutlines();
+        }
+        
         private void ChangeLoadMethod(string method)
         {
             switch (method)
@@ -58,6 +72,24 @@ namespace AbyssEditor.UI {
             
             VoxelWorld.world.LoadOctreePatch(paths[0]);
         }
+
+        public void OnEndEditInputField()
+        {
+            bool startEntered = TryParseBatchString(rangeStartInput.text, out Vector3Int startBatchIndex);
+            bool endEntered = TryParseBatchString(rangeEndInput.text, out Vector3Int endBatchIndex);
+
+            if (!startEntered && !endEntered)
+            {
+                return;
+            }
+            
+            if (!startEntered) startBatchIndex = endBatchIndex; 
+            if (!endEntered) endBatchIndex = startBatchIndex;
+            
+            BatchOutlineManager.main.DrawBatchOutline(startBatchIndex, endBatchIndex);
+            
+            CameraControls.main.OnRegionLoad(startBatchIndex, endBatchIndex);
+        }
         
         public void LoadBatch() {
 
@@ -78,8 +110,9 @@ namespace AbyssEditor.UI {
             if (!startEntered) startBatchIndex = endBatchIndex; 
             if (!endEntered) endBatchIndex = startBatchIndex;
             
+            
             VoxelWorld.world.LoadRegion(startBatchIndex, endBatchIndex, moddedBatchesCheckbox.isOn);
-            base.DisableWindow();
+            base.DisableWindow();//we don't want it to remove the outlines until the loading is done so just call base method
         }
 
         private bool TryParseBatchString(string s, out Vector3Int index) {
