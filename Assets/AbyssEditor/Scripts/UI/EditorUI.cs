@@ -65,7 +65,6 @@ namespace AbyssEditor.Scripts.UI {
             Error,
             Warning,
             Success
-            
         }
     }
 }

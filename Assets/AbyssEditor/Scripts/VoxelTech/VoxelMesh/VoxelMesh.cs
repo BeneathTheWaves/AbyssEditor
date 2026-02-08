@@ -148,7 +148,7 @@ namespace AbyssEditor.VoxelTech
 
         public Vector3Int GetBatchMaxBound()
         {
-            Vector3Int max = VoxelWorld.GetBatchOrigin(batchIndex) * VoxelWorld.BATCH_WIDTH;//(batchIndex - VoxelWorld.startBatch + Vector3Int.one) * (VoxelWorld.OCTREE_WIDTH * VoxelWorld.CONTAINERS_PER_SIDE);
+            Vector3Int max = VoxelWorld.GetBatchOrigin(batchIndex) + (Vector3Int.one * VoxelWorld.BATCH_WIDTH);//(batchIndex - VoxelWorld.startBatch + Vector3Int.one) * (VoxelWorld.OCTREE_WIDTH * VoxelWorld.CONTAINERS_PER_SIDE);
             return max;
         }
         
