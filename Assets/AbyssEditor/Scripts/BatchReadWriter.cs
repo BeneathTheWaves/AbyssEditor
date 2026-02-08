@@ -156,39 +156,11 @@ namespace AbyssEditor.Scripts {
             return true;
         }
         
-        public IEnumerator ReadOctreePatchCoroutine(PatchReadFinishedCall readFinishedCall, string filePath, EditorProcessHandle statusHandle)
+        public IEnumerator ReadOctreePatchCoroutine(PatchReadFinishedCall readFinishedCall, byte[] patchByteArray, List<Vector3Int> batchesInPatch, EditorProcessHandle statusHandle)
         {
-            if (!File.Exists(filePath))
-            {
-                Debug.LogError($"Patch file not found: {filePath}");
-                yield break;
-            }
-
-            BinaryReader reader = new BinaryReader(File.Open(filePath, FileMode.Open));
-
-            uint version = reader.ReadUInt32();
-            if (version == uint.MaxValue)
-            {
-                Debug.LogError("Invalid patch file");
-                reader.Close();
-                yield break;
-            }
-
-            //cache entire patch payload
-            int curr_pos = 0;
-            long payloadLength = reader.BaseStream.Length - 4;
-            byte[] data = new byte[payloadLength];
-
-            while (curr_pos < payloadLength)
-            {
-                data[curr_pos++] = reader.ReadByte();
-            }
-
-            int batchesToRead = GetBatchCountFromPatchBytes(data);
             int currentBatchIndex = 0;
-
-            reader.Close();
-            curr_pos = 0;
+            
+            int curr_pos = 0;
 
             Dictionary<Vector3Int, Octree[,,]> modifiedBatches = new();
 
@@ -197,21 +169,21 @@ namespace AbyssEditor.Scripts {
             NativeArray<byte> tempDensities = new(res * res * res, Allocator.Persistent);
 
             //iterate cached data
-            while (curr_pos < data.Length)
+            while (curr_pos < patchByteArray.Length)
             {
-                short bx = (short)(data[curr_pos] | (data[curr_pos + 1] << 8));
-                short by = (short)(data[curr_pos + 2] | (data[curr_pos + 3] << 8));
-                short bz = (short)(data[curr_pos + 4] | (data[curr_pos + 5] << 8));
+                short bx = (short)(patchByteArray[curr_pos] | (patchByteArray[curr_pos + 1] << 8));
+                short by = (short)(patchByteArray[curr_pos + 2] | (patchByteArray[curr_pos + 3] << 8));
+                short bz = (short)(patchByteArray[curr_pos + 4] | (patchByteArray[curr_pos + 5] << 8));
                 curr_pos += 6;
 
                 Vector3Int batchIndex = new(bx, by, bz);
 
-                byte octreeCount = data[curr_pos++];
+                byte octreeCount = patchByteArray[curr_pos++];
 
                 // Load original batch
                 NodeContainer container = new NodeContainer();
 
-                statusHandle.SetProgress((float)currentBatchIndex / batchesToRead);
+                statusHandle.SetProgress((float)currentBatchIndex / batchesInPatch.Count);
                 statusHandle.SetStatus($"Reading patched {batchIndex}");
                 currentBatchIndex++;
                 
@@ -222,17 +194,17 @@ namespace AbyssEditor.Scripts {
 
                 for (int i = 0; i < octreeCount; i++)
                 {
-                    byte octreeIndex = data[curr_pos++];
-                    ushort nodeCount = (ushort)(data[curr_pos] | (data[curr_pos + 1] << 8));
+                    byte octreeIndex = patchByteArray[curr_pos++];
+                    ushort nodeCount = (ushort)(patchByteArray[curr_pos] | (patchByteArray[curr_pos + 1] << 8));
                     curr_pos += 2;
 
                     OctNodeData[] nodes = new OctNodeData[nodeCount];
 
                     for (int n = 0; n < nodeCount; n++)
                     {
-                        byte type = data[curr_pos];
-                        byte dist = data[curr_pos + 1];
-                        ushort child = (ushort)(data[curr_pos + 2] | (data[curr_pos + 3] << 8));
+                        byte type = patchByteArray[curr_pos];
+                        byte dist = patchByteArray[curr_pos + 1];
+                        ushort child = (ushort)(patchByteArray[curr_pos + 2] | (patchByteArray[curr_pos + 3] << 8));
 
                         nodes[n] = new OctNodeData(type, dist, child);
                         curr_pos += 4;
@@ -402,7 +374,75 @@ namespace AbyssEditor.Scripts {
                 }
             }
         }
-        
+
+        public byte[] GetPatchBytes(string filePath)
+        {
+            if (!File.Exists(filePath))
+            {
+                Debug.LogError($"Patch file not found: {filePath}");
+                return null;
+            }
+            
+            BinaryReader reader = new BinaryReader(File.Open(filePath, FileMode.Open));
+
+            uint version = reader.ReadUInt32();
+            
+            /*if (version == uint.MaxValue)
+            {
+                Debug.LogError("Invalid patch file");
+                reader.Close();
+                yield break;
+            }*/
+            int curr_pos = 0;
+            long payloadLength = reader.BaseStream.Length - 4; // exclude version
+            byte[] patchByteArray = new byte[payloadLength];
+
+            while (curr_pos < payloadLength)
+            {
+                patchByteArray[curr_pos++] = reader.ReadByte();
+            }
+            
+            reader.Close();
+            
+            return patchByteArray;
+        }
+
+        public List<Vector3Int> GetBatchIndexesFromPatch(byte[] data)
+        {
+            int pos = 0;
+            List<Vector3Int> batchesInPatch = new List<Vector3Int>();
+
+            while (pos < data.Length)
+            {
+                //batch index
+                Vector3Int index = new Vector3Int(
+                    (short)(data[pos] | (data[pos + 1] << 8)),
+                    (short)(data[pos + 2] | (data[pos + 3] << 8)),
+                    (short)(data[pos + 4] | (data[pos + 5] << 8)));
+                
+                batchesInPatch.Add(index);
+                
+                pos += 6;
+
+                byte octreeCount = data[pos++];
+
+                for (int i = 0; i < octreeCount; i++)
+                {
+                    //octreeIndex
+                    pos += 1;
+
+                    // read nodeCount
+                    ushort nodeCount = (ushort)(data[pos] | (data[pos + 1] << 8));
+                    pos += 2;
+
+                    //nodes
+                    pos += nodeCount * 4;
+                }
+            }
+
+            return batchesInPatch;
+        }
+        /*
         int GetBatchCountFromPatchBytes(byte[] data)
         {
             int pos = 0;
@@ -432,6 +472,7 @@ namespace AbyssEditor.Scripts {
 
             return batchCount;
         }
+        */
     }
 
     [System.Serializable]

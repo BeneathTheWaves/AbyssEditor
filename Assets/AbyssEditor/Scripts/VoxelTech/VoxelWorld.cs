@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using AbyssEditor.Scripts.BatchOutline;
 using AbyssEditor.Scripts.TaskSystem;
 using AbyssEditor.Scripts.UI;
@@ -29,25 +30,22 @@ namespace AbyssEditor.Scripts.VoxelTech {
             world = this;
         }
 
-        public void LoadRegion(Vector3Int _start, Vector3Int _end, bool allowModded)
+        public void LoadRegion(Vector3Int startBatch, Vector3Int endBatch, bool allowModded)
         {
-            DebugOverlay.LogMessage($"Reading {_start} to {_end}");
-            
-            Vector3Int startBatch = new Vector3Int(Math.Min(_start.x, _end.x), Math.Min(_start.y, _end.y), Math.Min(_start.z, _end.z));
-            Vector3Int endBatch = new Vector3Int(Math.Max(_start.x, _end.x), Math.Max(_start.y, _end.y), Math.Max(_start.z, _end.z));
-            
+            DebugOverlay.LogMessage($"Loading {startBatch} to {endBatch}");
             StartCoroutine(RegionLoadCoroutine(allowModded, startBatch, endBatch));
         }
 
-        public void LoadOctreePatch(string filePath)
+        public void LoadOctreePatch(byte[] patchBytes, List<Vector3Int> batchesInPatch)
         {
-            StartCoroutine(OctreePatchCoroutine(filePath));
+            StartCoroutine(OctreePatchCoroutine(patchBytes, batchesInPatch));
         }
         
-        IEnumerator OctreePatchCoroutine(string filePath)
+        IEnumerator OctreePatchCoroutine(byte[] patchBytes, List<Vector3Int> batchesInPatch)
         {
-
-            yield return StartCoroutine(VoxelMetaspace.metaspace.OctreePatchReadCoroutine(filePath));
+            yield return StartCoroutine(VoxelMetaspace.metaspace.OctreePatchReadCoroutine(patchBytes, batchesInPatch));
+            
+            BatchOutlineManager.main.ResetLoadOutlines();
         }
         
         IEnumerator RegionLoadCoroutine(bool allowModded, Vector3Int startBatch, Vector3Int endBatch)

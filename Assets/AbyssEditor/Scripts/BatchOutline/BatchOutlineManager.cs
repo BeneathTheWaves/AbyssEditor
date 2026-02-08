@@ -45,6 +45,18 @@ namespace AbyssEditor.Scripts.BatchOutline
             }
             batchLoadOutlines = outlines.ToArray();
         }
+
+        public void DrawBatchOutline(List<Vector3Int> batchIndexes)
+        {
+            DeleteOldOutlines(batchLoadOutlines);
+            
+            List<GameObject> outlines = new List<GameObject>();            
+            foreach (Vector3Int batchIndex in batchIndexes)
+            {
+                outlines.Add(DrawBatchOutline(batchIndex));
+            }
+            batchLoadOutlines = outlines.ToArray();
+        }
         
         private GameObject DrawBatchOutline(Vector3Int batchIndex)
         {

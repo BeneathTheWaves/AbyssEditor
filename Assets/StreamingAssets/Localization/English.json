@@ -10,6 +10,10 @@
   //Color Picker
   "HexPlaceholderText": "Hex Value",
   
+  //Warning screen
+  "GenericConfirm": "Confirm",
+  "GenericCancel": "Cancel",
+  
   //Loading
   "LoadBatchesWindow": "Import Batches",
   "BaseGame": "Base Game",
@@ -19,11 +23,13 @@
     "BatchRange_Hint": "Starting and ending coordinates are interchangeable. Leave one field empty to load a single batch",
     "LoadModdedBatches": "Load Modded Batches",
     "LoadBatchButton": "Load Batch(es)",
+    "BatchOveriteWarning": "Warning, %overiteCount% currently loaded batch(es) will have their changes overriden. This action cannot be undone!",
     //Loading .optoctreePatch
     "patcherTitle": "Select an .optoctreepatch",
     "patcherTitle_Hint": "These patch files are used with terrain patcher. Loading them again can allow further edits",
     "OpenFileBrowser": "Open File Browser",
     "PatchSelectFileBrowserTip": "Select an .optoctreepatch file!",
+    "ApplyPatchButton": "Apply Patch",
   
   //Lighting
   "LightingTitle": "Lighting",

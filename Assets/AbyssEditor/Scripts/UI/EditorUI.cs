@@ -10,8 +10,12 @@ namespace AbyssEditor.Scripts.UI {
         public GameObject errorPrefab;
         public Color[] uiColors;
 
+        [SerializeField] private GameObject inputBlocker;
+        [SerializeField] private UIConfirmationWindow confirmationWindow;
+
         private void Awake() {
             inst = this;
+            confirmationWindow.Initialize();
         }
 
         private void Start()
@@ -29,6 +33,16 @@ namespace AbyssEditor.Scripts.UI {
             {
                 MaterialIconGenerator.main.GenerateMaterialIcons();
             }
+        }
+
+        public void BlockUIInput()
+        {
+            inputBlocker.SetActive(true);
+        }
+        
+        public void UnBlockUIInput()
+        {
+            inputBlocker.SetActive(false);
         }
 
         public static void DisplayErrorMessage(string message, NotificationType type = NotificationType.Error)

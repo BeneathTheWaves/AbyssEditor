@@ -113,12 +113,12 @@ namespace AbyssEditor.Scripts.VoxelTech {
             yield return RegenerateMeshesCoroutine(statusHandle);
         }
         
-        public IEnumerator OctreePatchReadCoroutine(string filepath, EditorProcessHandle statusHandle = null) {
+        public IEnumerator OctreePatchReadCoroutine(byte[] patchBytes, List<Vector3Int> batchesInPatch, EditorProcessHandle statusHandle = null) {
             if(statusHandle == null) { statusHandle = TaskManager.main.GetEditorProcessHandle(3); }    
             
             PatchContainer patchContainer = new PatchContainer();
             
-            yield return BatchReadWriter.readWriter.ReadOctreePatchCoroutine(patchContainer.Callback, filepath, statusHandle);
+            yield return BatchReadWriter.readWriter.ReadOctreePatchCoroutine(patchContainer.Callback, patchBytes, batchesInPatch, statusHandle);
 
             Vector3Int startBatch = new Vector3Int(-1000, -1000, -1000);
             Vector3Int endBatch = Vector3Int.zero;
