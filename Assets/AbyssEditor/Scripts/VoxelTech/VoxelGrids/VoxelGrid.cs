@@ -137,7 +137,11 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelGrids {
             int voxelWidth = 32 / VoxelWorld.RESOLUTION;
             Vector3Int voxelPos = octreePos + new Vector3Int((x - 1) * voxelWidth, (y - 1) * voxelWidth, (z - 1) * voxelWidth);
             
-            return new Vector3Int(voxelPos.x / VoxelWorld.BATCH_WIDTH, voxelPos.y / VoxelWorld.BATCH_WIDTH, voxelPos.z / VoxelWorld.BATCH_WIDTH);
+            return new Vector3Int(
+                Mathf.FloorToInt((float)voxelPos.x / VoxelWorld.BATCH_WIDTH),
+                Mathf.FloorToInt((float)voxelPos.y / VoxelWorld.BATCH_WIDTH),
+                Mathf.FloorToInt((float)voxelPos.z / VoxelWorld.BATCH_WIDTH)
+            );
         }
         
         internal static Vector3Int IndexMod(Vector3Int octreeIndex, int mod) => new Vector3Int((octreeIndex.x + mod) % mod, (octreeIndex.y + mod) % mod, (octreeIndex.z + mod) % mod);
