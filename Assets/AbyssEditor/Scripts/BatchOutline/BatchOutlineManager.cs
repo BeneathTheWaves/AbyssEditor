@@ -48,7 +48,22 @@ namespace AbyssEditor.Scripts.BatchOutline
         
         private GameObject DrawBatchOutline(Vector3Int batchIndex)
         {
-            return Instantiate(batchOutlinePrefab, batchIndex * VoxelWorld.BATCH_WIDTH, Quaternion.identity);
+            GameObject outline = Instantiate(batchOutlinePrefab, batchIndex * VoxelWorld.BATCH_WIDTH, Quaternion.identity);
+
+            GameObject cube = outline.transform.GetChild(0).gameObject;
+            
+            if (VoxelMetaspace.metaspace.TryGetVoxelMesh(batchIndex) != null)
+            {
+                //batch exists to make it red
+                cube.GetComponent<MeshRenderer>().material.SetColor("_WireframeColor", Color.red );
+            }
+            else
+            {
+                //batch doesn't exist to make it purple
+                cube.GetComponent<MeshRenderer>().material.SetColor("_WireframeColor", Color.rebeccaPurple );
+            }
+            
+            return outline;
         }
     }
 }

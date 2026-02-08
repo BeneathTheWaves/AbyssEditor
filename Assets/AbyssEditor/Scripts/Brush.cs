@@ -177,6 +177,7 @@ namespace AbyssEditor.Scripts {
                 
                 lastBrushTime = Time.time;
             }
+            
             public void ContinueStroke(Vector3 newPos, BrushMode newMode) {
                 strokeLength++;
 
@@ -185,6 +186,7 @@ namespace AbyssEditor.Scripts {
 
                 lastBrushTime = Time.time;
             }
+            
             public void EndStroke() {
                 strokeLength = 0;
 
@@ -200,6 +202,7 @@ namespace AbyssEditor.Scripts {
                 t = Mathf.Clamp01((t - min) / (max - min));
                 return t * t * (3 - 2 * t);
             }
+            
             public float GetWeight(Vector3 voxelPos) {
                 float dist = (brushLocation - voxelPos).magnitude;
                 float falloff = 1f - SmoothStep(dist, brushRadius * 0.7f, brushRadius);
