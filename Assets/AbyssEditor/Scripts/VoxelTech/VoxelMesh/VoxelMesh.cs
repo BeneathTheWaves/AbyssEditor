@@ -23,8 +23,6 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelMesh
             SetupGameObject();
 
             octreeCounts = Vector3Int.one * VoxelWorld.CONTAINERS_PER_SIDE;
-            if (_batchIndex.x == 25) octreeCounts.x = 3;
-            if (_batchIndex.z == 25) octreeCounts.z = 3;
 
             pointContainers = new PointContainer[octreeCounts.x * octreeCounts.y * octreeCounts.z];
 
