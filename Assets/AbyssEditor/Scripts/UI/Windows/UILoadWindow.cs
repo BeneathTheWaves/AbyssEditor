@@ -82,8 +82,8 @@ namespace AbyssEditor.Scripts.UI.Windows {
 
             patchFilePathText.text = lastPatchPath;
 
-            patchBytes = BatchReadWriter.readWriter.GetPatchBytes(lastPatchPath);
-            batchesInPatch = BatchReadWriter.readWriter.GetBatchIndexesFromPatch(patchBytes);
+            patchBytes = BatchReadWriter.GetPatchBytes(lastPatchPath);
+            batchesInPatch = BatchReadWriter.GetBatchIndexesFromPatch(patchBytes);
 
             DrawPatchOutlines();
         }

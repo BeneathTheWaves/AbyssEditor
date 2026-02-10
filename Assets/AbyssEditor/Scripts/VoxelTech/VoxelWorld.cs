@@ -79,7 +79,7 @@ namespace AbyssEditor.Scripts.VoxelTech {
                     statusHandle.CompletePhase();
                     break;
                 case 1:
-                    yield return StartCoroutine(BatchReadWriter.readWriter.WriteOctreePatchCoroutine(VoxelMetaspace.metaspace));
+                    yield return StartCoroutine(BatchReadWriter.WriteOctreePatchCoroutine(VoxelMetaspace.metaspace));
                     break;
                 case 2:
                     yield return StartCoroutine(ExportFBX.ExportMetaspaceAsync(VoxelMetaspace.metaspace, Globals.instance.batchOutputPath));

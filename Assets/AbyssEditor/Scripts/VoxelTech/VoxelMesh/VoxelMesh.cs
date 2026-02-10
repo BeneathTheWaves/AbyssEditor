@@ -94,7 +94,7 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelMesh
             }
         }
 
-        public void Write() => BatchReadWriter.readWriter.WriteOptoctrees(batchIndex, nodes);
+        public void Write() => BatchReadWriter.WriteOptoctrees(batchIndex, nodes);
 
         public void ApplyJobBasedDensityFunction(Brush.BrushStroke stroke, List<BrushJob> brushActions, List<PointContainer> modifiedContainers)
         {

@@ -20,7 +20,10 @@ namespace AbyssEditor.Scripts.TerrainMaterials
 {
     public class SnMaterialLoader : MonoBehaviour {
         public static SnMaterialLoader instance;
+        
+        //TODO: this should prob be moved to metaspace (maybe make this class static as well)
         public BlocktypeMaterial[] blocktypesData;
+        
         Dictionary<string, List<int>> materialBlocktypes;
         public bool contentLoaded = false;
 

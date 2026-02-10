@@ -12,20 +12,13 @@ using UnityEditor;
 using UnityEngine;
 
 namespace AbyssEditor.Scripts {
-    public class BatchReadWriter : MonoBehaviour
+    public static class BatchReadWriter
     {
-        public static BatchReadWriter readWriter;
-
         public delegate bool ReadFinishedCall(Octree[,,] nodes);
         
         public delegate bool PatchReadFinishedCall( Dictionary<Vector3Int, Octree[,,]> patchedBatches );
-
-        void Awake()
-        {
-            readWriter = this;
-        }
-
-        public IEnumerator ReadBatchCoroutine(ReadFinishedCall readFinishedCall, Vector3Int batchIndex, bool allowModded, bool generateEmpty)
+        
+        public static IEnumerator ReadBatchCoroutine(ReadFinishedCall readFinishedCall, Vector3Int batchIndex, bool allowModded, bool generateEmpty)
         {
             Vector3Int octreeDimensions = Vector3Int.one * VoxelWorld.CONTAINERS_PER_SIDE;
             if (batchIndex.x == 25) octreeDimensions.x = 3;
@@ -132,7 +125,7 @@ namespace AbyssEditor.Scripts {
             return fileName;
         }
 
-        public bool WriteOptoctrees(Vector3 batchIndex, Octree[,,] octrees)
+        public static bool WriteOptoctrees(Vector3 batchIndex, Octree[,,] octrees)
         {
             string batchname = string.Format(Path.DirectorySeparatorChar + "compiled-batch-{0}-{1}-{2}.optoctrees", batchIndex.x, batchIndex.y, batchIndex.z);
 
@@ -156,7 +149,7 @@ namespace AbyssEditor.Scripts {
             return true;
         }
         
-        public IEnumerator ReadOctreePatchCoroutine(PatchReadFinishedCall readFinishedCall, byte[] patchByteArray, List<Vector3Int> batchesInPatch, EditorProcessHandle statusHandle)
+        public static IEnumerator ReadOctreePatchCoroutine(PatchReadFinishedCall readFinishedCall, byte[] patchByteArray, List<Vector3Int> batchesInPatch, EditorProcessHandle statusHandle)
         {
             int currentBatchIndex = 0;
             
@@ -187,7 +180,7 @@ namespace AbyssEditor.Scripts {
                 statusHandle.SetStatus($"Reading patched {batchIndex}");
                 currentBatchIndex++;
                 
-                yield return StartCoroutine(ReadBatchCoroutine(container.Callback, batchIndex, true, true));
+                yield return ReadBatchCoroutine(container.Callback, batchIndex, true, true);
                 
                 Octree[,,] batchOctrees = container.nodes;
                 RasterDeRasterizeBatch(tempDensities, tempTypes, batchOctrees);
@@ -232,7 +225,7 @@ namespace AbyssEditor.Scripts {
             statusHandle.CompletePhase();
         }
 
-        public IEnumerator WriteOctreePatchCoroutine(VoxelMetaspace metaspace, EditorProcessHandle statusHandle = null)
+        public static IEnumerator WriteOctreePatchCoroutine(VoxelMetaspace metaspace, EditorProcessHandle statusHandle = null)
         {
             if (statusHandle == null) statusHandle = TaskManager.main.GetEditorProcessHandle(2);
             
@@ -268,7 +261,7 @@ namespace AbyssEditor.Scripts {
                 Octree[,,] nodes = batch.nodes;
                 // load original nodes from file?
                 NodeContainer container = new NodeContainer();
-                yield return StartCoroutine(ReadBatchCoroutine(container.Callback, batch.batchIndex, false, false));
+                yield return ReadBatchCoroutine(container.Callback, batch.batchIndex, false, false);
                 Octree[,,] originalNodes = container.nodes;
 
                 // get changed octrees data
@@ -302,7 +295,7 @@ namespace AbyssEditor.Scripts {
             writer.Close();
         }
 
-        void WriteOctree(BinaryWriter writer, Octree octree)
+        private static void WriteOctree(BinaryWriter writer, Octree octree)
         {
             //assemble the octnode array
             OctNodeData[] nodes = octree.Read();
@@ -331,7 +324,7 @@ namespace AbyssEditor.Scripts {
         /// <param name="newNodes">The new nodes of a batch that were generated from a grid</param>
         /// <param name="originalNodes">The original nodes of a batch</param>
         /// <returns></returns>
-        List<Octree> GetChangedOctrees(Octree[,,] newNodes, Octree[,,] originalNodes)
+        private static List<Octree> GetChangedOctrees(Octree[,,] newNodes, Octree[,,] originalNodes)
         {
             List<Octree> batchChanges = new List<Octree>();
             for (int z = 0; z < 5; z++)
@@ -362,7 +355,7 @@ namespace AbyssEditor.Scripts {
         /// <param name="tempDensities">Temporary Densities to use, mainly so that new arrays don't need to be allocated for this operation</param>
         /// <param name="tempTypes">Temporary Types to use, mainly so that new arrays don't need to be allocated for this operation</param>
         /// <param name="originalNodes">Original nodes that are directly from a loaded batch, otherwise this isn't going to do much</param>
-        void RasterDeRasterizeBatch(NativeArray<byte> tempDensities, NativeArray<byte> tempTypes, Octree[,,] originalNodes)
+        private static void RasterDeRasterizeBatch(NativeArray<byte> tempDensities, NativeArray<byte> tempTypes, Octree[,,] originalNodes)
         {
             //if this becomes a performance issue there is nothing stopping it from becoming a unity job operation, each octree only looks at itself and its grid
             if (originalNodes != null)
@@ -374,16 +367,16 @@ namespace AbyssEditor.Scripts {
                 }
             }
         }
-
-        public byte[] GetPatchBytes(string filePath)
+        
+        public static byte[] GetPatchBytes(string patchFilePath)
         {
-            if (!File.Exists(filePath))
+            if (!File.Exists(patchFilePath))
             {
-                Debug.LogError($"Patch file not found: {filePath}");
+                Debug.LogError($"Patch file not found: {patchFilePath}");
                 return null;
             }
             
-            BinaryReader reader = new BinaryReader(File.Open(filePath, FileMode.Open));
+            BinaryReader reader = new BinaryReader(File.Open(patchFilePath, FileMode.Open));
 
             uint version = reader.ReadUInt32();
             
@@ -407,7 +400,7 @@ namespace AbyssEditor.Scripts {
             return patchByteArray;
         }
 
-        public List<Vector3Int> GetBatchIndexesFromPatch(byte[] data)
+        public static List<Vector3Int> GetBatchIndexesFromPatch(byte[] data)
         {
             int pos = 0;
             List<Vector3Int> batchesInPatch = new List<Vector3Int>();
@@ -442,41 +435,10 @@ namespace AbyssEditor.Scripts {
 
             return batchesInPatch;
         }
-        /*
-        int GetBatchCountFromPatchBytes(byte[] data)
-        {
-            int pos = 0;
-            int batchCount = 0;
-
-            while (pos < data.Length)
-            {
-                //batch index
-                pos += 6;
-
-                byte octreeCount = data[pos++];
-                batchCount++;
-
-                for (int i = 0; i < octreeCount; i++)
-                {
-                    //octreeIndex
-                    pos += 1;
-
-                    // read nodeCount
-                    ushort nodeCount = (ushort)(data[pos] | (data[pos + 1] << 8));
-                    pos += 2;
-
-                    //nodes
-                    pos += nodeCount * 4;
-                }
-            }
-
-            return batchCount;
-        }
-        */
     }
 
     [System.Serializable]
-    class NodeContainer {
+    public class NodeContainer {
         public Octree[,,] nodes;
 
         public bool Callback(Octree[,,] originalNodes) {

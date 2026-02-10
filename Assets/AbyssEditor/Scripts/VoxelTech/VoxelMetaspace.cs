@@ -106,7 +106,7 @@ namespace AbyssEditor.Scripts.VoxelTech {
                 
                 BatchReadWriter.GetPath(mesh.batchIndex, allowModded, out bool isModded);
                 
-                yield return BatchReadWriter.readWriter.ReadBatchCoroutine(mesh.OctreesReadCallback, mesh.batchIndex, allowModded, true);
+                yield return BatchReadWriter.ReadBatchCoroutine(mesh.OctreesReadCallback, mesh.batchIndex, allowModded, true);
             }
             statusHandle.CompletePhase();
 
@@ -118,7 +118,7 @@ namespace AbyssEditor.Scripts.VoxelTech {
             
             PatchContainer patchContainer = new PatchContainer();
             
-            yield return BatchReadWriter.readWriter.ReadOctreePatchCoroutine(patchContainer.Callback, patchBytes, batchesInPatch, statusHandle);
+            yield return BatchReadWriter.ReadOctreePatchCoroutine(patchContainer.Callback, patchBytes, batchesInPatch, statusHandle);
 
             Vector3Int startBatch = new Vector3Int(-1000, -1000, -1000);
             Vector3Int endBatch = Vector3Int.zero;
