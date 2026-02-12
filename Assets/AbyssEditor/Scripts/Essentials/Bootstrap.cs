@@ -8,23 +8,14 @@ namespace AbyssEditor.Scripts.Essentials
     {
         IEnumerator Start()
         {
-            if (IsSceneLoaded("MainMenu"))
+            if (IsSceneLoaded("MainMenu") || IsSceneLoaded("AbyssEditor") )
             {
                 Debug.LogWarning("Skipping Main Menu load, this should only happen in editor...");
                 yield break;
             }
             
             AsyncOperation menuLoadOpp = SceneManager.LoadSceneAsync("MainMenu", LoadSceneMode.Additive);
-
-            /*
-            menuLoadOpp.allowSceneActivation = false;
-
-            while (menuLoadOpp.progress < 0.9f)
-            {
-                //we can check our load tasks that need to happen before everything here
-            }
-
-            */
+            
             menuLoadOpp.allowSceneActivation = true;
             yield return null;
         }
