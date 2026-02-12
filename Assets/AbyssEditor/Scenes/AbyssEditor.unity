@@ -14088,10 +14088,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   moveLock: 1
   dragging: 0
-  acceleration: 50
+  acceleration: 80
   accSprintMultiplier: 4
   lookSensitivity: 1
-  dampingCoefficient: 5
+  dampingCoefficient: 4
 --- !u!114 &1433409870
 MonoBehaviour:
   m_ObjectHideFlags: 0
