@@ -5307,7 +5307,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -10450,7 +10450,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -13134,10 +13134,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   moveLock: 1
   dragging: 0
-  acceleration: 50
+  acceleration: 80
   accSprintMultiplier: 4
   lookSensitivity: 1
-  dampingCoefficient: 5
+  dampingCoefficient: 4
 --- !u!114 &1433409870
 MonoBehaviour:
   m_ObjectHideFlags: 0
