@@ -1,4 +1,6 @@
-﻿using AbyssEditor.Scripts.SaveSystem;
+﻿using System;
+using System.Collections.Generic;
+using AbyssEditor.Scripts.SaveSystem;
 using AbyssEditor.Scripts.TerrainMaterials;
 using AbyssEditor.Scripts.UI.Windows;
 using UnityEngine;
@@ -12,6 +14,8 @@ namespace AbyssEditor.Scripts.UI {
 
         [SerializeField] private GameObject inputBlocker;
         [SerializeField] private UIConfirmationWindow confirmationWindow;
+        
+        [SerializeField] private List<UIWindow> uiWindows;
 
         private void Awake() {
             inst = this;
@@ -22,16 +26,27 @@ namespace AbyssEditor.Scripts.UI {
         {
             if(string.IsNullOrEmpty(Preferences.data.gamePath))
             {
-                UIWindow.ShowWindow("Button_Settings");
+                EnableWindow<UISettingsWindow>();
             }
             else
             {
-                UIWindow.ShowWindow("Button_LoadBatch");
+                EnableWindow<UILoadWindow>();
             }
 
             if (Preferences.data.autoLoadMaterials)
             {
                 MaterialIconGenerator.main.GenerateMaterialIcons();
+            }
+        }
+
+        public void EnableWindow<T>() where T : UIWindow
+        {
+            foreach (var window in uiWindows)
+            {
+                if (window.GetType() == typeof(T))
+                {
+                    window.ToggleWindow();
+                }
             }
         }
 

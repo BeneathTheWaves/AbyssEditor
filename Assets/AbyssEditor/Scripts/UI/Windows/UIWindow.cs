@@ -25,21 +25,5 @@ namespace AbyssEditor.Scripts.UI.Windows {
         public void PushToTop() {
             transform.SetAsLastSibling();
         }
-
-        public static void ShowWindow(string buttonName)
-        {
-            Button[] buttons = FindObjectsByType<Button>(FindObjectsSortMode.None);
-
-            foreach(Button button in buttons)
-            {
-                if(button.gameObject.name == buttonName)
-                {
-                    button.onClick.Invoke();
-                    return;
-                }
-            }
-
-            Debug.LogError($"Button: \"{buttonName}\" does not exist. Make sure the correct button name is being passed.");
-        }
     }
 }
