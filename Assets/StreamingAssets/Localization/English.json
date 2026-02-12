@@ -7,6 +7,13 @@
   "CreatorCredit": "Original Creator: Eterna",
   "Maintainers": "Active Maintainers: Jbeast291, Kallie23\nPast Contributors: Esper, Lyonic, Metious,  ",
   
+  // Top bar buttons
+  "TopBarButton_ImportBatches": "Import",
+  "TopBarButton_Export": "Export",
+  "TopBarButton_Materials": "Materials",
+  "TopBarButton_Lighting": "Lighting",
+  "TopBarButton_Settings": "Settings",
+  
   //Color Picker
   "HexPlaceholderText": "Hex Value",
   
