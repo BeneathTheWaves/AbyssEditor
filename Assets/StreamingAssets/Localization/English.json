@@ -43,10 +43,9 @@
   "SunPitch": "Sun Pitch",
   "SunYaw": "Sun Yaw",
   "EnableBrushLight": "Enable Brush Light",
-  "SunCR": "Sun Color (R)",
-  "SunCG": "Sun Color (G)",
-  "SunCB": "Sun Color (B)",
+  "SunColor": "Sun Color",
   "SunIntensity": "Sun Intensity",
+  "AmbientIntensity": "Ambient Light Intensity",
   
   //Settings
   "SettingsTitle": "Settings",

@@ -4,12 +4,13 @@ using UnityEngine.UI;
 
 namespace AbyssEditor.Scripts.UI.Windows {
     public class UILightWindow : UIWindow {
-        public UIHybridInput sunPitch;
-        public UIHybridInput sunYaw;
-        public UIColorPicker sunColor;
-        public UIHybridInput sunIntensity;
+        [SerializeField] private UIHybridInput sunPitch;
+        [SerializeField] private UIHybridInput sunYaw;
+        [SerializeField] private UIColorPicker sunColor;
+        [SerializeField] private UIHybridInput sunIntensity;
+        [SerializeField] private UIHybridInput ambientIntensity;
         
-        public Toggle brushLightToggle;
+        [SerializeField] private Toggle brushLightToggle;
 
         private void Start() {
             sunPitch.OnValueUpdated += UpdateSunRotation;
@@ -30,6 +31,11 @@ namespace AbyssEditor.Scripts.UI.Windows {
             sunIntensity.OnEndDragging += SavePreferences;
             sunIntensity.formatFunction = FormatScalar;
             sunIntensity.SetValue(Preferences.data.sunIntensity);
+            
+            ambientIntensity.OnValueUpdated += UpdateAmbientIntensity;
+            ambientIntensity.OnEndDragging += SavePreferences;
+            ambientIntensity.formatFunction = FormatScalar;
+            ambientIntensity.SetValue(Preferences.data.ambientIntensity);
             
             brushLightToggle.SetIsOnWithoutNotify(Preferences.data.enableBrushLight);
         }
@@ -58,6 +64,11 @@ namespace AbyssEditor.Scripts.UI.Windows {
         {
             LightingManager.main.UpdateSunIntensity(sunIntensity.LerpedValue);
         }
+        
+        void UpdateAmbientIntensity()
+        {
+            LightingManager.main.UpdateAmbientIntensity(ambientIntensity.LerpedValue);
+        }
 
         void SavePreferences()
         {
@@ -67,6 +78,7 @@ namespace AbyssEditor.Scripts.UI.Windows {
             Preferences.data.sunColorG = sunColor.color.g;
             Preferences.data.sunColorB = sunColor.color.b;
             Preferences.data.sunIntensity = sunIntensity.LerpedValue;
+            Preferences.data.ambientIntensity = ambientIntensity.LerpedValue;
             
             Preferences.SavePreferences();
         }

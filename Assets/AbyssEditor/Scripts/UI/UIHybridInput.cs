@@ -90,7 +90,10 @@ namespace AbyssEditor.Scripts.UI {
             
             bar.offsetMax = new Vector2(rightOffset, -padding);
 
-            field.SetTextWithoutNotify(formatFunction(LerpedValue));
+            if (formatFunction != null)
+            {
+                field.SetTextWithoutNotify(formatFunction(LerpedValue));
+            }
         }
         
         public void OnEndDrag(PointerEventData eventData)
