@@ -1,16 +1,21 @@
+using System;
+using System.Security.Cryptography;
 using AbyssEditor.Scripts.SaveSystem;
 using UnityEngine;
+using UnityEngine.Rendering;
+using Random = System.Random;
 
 namespace AbyssEditor.Scripts
 {
     public class LightingManager : MonoBehaviour
     {
         public static LightingManager main;
+        private static readonly int exposure = Shader.PropertyToID("_Exposure");
+
+        [SerializeField] private Transform sunTransform;
+        [SerializeField] private Light brushLight;
     
-        public Transform sunTransform;
-        Light brushLight;
-    
-        public Light[] sunLights;
+        [SerializeField] private Light[] sunLights;
         void Awake()
         {
             main = this;
@@ -28,6 +33,7 @@ namespace AbyssEditor.Scripts
             UpdateSunRotation(Preferences.data.sunPitch, Preferences.data.sunYaw);
             UpdateSunColor(Preferences.data.sunColorR, Preferences.data.sunColorG, Preferences.data.sunColorB);
             UpdateSunIntensity(Preferences.data.sunIntensity);
+            UpdateAmbientIntensity(Preferences.data.ambientIntensity);
         }
 
         public void UpdateBrushLight(bool value)
@@ -55,6 +61,11 @@ namespace AbyssEditor.Scripts
             {
                 light.intensity = value;
             }
+        }
+        
+        public void UpdateAmbientIntensity(float value)
+        {
+            RenderSettings.ambientIntensity = value * 4;
         }
     }
 }

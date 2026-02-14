@@ -29,6 +29,7 @@ namespace AbyssEditor.Scripts.SaveSystem
         public float sunColorG = 1f;
         public float sunColorB = 1f;
         public float sunIntensity = 0.5f;
+        public float ambientIntensity = 0.5f;
         
         //Settings
         public string gamePath = "";
