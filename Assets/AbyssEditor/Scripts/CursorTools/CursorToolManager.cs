@@ -32,17 +32,23 @@ namespace AbyssEditor.Scripts.CursorTools
             activeTool?.HandleToolUpdate(CanUseTool());
         }
 
+        /*
         public void Enable<T>() where T : ICursorTool
         {
             activeTool?.DisableTool();
             activeTool = tools.OfType<T>().First();
             activeTool?.EnableTool();
         }
+        */
         
         public void Enable<T>(HotBarButton hotBarButton) where T : ICursorTool
         {
-            activeTool?.DisableTool();
-            activeTool = tools.OfType<T>().First();
+            if (activeTool == null || activeTool.GetType() != typeof(T))
+            {
+                activeTool?.DisableTool();
+                activeTool = tools.OfType<T>().First();
+            }
+
             activeTool?.EnableTool(hotBarButton);
         }
 

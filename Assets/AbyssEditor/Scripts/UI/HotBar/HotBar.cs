@@ -99,6 +99,11 @@ namespace AbyssEditor.Scripts.UI.HotBar
                 CursorToolManager.main.DisableActiveTool();
                 return;
             }
+
+            if (currentButton && currentButton.GetType() != newButton.GetType())
+            {
+                CursorToolManager.main.DisableActiveTool();
+            }
             
             currentButton?.SetToggle(false);
             
@@ -109,7 +114,7 @@ namespace AbyssEditor.Scripts.UI.HotBar
             {
                 CursorToolManager.main.Enable<BrushTool>(currentButton);
             }
-            else if (newButton is RemoveBatchButton)
+            else if (newButton is RemoveBatchHotBarButton)
             {
                 Debug.Log("Removing batch button");
             }

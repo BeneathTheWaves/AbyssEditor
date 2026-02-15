@@ -711,8 +711,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 117.54573}
-  m_SizeDelta: {x: 300, y: 294.9084}
+  m_AnchoredPosition: {x: 0, y: 113.88461}
+  m_SizeDelta: {x: 300, y: 302.2307}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &43506445
 MonoBehaviour:
@@ -15715,6 +15715,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: TopBarButton
       objectReference: {fileID: 0}
+    - target: {fileID: 7526403588409628714, guid: 901f8c4741b9a4ca28122e09bb2ccaf0,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -16035,8 +16040,6 @@ MonoBehaviour:
   batchMat: {fileID: 2100000, guid: 5fef197d69377cd46bb1ed4226580c80, type: 2}
   batchCappedMat: {fileID: 2100000, guid: f33cd215ac3e76d4ba6f0d0922d1d85d, type: 2}
   brushGizmoMat: {fileID: 2100000, guid: bbb5c162cfbc47f4aa1535f48ccd95d4, type: 2}
-  brushGizmoMatWireFrame: {fileID: 2100000, guid: a3ecdfbe692e6f120993c088e74e2b86,
-    type: 2}
   boundaryGizmoMat: {fileID: 2100000, guid: e0bd272d84c6168419ad21940384dc99, type: 2}
   belowzero: 0
   userBatchOutputPath: 
