@@ -46,23 +46,24 @@ namespace AbyssEditor.Scripts
             brushTool = CursorToolManager.main.brushTool;
         }
 
+        /// <summary>
+        /// NOTE: Requires start batch to be the lowest batch and end batch to be the highest for proper positioning
+        /// </summary>
         public void OnRegionLoad(Vector3Int startBatch, Vector3Int endBatch)
         {
             moveLock = false;
-            transform.parent.rotation = Quaternion.Euler(new Vector3(30, -135, 0));
             PoseCamera(startBatch, endBatch);
         }
 
-        public void PoseCamera(Vector3 startBatch, Vector3 endBatch)
+        private void PoseCamera(Vector3 startBatch, Vector3 endBatch)
         {
-            Vector3 regionCenter = (startBatch + endBatch) * 0.5f;
+            Vector3 regionCenter = (startBatch + endBatch) * (0.5f * VoxelWorld.BATCH_WIDTH);
             
-            transform.parent.position = (regionCenter + Vector3.one + Vector3.up) * VoxelWorld.BATCH_WIDTH;
+            transform.position = (endBatch + Vector3.one + Vector3.up) * VoxelWorld.BATCH_WIDTH;
             transform.LookAt(regionCenter);
         }
 
         void OnDisable() => HoldingRMB = false;
-
 
         private void Update()
         {

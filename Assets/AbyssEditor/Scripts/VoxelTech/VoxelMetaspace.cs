@@ -157,8 +157,6 @@ namespace AbyssEditor.Scripts.VoxelTech {
             yield return RegenerateMeshesCoroutine(statusHandle);
             
             ReloadBoundaries();
-            
-            CameraControls.main.OnRegionLoad(startBatch, endBatch);
         }
 
         public IEnumerator RegenerateMeshesCoroutine(EditorProcessHandle statusHandle = null)

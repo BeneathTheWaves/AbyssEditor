@@ -97,16 +97,16 @@ namespace AbyssEditor.Scripts.UI.Windows {
             
             BatchOutlineManager.main.DrawBatchOutline(batchesInPatch);
 
-            Vector3Int minBatch = batchesInPatch[0];
-            Vector3Int maxBatch = batchesInPatch[0];
+            Vector3Int minBatchIndex = batchesInPatch[0];
+            Vector3Int maxBatchIndex = batchesInPatch[0];
 
             foreach (Vector3Int batchIndex in batchesInPatch)
             {
-                minBatch = Vector3Int.Min(minBatch, batchIndex);
-                maxBatch = Vector3Int.Max(maxBatch, batchIndex);
+                minBatchIndex = Vector3Int.Min(minBatchIndex, batchIndex);
+                maxBatchIndex = Vector3Int.Max(maxBatchIndex, batchIndex);
             }
             
-            CameraControls.main.OnRegionLoad(minBatch, maxBatch);
+            CameraControls.main.OnRegionLoad(minBatchIndex, maxBatchIndex);
         }
 
         public void OnApplyPatchButton()
@@ -160,7 +160,16 @@ namespace AbyssEditor.Scripts.UI.Windows {
             
             BatchOutlineManager.main.DrawBatchOutline(startBatchIndex, endBatchIndex);
             
-            CameraControls.main.OnRegionLoad(startBatchIndex, endBatchIndex);
+            Vector3Int minBatchIndex = startBatchIndex;
+            Vector3Int maxBatchIndex = startBatchIndex;
+            
+            foreach (Vector3Int batchIndex in startBatchIndex.IterateTo(endBatchIndex))
+            {
+                minBatchIndex = Vector3Int.Min(minBatchIndex, batchIndex);
+                maxBatchIndex = Vector3Int.Max(maxBatchIndex, batchIndex);
+            }
+            
+            CameraControls.main.OnRegionLoad(minBatchIndex, maxBatchIndex);
         }
 
         public void OnLoadBatchButton()
