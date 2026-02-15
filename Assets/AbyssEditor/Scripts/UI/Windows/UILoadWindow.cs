@@ -46,12 +46,12 @@ namespace AbyssEditor.Scripts.UI.Windows {
         public override void DisableWindow()
         {
             base.DisableWindow();
-            BatchOutlineManager.main.ResetLoadOutlines();
+            BatchOutlineManager.main.ResetOutlines();
         }
         
         private void ChangeLoadMethod(string method)
         {
-            BatchOutlineManager.main.ResetLoadOutlines();
+            BatchOutlineManager.main.ResetOutlines();
             switch (method)
             {
                 case "BaseGame":

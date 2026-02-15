@@ -15,7 +15,7 @@ namespace AbyssEditor.Scripts.UI
         public IEnumerator QuitEditorCoroutine()
         {
             UIConfirmationWindow.main.OpenWindow(
-                Language.main.Get("ConfirmationMessage"),
+                Language.main.Get("QuitConfirmationMessage"),
                 Language.main.Get("ConfirmQuit"), 
                 Language.main.Get("CancelQuit"), 
                 out UIConfirmationWindow.Response response

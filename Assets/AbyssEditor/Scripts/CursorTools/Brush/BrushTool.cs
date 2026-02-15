@@ -27,7 +27,7 @@ namespace AbyssEditor.Scripts.CursorTools.Brush {
         
         private BrushMode activeMode;
         private BrushStroke stroke;
-        
+        //
         private AbyssEditorInput.BrushActions input = new AbyssEditorInput().Brush;
         private GameObject brushAreaObject;
 
@@ -45,7 +45,6 @@ namespace AbyssEditor.Scripts.CursorTools.Brush {
         }
         
         public void EnableTool(HotBarButton hotBarButton) {
-            input.Enable();
             BrushHotBarButton brushbutton = hotBarButton as BrushHotBarButton;
             SetBrushMode(brushbutton.GetBrushMode());
             EnableTool();
@@ -115,9 +114,8 @@ namespace AbyssEditor.Scripts.CursorTools.Brush {
         private void BrushAction(bool doAction) {
             
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-
-            RaycastHit hit;
-            Physics.Raycast(ray, out hit, Mathf.Infinity, 1);
+            
+            Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, 1);
 
             if (!hit.collider)
             {

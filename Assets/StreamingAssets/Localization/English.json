@@ -44,6 +44,8 @@
     "BrushSizeSlider": "Brush Size Slider",
     "BrushStrengthSlider": "Brush Strength Slider",
     "BlockType": "Block Type",
+    //Remove Batch
+    "BatchRemoveConfirmationMessage": "This action will delete the selected batch. Any unexported data will be lost!",
   
   //Lighting
   "LightingTitle": "Lighting",
@@ -70,7 +72,7 @@
   "LoadmatsBZ": "Load BZ materials",
   
   //Quit
-  "ConfirmationMessage": "Are you certain you want to close the editor? Any unexported data will be lost!",
+  "QuitConfirmationMessage": "Are you certain you want to close the editor? Any unexported data will be lost!",
   "ConfirmQuit": "Quit",
   "CancelQuit": "No!"
 }

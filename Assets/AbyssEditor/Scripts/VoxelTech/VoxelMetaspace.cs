@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using AbyssEditor.Scripts.CursorTools;
@@ -36,6 +37,21 @@ namespace AbyssEditor.Scripts.VoxelTech {
                     meshes.Add(voxelMesh);
                 }
             }
+        }
+
+        public IEnumerator RemoveBatch(Vector3Int batchIndex)
+        {
+            if (TryGetVoxelMesh(batchIndex, out VoxelMesh.VoxelMesh voxelMesh))
+            {
+                meshes.Remove(voxelMesh);
+                voxelMesh.DisposeGrids();
+
+                Debug.Log("REMOVED: " + voxelMesh.name);
+                
+                DestroyImmediate(voxelMesh.gameObject);
+            }
+
+            yield return RegenerateMeshesCoroutine(reloadBoundariesOnComplete: true);
         }
 
         public VoxelGrid TryGetVoxelGrid(Vector3Int batchIndex, Vector3Int containerIndex)
@@ -112,7 +128,7 @@ namespace AbyssEditor.Scripts.VoxelTech {
             }
             statusHandle.CompletePhase();
 
-            yield return RegenerateMeshesCoroutine(statusHandle);
+            yield return RegenerateMeshesCoroutine(statusHandle, true);
         }
         
         public IEnumerator OctreePatchReadCoroutine(byte[] patchBytes, List<Vector3Int> batchesInPatch, EditorProcessHandle statusHandle = null) {
@@ -121,9 +137,7 @@ namespace AbyssEditor.Scripts.VoxelTech {
             PatchContainer patchContainer = new PatchContainer();
             
             yield return BatchReadWriter.ReadOctreePatchCoroutine(patchContainer.Callback, patchBytes, batchesInPatch, statusHandle);
-
-            Vector3Int startBatch = new Vector3Int(-1000, -1000, -1000);
-            Vector3Int endBatch = Vector3Int.zero;
+            
 
             int batchCount = patchContainer.modifiedBatches.Keys.Count;
             int readIndex = 0;
@@ -138,10 +152,6 @@ namespace AbyssEditor.Scripts.VoxelTech {
                 {
                     continue;
                 }
-                if (startBatch == new Vector3Int(-1000, -1000, -1000))
-                {
-                    startBatch = modifiedBatch;
-                }
                 
                 //TODO: THIS IS SCUFFED ASF RN SMH TS PMO ONG ONG FRFR NO CAPA LAPA HI KOOKOO
                 AddRegion(modifiedBatch, modifiedBatch);
@@ -149,17 +159,14 @@ namespace AbyssEditor.Scripts.VoxelTech {
                 VoxelMesh.VoxelMesh mesh = TryGetVoxelMesh(modifiedBatch);
                 
                 mesh.OctreesReadCallback(nodes);
-                endBatch = modifiedBatch;
                 yield return null;
             }
             statusHandle.CompletePhase();
 
-            yield return RegenerateMeshesCoroutine(statusHandle);
-            
-            ReloadBoundaries();
+            yield return RegenerateMeshesCoroutine(statusHandle, true);
         }
 
-        public IEnumerator RegenerateMeshesCoroutine(EditorProcessHandle statusHandle = null)
+        public IEnumerator RegenerateMeshesCoroutine(EditorProcessHandle statusHandle = null, bool reloadBoundariesOnComplete = false)
         {
             if (statusHandle == null) { statusHandle = TaskManager.main.GetEditorProcessHandle(1); }
             
@@ -186,6 +193,11 @@ namespace AbyssEditor.Scripts.VoxelTech {
                 yield return null;
             }
             statusHandle.CompletePhase();
+
+            if (reloadBoundariesOnComplete)
+            {
+                ReloadBoundaries();
+            }
         }
         
         public bool BatchLoaded(Vector3Int batchIndex) {
@@ -217,12 +229,24 @@ namespace AbyssEditor.Scripts.VoxelTech {
             BrushJob.DisposeNativeArrayPool();
             VoxelGrid.neighboursToCheckInSmooth.Dispose();
         }
-
+        
         public VoxelMesh.VoxelMesh TryGetVoxelMesh(Vector3Int batchIndex)
         {
             return meshes.FirstOrDefault(mesh => mesh.batchIndex == batchIndex);
         }
         
+        //TODO migrate above code to use this, conforms to standards better
+        public bool TryGetVoxelMesh(Vector3Int batchIndex, out VoxelMesh.VoxelMesh mesh)
+        {
+            VoxelMesh.VoxelMesh voxelMesh = TryGetVoxelMesh(batchIndex);
+            if (voxelMesh == null)
+            {
+                mesh = null;
+                return false;
+            }
+            mesh = voxelMesh;
+            return true;
+        }
         
     }
 }

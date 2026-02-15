@@ -7,17 +7,20 @@ namespace AbyssEditor.Scripts.BatchOutline
     public class BatchOutlineManager : MonoBehaviour
     {
         public static BatchOutlineManager main;
-        
+        private static readonly int wireframeColor = Shader.PropertyToID("_WireframeColor");
+
         [SerializeField] private GameObject batchOutlinePrefab;
         
         private GameObject[] batchLoadOutlines;
+        
+        private BatchOutline hoveredOutline;
         
         private void Awake()
         {
             main = this;
         }
 
-        public void ResetLoadOutlines()
+        public void ResetOutlines()
         {
             DeleteOldOutlines(batchLoadOutlines);
         }
@@ -41,7 +44,7 @@ namespace AbyssEditor.Scripts.BatchOutline
             List<GameObject> outlines = new List<GameObject>();
             foreach (Vector3Int batchIndex in startBatchIndex.IterateTo(endBatchIndex))
             {
-                outlines.Add(DrawBatchOutline(batchIndex));
+                outlines.Add(DrawBatchLoadOutline(batchIndex));
             }
             batchLoadOutlines = outlines.ToArray();
         }
@@ -53,27 +56,69 @@ namespace AbyssEditor.Scripts.BatchOutline
             List<GameObject> outlines = new List<GameObject>();            
             foreach (Vector3Int batchIndex in batchIndexes)
             {
-                outlines.Add(DrawBatchOutline(batchIndex));
+                outlines.Add(DrawBatchLoadOutline(batchIndex));
             }
             batchLoadOutlines = outlines.ToArray();
         }
         
-        private GameObject DrawBatchOutline(Vector3Int batchIndex)
+        public void DrawBatchRemoveOutlines(List<Vector3Int> batchIndexes)
+        {
+            DeleteOldOutlines(batchLoadOutlines);
+            
+            List<GameObject> outlines = new List<GameObject>();            
+            foreach (Vector3Int batchIndex in batchIndexes)
+            {
+                outlines.Add(DrawBatchRemoveOutline(batchIndex));
+            }
+            batchLoadOutlines = outlines.ToArray();
+        }
+
+        public void HoverRemoveOutline(BatchOutline outline)
+        {
+            if (outline != null && outline == hoveredOutline)
+                return;
+
+            // Reset old
+            if (hoveredOutline != null)
+            {
+                hoveredOutline.GetMeshRenderer().material.SetColor(wireframeColor, Color.white);
+            }
+            
+            hoveredOutline = outline;
+
+            if (hoveredOutline != null)
+            {
+                hoveredOutline.GetMeshRenderer().material.SetColor(wireframeColor, Color.red);
+            }
+        }
+        
+        private GameObject DrawBatchLoadOutline(Vector3Int batchIndex)
         {
             GameObject outline = Instantiate(batchOutlinePrefab, batchIndex * VoxelWorld.BATCH_WIDTH, Quaternion.identity);
 
             GameObject cube = outline.transform.GetChild(0).gameObject;
+            cube.AddComponent<BatchOutline>();
+            MeshRenderer meshRenderer = cube.GetComponent<MeshRenderer>();
             
             if (VoxelMetaspace.metaspace.TryGetVoxelMesh(batchIndex) != null)
             {
                 //batch exists to make it red
-                cube.GetComponent<MeshRenderer>().material.SetColor("_WireframeColor", Color.red );
+                meshRenderer.material.SetColor(wireframeColor, Color.red );
+                return outline;
             }
-            else
-            {
-                //batch doesn't exist to make it purple
-                cube.GetComponent<MeshRenderer>().material.SetColor("_WireframeColor", Color.rebeccaPurple );
-            }
+            
+            meshRenderer.material.SetColor(wireframeColor, Color.rebeccaPurple );
+            return outline;
+        }
+        
+        
+        private GameObject DrawBatchRemoveOutline(Vector3Int batchIndex)
+        {
+            GameObject outline = Instantiate(batchOutlinePrefab, batchIndex * VoxelWorld.BATCH_WIDTH, Quaternion.identity);
+
+            GameObject cube = outline.transform.GetChild(0).gameObject;
+            cube.AddComponent<BatchOutline>();
+            cube.GetComponent<MeshRenderer>().material.SetColor(wireframeColor, Color.white );
             
             return outline;
         }

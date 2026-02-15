@@ -91,243 +91,6 @@ namespace AbyssEditor.Scripts.InputMaps
     ""name"": ""AbyssEditorInput"",
     ""maps"": [
         {
-            ""name"": ""Brush"",
-            ""id"": ""f656d63c-6511-4a6c-87b7-92f7e75111ee"",
-            ""actions"": [
-                {
-                    ""name"": ""ActivateBrush"",
-                    ""type"": ""Button"",
-                    ""id"": ""9a8ab7a4-6af1-4f84-a145-28a39754dc32"",
-                    ""expectedControlType"": """",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": false
-                },
-                {
-                    ""name"": ""ScrollWheelScale"",
-                    ""type"": ""Value"",
-                    ""id"": ""3a19a02e-d67a-496c-8171-0a7a8eafaf01"",
-                    ""expectedControlType"": ""Axis"",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": true
-                },
-                {
-                    ""name"": ""ActivateBrushScale"",
-                    ""type"": ""Button"",
-                    ""id"": ""e2a6ecba-b5d4-4420-9d2a-401b0bd679df"",
-                    ""expectedControlType"": """",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": false
-                },
-                {
-                    ""name"": ""ActivateBrushStrengthScale"",
-                    ""type"": ""Button"",
-                    ""id"": ""f5b6c41c-8e53-4b5b-9e72-b87eb281930b"",
-                    ""expectedControlType"": """",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": false
-                }
-            ],
-            ""bindings"": [
-                {
-                    ""name"": """",
-                    ""id"": ""909e3efc-22ef-4f60-9bee-ff925d57a0c2"",
-                    ""path"": ""<Mouse>/leftButton"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""ActivateBrush"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": ""1D Axis"",
-                    ""id"": ""758afe62-c8f5-4ca9-8065-7a80c25b6d1f"",
-                    ""path"": ""1DAxis"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""ScrollWheelScale"",
-                    ""isComposite"": true,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": ""negative"",
-                    ""id"": ""633e7af1-e49b-4e85-b9c0-bedfea0fa5e7"",
-                    ""path"": ""<Mouse>/scroll/down"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""ScrollWheelScale"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": true
-                },
-                {
-                    ""name"": ""positive"",
-                    ""id"": ""2fb66fe8-d330-427d-a30c-f712b99e63be"",
-                    ""path"": ""<Mouse>/scroll/up"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""ScrollWheelScale"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": true
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""e20bc53e-cd64-43a1-943e-9d0191a946b4"",
-                    ""path"": ""<Keyboard>/q"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""ActivateBrushStrengthScale"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""ac1f4fb4-c8b0-46ba-87f8-45affc16e5d4"",
-                    ""path"": ""<Keyboard>/e"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""ActivateBrushScale"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                }
-            ]
-        },
-        {
-            ""name"": ""HotBar"",
-            ""id"": ""eb5ac3fd-83bf-40ae-9406-fa855445ef77"",
-            ""actions"": [
-                {
-                    ""name"": ""HotbarSelect"",
-                    ""type"": ""Button"",
-                    ""id"": ""80e13611-afd8-420d-b7ac-b21d4d7d81ea"",
-                    ""expectedControlType"": """",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": false
-                }
-            ],
-            ""bindings"": [
-                {
-                    ""name"": """",
-                    ""id"": ""0f92b5b8-7790-4a92-9875-74967fdc594a"",
-                    ""path"": ""<Keyboard>/1"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""HotbarSelect"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""a304faf4-c9ab-4ca8-acdd-8afe2cc19596"",
-                    ""path"": ""<Keyboard>/2"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""HotbarSelect"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""6d19327e-64af-4247-856a-084a9848bfc1"",
-                    ""path"": ""<Keyboard>/3"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""HotbarSelect"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""240d2e26-48b6-471d-b6fc-e7069dff89d7"",
-                    ""path"": ""<Keyboard>/4"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""HotbarSelect"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""1b318de0-c6eb-4625-ae85-982bd1506f93"",
-                    ""path"": ""<Keyboard>/5"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""HotbarSelect"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""7035274b-0d47-49da-9499-3d60f131f0b8"",
-                    ""path"": ""<Keyboard>/6"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""HotbarSelect"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""f8041695-377a-4458-8403-9704d92f1034"",
-                    ""path"": ""<Keyboard>/7"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""HotbarSelect"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""f9af8d71-0c22-4643-9faa-240d0f252e01"",
-                    ""path"": ""<Keyboard>/8"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""HotbarSelect"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""1bd24454-60a7-4dc1-ae13-4451c915c2d2"",
-                    ""path"": ""<Keyboard>/9"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""HotbarSelect"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""895ab6a2-bc6c-432f-bb96-3880f5359927"",
-                    ""path"": ""<Keyboard>/0"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""HotbarSelect"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                }
-            ]
-        },
-        {
             ""name"": ""FreeCam"",
             ""id"": ""1654a017-c18f-4e16-8930-f0f7cdee4f1c"",
             ""actions"": [
@@ -480,32 +243,301 @@ namespace AbyssEditor.Scripts.InputMaps
                     ""isPartOfComposite"": false
                 }
             ]
+        },
+        {
+            ""name"": ""HotBar"",
+            ""id"": ""eb5ac3fd-83bf-40ae-9406-fa855445ef77"",
+            ""actions"": [
+                {
+                    ""name"": ""HotbarSelect"",
+                    ""type"": ""Button"",
+                    ""id"": ""80e13611-afd8-420d-b7ac-b21d4d7d81ea"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""0f92b5b8-7790-4a92-9875-74967fdc594a"",
+                    ""path"": ""<Keyboard>/1"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""HotbarSelect"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""a304faf4-c9ab-4ca8-acdd-8afe2cc19596"",
+                    ""path"": ""<Keyboard>/2"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""HotbarSelect"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""6d19327e-64af-4247-856a-084a9848bfc1"",
+                    ""path"": ""<Keyboard>/3"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""HotbarSelect"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""240d2e26-48b6-471d-b6fc-e7069dff89d7"",
+                    ""path"": ""<Keyboard>/4"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""HotbarSelect"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""1b318de0-c6eb-4625-ae85-982bd1506f93"",
+                    ""path"": ""<Keyboard>/5"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""HotbarSelect"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""7035274b-0d47-49da-9499-3d60f131f0b8"",
+                    ""path"": ""<Keyboard>/6"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""HotbarSelect"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""f8041695-377a-4458-8403-9704d92f1034"",
+                    ""path"": ""<Keyboard>/7"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""HotbarSelect"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""f9af8d71-0c22-4643-9faa-240d0f252e01"",
+                    ""path"": ""<Keyboard>/8"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""HotbarSelect"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""1bd24454-60a7-4dc1-ae13-4451c915c2d2"",
+                    ""path"": ""<Keyboard>/9"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""HotbarSelect"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""895ab6a2-bc6c-432f-bb96-3880f5359927"",
+                    ""path"": ""<Keyboard>/0"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""HotbarSelect"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
+        },
+        {
+            ""name"": ""Brush"",
+            ""id"": ""f656d63c-6511-4a6c-87b7-92f7e75111ee"",
+            ""actions"": [
+                {
+                    ""name"": ""ActivateBrush"",
+                    ""type"": ""Button"",
+                    ""id"": ""9a8ab7a4-6af1-4f84-a145-28a39754dc32"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""ScrollWheelScale"",
+                    ""type"": ""Value"",
+                    ""id"": ""3a19a02e-d67a-496c-8171-0a7a8eafaf01"",
+                    ""expectedControlType"": ""Axis"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""ActivateBrushScale"",
+                    ""type"": ""Button"",
+                    ""id"": ""e2a6ecba-b5d4-4420-9d2a-401b0bd679df"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""ActivateBrushStrengthScale"",
+                    ""type"": ""Button"",
+                    ""id"": ""f5b6c41c-8e53-4b5b-9e72-b87eb281930b"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""909e3efc-22ef-4f60-9bee-ff925d57a0c2"",
+                    ""path"": ""<Mouse>/leftButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ActivateBrush"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""1D Axis"",
+                    ""id"": ""758afe62-c8f5-4ca9-8065-7a80c25b6d1f"",
+                    ""path"": ""1DAxis"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ScrollWheelScale"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""negative"",
+                    ""id"": ""633e7af1-e49b-4e85-b9c0-bedfea0fa5e7"",
+                    ""path"": ""<Mouse>/scroll/down"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ScrollWheelScale"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""positive"",
+                    ""id"": ""2fb66fe8-d330-427d-a30c-f712b99e63be"",
+                    ""path"": ""<Mouse>/scroll/up"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ScrollWheelScale"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""e20bc53e-cd64-43a1-943e-9d0191a946b4"",
+                    ""path"": ""<Keyboard>/q"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ActivateBrushStrengthScale"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""ac1f4fb4-c8b0-46ba-87f8-45affc16e5d4"",
+                    ""path"": ""<Keyboard>/e"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ActivateBrushScale"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
+        },
+        {
+            ""name"": ""RemoveBatch"",
+            ""id"": ""7bde8453-f416-46e3-9c8f-b94aa8f13f26"",
+            ""actions"": [
+                {
+                    ""name"": ""SelectBatch"",
+                    ""type"": ""Button"",
+                    ""id"": ""3718e3ba-932b-4663-8dcf-0e3ab98849ca"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""402e2ddb-3380-450e-bc17-b9567a712147"",
+                    ""path"": ""<Mouse>/leftButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SelectBatch"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
         }
     ],
     ""controlSchemes"": []
 }");
-            // Brush
-            m_Brush = asset.FindActionMap("Brush", throwIfNotFound: true);
-            m_Brush_ActivateBrush = m_Brush.FindAction("ActivateBrush", throwIfNotFound: true);
-            m_Brush_ScrollWheelScale = m_Brush.FindAction("ScrollWheelScale", throwIfNotFound: true);
-            m_Brush_ActivateBrushScale = m_Brush.FindAction("ActivateBrushScale", throwIfNotFound: true);
-            m_Brush_ActivateBrushStrengthScale = m_Brush.FindAction("ActivateBrushStrengthScale", throwIfNotFound: true);
-            // HotBar
-            m_HotBar = asset.FindActionMap("HotBar", throwIfNotFound: true);
-            m_HotBar_HotbarSelect = m_HotBar.FindAction("HotbarSelect", throwIfNotFound: true);
             // FreeCam
             m_FreeCam = asset.FindActionMap("FreeCam", throwIfNotFound: true);
             m_FreeCam_Move = m_FreeCam.FindAction("Move", throwIfNotFound: true);
             m_FreeCam_Look = m_FreeCam.FindAction("Look", throwIfNotFound: true);
             m_FreeCam_UpDown = m_FreeCam.FindAction("UpDown", throwIfNotFound: true);
             m_FreeCam_SpeedUp = m_FreeCam.FindAction("SpeedUp", throwIfNotFound: true);
+            // HotBar
+            m_HotBar = asset.FindActionMap("HotBar", throwIfNotFound: true);
+            m_HotBar_HotbarSelect = m_HotBar.FindAction("HotbarSelect", throwIfNotFound: true);
+            // Brush
+            m_Brush = asset.FindActionMap("Brush", throwIfNotFound: true);
+            m_Brush_ActivateBrush = m_Brush.FindAction("ActivateBrush", throwIfNotFound: true);
+            m_Brush_ScrollWheelScale = m_Brush.FindAction("ScrollWheelScale", throwIfNotFound: true);
+            m_Brush_ActivateBrushScale = m_Brush.FindAction("ActivateBrushScale", throwIfNotFound: true);
+            m_Brush_ActivateBrushStrengthScale = m_Brush.FindAction("ActivateBrushStrengthScale", throwIfNotFound: true);
+            // RemoveBatch
+            m_RemoveBatch = asset.FindActionMap("RemoveBatch", throwIfNotFound: true);
+            m_RemoveBatch_SelectBatch = m_RemoveBatch.FindAction("SelectBatch", throwIfNotFound: true);
         }
 
         ~@AbyssEditorInput()
         {
-            UnityEngine.Debug.Assert(!m_Brush.enabled, "This will cause a leak and performance issues, AbyssEditorInput.Brush.Disable() has not been called.");
-            UnityEngine.Debug.Assert(!m_HotBar.enabled, "This will cause a leak and performance issues, AbyssEditorInput.HotBar.Disable() has not been called.");
             UnityEngine.Debug.Assert(!m_FreeCam.enabled, "This will cause a leak and performance issues, AbyssEditorInput.FreeCam.Disable() has not been called.");
+            UnityEngine.Debug.Assert(!m_HotBar.enabled, "This will cause a leak and performance issues, AbyssEditorInput.HotBar.Disable() has not been called.");
+            UnityEngine.Debug.Assert(!m_Brush.enabled, "This will cause a leak and performance issues, AbyssEditorInput.Brush.Disable() has not been called.");
+            UnityEngine.Debug.Assert(!m_RemoveBatch.enabled, "This will cause a leak and performance issues, AbyssEditorInput.RemoveBatch.Disable() has not been called.");
         }
 
         /// <summary>
@@ -577,6 +609,231 @@ namespace AbyssEditor.Scripts.InputMaps
         {
             return asset.FindBinding(bindingMask, out action);
         }
+
+        // FreeCam
+        private readonly InputActionMap m_FreeCam;
+        private List<IFreeCamActions> m_FreeCamActionsCallbackInterfaces = new List<IFreeCamActions>();
+        private readonly InputAction m_FreeCam_Move;
+        private readonly InputAction m_FreeCam_Look;
+        private readonly InputAction m_FreeCam_UpDown;
+        private readonly InputAction m_FreeCam_SpeedUp;
+        /// <summary>
+        /// Provides access to input actions defined in input action map "FreeCam".
+        /// </summary>
+        public struct FreeCamActions
+        {
+            private @AbyssEditorInput m_Wrapper;
+
+            /// <summary>
+            /// Construct a new instance of the input action map wrapper class.
+            /// </summary>
+            public FreeCamActions(@AbyssEditorInput wrapper) { m_Wrapper = wrapper; }
+            /// <summary>
+            /// Provides access to the underlying input action "FreeCam/Move".
+            /// </summary>
+            public InputAction @Move => m_Wrapper.m_FreeCam_Move;
+            /// <summary>
+            /// Provides access to the underlying input action "FreeCam/Look".
+            /// </summary>
+            public InputAction @Look => m_Wrapper.m_FreeCam_Look;
+            /// <summary>
+            /// Provides access to the underlying input action "FreeCam/UpDown".
+            /// </summary>
+            public InputAction @UpDown => m_Wrapper.m_FreeCam_UpDown;
+            /// <summary>
+            /// Provides access to the underlying input action "FreeCam/SpeedUp".
+            /// </summary>
+            public InputAction @SpeedUp => m_Wrapper.m_FreeCam_SpeedUp;
+            /// <summary>
+            /// Provides access to the underlying input action map instance.
+            /// </summary>
+            public InputActionMap Get() { return m_Wrapper.m_FreeCam; }
+            /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Enable()" />
+            public void Enable() { Get().Enable(); }
+            /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Disable()" />
+            public void Disable() { Get().Disable(); }
+            /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.enabled" />
+            public bool enabled => Get().enabled;
+            /// <summary>
+            /// Implicitly converts an <see ref="FreeCamActions" /> to an <see ref="InputActionMap" /> instance.
+            /// </summary>
+            public static implicit operator InputActionMap(FreeCamActions set) { return set.Get(); }
+            /// <summary>
+            /// Adds <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
+            /// </summary>
+            /// <param name="instance">Callback instance.</param>
+            /// <remarks>
+            /// If <paramref name="instance" /> is <c>null</c> or <paramref name="instance"/> have already been added this method does nothing.
+            /// </remarks>
+            /// <seealso cref="FreeCamActions" />
+            public void AddCallbacks(IFreeCamActions instance)
+            {
+                if (instance == null || m_Wrapper.m_FreeCamActionsCallbackInterfaces.Contains(instance)) return;
+                m_Wrapper.m_FreeCamActionsCallbackInterfaces.Add(instance);
+                @Move.started += instance.OnMove;
+                @Move.performed += instance.OnMove;
+                @Move.canceled += instance.OnMove;
+                @Look.started += instance.OnLook;
+                @Look.performed += instance.OnLook;
+                @Look.canceled += instance.OnLook;
+                @UpDown.started += instance.OnUpDown;
+                @UpDown.performed += instance.OnUpDown;
+                @UpDown.canceled += instance.OnUpDown;
+                @SpeedUp.started += instance.OnSpeedUp;
+                @SpeedUp.performed += instance.OnSpeedUp;
+                @SpeedUp.canceled += instance.OnSpeedUp;
+            }
+
+            /// <summary>
+            /// Removes <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
+            /// </summary>
+            /// <remarks>
+            /// Calling this method when <paramref name="instance" /> have not previously been registered has no side-effects.
+            /// </remarks>
+            /// <seealso cref="FreeCamActions" />
+            private void UnregisterCallbacks(IFreeCamActions instance)
+            {
+                @Move.started -= instance.OnMove;
+                @Move.performed -= instance.OnMove;
+                @Move.canceled -= instance.OnMove;
+                @Look.started -= instance.OnLook;
+                @Look.performed -= instance.OnLook;
+                @Look.canceled -= instance.OnLook;
+                @UpDown.started -= instance.OnUpDown;
+                @UpDown.performed -= instance.OnUpDown;
+                @UpDown.canceled -= instance.OnUpDown;
+                @SpeedUp.started -= instance.OnSpeedUp;
+                @SpeedUp.performed -= instance.OnSpeedUp;
+                @SpeedUp.canceled -= instance.OnSpeedUp;
+            }
+
+            /// <summary>
+            /// Unregisters <param cref="instance" /> and unregisters all input action callbacks via <see cref="FreeCamActions.UnregisterCallbacks(IFreeCamActions)" />.
+            /// </summary>
+            /// <seealso cref="FreeCamActions.UnregisterCallbacks(IFreeCamActions)" />
+            public void RemoveCallbacks(IFreeCamActions instance)
+            {
+                if (m_Wrapper.m_FreeCamActionsCallbackInterfaces.Remove(instance))
+                    UnregisterCallbacks(instance);
+            }
+
+            /// <summary>
+            /// Replaces all existing callback instances and previously registered input action callbacks associated with them with callbacks provided via <param cref="instance" />.
+            /// </summary>
+            /// <remarks>
+            /// If <paramref name="instance" /> is <c>null</c>, calling this method will only unregister all existing callbacks but not register any new callbacks.
+            /// </remarks>
+            /// <seealso cref="FreeCamActions.AddCallbacks(IFreeCamActions)" />
+            /// <seealso cref="FreeCamActions.RemoveCallbacks(IFreeCamActions)" />
+            /// <seealso cref="FreeCamActions.UnregisterCallbacks(IFreeCamActions)" />
+            public void SetCallbacks(IFreeCamActions instance)
+            {
+                foreach (var item in m_Wrapper.m_FreeCamActionsCallbackInterfaces)
+                    UnregisterCallbacks(item);
+                m_Wrapper.m_FreeCamActionsCallbackInterfaces.Clear();
+                AddCallbacks(instance);
+            }
+        }
+        /// <summary>
+        /// Provides a new <see cref="FreeCamActions" /> instance referencing this action map.
+        /// </summary>
+        public FreeCamActions @FreeCam => new FreeCamActions(this);
+
+        // HotBar
+        private readonly InputActionMap m_HotBar;
+        private List<IHotBarActions> m_HotBarActionsCallbackInterfaces = new List<IHotBarActions>();
+        private readonly InputAction m_HotBar_HotbarSelect;
+        /// <summary>
+        /// Provides access to input actions defined in input action map "HotBar".
+        /// </summary>
+        public struct HotBarActions
+        {
+            private @AbyssEditorInput m_Wrapper;
+
+            /// <summary>
+            /// Construct a new instance of the input action map wrapper class.
+            /// </summary>
+            public HotBarActions(@AbyssEditorInput wrapper) { m_Wrapper = wrapper; }
+            /// <summary>
+            /// Provides access to the underlying input action "HotBar/HotbarSelect".
+            /// </summary>
+            public InputAction @HotbarSelect => m_Wrapper.m_HotBar_HotbarSelect;
+            /// <summary>
+            /// Provides access to the underlying input action map instance.
+            /// </summary>
+            public InputActionMap Get() { return m_Wrapper.m_HotBar; }
+            /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Enable()" />
+            public void Enable() { Get().Enable(); }
+            /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Disable()" />
+            public void Disable() { Get().Disable(); }
+            /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.enabled" />
+            public bool enabled => Get().enabled;
+            /// <summary>
+            /// Implicitly converts an <see ref="HotBarActions" /> to an <see ref="InputActionMap" /> instance.
+            /// </summary>
+            public static implicit operator InputActionMap(HotBarActions set) { return set.Get(); }
+            /// <summary>
+            /// Adds <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
+            /// </summary>
+            /// <param name="instance">Callback instance.</param>
+            /// <remarks>
+            /// If <paramref name="instance" /> is <c>null</c> or <paramref name="instance"/> have already been added this method does nothing.
+            /// </remarks>
+            /// <seealso cref="HotBarActions" />
+            public void AddCallbacks(IHotBarActions instance)
+            {
+                if (instance == null || m_Wrapper.m_HotBarActionsCallbackInterfaces.Contains(instance)) return;
+                m_Wrapper.m_HotBarActionsCallbackInterfaces.Add(instance);
+                @HotbarSelect.started += instance.OnHotbarSelect;
+                @HotbarSelect.performed += instance.OnHotbarSelect;
+                @HotbarSelect.canceled += instance.OnHotbarSelect;
+            }
+
+            /// <summary>
+            /// Removes <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
+            /// </summary>
+            /// <remarks>
+            /// Calling this method when <paramref name="instance" /> have not previously been registered has no side-effects.
+            /// </remarks>
+            /// <seealso cref="HotBarActions" />
+            private void UnregisterCallbacks(IHotBarActions instance)
+            {
+                @HotbarSelect.started -= instance.OnHotbarSelect;
+                @HotbarSelect.performed -= instance.OnHotbarSelect;
+                @HotbarSelect.canceled -= instance.OnHotbarSelect;
+            }
+
+            /// <summary>
+            /// Unregisters <param cref="instance" /> and unregisters all input action callbacks via <see cref="HotBarActions.UnregisterCallbacks(IHotBarActions)" />.
+            /// </summary>
+            /// <seealso cref="HotBarActions.UnregisterCallbacks(IHotBarActions)" />
+            public void RemoveCallbacks(IHotBarActions instance)
+            {
+                if (m_Wrapper.m_HotBarActionsCallbackInterfaces.Remove(instance))
+                    UnregisterCallbacks(instance);
+            }
+
+            /// <summary>
+            /// Replaces all existing callback instances and previously registered input action callbacks associated with them with callbacks provided via <param cref="instance" />.
+            /// </summary>
+            /// <remarks>
+            /// If <paramref name="instance" /> is <c>null</c>, calling this method will only unregister all existing callbacks but not register any new callbacks.
+            /// </remarks>
+            /// <seealso cref="HotBarActions.AddCallbacks(IHotBarActions)" />
+            /// <seealso cref="HotBarActions.RemoveCallbacks(IHotBarActions)" />
+            /// <seealso cref="HotBarActions.UnregisterCallbacks(IHotBarActions)" />
+            public void SetCallbacks(IHotBarActions instance)
+            {
+                foreach (var item in m_Wrapper.m_HotBarActionsCallbackInterfaces)
+                    UnregisterCallbacks(item);
+                m_Wrapper.m_HotBarActionsCallbackInterfaces.Clear();
+                AddCallbacks(instance);
+            }
+        }
+        /// <summary>
+        /// Provides a new <see cref="HotBarActions" /> instance referencing this action map.
+        /// </summary>
+        public HotBarActions @HotBar => new HotBarActions(this);
 
         // Brush
         private readonly InputActionMap m_Brush;
@@ -707,29 +964,29 @@ namespace AbyssEditor.Scripts.InputMaps
         /// </summary>
         public BrushActions @Brush => new BrushActions(this);
 
-        // HotBar
-        private readonly InputActionMap m_HotBar;
-        private List<IHotBarActions> m_HotBarActionsCallbackInterfaces = new List<IHotBarActions>();
-        private readonly InputAction m_HotBar_HotbarSelect;
+        // RemoveBatch
+        private readonly InputActionMap m_RemoveBatch;
+        private List<IRemoveBatchActions> m_RemoveBatchActionsCallbackInterfaces = new List<IRemoveBatchActions>();
+        private readonly InputAction m_RemoveBatch_SelectBatch;
         /// <summary>
-        /// Provides access to input actions defined in input action map "HotBar".
+        /// Provides access to input actions defined in input action map "RemoveBatch".
         /// </summary>
-        public struct HotBarActions
+        public struct RemoveBatchActions
         {
             private @AbyssEditorInput m_Wrapper;
 
             /// <summary>
             /// Construct a new instance of the input action map wrapper class.
             /// </summary>
-            public HotBarActions(@AbyssEditorInput wrapper) { m_Wrapper = wrapper; }
+            public RemoveBatchActions(@AbyssEditorInput wrapper) { m_Wrapper = wrapper; }
             /// <summary>
-            /// Provides access to the underlying input action "HotBar/HotbarSelect".
+            /// Provides access to the underlying input action "RemoveBatch/SelectBatch".
             /// </summary>
-            public InputAction @HotbarSelect => m_Wrapper.m_HotBar_HotbarSelect;
+            public InputAction @SelectBatch => m_Wrapper.m_RemoveBatch_SelectBatch;
             /// <summary>
             /// Provides access to the underlying input action map instance.
             /// </summary>
-            public InputActionMap Get() { return m_Wrapper.m_HotBar; }
+            public InputActionMap Get() { return m_Wrapper.m_RemoveBatch; }
             /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Enable()" />
             public void Enable() { Get().Enable(); }
             /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Disable()" />
@@ -737,9 +994,9 @@ namespace AbyssEditor.Scripts.InputMaps
             /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.enabled" />
             public bool enabled => Get().enabled;
             /// <summary>
-            /// Implicitly converts an <see ref="HotBarActions" /> to an <see ref="InputActionMap" /> instance.
+            /// Implicitly converts an <see ref="RemoveBatchActions" /> to an <see ref="InputActionMap" /> instance.
             /// </summary>
-            public static implicit operator InputActionMap(HotBarActions set) { return set.Get(); }
+            public static implicit operator InputActionMap(RemoveBatchActions set) { return set.Get(); }
             /// <summary>
             /// Adds <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
             /// </summary>
@@ -747,14 +1004,14 @@ namespace AbyssEditor.Scripts.InputMaps
             /// <remarks>
             /// If <paramref name="instance" /> is <c>null</c> or <paramref name="instance"/> have already been added this method does nothing.
             /// </remarks>
-            /// <seealso cref="HotBarActions" />
-            public void AddCallbacks(IHotBarActions instance)
+            /// <seealso cref="RemoveBatchActions" />
+            public void AddCallbacks(IRemoveBatchActions instance)
             {
-                if (instance == null || m_Wrapper.m_HotBarActionsCallbackInterfaces.Contains(instance)) return;
-                m_Wrapper.m_HotBarActionsCallbackInterfaces.Add(instance);
-                @HotbarSelect.started += instance.OnHotbarSelect;
-                @HotbarSelect.performed += instance.OnHotbarSelect;
-                @HotbarSelect.canceled += instance.OnHotbarSelect;
+                if (instance == null || m_Wrapper.m_RemoveBatchActionsCallbackInterfaces.Contains(instance)) return;
+                m_Wrapper.m_RemoveBatchActionsCallbackInterfaces.Add(instance);
+                @SelectBatch.started += instance.OnSelectBatch;
+                @SelectBatch.performed += instance.OnSelectBatch;
+                @SelectBatch.canceled += instance.OnSelectBatch;
             }
 
             /// <summary>
@@ -763,21 +1020,21 @@ namespace AbyssEditor.Scripts.InputMaps
             /// <remarks>
             /// Calling this method when <paramref name="instance" /> have not previously been registered has no side-effects.
             /// </remarks>
-            /// <seealso cref="HotBarActions" />
-            private void UnregisterCallbacks(IHotBarActions instance)
+            /// <seealso cref="RemoveBatchActions" />
+            private void UnregisterCallbacks(IRemoveBatchActions instance)
             {
-                @HotbarSelect.started -= instance.OnHotbarSelect;
-                @HotbarSelect.performed -= instance.OnHotbarSelect;
-                @HotbarSelect.canceled -= instance.OnHotbarSelect;
+                @SelectBatch.started -= instance.OnSelectBatch;
+                @SelectBatch.performed -= instance.OnSelectBatch;
+                @SelectBatch.canceled -= instance.OnSelectBatch;
             }
 
             /// <summary>
-            /// Unregisters <param cref="instance" /> and unregisters all input action callbacks via <see cref="HotBarActions.UnregisterCallbacks(IHotBarActions)" />.
+            /// Unregisters <param cref="instance" /> and unregisters all input action callbacks via <see cref="RemoveBatchActions.UnregisterCallbacks(IRemoveBatchActions)" />.
             /// </summary>
-            /// <seealso cref="HotBarActions.UnregisterCallbacks(IHotBarActions)" />
-            public void RemoveCallbacks(IHotBarActions instance)
+            /// <seealso cref="RemoveBatchActions.UnregisterCallbacks(IRemoveBatchActions)" />
+            public void RemoveCallbacks(IRemoveBatchActions instance)
             {
-                if (m_Wrapper.m_HotBarActionsCallbackInterfaces.Remove(instance))
+                if (m_Wrapper.m_RemoveBatchActionsCallbackInterfaces.Remove(instance))
                     UnregisterCallbacks(instance);
             }
 
@@ -787,150 +1044,72 @@ namespace AbyssEditor.Scripts.InputMaps
             /// <remarks>
             /// If <paramref name="instance" /> is <c>null</c>, calling this method will only unregister all existing callbacks but not register any new callbacks.
             /// </remarks>
-            /// <seealso cref="HotBarActions.AddCallbacks(IHotBarActions)" />
-            /// <seealso cref="HotBarActions.RemoveCallbacks(IHotBarActions)" />
-            /// <seealso cref="HotBarActions.UnregisterCallbacks(IHotBarActions)" />
-            public void SetCallbacks(IHotBarActions instance)
+            /// <seealso cref="RemoveBatchActions.AddCallbacks(IRemoveBatchActions)" />
+            /// <seealso cref="RemoveBatchActions.RemoveCallbacks(IRemoveBatchActions)" />
+            /// <seealso cref="RemoveBatchActions.UnregisterCallbacks(IRemoveBatchActions)" />
+            public void SetCallbacks(IRemoveBatchActions instance)
             {
-                foreach (var item in m_Wrapper.m_HotBarActionsCallbackInterfaces)
+                foreach (var item in m_Wrapper.m_RemoveBatchActionsCallbackInterfaces)
                     UnregisterCallbacks(item);
-                m_Wrapper.m_HotBarActionsCallbackInterfaces.Clear();
+                m_Wrapper.m_RemoveBatchActionsCallbackInterfaces.Clear();
                 AddCallbacks(instance);
             }
         }
         /// <summary>
-        /// Provides a new <see cref="HotBarActions" /> instance referencing this action map.
+        /// Provides a new <see cref="RemoveBatchActions" /> instance referencing this action map.
         /// </summary>
-        public HotBarActions @HotBar => new HotBarActions(this);
-
-        // FreeCam
-        private readonly InputActionMap m_FreeCam;
-        private List<IFreeCamActions> m_FreeCamActionsCallbackInterfaces = new List<IFreeCamActions>();
-        private readonly InputAction m_FreeCam_Move;
-        private readonly InputAction m_FreeCam_Look;
-        private readonly InputAction m_FreeCam_UpDown;
-        private readonly InputAction m_FreeCam_SpeedUp;
+        public RemoveBatchActions @RemoveBatch => new RemoveBatchActions(this);
         /// <summary>
-        /// Provides access to input actions defined in input action map "FreeCam".
+        /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "FreeCam" which allows adding and removing callbacks.
         /// </summary>
-        public struct FreeCamActions
+        /// <seealso cref="FreeCamActions.AddCallbacks(IFreeCamActions)" />
+        /// <seealso cref="FreeCamActions.RemoveCallbacks(IFreeCamActions)" />
+        public interface IFreeCamActions
         {
-            private @AbyssEditorInput m_Wrapper;
-
             /// <summary>
-            /// Construct a new instance of the input action map wrapper class.
+            /// Method invoked when associated input action "Move" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
             /// </summary>
-            public FreeCamActions(@AbyssEditorInput wrapper) { m_Wrapper = wrapper; }
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+            void OnMove(InputAction.CallbackContext context);
             /// <summary>
-            /// Provides access to the underlying input action "FreeCam/Move".
+            /// Method invoked when associated input action "Look" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
             /// </summary>
-            public InputAction @Move => m_Wrapper.m_FreeCam_Move;
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+            void OnLook(InputAction.CallbackContext context);
             /// <summary>
-            /// Provides access to the underlying input action "FreeCam/Look".
+            /// Method invoked when associated input action "UpDown" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
             /// </summary>
-            public InputAction @Look => m_Wrapper.m_FreeCam_Look;
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+            void OnUpDown(InputAction.CallbackContext context);
             /// <summary>
-            /// Provides access to the underlying input action "FreeCam/UpDown".
+            /// Method invoked when associated input action "SpeedUp" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
             /// </summary>
-            public InputAction @UpDown => m_Wrapper.m_FreeCam_UpDown;
-            /// <summary>
-            /// Provides access to the underlying input action "FreeCam/SpeedUp".
-            /// </summary>
-            public InputAction @SpeedUp => m_Wrapper.m_FreeCam_SpeedUp;
-            /// <summary>
-            /// Provides access to the underlying input action map instance.
-            /// </summary>
-            public InputActionMap Get() { return m_Wrapper.m_FreeCam; }
-            /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Enable()" />
-            public void Enable() { Get().Enable(); }
-            /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Disable()" />
-            public void Disable() { Get().Disable(); }
-            /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.enabled" />
-            public bool enabled => Get().enabled;
-            /// <summary>
-            /// Implicitly converts an <see ref="FreeCamActions" /> to an <see ref="InputActionMap" /> instance.
-            /// </summary>
-            public static implicit operator InputActionMap(FreeCamActions set) { return set.Get(); }
-            /// <summary>
-            /// Adds <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
-            /// </summary>
-            /// <param name="instance">Callback instance.</param>
-            /// <remarks>
-            /// If <paramref name="instance" /> is <c>null</c> or <paramref name="instance"/> have already been added this method does nothing.
-            /// </remarks>
-            /// <seealso cref="FreeCamActions" />
-            public void AddCallbacks(IFreeCamActions instance)
-            {
-                if (instance == null || m_Wrapper.m_FreeCamActionsCallbackInterfaces.Contains(instance)) return;
-                m_Wrapper.m_FreeCamActionsCallbackInterfaces.Add(instance);
-                @Move.started += instance.OnMove;
-                @Move.performed += instance.OnMove;
-                @Move.canceled += instance.OnMove;
-                @Look.started += instance.OnLook;
-                @Look.performed += instance.OnLook;
-                @Look.canceled += instance.OnLook;
-                @UpDown.started += instance.OnUpDown;
-                @UpDown.performed += instance.OnUpDown;
-                @UpDown.canceled += instance.OnUpDown;
-                @SpeedUp.started += instance.OnSpeedUp;
-                @SpeedUp.performed += instance.OnSpeedUp;
-                @SpeedUp.canceled += instance.OnSpeedUp;
-            }
-
-            /// <summary>
-            /// Removes <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
-            /// </summary>
-            /// <remarks>
-            /// Calling this method when <paramref name="instance" /> have not previously been registered has no side-effects.
-            /// </remarks>
-            /// <seealso cref="FreeCamActions" />
-            private void UnregisterCallbacks(IFreeCamActions instance)
-            {
-                @Move.started -= instance.OnMove;
-                @Move.performed -= instance.OnMove;
-                @Move.canceled -= instance.OnMove;
-                @Look.started -= instance.OnLook;
-                @Look.performed -= instance.OnLook;
-                @Look.canceled -= instance.OnLook;
-                @UpDown.started -= instance.OnUpDown;
-                @UpDown.performed -= instance.OnUpDown;
-                @UpDown.canceled -= instance.OnUpDown;
-                @SpeedUp.started -= instance.OnSpeedUp;
-                @SpeedUp.performed -= instance.OnSpeedUp;
-                @SpeedUp.canceled -= instance.OnSpeedUp;
-            }
-
-            /// <summary>
-            /// Unregisters <param cref="instance" /> and unregisters all input action callbacks via <see cref="FreeCamActions.UnregisterCallbacks(IFreeCamActions)" />.
-            /// </summary>
-            /// <seealso cref="FreeCamActions.UnregisterCallbacks(IFreeCamActions)" />
-            public void RemoveCallbacks(IFreeCamActions instance)
-            {
-                if (m_Wrapper.m_FreeCamActionsCallbackInterfaces.Remove(instance))
-                    UnregisterCallbacks(instance);
-            }
-
-            /// <summary>
-            /// Replaces all existing callback instances and previously registered input action callbacks associated with them with callbacks provided via <param cref="instance" />.
-            /// </summary>
-            /// <remarks>
-            /// If <paramref name="instance" /> is <c>null</c>, calling this method will only unregister all existing callbacks but not register any new callbacks.
-            /// </remarks>
-            /// <seealso cref="FreeCamActions.AddCallbacks(IFreeCamActions)" />
-            /// <seealso cref="FreeCamActions.RemoveCallbacks(IFreeCamActions)" />
-            /// <seealso cref="FreeCamActions.UnregisterCallbacks(IFreeCamActions)" />
-            public void SetCallbacks(IFreeCamActions instance)
-            {
-                foreach (var item in m_Wrapper.m_FreeCamActionsCallbackInterfaces)
-                    UnregisterCallbacks(item);
-                m_Wrapper.m_FreeCamActionsCallbackInterfaces.Clear();
-                AddCallbacks(instance);
-            }
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+            void OnSpeedUp(InputAction.CallbackContext context);
         }
         /// <summary>
-        /// Provides a new <see cref="FreeCamActions" /> instance referencing this action map.
+        /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "HotBar" which allows adding and removing callbacks.
         /// </summary>
-        public FreeCamActions @FreeCam => new FreeCamActions(this);
+        /// <seealso cref="HotBarActions.AddCallbacks(IHotBarActions)" />
+        /// <seealso cref="HotBarActions.RemoveCallbacks(IHotBarActions)" />
+        public interface IHotBarActions
+        {
+            /// <summary>
+            /// Method invoked when associated input action "HotbarSelect" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+            /// </summary>
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+            void OnHotbarSelect(InputAction.CallbackContext context);
+        }
         /// <summary>
         /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "Brush" which allows adding and removing callbacks.
         /// </summary>
@@ -968,55 +1147,19 @@ namespace AbyssEditor.Scripts.InputMaps
             void OnActivateBrushStrengthScale(InputAction.CallbackContext context);
         }
         /// <summary>
-        /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "HotBar" which allows adding and removing callbacks.
+        /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "RemoveBatch" which allows adding and removing callbacks.
         /// </summary>
-        /// <seealso cref="HotBarActions.AddCallbacks(IHotBarActions)" />
-        /// <seealso cref="HotBarActions.RemoveCallbacks(IHotBarActions)" />
-        public interface IHotBarActions
+        /// <seealso cref="RemoveBatchActions.AddCallbacks(IRemoveBatchActions)" />
+        /// <seealso cref="RemoveBatchActions.RemoveCallbacks(IRemoveBatchActions)" />
+        public interface IRemoveBatchActions
         {
             /// <summary>
-            /// Method invoked when associated input action "HotbarSelect" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+            /// Method invoked when associated input action "SelectBatch" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
             /// </summary>
             /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
             /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
             /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-            void OnHotbarSelect(InputAction.CallbackContext context);
-        }
-        /// <summary>
-        /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "FreeCam" which allows adding and removing callbacks.
-        /// </summary>
-        /// <seealso cref="FreeCamActions.AddCallbacks(IFreeCamActions)" />
-        /// <seealso cref="FreeCamActions.RemoveCallbacks(IFreeCamActions)" />
-        public interface IFreeCamActions
-        {
-            /// <summary>
-            /// Method invoked when associated input action "Move" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
-            /// </summary>
-            /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
-            /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
-            /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-            void OnMove(InputAction.CallbackContext context);
-            /// <summary>
-            /// Method invoked when associated input action "Look" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
-            /// </summary>
-            /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
-            /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
-            /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-            void OnLook(InputAction.CallbackContext context);
-            /// <summary>
-            /// Method invoked when associated input action "UpDown" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
-            /// </summary>
-            /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
-            /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
-            /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-            void OnUpDown(InputAction.CallbackContext context);
-            /// <summary>
-            /// Method invoked when associated input action "SpeedUp" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
-            /// </summary>
-            /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
-            /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
-            /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-            void OnSpeedUp(InputAction.CallbackContext context);
+            void OnSelectBatch(InputAction.CallbackContext context);
         }
     }
 }

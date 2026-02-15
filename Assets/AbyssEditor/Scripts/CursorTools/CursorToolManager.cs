@@ -11,7 +11,8 @@ namespace AbyssEditor.Scripts.CursorTools
     {
         public static CursorToolManager main;
         
-        public BrushTool brushTool;
+        public BrushTool brushTool { get; private set; }
+        public RemoveBatchTool batchRemoveTool { get; private set; }
 
         private readonly HashSet<ICursorTool> tools = new();
         
@@ -22,9 +23,10 @@ namespace AbyssEditor.Scripts.CursorTools
         private void Awake()
         {
             main = this;
-            
             brushTool = new BrushTool();
+            batchRemoveTool = new RemoveBatchTool();
             tools.Add(brushTool);
+            tools.Add(batchRemoveTool);
         }
 
         private void Update()
@@ -32,23 +34,25 @@ namespace AbyssEditor.Scripts.CursorTools
             activeTool?.HandleToolUpdate(CanUseTool());
         }
 
-        /*
-        public void Enable<T>() where T : ICursorTool
-        {
-            activeTool?.DisableTool();
-            activeTool = tools.OfType<T>().First();
-            activeTool?.EnableTool();
-        }
-        */
-        
-        public void Enable<T>(HotBarButton hotBarButton) where T : ICursorTool
+
+        private void DisableOldToolSafe<T>() where T : ICursorTool
         {
             if (activeTool == null || activeTool.GetType() != typeof(T))
             {
                 activeTool?.DisableTool();
                 activeTool = tools.OfType<T>().First();
             }
-
+        }
+        
+        public void Enable<T>() where T : ICursorTool
+        {
+            DisableOldToolSafe<T>();
+            activeTool?.EnableTool();
+        }
+        
+        public void Enable<T>(HotBarButton hotBarButton) where T : ICursorTool
+        {
+            DisableOldToolSafe<T>();
             activeTool?.EnableTool(hotBarButton);
         }
 

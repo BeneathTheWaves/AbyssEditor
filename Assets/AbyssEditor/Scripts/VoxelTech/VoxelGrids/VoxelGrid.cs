@@ -18,7 +18,7 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelGrids {
         public Vector3Int fullGridDim;
         public readonly Vector3Int octreeIndex;
         public readonly Vector3Int batchIndex;
-        bool[] neighbourMap;
+        //bool[] neighbourMap;
         
         public static NativeArray<int3> neighboursToCheckInSmooth;
         public static Vector3Int[] paddingVoxels;
@@ -85,6 +85,8 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelGrids {
                 neighborBatchIndex = NeighbourBatchFromPaddedVoxel(voxel.x, voxel.y, voxel.z);
                 if (!VoxelMetaspace.metaspace.BatchLoaded(neighborBatchIndex))
                 {
+                    SetVoxel(densityGrid, voxel, 0);
+                    SetVoxel(typeGrid, voxel, 0);
                     return;
                 }
                 
@@ -107,7 +109,7 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelGrids {
             SetVoxel(typeGrid, voxel, GetVoxel(neighborGrid.typeGrid, sample));
         }
         
-        internal static Vector3Int NeighbourGridOffsetFromPaddedVoxel(Vector3Int voxel) {
+        private static Vector3Int NeighbourGridOffsetFromPaddedVoxel(Vector3Int voxel) {
             Vector3Int offset = Vector3Int.zero;
             if (voxel.x <= 0) offset.x = -1;                                                                                                
             else if (voxel.x >= VoxelWorld.RESOLUTION + GRID_PADDING) offset.x = 1;
@@ -125,7 +127,7 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelGrids {
         /// Gets a batch from a voxel.
         /// Uses absolute positioning for calculations
         /// </summary>
-        internal Vector3Int NeighbourBatchFromPaddedVoxel(int x, int y, int z)
+        private Vector3Int NeighbourBatchFromPaddedVoxel(int x, int y, int z)
         {
             Vector3Int batchPos = batchIndex * VoxelWorld.BATCH_WIDTH;
             Vector3Int octreePos = batchPos + (octreeIndex * VoxelWorld.OCTREE_WIDTH);
@@ -139,7 +141,7 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelGrids {
             );
         }
         
-        internal static Vector3Int IndexMod(Vector3Int octreeIndex, int mod) => new Vector3Int((octreeIndex.x + mod) % mod, (octreeIndex.y + mod) % mod, (octreeIndex.z + mod) % mod);
+        private static Vector3Int IndexMod(Vector3Int octreeIndex, int mod) => new Vector3Int((octreeIndex.x + mod) % mod, (octreeIndex.y + mod) % mod, (octreeIndex.z + mod) % mod);
         
         public void GetFullGrids(out NativeArray<byte> _fullDensityGrid, out NativeArray<byte> _fullTypeGrid) {
             _fullDensityGrid =   densityGrid;

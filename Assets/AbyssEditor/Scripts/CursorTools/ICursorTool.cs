@@ -2,11 +2,31 @@ using AbyssEditor.Scripts.UI.HotBar;
 using AbyssEditor.Scripts.UI.HotBar.HotBarButtons;
 namespace AbyssEditor.Scripts.CursorTools
 {
+    /// <summary>
+    /// Represents a tool that uses the cursor where only 1 should be active at a time
+    /// </summary>
     public interface ICursorTool
     {
+        /// <summary>
+        /// Enable the tool
+        /// </summary>
         public void EnableTool();
-        public void EnableTool(HotBarButton hotBarButton);
+        
+        /// <summary>
+        /// Enable the tool. Not required to be implemented
+        /// </summary>
+        /// <param name="hotBarButton">The HotBarButton that was used to call this. You can extract data from that button if multiple slots point to 1 tool</param>
+        public void EnableTool(HotBarButton hotBarButton) { }
+        
+        /// <summary>
+        /// Disable the tool
+        /// </summary>
         public void DisableTool();
-        public void HandleToolUpdate(bool blockInput);
+        
+        /// <summary>
+        /// Called every frame the tool is enabled. Not required to be implemented
+        /// </summary>
+        /// <param name="blockInput">If the input should be blocked, like being over ui or some script is blocking, but an update is still needed to keep the tool working</param>
+        public void HandleToolUpdate(bool blockInput) { }
     }
 }

@@ -45,7 +45,7 @@ namespace AbyssEditor.Scripts.VoxelTech {
         {
             yield return StartCoroutine(VoxelMetaspace.metaspace.OctreePatchReadCoroutine(patchBytes, batchesInPatch));
             
-            BatchOutlineManager.main.ResetLoadOutlines();
+            BatchOutlineManager.main.ResetOutlines();
         }
         
         IEnumerator RegionLoadCoroutine(bool allowModded, Vector3Int startBatch, Vector3Int endBatch)
@@ -54,9 +54,7 @@ namespace AbyssEditor.Scripts.VoxelTech {
             
             yield return StartCoroutine(VoxelMetaspace.metaspace.RegionReadCoroutine(allowModded, startBatch, endBatch));
             
-            VoxelMetaspace.metaspace.ReloadBoundaries();
-            
-            BatchOutlineManager.main.ResetLoadOutlines();
+            BatchOutlineManager.main.ResetOutlines();
         }
 
         public static void ExportRegion(int mode) {
@@ -92,7 +90,6 @@ namespace AbyssEditor.Scripts.VoxelTech {
             OnRegionExported?.Invoke();
         }
         
-        //TODO:THIS PROBABLY DOESNT FUCKING WORK NOW
         public byte SampleBlocktype(Vector3 hitPoint, Ray cameraRay, int retryCount= 0) {
             // batch -> octree -> voxel
             if (retryCount == 32) return 0;
