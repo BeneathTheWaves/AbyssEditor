@@ -83,6 +83,17 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelMesh
             int[] blocktypes;
             Vector3 offset = octreeIndex * VoxelWorld.RESOLUTION;
             mesh = MeshBuilder.builder.GenerateMesh(_tempDensities, _tempTypes, grid.fullGridDim, offset, out blocktypes);
+            
+            if (mesh.vertexCount == 0)
+            {
+                meshFilter.mesh = null;
+                meshCollider.sharedMesh = null;
+            }
+            else
+            {
+                meshFilter.mesh = mesh;
+                meshCollider.sharedMesh = mesh;
+            }
 
             // update data
             if (mesh.triangles.Length > 0)
