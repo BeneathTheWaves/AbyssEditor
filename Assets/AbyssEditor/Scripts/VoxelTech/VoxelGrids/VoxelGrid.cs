@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using AbyssEditor.Scripts.CursorTools;
+using AbyssEditor.Scripts.CursorTools.Brush;
 using AbyssEditor.Scripts.VoxelTech.VoxelGrids.Brushes;
 using Unity.Collections;
 using Unity.Mathematics;
@@ -146,7 +147,7 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelGrids {
             _fullTypeGrid =      typeGrid;
         }
 
-        public BrushJob ApplyJobBasedDensityFunction(BrushTool.BrushStroke stroke, Vector3 gridOrigin)
+        public BrushJob ApplyJobBasedDensityFunction(BrushStroke stroke, Vector3 gridOrigin)
         {
             BrushJob brushJob = null;
             

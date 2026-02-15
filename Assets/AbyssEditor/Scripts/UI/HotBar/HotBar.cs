@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using AbyssEditor.Scripts.CursorTools;
+using AbyssEditor.Scripts.CursorTools.Brush;
 using AbyssEditor.Scripts.InputMaps;
 using TMPro;
 using UnityEngine;

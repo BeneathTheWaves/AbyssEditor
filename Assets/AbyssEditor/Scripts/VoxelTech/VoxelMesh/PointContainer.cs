@@ -1,4 +1,5 @@
 ﻿using AbyssEditor.Scripts.CursorTools;
+using AbyssEditor.Scripts.CursorTools.Brush;
 using AbyssEditor.Scripts.Mesh_Gen;
 using AbyssEditor.Scripts.Octrees;
 using AbyssEditor.Scripts.TerrainMaterials;
@@ -68,7 +69,7 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelMesh
             //WE MAY want to change this so we don't have to do that tho :)
         }
         
-        public BrushJob ApplyJobBasedDensityAction(BrushTool.BrushStroke stroke)
+        public BrushJob ApplyJobBasedDensityAction(BrushStroke stroke)
         {
             if (grid != null)
                 return grid.ApplyJobBasedDensityFunction(stroke, octreeIndex * VoxelWorld.OCTREE_WIDTH + meshObj.transform.position);

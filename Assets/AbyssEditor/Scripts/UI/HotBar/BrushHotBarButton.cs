@@ -1,5 +1,6 @@
 using System;
 using AbyssEditor.Scripts.CursorTools;
+using AbyssEditor.Scripts.CursorTools.Brush;
 using UnityEngine;
 using UnityEngine.UI;
 

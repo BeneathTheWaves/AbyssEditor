@@ -1,5 +1,6 @@
 ﻿using System;
 using AbyssEditor.Scripts.CursorTools;
+using AbyssEditor.Scripts.CursorTools.Brush;
 using AbyssEditor.Scripts.TerrainMaterials;
 using UnityEngine;
 namespace AbyssEditor.Scripts.UI.Windows {
