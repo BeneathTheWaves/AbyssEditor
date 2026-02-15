@@ -60,5 +60,10 @@
   "MaterialsTitle": "Materials",
   "OnlyShowFavorites": "Only Show Favorites",
   "LoadmatsSN": "Load SN materials",
-  "LoadmatsBZ": "Load BZ materials"
+  "LoadmatsBZ": "Load BZ materials",
+  
+  //Quit
+  "ConfirmationMessage": "Are you certain you want to close the editor? Any unexported data will be lost!",
+  "ConfirmQuit": "Quit",
+  "CancelQuit": "No!"
 }

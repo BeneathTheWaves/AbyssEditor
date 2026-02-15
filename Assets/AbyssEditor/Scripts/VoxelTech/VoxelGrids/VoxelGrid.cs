@@ -73,7 +73,6 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelGrids {
 
         private void UpdateNeighborVoxel(Vector3Int voxel)
         {
-            VoxelGrid neighborGrid;
             Vector3Int neighbourGridOffset = NeighbourGridOffsetFromPaddedVoxel(voxel);
 
             Vector3Int neighborContainerIndex = octreeIndex + neighbourGridOffset;
@@ -92,7 +91,7 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelGrids {
                 neighborContainerIndex = IndexMod(neighborContainerIndex, 5);
             }
             
-            neighborGrid = VoxelMetaspace.metaspace.TryGetVoxelGrid(neighborBatchIndex, neighborContainerIndex);
+            VoxelGrid neighborGrid = VoxelMetaspace.metaspace.TryGetVoxelGrid(neighborBatchIndex, neighborContainerIndex);
 
             Vector3Int sample = new Vector3Int(voxel.x, voxel.y, voxel.z);
             if (voxel.x == 0) sample.x = VoxelWorld.RESOLUTION;

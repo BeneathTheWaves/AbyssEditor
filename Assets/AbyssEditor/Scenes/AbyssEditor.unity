@@ -2560,6 +2560,21 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8944151307164095187, guid: 44754812827820fcd84691d1b4c0a5e1,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 784518642}
+    - target: {fileID: 8944151307164095187, guid: 44754812827820fcd84691d1b4c0a5e1,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: QuitEditor
+      objectReference: {fileID: 0}
+    - target: {fileID: 8944151307164095187, guid: 44754812827820fcd84691d1b4c0a5e1,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: AbyssEditor.Scripts.UI.QuitEditorButton, AbyssEditor
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -2568,6 +2583,10 @@ PrefabInstance:
         type: 3}
       insertIndex: -1
       addedObject: {fileID: 784518638}
+    - targetCorrespondingSourceObject: {fileID: 5327497534997748822, guid: 44754812827820fcd84691d1b4c0a5e1,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 784518642}
   m_SourcePrefab: {fileID: 100100000, guid: 44754812827820fcd84691d1b4c0a5e1, type: 3}
 --- !u!224 &283305066 stripped
 RectTransform:
@@ -7030,6 +7049,18 @@ MonoBehaviour:
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
+--- !u!114 &784518642
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 784518637}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 86b3e825814824565aadc1e7f7c69405, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: '::'
 --- !u!1 &785072767
 GameObject:
   m_ObjectHideFlags: 0
