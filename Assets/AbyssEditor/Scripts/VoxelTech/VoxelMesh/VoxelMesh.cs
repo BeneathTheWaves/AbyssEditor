@@ -101,7 +101,7 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelMesh
             foreach (PointContainer container in pointContainers)
             {
                 Bounds bounds = container.bounds;
-                if (OctreeRaycasting.DistanceToBox(stroke.brushLocation, bounds.min, bounds.max) <= stroke.brushRadius)
+                if (OctreeRaycasting.SquaredDistanceToBox(stroke.brushLocation, bounds.min, bounds.max) <= stroke.squaredRadius )
                 {
                     brushActions.Add(container.ApplyJobBasedDensityAction(stroke));
                     modifiedContainers.Add(container);

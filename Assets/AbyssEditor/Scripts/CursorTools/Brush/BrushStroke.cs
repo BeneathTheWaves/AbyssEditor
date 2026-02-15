@@ -4,6 +4,7 @@ namespace AbyssEditor.Scripts.CursorTools.Brush
     public struct BrushStroke {
         public Vector3 brushLocation;
         public float brushRadius;
+        public float squaredRadius;
         public float strength;
         public BrushMode brushMode;
         public int strokeLength;
@@ -17,6 +18,7 @@ namespace AbyssEditor.Scripts.CursorTools.Brush
 
             brushLocation = _position;
             brushRadius = _radius;
+            squaredRadius = _radius * _radius;
             brushMode = _mode;
             strength = _strength;
                 

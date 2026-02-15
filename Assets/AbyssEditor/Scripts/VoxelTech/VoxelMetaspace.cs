@@ -56,7 +56,7 @@ namespace AbyssEditor.Scripts.VoxelTech {
             List<PointContainer> modifiedContainers = new List<PointContainer>(8);
             List<BrushJob> brushJobs = new List<BrushJob>(8);
             foreach(VoxelMesh.VoxelMesh mesh in meshes) {
-                if (OctreeRaycasting.DistanceToBox(stroke.brushLocation, mesh.GetBatchMinBound(), mesh.GetBatchMaxBound()) <= stroke.brushRadius) {
+                if (OctreeRaycasting.SquaredDistanceToBox(stroke.brushLocation, mesh.GetBatchMinBound(), mesh.GetBatchMaxBound()) <= stroke.squaredRadius) {
                     mesh.ApplyJobBasedDensityFunction(stroke, brushJobs, modifiedContainers);
                 }
             }
