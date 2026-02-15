@@ -117,28 +117,32 @@ namespace AbyssEditor.Scripts.CursorTools {
             RaycastHit hit;
             Physics.Raycast(ray, out hit, Mathf.Infinity, 1);
 
-            if (hit.collider) {
-                EnableBrushGizmo(hit.point, hit.normal);
-                if (doAction) {
-                    if (activeMode == BrushMode.Eyedropper) {
-                        SetBrushMaterial(VoxelWorld.world.SampleBlocktype(hit.point, ray));
-                    } else {
-                        if (stroke.ReadyForNextAction()) {
-
-                            if (stroke.strokeLength == 0) stroke.FirstStroke(hit.point, currentBrushSize, currentBrushStrength, activeMode);
-                            else stroke.ContinueStroke(hit.point, activeMode);
-
-                            VoxelMetaspace.metaspace.ApplyJobBasedDensityAction(stroke);
-                        }
-                    }
-                } else {
-                    stroke.EndStroke();
-                }
-                UpdateBoundaries(hit.point, currentBrushSize + 2);
-            } else {
+            if (!hit.collider)
+            {
                 DisableBrushGizmo();
+                return;
             }
+
+            EnableBrushGizmo(hit.point, hit.normal);
+
+            if (!doAction)
+            {
+                stroke.EndStroke();
+                return;
+            }
+
+            if (activeMode == BrushMode.Eyedropper) {
+                SetBrushMaterial(VoxelWorld.world.SampleBlocktype(hit.point, ray));
+                return;
+            } 
             
+            if (stroke.ReadyForNextAction()) {
+
+                if (stroke.strokeLength == 0) stroke.FirstStroke(hit.point, currentBrushSize, currentBrushStrength, activeMode);
+                else stroke.ContinueStroke(hit.point, activeMode);
+
+                VoxelMetaspace.metaspace.ApplyJobBasedDensityAction(stroke);
+            }
         }
         
         private void EnableBrushGizmo(Vector3 position, Vector3 normal) {
