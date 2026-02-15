@@ -9,7 +9,6 @@ namespace AbyssEditor.Scripts {
         public Material batchMat;
         public Material batchCappedMat;
         public Material brushGizmoMat;
-        public Material brushGizmoMatWireFrame;
         public Material boundaryGizmoMat;
         public bool belowzero;
         public string userBatchOutputPath;

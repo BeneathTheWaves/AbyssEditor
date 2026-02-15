@@ -38,6 +38,13 @@
     "PatchSelectFileBrowserTip": "Select an .optoctreepatch file!",
     "ApplyPatchButton": "Apply Patch",
   
+  //Active Tool
+    //Brush
+    "ActiveTool": "Active Tool",
+    "BrushSizeSlider": "Brush Size Slider",
+    "BrushStrengthSlider": "Brush Strength Slider",
+    "BlockType": "Block Type",
+  
   //Lighting
   "LightingTitle": "Lighting",
   "SunPitch": "Sun Pitch",

@@ -111,9 +111,8 @@ namespace AbyssEditor.Scripts.UI.HotBar
             }
             else if (newButton is RemoveBatchButton)
             {
-                
+                Debug.Log("Removing batch button");
             }
-
         }
     }
 }

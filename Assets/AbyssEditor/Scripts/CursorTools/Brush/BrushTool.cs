@@ -19,7 +19,6 @@ namespace AbyssEditor.Scripts.CursorTools.Brush {
         private const float SIZE_SCROLL_SPEED = 1f;
         private const float STRENGTH_SCROLL_SPEED = 0.05f;
         
-        
         public float currentBrushSize = 10;
         public byte currentSelectedType = 1;
         public float currentBrushStrength = 0.5f;
@@ -168,7 +167,6 @@ namespace AbyssEditor.Scripts.CursorTools.Brush {
             renderer.materials = new[]
             {
                 Globals.instance.brushGizmoMat,
-                Globals.instance.brushGizmoMatWireFrame
             };
             
             brushAreaObject.GetComponent<SphereCollider>().enabled = false;
@@ -201,7 +199,6 @@ namespace AbyssEditor.Scripts.CursorTools.Brush {
             Color brushColor = activeMode.GetColor();
             brushColor.a = 0.3f;
             Globals.instance.brushGizmoMat.color = brushColor;
-            Globals.instance.brushGizmoMatWireFrame.SetColor(wireframeColor, activeMode.GetColor());
             
             OnParametersChanged?.Invoke();
         }
