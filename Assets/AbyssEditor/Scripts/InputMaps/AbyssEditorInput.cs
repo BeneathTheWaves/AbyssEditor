@@ -91,6 +91,116 @@ namespace AbyssEditor.Scripts.InputMaps
     ""name"": ""AbyssEditorInput"",
     ""maps"": [
         {
+            ""name"": ""Brush"",
+            ""id"": ""f656d63c-6511-4a6c-87b7-92f7e75111ee"",
+            ""actions"": [
+                {
+                    ""name"": ""ActivateBrush"",
+                    ""type"": ""Button"",
+                    ""id"": ""9a8ab7a4-6af1-4f84-a145-28a39754dc32"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""ScrollWheelScale"",
+                    ""type"": ""Value"",
+                    ""id"": ""3a19a02e-d67a-496c-8171-0a7a8eafaf01"",
+                    ""expectedControlType"": ""Axis"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""ActivateBrushScale"",
+                    ""type"": ""Button"",
+                    ""id"": ""e2a6ecba-b5d4-4420-9d2a-401b0bd679df"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""ActivateBrushStrengthScale"",
+                    ""type"": ""Button"",
+                    ""id"": ""f5b6c41c-8e53-4b5b-9e72-b87eb281930b"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""909e3efc-22ef-4f60-9bee-ff925d57a0c2"",
+                    ""path"": ""<Mouse>/leftButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ActivateBrush"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""1D Axis"",
+                    ""id"": ""758afe62-c8f5-4ca9-8065-7a80c25b6d1f"",
+                    ""path"": ""1DAxis"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ScrollWheelScale"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""negative"",
+                    ""id"": ""633e7af1-e49b-4e85-b9c0-bedfea0fa5e7"",
+                    ""path"": ""<Mouse>/scroll/down"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ScrollWheelScale"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""positive"",
+                    ""id"": ""2fb66fe8-d330-427d-a30c-f712b99e63be"",
+                    ""path"": ""<Mouse>/scroll/up"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ScrollWheelScale"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""e20bc53e-cd64-43a1-943e-9d0191a946b4"",
+                    ""path"": ""<Keyboard>/q"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ActivateBrushStrengthScale"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""ac1f4fb4-c8b0-46ba-87f8-45affc16e5d4"",
+                    ""path"": ""<Keyboard>/e"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ActivateBrushScale"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
+        },
+        {
             ""name"": ""HotBar"",
             ""id"": ""eb5ac3fd-83bf-40ae-9406-fa855445ef77"",
             ""actions"": [
@@ -374,6 +484,12 @@ namespace AbyssEditor.Scripts.InputMaps
     ],
     ""controlSchemes"": []
 }");
+            // Brush
+            m_Brush = asset.FindActionMap("Brush", throwIfNotFound: true);
+            m_Brush_ActivateBrush = m_Brush.FindAction("ActivateBrush", throwIfNotFound: true);
+            m_Brush_ScrollWheelScale = m_Brush.FindAction("ScrollWheelScale", throwIfNotFound: true);
+            m_Brush_ActivateBrushScale = m_Brush.FindAction("ActivateBrushScale", throwIfNotFound: true);
+            m_Brush_ActivateBrushStrengthScale = m_Brush.FindAction("ActivateBrushStrengthScale", throwIfNotFound: true);
             // HotBar
             m_HotBar = asset.FindActionMap("HotBar", throwIfNotFound: true);
             m_HotBar_HotbarSelect = m_HotBar.FindAction("HotbarSelect", throwIfNotFound: true);
@@ -387,6 +503,7 @@ namespace AbyssEditor.Scripts.InputMaps
 
         ~@AbyssEditorInput()
         {
+            UnityEngine.Debug.Assert(!m_Brush.enabled, "This will cause a leak and performance issues, AbyssEditorInput.Brush.Disable() has not been called.");
             UnityEngine.Debug.Assert(!m_HotBar.enabled, "This will cause a leak and performance issues, AbyssEditorInput.HotBar.Disable() has not been called.");
             UnityEngine.Debug.Assert(!m_FreeCam.enabled, "This will cause a leak and performance issues, AbyssEditorInput.FreeCam.Disable() has not been called.");
         }
@@ -460,6 +577,135 @@ namespace AbyssEditor.Scripts.InputMaps
         {
             return asset.FindBinding(bindingMask, out action);
         }
+
+        // Brush
+        private readonly InputActionMap m_Brush;
+        private List<IBrushActions> m_BrushActionsCallbackInterfaces = new List<IBrushActions>();
+        private readonly InputAction m_Brush_ActivateBrush;
+        private readonly InputAction m_Brush_ScrollWheelScale;
+        private readonly InputAction m_Brush_ActivateBrushScale;
+        private readonly InputAction m_Brush_ActivateBrushStrengthScale;
+        /// <summary>
+        /// Provides access to input actions defined in input action map "Brush".
+        /// </summary>
+        public struct BrushActions
+        {
+            private @AbyssEditorInput m_Wrapper;
+
+            /// <summary>
+            /// Construct a new instance of the input action map wrapper class.
+            /// </summary>
+            public BrushActions(@AbyssEditorInput wrapper) { m_Wrapper = wrapper; }
+            /// <summary>
+            /// Provides access to the underlying input action "Brush/ActivateBrush".
+            /// </summary>
+            public InputAction @ActivateBrush => m_Wrapper.m_Brush_ActivateBrush;
+            /// <summary>
+            /// Provides access to the underlying input action "Brush/ScrollWheelScale".
+            /// </summary>
+            public InputAction @ScrollWheelScale => m_Wrapper.m_Brush_ScrollWheelScale;
+            /// <summary>
+            /// Provides access to the underlying input action "Brush/ActivateBrushScale".
+            /// </summary>
+            public InputAction @ActivateBrushScale => m_Wrapper.m_Brush_ActivateBrushScale;
+            /// <summary>
+            /// Provides access to the underlying input action "Brush/ActivateBrushStrengthScale".
+            /// </summary>
+            public InputAction @ActivateBrushStrengthScale => m_Wrapper.m_Brush_ActivateBrushStrengthScale;
+            /// <summary>
+            /// Provides access to the underlying input action map instance.
+            /// </summary>
+            public InputActionMap Get() { return m_Wrapper.m_Brush; }
+            /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Enable()" />
+            public void Enable() { Get().Enable(); }
+            /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Disable()" />
+            public void Disable() { Get().Disable(); }
+            /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.enabled" />
+            public bool enabled => Get().enabled;
+            /// <summary>
+            /// Implicitly converts an <see ref="BrushActions" /> to an <see ref="InputActionMap" /> instance.
+            /// </summary>
+            public static implicit operator InputActionMap(BrushActions set) { return set.Get(); }
+            /// <summary>
+            /// Adds <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
+            /// </summary>
+            /// <param name="instance">Callback instance.</param>
+            /// <remarks>
+            /// If <paramref name="instance" /> is <c>null</c> or <paramref name="instance"/> have already been added this method does nothing.
+            /// </remarks>
+            /// <seealso cref="BrushActions" />
+            public void AddCallbacks(IBrushActions instance)
+            {
+                if (instance == null || m_Wrapper.m_BrushActionsCallbackInterfaces.Contains(instance)) return;
+                m_Wrapper.m_BrushActionsCallbackInterfaces.Add(instance);
+                @ActivateBrush.started += instance.OnActivateBrush;
+                @ActivateBrush.performed += instance.OnActivateBrush;
+                @ActivateBrush.canceled += instance.OnActivateBrush;
+                @ScrollWheelScale.started += instance.OnScrollWheelScale;
+                @ScrollWheelScale.performed += instance.OnScrollWheelScale;
+                @ScrollWheelScale.canceled += instance.OnScrollWheelScale;
+                @ActivateBrushScale.started += instance.OnActivateBrushScale;
+                @ActivateBrushScale.performed += instance.OnActivateBrushScale;
+                @ActivateBrushScale.canceled += instance.OnActivateBrushScale;
+                @ActivateBrushStrengthScale.started += instance.OnActivateBrushStrengthScale;
+                @ActivateBrushStrengthScale.performed += instance.OnActivateBrushStrengthScale;
+                @ActivateBrushStrengthScale.canceled += instance.OnActivateBrushStrengthScale;
+            }
+
+            /// <summary>
+            /// Removes <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
+            /// </summary>
+            /// <remarks>
+            /// Calling this method when <paramref name="instance" /> have not previously been registered has no side-effects.
+            /// </remarks>
+            /// <seealso cref="BrushActions" />
+            private void UnregisterCallbacks(IBrushActions instance)
+            {
+                @ActivateBrush.started -= instance.OnActivateBrush;
+                @ActivateBrush.performed -= instance.OnActivateBrush;
+                @ActivateBrush.canceled -= instance.OnActivateBrush;
+                @ScrollWheelScale.started -= instance.OnScrollWheelScale;
+                @ScrollWheelScale.performed -= instance.OnScrollWheelScale;
+                @ScrollWheelScale.canceled -= instance.OnScrollWheelScale;
+                @ActivateBrushScale.started -= instance.OnActivateBrushScale;
+                @ActivateBrushScale.performed -= instance.OnActivateBrushScale;
+                @ActivateBrushScale.canceled -= instance.OnActivateBrushScale;
+                @ActivateBrushStrengthScale.started -= instance.OnActivateBrushStrengthScale;
+                @ActivateBrushStrengthScale.performed -= instance.OnActivateBrushStrengthScale;
+                @ActivateBrushStrengthScale.canceled -= instance.OnActivateBrushStrengthScale;
+            }
+
+            /// <summary>
+            /// Unregisters <param cref="instance" /> and unregisters all input action callbacks via <see cref="BrushActions.UnregisterCallbacks(IBrushActions)" />.
+            /// </summary>
+            /// <seealso cref="BrushActions.UnregisterCallbacks(IBrushActions)" />
+            public void RemoveCallbacks(IBrushActions instance)
+            {
+                if (m_Wrapper.m_BrushActionsCallbackInterfaces.Remove(instance))
+                    UnregisterCallbacks(instance);
+            }
+
+            /// <summary>
+            /// Replaces all existing callback instances and previously registered input action callbacks associated with them with callbacks provided via <param cref="instance" />.
+            /// </summary>
+            /// <remarks>
+            /// If <paramref name="instance" /> is <c>null</c>, calling this method will only unregister all existing callbacks but not register any new callbacks.
+            /// </remarks>
+            /// <seealso cref="BrushActions.AddCallbacks(IBrushActions)" />
+            /// <seealso cref="BrushActions.RemoveCallbacks(IBrushActions)" />
+            /// <seealso cref="BrushActions.UnregisterCallbacks(IBrushActions)" />
+            public void SetCallbacks(IBrushActions instance)
+            {
+                foreach (var item in m_Wrapper.m_BrushActionsCallbackInterfaces)
+                    UnregisterCallbacks(item);
+                m_Wrapper.m_BrushActionsCallbackInterfaces.Clear();
+                AddCallbacks(instance);
+            }
+        }
+        /// <summary>
+        /// Provides a new <see cref="BrushActions" /> instance referencing this action map.
+        /// </summary>
+        public BrushActions @Brush => new BrushActions(this);
 
         // HotBar
         private readonly InputActionMap m_HotBar;
@@ -685,6 +931,42 @@ namespace AbyssEditor.Scripts.InputMaps
         /// Provides a new <see cref="FreeCamActions" /> instance referencing this action map.
         /// </summary>
         public FreeCamActions @FreeCam => new FreeCamActions(this);
+        /// <summary>
+        /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "Brush" which allows adding and removing callbacks.
+        /// </summary>
+        /// <seealso cref="BrushActions.AddCallbacks(IBrushActions)" />
+        /// <seealso cref="BrushActions.RemoveCallbacks(IBrushActions)" />
+        public interface IBrushActions
+        {
+            /// <summary>
+            /// Method invoked when associated input action "ActivateBrush" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+            /// </summary>
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+            void OnActivateBrush(InputAction.CallbackContext context);
+            /// <summary>
+            /// Method invoked when associated input action "ScrollWheelScale" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+            /// </summary>
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+            void OnScrollWheelScale(InputAction.CallbackContext context);
+            /// <summary>
+            /// Method invoked when associated input action "ActivateBrushScale" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+            /// </summary>
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+            void OnActivateBrushScale(InputAction.CallbackContext context);
+            /// <summary>
+            /// Method invoked when associated input action "ActivateBrushStrengthScale" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+            /// </summary>
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+            void OnActivateBrushStrengthScale(InputAction.CallbackContext context);
+        }
         /// <summary>
         /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "HotBar" which allows adding and removing callbacks.
         /// </summary>

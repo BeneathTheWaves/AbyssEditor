@@ -29,8 +29,7 @@ namespace AbyssEditor.Scripts
             set
             {
                 Cursor.lockState = value ? CursorLockMode.Locked : CursorLockMode.None;
-                Cursor.visible = value == false;
-
+                Cursor.visible = !value;
             }
         }
 

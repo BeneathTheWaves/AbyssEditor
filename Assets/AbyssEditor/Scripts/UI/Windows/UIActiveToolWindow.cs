@@ -32,18 +32,13 @@ namespace AbyssEditor.Scripts.UI.Windows {
 
             RedrawValues();
         }
-        public override void DisableWindow()
-        {
-            CursorToolManager.main.DisableActiveTool();
-            base.DisableWindow();
-        }
 
         // For receiving commands from UI
         private void SetNewBrushSize() {
-            brushTool.SetBrushSize(brushSizeSelector.LerpedValue);
+            brushTool.SetBrushSize(brushSizeSelector.lerpedValue);
         }
         private void SetNewBrushStrength() {
-            brushTool.SetBrushStrength(brushStrengthSelector.LerpedValue);
+            brushTool.SetBrushStrength(brushStrengthSelector.lerpedValue);
         }
         /*public void SetNewBlocktype() {
             if (byte.TryParse(blocktypePreview.matNumber.ToString(), out byte typeValue)) {

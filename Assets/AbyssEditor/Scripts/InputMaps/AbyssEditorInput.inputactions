@@ -3,6 +3,116 @@
     "name": "AbyssEditorInput",
     "maps": [
         {
+            "name": "Brush",
+            "id": "f656d63c-6511-4a6c-87b7-92f7e75111ee",
+            "actions": [
+                {
+                    "name": "ActivateBrush",
+                    "type": "Button",
+                    "id": "9a8ab7a4-6af1-4f84-a145-28a39754dc32",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "ScrollWheelScale",
+                    "type": "Value",
+                    "id": "3a19a02e-d67a-496c-8171-0a7a8eafaf01",
+                    "expectedControlType": "Axis",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                },
+                {
+                    "name": "ActivateBrushScale",
+                    "type": "Button",
+                    "id": "e2a6ecba-b5d4-4420-9d2a-401b0bd679df",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "ActivateBrushStrengthScale",
+                    "type": "Button",
+                    "id": "f5b6c41c-8e53-4b5b-9e72-b87eb281930b",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "909e3efc-22ef-4f60-9bee-ff925d57a0c2",
+                    "path": "<Mouse>/leftButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "ActivateBrush",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "1D Axis",
+                    "id": "758afe62-c8f5-4ca9-8065-7a80c25b6d1f",
+                    "path": "1DAxis",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "ScrollWheelScale",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "negative",
+                    "id": "633e7af1-e49b-4e85-b9c0-bedfea0fa5e7",
+                    "path": "<Mouse>/scroll/down",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "ScrollWheelScale",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "positive",
+                    "id": "2fb66fe8-d330-427d-a30c-f712b99e63be",
+                    "path": "<Mouse>/scroll/up",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "ScrollWheelScale",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "",
+                    "id": "e20bc53e-cd64-43a1-943e-9d0191a946b4",
+                    "path": "<Keyboard>/q",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "ActivateBrushStrengthScale",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "ac1f4fb4-c8b0-46ba-87f8-45affc16e5d4",
+                    "path": "<Keyboard>/e",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "ActivateBrushScale",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        },
+        {
             "name": "HotBar",
             "id": "eb5ac3fd-83bf-40ae-9406-fa855445ef77",
             "actions": [

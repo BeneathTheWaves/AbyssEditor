@@ -52,7 +52,7 @@ namespace AbyssEditor.Scripts.UI.Windows {
 
         void UpdateSunRotation()
         {
-            LightingManager.main.UpdateSunRotation(sunPitch.LerpedValue, sunYaw.LerpedValue);
+            LightingManager.main.UpdateSunRotation(sunPitch.lerpedValue, sunYaw.lerpedValue);
         }
 
         void UpdateSunColor()
@@ -62,23 +62,23 @@ namespace AbyssEditor.Scripts.UI.Windows {
 
         void UpdateSunIntensity()
         {
-            LightingManager.main.UpdateSunIntensity(sunIntensity.LerpedValue);
+            LightingManager.main.UpdateSunIntensity(sunIntensity.lerpedValue);
         }
         
         void UpdateAmbientIntensity()
         {
-            LightingManager.main.UpdateAmbientIntensity(ambientIntensity.LerpedValue);
+            LightingManager.main.UpdateAmbientIntensity(ambientIntensity.lerpedValue);
         }
 
         void SavePreferences()
         {
-            Preferences.data.sunPitch = sunPitch.LerpedValue;
-            Preferences.data.sunYaw = sunYaw.LerpedValue;
+            Preferences.data.sunPitch = sunPitch.lerpedValue;
+            Preferences.data.sunYaw = sunYaw.lerpedValue;
             Preferences.data.sunColorR = sunColor.color.r;
             Preferences.data.sunColorG = sunColor.color.g;
             Preferences.data.sunColorB = sunColor.color.b;
-            Preferences.data.sunIntensity = sunIntensity.LerpedValue;
-            Preferences.data.ambientIntensity = ambientIntensity.LerpedValue;
+            Preferences.data.sunIntensity = sunIntensity.lerpedValue;
+            Preferences.data.ambientIntensity = ambientIntensity.lerpedValue;
             
             Preferences.SavePreferences();
         }

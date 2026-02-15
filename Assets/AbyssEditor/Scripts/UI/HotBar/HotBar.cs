@@ -1,6 +1,4 @@
-using System;
 using System.Collections.Generic;
-using AbyssEditor.Scripts.CursorTools;
 using AbyssEditor.Scripts.CursorTools;
 using AbyssEditor.Scripts.InputMaps;
 using TMPro;
@@ -14,13 +12,13 @@ namespace AbyssEditor.Scripts.UI.HotBar
     {
         private List<IHotBarButton> buttons = new();
         
-        private AbyssEditorInput input;
+        private AbyssEditorInput.HotBarActions input;
 
         private IHotBarButton currentButton;
 
         private void Awake()
         {
-            input = new AbyssEditorInput();
+            input = new AbyssEditorInput().HotBar;
             buttons = new List<IHotBarButton>(transform.GetComponentsInChildren<IHotBarButton>());
         }
         private void Start()
@@ -35,9 +33,9 @@ namespace AbyssEditor.Scripts.UI.HotBar
 
         private void RegisterHotKeyActions()
         {            
-            input.HotBar.Enable();
+            input.Enable();
             
-            input.HotBar.HotbarSelect.performed += OnNumberKeyDown;
+            input.HotbarSelect.performed += OnNumberKeyDown;
         }
 
         private void OnNumberKeyDown(InputAction.CallbackContext ctx)

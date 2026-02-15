@@ -12,6 +12,8 @@ namespace AbyssEditor.Scripts.CursorTools
         public BrushTool brushTool;
 
         private readonly HashSet<ICursorTool> tools = new();
+        
+        private readonly HashSet<MonoBehaviour> inputBlockingScripts = new();
 
         private ICursorTool activeTool;
 
@@ -25,7 +27,7 @@ namespace AbyssEditor.Scripts.CursorTools
 
         private void Update()
         {
-            activeTool?.HandleToolUpdate(IsMouseOverUI());
+            activeTool?.HandleToolUpdate(CanUseTool());
         }
 
         public void Enable<T>() where T : ICursorTool
@@ -48,6 +50,20 @@ namespace AbyssEditor.Scripts.CursorTools
             activeTool = null;
         }
 
+        public void RegisterInputBlock(MonoBehaviour script)
+        {
+            inputBlockingScripts.Add(script);
+        }
+
+        public void UnregisterInputBlock(MonoBehaviour script)
+        {
+            inputBlockingScripts.Remove(script);
+        }
+
+        private bool CanUseTool() => IsMouseOverUI() || HadBlockingScripts();
+        
         private bool IsMouseOverUI() => EventSystem.current.IsPointerOverGameObject();
+
+        private bool HadBlockingScripts() => inputBlockingScripts.Count > 0;
     }
 }

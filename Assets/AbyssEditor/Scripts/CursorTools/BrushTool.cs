@@ -1,28 +1,41 @@
 ﻿using System;
+using AbyssEditor.Scripts.InputMaps;
 using AbyssEditor.Scripts.UI.HotBar;
 using AbyssEditor.Scripts.VoxelTech;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 namespace AbyssEditor.Scripts.CursorTools {
     public class BrushTool : ICursorTool {
-        public float currentBrushSize = 10;
-        
         public const float MIN_BRUSH_SIZE = 1;
         public const float MAX_BRUSH_SIZE = 32;
+        private const float MIN_BRUSH_STRENGTH = 0;
+        private const float MAX_BRUSH_STRENGTH = 1;
+
+        private const float SIZE_SCROLL_SPEED = 1f;
+        private const float STRENGTH_SCROLL_SPEED = 0.05f;
         
+        
+        public float currentBrushSize = 10;
         public byte currentSelectedType = 1;
         public float currentBrushStrength = 0.5f;
         
-        private BrushMode activeMode;
-        
         public event Action OnParametersChanged;
-
+        
+        private BrushMode activeMode;
         private BrushStroke stroke;
         private const float BRUSH_ACTION_PERIOD = 1.0f;
-
-        GameObject brushAreaObject;
         
+        private AbyssEditorInput.BrushActions input = new AbyssEditorInput().Brush;
+        private GameObject brushAreaObject;
+
+        public BrushTool()
+        {
+            input.ScrollWheelScale.performed += OnScrollWheel;
+        }
+
         public void EnableTool() {
+            input.Enable();
             if (brushAreaObject == null) {
                 CreateBrushObject();
                 DisableBrushGizmo();
@@ -30,28 +43,33 @@ namespace AbyssEditor.Scripts.CursorTools {
         }
         
         public void EnableTool(IHotBarButton hotBarButton) {
+            input.Enable();
             BrushHotBarButton brushbutton = hotBarButton as BrushHotBarButton;
             SetBrushMode(brushbutton.GetBrushMode());
             EnableTool();
         }
         
         public void DisableTool() {
+            input.Disable();
             DisableBrushGizmo();
         }
         
-        private void CreateBrushObject() {
-            brushAreaObject = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-            brushAreaObject.GetComponent<MeshRenderer>().sharedMaterial = Globals.instance.brushGizmoMat;
-            brushAreaObject.GetComponent<SphereCollider>().enabled = false;
-            brushAreaObject.transform.localScale = Vector3.one * currentBrushSize;
-
-            GameObject lightObj = new GameObject("brushLight");
-            lightObj.transform.SetParent(brushAreaObject.transform);
-            lightObj.transform.localScale = Vector3.one;
-            Light light = lightObj.AddComponent<Light>();
-            light.enabled = false;
-            light.intensity = Mathf.Clamp(Mathf.Sqrt(currentBrushSize), 1, 12);
+        public void SetBrushMaterial(byte value) {
+            currentSelectedType = value;
+            OnParametersChanged?.Invoke();
+        }
+        
+        public void SetBrushSize(float t) {
+            currentBrushSize = t;
+            Light light = brushAreaObject.GetComponentInChildren<Light>();
+            light.intensity = Mathf.Clamp(Mathf.Sqrt(currentBrushSize), 1, 12); ;
             light.range = 2 * currentBrushSize;
+            OnParametersChanged?.Invoke();
+        }
+        
+        public void SetBrushStrength(float t) {
+            currentBrushStrength = t;
+            OnParametersChanged?.Invoke();
         }
 
         public Light GetBrushLight() {
@@ -62,20 +80,37 @@ namespace AbyssEditor.Scripts.CursorTools {
             return brushAreaObject.GetComponentInChildren<Light>();
         }
         
-        //TODO: MOVE THIS INPUT HANDLING INTO HOTBAR CLASS
-        public void HandleToolUpdate(bool mouseOverUI) {
-
-            if (mouseOverUI)
+        public void HandleToolUpdate(bool blockInput)
+        {
+            if (blockInput)
             {
                 DisableTool();
                 return;
             }
             
-            BrushAction(Input.GetMouseButton(0));
+            EnableTool();
+            BrushAction(input.ActivateBrush.IsPressed());
+        }
+
+        private void OnScrollWheel(InputAction.CallbackContext ctx)
+        {
+            ctx.ReadValue<float>();
+            if (input.ActivateBrushScale.IsPressed())
+            {
+                float newSize = currentBrushSize + (ctx.ReadValue<float>() * SIZE_SCROLL_SPEED);
+                newSize = Mathf.Clamp(newSize, MIN_BRUSH_SIZE, MAX_BRUSH_SIZE);
+                SetBrushSize(newSize);
+            }
+            if (input.ActivateBrushStrengthScale.IsPressed())
+            {
+                float newSize = currentBrushStrength + (ctx.ReadValue<float>() * STRENGTH_SCROLL_SPEED);
+                newSize = Mathf.Clamp(newSize, MIN_BRUSH_STRENGTH, MAX_BRUSH_STRENGTH);
+                SetBrushStrength(newSize);
+            }
         }
 
 
-        public void BrushAction(bool doAction) {
+        private void BrushAction(bool doAction) {
             
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
@@ -105,6 +140,7 @@ namespace AbyssEditor.Scripts.CursorTools {
             }
             
         }
+        
         private void EnableBrushGizmo(Vector3 position, Vector3 normal) {
 
             brushAreaObject.SetActive(true);
@@ -117,36 +153,33 @@ namespace AbyssEditor.Scripts.CursorTools {
                 brushAreaObject.transform.localScale = Vector3.one * (2 * currentBrushSize);
             }
         }
+        
+        private void CreateBrushObject() {
+            brushAreaObject = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+            brushAreaObject.GetComponent<MeshRenderer>().sharedMaterial = Globals.instance.brushGizmoMat;
+            brushAreaObject.GetComponent<SphereCollider>().enabled = false;
+            brushAreaObject.transform.localScale = Vector3.one * currentBrushSize;
+
+            GameObject lightObj = new GameObject("brushLight");
+            lightObj.transform.SetParent(brushAreaObject.transform);
+            lightObj.transform.localScale = Vector3.one;
+            Light light = lightObj.AddComponent<Light>();
+            light.enabled = false;
+            light.intensity = Mathf.Clamp(Mathf.Sqrt(currentBrushSize), 1, 12);
+            light.range = 2 * currentBrushSize;
+        }
+        
         private void DisableBrushGizmo() {
             if (brushAreaObject)
                 brushAreaObject.SetActive(false);
             UpdateBoundaries(Vector3.zero, 0);
         }
         
-        public void SetBrushMaterial(byte value) {
-            currentSelectedType = value;
-            OnParametersChanged?.Invoke();
-        }
-        
-        public void SetBrushSize(float t) {
-            currentBrushSize = t;
-            Light light = brushAreaObject.GetComponentInChildren<Light>();
-            light.intensity = Mathf.Clamp(Mathf.Sqrt(currentBrushSize), 1, 12); ;
-            light.range = 2 * currentBrushSize;
-            OnParametersChanged?.Invoke();
-        }
-        
-        public void SetBrushStrength(float t) {
-            currentBrushStrength = t;
-            OnParametersChanged?.Invoke();
-        }
-
         private void UpdateBoundaries(Vector3 newPos, float radius) {
             Globals.instance.boundaryGizmoMat.SetVector("_CursorWorldPos", newPos);
             Globals.instance.boundaryGizmoMat.SetFloat("_BlendRadius", radius);
         }
-
-
+        
         private void SetBrushMode(BrushMode brushMode)
         {
             activeMode = brushMode;
@@ -154,7 +187,6 @@ namespace AbyssEditor.Scripts.CursorTools {
             //    Globals.instance.brushGizmoMat.color = Globals.instance.brushColors[selection];
             OnParametersChanged?.Invoke();
         }
-        
 
         public struct BrushStroke {
             public Vector3 brushLocation;
