@@ -14,13 +14,13 @@ namespace AbyssEditor.Scripts.UI.HotBar
     {
         private List<IHotBarButton> buttons = new();
         
-        private HotBarInput input;
+        private AbyssEditorInput input;
 
         private IHotBarButton currentButton;
 
         private void Awake()
         {
-            input = new HotBarInput();
+            input = new AbyssEditorInput();
             buttons = new List<IHotBarButton>(transform.GetComponentsInChildren<IHotBarButton>());
         }
         private void Start()
@@ -35,7 +35,7 @@ namespace AbyssEditor.Scripts.UI.HotBar
 
         private void RegisterHotKeyActions()
         {            
-            input.Enable();
+            input.HotBar.Enable();
             
             input.HotBar.HotbarSelect.performed += OnNumberKeyDown;
         }
@@ -58,8 +58,6 @@ namespace AbyssEditor.Scripts.UI.HotBar
             {
                 index = numberKey - 1;
             }
-            
-            Debug.Log("Selected slot: " + index);
 
             if (index < 0 || index >= buttons.Count)
             {

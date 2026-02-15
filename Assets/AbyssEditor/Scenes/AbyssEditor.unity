@@ -12842,7 +12842,7 @@ MonoBehaviour:
   dragging: 0
   acceleration: 80
   accSprintMultiplier: 4
-  lookSensitivity: 1
+  lookSensitivity: 0.1
   dampingCoefficient: 4
 --- !u!114 &1433409871
 MonoBehaviour:

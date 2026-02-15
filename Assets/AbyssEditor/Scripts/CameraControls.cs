@@ -1,4 +1,5 @@
 ﻿using AbyssEditor.Scripts.CursorTools;
+using AbyssEditor.Scripts.InputMaps;
 using AbyssEditor.Scripts.VoxelTech;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -7,6 +8,8 @@ namespace AbyssEditor.Scripts
     public class CameraControls : MonoBehaviour
     {
         public static CameraControls main;
+        
+        public AbyssEditorInput.FreeCamActions input;
         
         public bool moveLock = true;
 
@@ -20,10 +23,6 @@ namespace AbyssEditor.Scripts
         
         Vector3 velocity; // current velocity
 
-#if UNITY_STANDALONE_LINUX || UNITY_EDITOR_LINUX
-        public static bool mouseWarpedToCenter;//On linux the mouse only warps on the first move of the mouse, this can cause a big jump in camera movement when pressing right click
-#endif
-        
         static bool HoldingRMB
         {
             get => Cursor.lockState == CursorLockMode.Locked;
@@ -31,22 +30,19 @@ namespace AbyssEditor.Scripts
             {
                 Cursor.lockState = value ? CursorLockMode.Locked : CursorLockMode.None;
                 Cursor.visible = value == false;
-#if UNITY_STANDALONE_LINUX || UNITY_EDITOR_LINUX
-                if (!value)
-                {
-                    mouseWarpedToCenter = false;//reset
-                }
-#endif
+
             }
         }
 
         private void Awake()
         {
             main = this;
+            input = new AbyssEditorInput().FreeCam;
         }
         
         private void Start()
         {
+            input.Enable();
             brushTool = CursorToolManager.main.brushTool;
         }
 
@@ -61,8 +57,8 @@ namespace AbyssEditor.Scripts
         {
             Vector3 regionCenter = (startBatch + endBatch) * 0.5f;
             
-            Camera.main.transform.parent.position = (regionCenter + Vector3.one + Vector3.up) * VoxelWorld.BATCH_WIDTH;
-            Camera.main.transform.LookAt(regionCenter);
+            transform.parent.position = (regionCenter + Vector3.one + Vector3.up) * VoxelWorld.BATCH_WIDTH;
+            transform.LookAt(regionCenter);
         }
 
         void OnDisable() => HoldingRMB = false;
@@ -87,19 +83,12 @@ namespace AbyssEditor.Scripts
         void UpdateInput()
         {
             // Rotation
-            Vector2 mouseDelta = lookSensitivity * new Vector2(Input.GetAxis("Mouse X"), -Input.GetAxis("Mouse Y"));
+            Vector2 mouseDelta = lookSensitivity * input.Look.ReadValue<Vector2>();
+            mouseDelta.y *= -1f;
             Quaternion rotation = transform.rotation;
             Quaternion horiz = Quaternion.AngleAxis(mouseDelta.x, Vector3.up);
             Quaternion vert = Quaternion.AngleAxis(mouseDelta.y, Vector3.right);
             
-#if UNITY_STANDALONE_LINUX || UNITY_EDITOR_LINUX
-            //On linux, we need to skip the first frame of mouse movement as it takes 1 set it to the center
-            if (!mouseWarpedToCenter && mouseDelta.magnitude != 0)
-            {
-                mouseWarpedToCenter = true;
-                return;
-            }
-#endif
 
             //Apply
             transform.rotation = horiz * rotation * vert;
@@ -110,21 +99,16 @@ namespace AbyssEditor.Scripts
         {
             Vector3 moveInput = default;
 
-            void AddMovement(KeyCode key, Vector3 dir)
-            {
-                if (Input.GetKey(key))
-                    moveInput += dir;
-            }
-
-            AddMovement(KeyCode.W, Vector3.forward);
-            AddMovement(KeyCode.S, Vector3.back);
-            AddMovement(KeyCode.D, Vector3.right);
-            AddMovement(KeyCode.A, Vector3.left);
-            AddMovement(KeyCode.Space, Vector3.up);
-            AddMovement(KeyCode.LeftControl, Vector3.down);
+            Vector2 wasd = input.Move.ReadValue<Vector2>();
+            
+            moveInput.x = wasd.x;
+            moveInput.z = wasd.y;
+            
+            moveInput.y = input.UpDown.ReadValue<float>();
+            
             Vector3 direction = transform.TransformVector(moveInput.normalized);
 
-            if (Input.GetKey(KeyCode.LeftShift))
+            if (input.SpeedUp.IsPressed())
                 return direction * (acceleration * accSprintMultiplier); // "sprinting"
             return direction * acceleration; // "walking"
         }
