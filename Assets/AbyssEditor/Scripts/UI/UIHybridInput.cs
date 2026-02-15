@@ -81,8 +81,7 @@ namespace AbyssEditor.Scripts.UI {
             
             OnValueUpdated?.Invoke();
         }
-
-        //
+        
         private void Redraw() {
             bar.offsetMin = new Vector2(padding, padding);
             

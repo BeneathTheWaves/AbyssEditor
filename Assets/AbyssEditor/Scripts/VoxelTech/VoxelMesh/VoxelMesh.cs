@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using AbyssEditor.Scripts.CursorTools;
 using AbyssEditor.Scripts.Octrees;
 using AbyssEditor.Scripts.VoxelTech.VoxelGrids;
 using AbyssEditor.Scripts.VoxelTech.VoxelGrids.Brushes;
@@ -94,7 +95,7 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelMesh
 
         public void Write() => BatchReadWriter.WriteOptoctrees(batchIndex, nodes);
 
-        public void ApplyJobBasedDensityFunction(Brush.BrushStroke stroke, List<BrushJob> brushActions, List<PointContainer> modifiedContainers)
+        public void ApplyJobBasedDensityFunction(BrushTool.BrushStroke stroke, List<BrushJob> brushActions, List<PointContainer> modifiedContainers)
         {
             foreach (PointContainer container in pointContainers)
             {

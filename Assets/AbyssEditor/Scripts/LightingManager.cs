@@ -1,5 +1,6 @@
 using System;
 using System.Security.Cryptography;
+using AbyssEditor.Scripts.CursorTools;
 using AbyssEditor.Scripts.SaveSystem;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -23,7 +24,7 @@ namespace AbyssEditor.Scripts
     
         void Start()
         {
-            brushLight = Brush.GetBrushLight();
+            brushLight = CursorToolManager.main.brushTool.GetBrushLight();
             LoadFromSettings();
         }
 

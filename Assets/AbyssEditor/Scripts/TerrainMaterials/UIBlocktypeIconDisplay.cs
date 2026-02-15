@@ -1,3 +1,4 @@
+using AbyssEditor.Scripts.CursorTools;
 using AbyssEditor.Scripts.SaveSystem;
 using AbyssEditor.Scripts.UI.Windows;
 using TMPro;
@@ -78,7 +79,7 @@ namespace AbyssEditor.Scripts.TerrainMaterials
 
             public void OnMaterialSelected()
             {
-                Brush.SetBrushMaterial((byte)mat.blocktype);
+                CursorToolManager.main.brushTool.SetBrushMaterial((byte)mat.blocktype);
             }
 
             public void OnFavoriteButtonPressed()

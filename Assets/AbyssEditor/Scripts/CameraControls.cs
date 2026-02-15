@@ -1,4 +1,5 @@
-﻿using AbyssEditor.Scripts.VoxelTech;
+﻿using AbyssEditor.Scripts.CursorTools;
+using AbyssEditor.Scripts.VoxelTech;
 using UnityEngine;
 using UnityEngine.EventSystems;
 namespace AbyssEditor.Scripts
@@ -10,8 +11,7 @@ namespace AbyssEditor.Scripts
         public bool moveLock = true;
 
         public bool dragging;
-        private bool mouseOverUI;
-        private Brush brush;
+        private BrushTool brushTool;
 
         public float acceleration = 50; // how fast you accelerate
         public float accSprintMultiplier = 4; // how much faster you go when "sprinting"
@@ -47,7 +47,7 @@ namespace AbyssEditor.Scripts
         
         private void Start()
         {
-            brush = GetComponent<Brush>();
+            brushTool = CursorToolManager.main.brushTool;
         }
 
         public void OnRegionLoad(Vector3Int startBatch, Vector3Int endBatch)
@@ -73,8 +73,6 @@ namespace AbyssEditor.Scripts
             if (moveLock)
                 return;
 
-            mouseOverUI = IsMouseOverUI();
-
             // Input
             if (HoldingRMB)
                 UpdateInput();
@@ -84,8 +82,6 @@ namespace AbyssEditor.Scripts
             // Physics
             velocity = Vector3.Lerp(velocity, Vector3.zero, dampingCoefficient * Time.deltaTime);
             transform.position += velocity * Time.deltaTime;
-
-            HandleBrushInput();
         }
 
         void UpdateInput()
@@ -132,23 +128,5 @@ namespace AbyssEditor.Scripts
                 return direction * (acceleration * accSprintMultiplier); // "sprinting"
             return direction * acceleration; // "walking"
         }
-
-        private void HandleBrushInput()
-        {
-            if (brush.enabled)
-            {
-                if (mouseOverUI)
-                {
-                    brush.DisableBrushGizmo();
-                }
-                else
-                {
-                    brush.BrushAction(Input.GetMouseButton(0));
-                }
-            }
-        }
-
-
-        private bool IsMouseOverUI() => EventSystem.current.IsPointerOverGameObject();
     }
 }

@@ -9,9 +9,7 @@ namespace AbyssEditor.Scripts {
         public Material batchMat;
         public Material batchCappedMat;
         public Material brushGizmoMat;
-        public Material simpleMapMat;
         public Material boundaryGizmoMat;
-        public Color[] brushColors;
         public bool belowzero;
         public string userBatchOutputPath;
 
@@ -40,21 +38,12 @@ namespace AbyssEditor.Scripts {
         public static Material GetBatchMat() {
             return instance.batchMat;
         }
-        
-        public static Material GetSimpleMapMat() {
-            return instance.simpleMapMat;
-        }
 
         public static int LinearIndex(int x, int y, int z, int dim) {
             return x + y * dim + z * dim * dim;
         }
         public static int LinearIndex(int x, int y, int z, Vector3Int dim) {
             return x + y * dim.x + z * dim.x * dim.y;
-        }
-
-        public static void UpdateBoundaries(Vector3 newPos, float radius) {
-            instance.boundaryGizmoMat.SetVector("_CursorWorldPos", newPos);
-            instance.boundaryGizmoMat.SetFloat("_BlendRadius", radius);
         }
 
         public static bool CheckIsGamePathValid() {

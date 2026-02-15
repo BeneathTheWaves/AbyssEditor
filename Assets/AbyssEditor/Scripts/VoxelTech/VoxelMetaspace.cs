@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using AbyssEditor.Scripts.CursorTools;
 using AbyssEditor.Scripts.Octrees;
 using AbyssEditor.Scripts.TaskSystem;
 using AbyssEditor.Scripts.UI;
@@ -46,7 +47,7 @@ namespace AbyssEditor.Scripts.VoxelTech {
             return null;
         }
         
-        public void ApplyJobBasedDensityAction(Brush.BrushStroke stroke)
+        public void ApplyJobBasedDensityAction(BrushTool.BrushStroke stroke)
         {
             System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch();
             sw.Start();

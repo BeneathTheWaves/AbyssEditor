@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using AbyssEditor.Scripts.CursorTools;
 using AbyssEditor.Scripts.VoxelTech.VoxelGrids.Brushes;
 using Unity.Collections;
 using Unity.Mathematics;
@@ -145,7 +146,7 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelGrids {
             _fullTypeGrid =      typeGrid;
         }
 
-        public BrushJob ApplyJobBasedDensityFunction(Brush.BrushStroke stroke, Vector3 gridOrigin)
+        public BrushJob ApplyJobBasedDensityFunction(BrushTool.BrushStroke stroke, Vector3 gridOrigin)
         {
             BrushJob brushJob = null;
             
@@ -157,12 +158,12 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelGrids {
             else if (stroke.brushMode == BrushMode.Add || stroke.brushMode == BrushMode.Remove )
             {
                 bool shouldRemoveDensity = stroke.brushMode == BrushMode.Remove;
-                brushJob = new AddSubJob(this, stroke.brushLocation, stroke.brushRadius, stroke.strength, Brush.selectedType, gridOrigin, shouldRemoveDensity);
+                brushJob = new AddSubJob(this, stroke.brushLocation, stroke.brushRadius, stroke.strength, CursorToolManager.main.brushTool.currentSelectedType, gridOrigin, shouldRemoveDensity);
             }
 
             else if (stroke.brushMode == BrushMode.Paint)
             {
-                brushJob = new PaintJob(this, stroke.brushLocation, stroke.brushRadius, Brush.selectedType, gridOrigin);
+                brushJob = new PaintJob(this, stroke.brushLocation, stroke.brushRadius, CursorToolManager.main.brushTool.currentSelectedType, gridOrigin);
             }
 
             brushJob?.StartJob();
