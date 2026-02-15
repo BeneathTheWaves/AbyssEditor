@@ -12,12 +12,12 @@ namespace AbyssEditor.Scripts.UI
             StartCoroutine(QuitEditorCoroutine());
         }
 
-        public IEnumerator QuitEditorCoroutine()
+        private IEnumerator QuitEditorCoroutine()
         {
             UIConfirmationWindow.main.OpenWindow(
                 Language.main.Get("QuitConfirmationMessage"),
-                Language.main.Get("ConfirmQuit"), 
                 Language.main.Get("CancelQuit"), 
+                Language.main.Get("ConfirmQuit"), 
                 out UIConfirmationWindow.Response response
             );
                 
@@ -27,6 +27,8 @@ namespace AbyssEditor.Scripts.UI
             {
                 yield break;
             }
+            
+            Application.Quit();
         }
     }
 }
