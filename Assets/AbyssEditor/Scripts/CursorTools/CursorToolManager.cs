@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using AbyssEditor.Scripts.CursorTools.Brush;
 using AbyssEditor.Scripts.UI.HotBar;
+using AbyssEditor.Scripts.UI.HotBar.HotBarButtons;
 using UnityEngine;
 using UnityEngine.EventSystems;
 namespace AbyssEditor.Scripts.CursorTools
@@ -38,7 +39,7 @@ namespace AbyssEditor.Scripts.CursorTools
             activeTool?.EnableTool();
         }
         
-        public void Enable<T>(IHotBarButton hotBarButton) where T : ICursorTool
+        public void Enable<T>(HotBarButton hotBarButton) where T : ICursorTool
         {
             activeTool?.DisableTool();
             activeTool = tools.OfType<T>().First();

@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using AbyssEditor.Scripts.CursorTools;
 using AbyssEditor.Scripts.CursorTools.Brush;
 using AbyssEditor.Scripts.InputMaps;
+using AbyssEditor.Scripts.UI.HotBar.HotBarButtons;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -11,20 +12,20 @@ namespace AbyssEditor.Scripts.UI.HotBar
 { 
     public class HotBar : MonoBehaviour
     {
-        private List<IHotBarButton> buttons = new();
+        private List<HotBarButton> buttons = new();
         
         private AbyssEditorInput.HotBarActions input;
 
-        private IHotBarButton currentButton;
+        private HotBarButton currentButton;
 
         private void Awake()
         {
             input = new AbyssEditorInput().HotBar;
-            buttons = new List<IHotBarButton>(transform.GetComponentsInChildren<IHotBarButton>());
+            buttons = new List<HotBarButton>(transform.GetComponentsInChildren<HotBarButton>());
         }
         private void Start()
         {
-            foreach (IHotBarButton button in buttons)
+            foreach (HotBarButton button in buttons)
             {
                 button.InitializeListener(OnAnyButtonPress);
             }
@@ -89,7 +90,7 @@ namespace AbyssEditor.Scripts.UI.HotBar
             }*/
         }
 
-        private void OnAnyButtonPress(IHotBarButton newButton)
+        private void OnAnyButtonPress(HotBarButton newButton)
         {
             if (currentButton == newButton)
             {
@@ -103,8 +104,16 @@ namespace AbyssEditor.Scripts.UI.HotBar
             
             currentButton = newButton;
             currentButton.SetToggle(true);
-            
-            CursorToolManager.main.Enable<BrushTool>(currentButton);
+
+            if (newButton is BrushHotBarButton)
+            {
+                CursorToolManager.main.Enable<BrushTool>(currentButton);
+            }
+            else if (newButton is RemoveBatchButton)
+            {
+                
+            }
+
         }
     }
 }

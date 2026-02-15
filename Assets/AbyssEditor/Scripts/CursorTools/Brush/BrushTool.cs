@@ -1,6 +1,7 @@
 ﻿using System;
 using AbyssEditor.Scripts.InputMaps;
 using AbyssEditor.Scripts.UI.HotBar;
+using AbyssEditor.Scripts.UI.HotBar.HotBarButtons;
 using AbyssEditor.Scripts.VoxelTech;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -41,7 +42,7 @@ namespace AbyssEditor.Scripts.CursorTools.Brush {
             }
         }
         
-        public void EnableTool(IHotBarButton hotBarButton) {
+        public void EnableTool(HotBarButton hotBarButton) {
             input.Enable();
             BrushHotBarButton brushbutton = hotBarButton as BrushHotBarButton;
             SetBrushMode(brushbutton.GetBrushMode());
