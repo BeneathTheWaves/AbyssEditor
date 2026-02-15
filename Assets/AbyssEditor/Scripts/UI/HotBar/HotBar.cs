@@ -1,18 +1,26 @@
 using System;
 using System.Collections.Generic;
 using AbyssEditor.Scripts.CursorTools;
+using AbyssEditor.Scripts.CursorTools;
+using AbyssEditor.Scripts.InputMaps;
+using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.InputSystem;
 
 namespace AbyssEditor.Scripts.UI.HotBar
 { 
     public class HotBar : MonoBehaviour
     {
         private List<IHotBarButton> buttons = new();
+        
+        private HotBarInput input;
 
         private IHotBarButton currentButton;
 
         private void Awake()
         {
+            input = new HotBarInput();
             buttons = new List<IHotBarButton>(transform.GetComponentsInChildren<IHotBarButton>());
         }
         private void Start()
@@ -21,33 +29,49 @@ namespace AbyssEditor.Scripts.UI.HotBar
             {
                 button.InitializeListener(OnAnyButtonPress);
             }
+
+            RegisterHotKeyActions();
+        }
+
+        private void RegisterHotKeyActions()
+        {            
+            input.Enable();
+            
+            input.HotBar.HotbarSelect.performed += OnNumberKeyDown;
+        }
+
+        private void OnNumberKeyDown(InputAction.CallbackContext ctx)
+        {
+            //Dont process input if typing
+            if (EventSystem.current.currentSelectedGameObject != null &&
+                EventSystem.current.currentSelectedGameObject.GetComponent<TMP_InputField>() != null)
+                return;
+            
+            int numberKey = int.Parse(ctx.control.name);
+
+            int index;
+            if (numberKey == 0)
+            {
+                index = 9;//Zero becomes 9 index wise
+            }
+            else
+            {
+                index = numberKey - 1;
+            }
+            
+            Debug.Log("Selected slot: " + index);
+
+            if (index < 0 || index >= buttons.Count)
+            {
+                return;
+            }
+            
+            OnAnyButtonPress(buttons[index]);
         }
 
         public void Update()
         {
-            if (Input.GetKeyDown(KeyCode.Alpha1))
-            {
-                OnAnyButtonPress(buttons[0]);
-            }
-            if (Input.GetKeyDown(KeyCode.Alpha2))
-            {
-                OnAnyButtonPress(buttons[1]);
-            }
-            if (Input.GetKeyDown(KeyCode.Alpha3))
-            {
-                OnAnyButtonPress(buttons[2]);
-            }
-            if (Input.GetKeyDown(KeyCode.Alpha4))
-            {
-                OnAnyButtonPress(buttons[3]);
-            }
-            if (Input.GetKeyDown(KeyCode.Alpha5))
-            {
-                OnAnyButtonPress(buttons[4]);
-            }
-            
-            /*
-            BrushMode _newActiveMode = userSelectedMode;
+            /*BrushMode _newActiveMode = userSelectedMode;
             if (Input.GetKey(KeyCode.LeftShift)) {
                 // Always smooth
                 _newActiveMode = BrushMode.Smooth;
