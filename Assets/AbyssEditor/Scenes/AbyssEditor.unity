@@ -16035,6 +16035,8 @@ MonoBehaviour:
   batchMat: {fileID: 2100000, guid: 5fef197d69377cd46bb1ed4226580c80, type: 2}
   batchCappedMat: {fileID: 2100000, guid: f33cd215ac3e76d4ba6f0d0922d1d85d, type: 2}
   brushGizmoMat: {fileID: 2100000, guid: bbb5c162cfbc47f4aa1535f48ccd95d4, type: 2}
+  brushGizmoMatWireFrame: {fileID: 2100000, guid: a3ecdfbe692e6f120993c088e74e2b86,
+    type: 2}
   boundaryGizmoMat: {fileID: 2100000, guid: e0bd272d84c6168419ad21940384dc99, type: 2}
   belowzero: 0
   userBatchOutputPath: 

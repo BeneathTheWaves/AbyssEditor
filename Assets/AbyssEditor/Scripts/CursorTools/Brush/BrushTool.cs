@@ -8,6 +8,9 @@ using UnityEngine.InputSystem;
 
 namespace AbyssEditor.Scripts.CursorTools.Brush {
     public class BrushTool : ICursorTool {
+        private static readonly int wireframeColor = Shader.PropertyToID("_WireframeColor");
+        private static readonly int blendRadius = Shader.PropertyToID("_BlendRadius");
+        private static readonly int cursorWorldPos = Shader.PropertyToID("_CursorWorldPos");
         public const float MIN_BRUSH_SIZE = 1;
         public const float MAX_BRUSH_SIZE = 32;
         private const float MIN_BRUSH_STRENGTH = 0;
@@ -160,7 +163,14 @@ namespace AbyssEditor.Scripts.CursorTools.Brush {
         
         private void CreateBrushObject() {
             brushAreaObject = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-            brushAreaObject.GetComponent<MeshRenderer>().sharedMaterial = Globals.instance.brushGizmoMat;
+            
+            var renderer = brushAreaObject.GetComponent<MeshRenderer>();
+            renderer.materials = new[]
+            {
+                Globals.instance.brushGizmoMat,
+                Globals.instance.brushGizmoMatWireFrame
+            };
+            
             brushAreaObject.GetComponent<SphereCollider>().enabled = false;
             brushAreaObject.transform.localScale = Vector3.one * currentBrushSize;
 
@@ -180,8 +190,8 @@ namespace AbyssEditor.Scripts.CursorTools.Brush {
         }
         
         private void UpdateBoundaries(Vector3 newPos, float radius) {
-            Globals.instance.boundaryGizmoMat.SetVector("_CursorWorldPos", newPos);
-            Globals.instance.boundaryGizmoMat.SetFloat("_BlendRadius", radius);
+            Globals.instance.boundaryGizmoMat.SetVector(cursorWorldPos, newPos);
+            Globals.instance.boundaryGizmoMat.SetFloat(blendRadius, radius);
         }
         
         private void SetBrushMode(BrushMode brushMode)
@@ -191,6 +201,7 @@ namespace AbyssEditor.Scripts.CursorTools.Brush {
             Color brushColor = activeMode.GetColor();
             brushColor.a = 0.3f;
             Globals.instance.brushGizmoMat.color = brushColor;
+            Globals.instance.brushGizmoMatWireFrame.SetColor(wireframeColor, activeMode.GetColor());
             
             OnParametersChanged?.Invoke();
         }
