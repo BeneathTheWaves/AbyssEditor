@@ -1,0 +1,11 @@
+{
+  "name": "discord.rpc.csharp",
+  "displayName": "Discord RPC C#",
+  "author": {
+    "name": "Lachee",
+    "url": "https://github.com/Lachee/discord-rpc-csharp"
+  },
+  "description": "C# custom implementation for Discord Rich Presence. Not deprecated and still available!",
+  "version": "1.6.1",
+  "license": "MIT"
+}

@@ -77,7 +77,6 @@
   "CancelQuit": "No!",
   
   //Discord Game SDK
-  "DiscordGameSDK_Details": "Subnautica Terrain Editor by the BTW team",
-  "DiscordGameSDK_State": "%numbatches% batch loaded",
-  "DiscordGameSDK_State_Plural": "%numbatches% batches loaded"
+  "DiscordGameSDK_Details": "Subnautica Terrain Editor",
+  "DiscordGameSDK_State": "By the BTW team"
 }

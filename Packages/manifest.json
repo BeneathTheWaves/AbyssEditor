@@ -1,7 +1,6 @@
 {
   "dependencies": {
-    "com.discord.gamesdk": "file:../LocalPackages/com.discord.gamesdk",
-    "com.judahperez.hsvcolorpicker": "file:../LocalPackages/hsvcolorpicker",
+    "com.judahperez.hsvcolorpicker": "file:../LocalPackages/com.judahperez.hsvcolorpicker",
     "com.perfare.assetstudio": "file:../LocalPackages/com.perfare.assetstudio",
     "com.unity.2d.sprite": "1.0.0",
     "com.unity.collab-proxy": "2.11.2",
@@ -17,6 +16,7 @@
     "com.unity.timeline": "1.8.10",
     "com.unity.toolchain.linux-x86_64-linux": "1.0.2",
     "com.unity.ugui": "2.0.0",
+    "discord.rpc.csharp": "file:../LocalPackages/discord.rpc.csharp",
     "io.github.gkngkc.unity-standalone-file-browser": "file:../LocalPackages/io.github.gkngkc.unity-standalone-file-browser",
     "com.unity.modules.accessibility": "1.0.0",
     "com.unity.modules.adaptiveperformance": "1.0.0",

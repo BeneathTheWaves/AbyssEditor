@@ -1,67 +1,62 @@
 using System;
 using AbyssEditor.Scripts.Essentials;
 using AbyssEditor.Scripts.VoxelTech;
-using Discord;
+using DiscordRPC;
+using DiscordRPC.Message;
 using UnityEngine;
 
 namespace AbyssEditor.Scripts.DiscordRPC
 {
     public class DiscordManager : MonoBehaviour
     {
-        // Your Discord Application Client ID
-        private Discord.Discord discord;
-        private long startTimestamp;
+        private const string DISCORD_APP_ID = "1472757634426994904";
+        private bool clientConnected = false;
+        private static DiscordRpcClient client;
 
         private void Awake()
         {
-            discord = new Discord.Discord(1472757634426994904, (UInt64)Discord.CreateFlags.NoRequireDiscord);
+            client = new DiscordRpcClient(DISCORD_APP_ID);
+            client.OnReady += (sender, readyMessage) => OnClientReady(readyMessage); 
         }
 
         private void Start()
         {
-            startTimestamp = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
-            InvokeRepeating(nameof(UpdateCallbacks), 0f, 5f);
-            InvokeRepeating(nameof(UpdateActivity), 0f, 4f);
+            client.Initialize();
+            InvokeRepeating(nameof(UpdateActivity), 0, 4f);
         }
 
-        private void UpdateCallbacks()
+        private void OnClientReady(ReadyMessage msg)
         {
-            discord?.RunCallbacks();
-        }
-
-        private void OnApplicationQuit()
-        {
-            discord?.Dispose();
+            Debug.Log($"Connected to discord with user {msg.User.Username}! Updating status...");
+            clientConnected = true;
         }
 
         private void UpdateActivity()
         {
-            ActivityManager activityManager = discord.GetActivityManager();
-
-            int numBatchesLoaded = VoxelMetaspace.metaspace.meshes.Count;
+            if (!clientConnected) return;
             
-            string descriptionKey = "DiscordGameSDK_State";
-            if (numBatchesLoaded != 1) descriptionKey = "DiscordGameSDK_State_Plural";
-
-            Activity activity = new Activity
+            client.SetPresence(new RichPresence()
             {
+                Name = Language.main.Get("Title"),
                 Details = Language.main.Get("DiscordGameSDK_Details"),
-                State = Language.main.Get(descriptionKey).Replace("%numbatches%", ""+VoxelMetaspace.metaspace.meshes.Count),
-                Timestamps =
+                State = Language.main.Get("DiscordGameSDK_State"),
+                Assets = new Assets()
                 {
-                    Start = startTimestamp,
+                    LargeImageKey = "voideditoricon", //Asset key is creating within discord dev portal, do not change this unless it's been update there
+                    LargeImageText = Language.main.Get("Title"),
+                    SmallImageKey = "btwlogo",
+                    SmallImageUrl = "https://discord.gg/jKdBdPD46h",
                 },
-                Assets =
+                Buttons = new Button[]
                 {
-                    LargeImage = "voideditoricon", //Asset key is creating within discord dev portal, do not change this unless it's been update there
-                    LargeText = Language.main.Get("Title"),
-                    SmallImage = "btwlogo",
-                    SmallText = "https://discord.gg/jKdBdPD46h",
-                },
-                Instance = true
-            };
-
-            activityManager.UpdateActivity(activity, result => { });
+                    new Button() { Label = "Join Discord", Url = "https://discord.gg/jKdBdPD46h" },
+                }
+            });
+        }
+        
+        private void OnApplicationQuit()
+        {
+            client.Dispose();
         }
     }
 }
