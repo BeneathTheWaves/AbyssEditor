@@ -74,5 +74,10 @@
   //Quit
   "QuitConfirmationMessage": "Are you certain you want to close the editor? Any unexported data will be lost!",
   "ConfirmQuit": "Quit",
-  "CancelQuit": "No!"
+  "CancelQuit": "No!",
+  
+  //Discord Game SDK
+  "DiscordGameSDK_Details": "Subnautica Terrain Editor by the BTW team",
+  "DiscordGameSDK_State": "%numbatches% batch loaded",
+  "DiscordGameSDK_State_Plural": "%numbatches% batches loaded"
 }

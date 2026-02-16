@@ -16,7 +16,8 @@
         "HSVPicker.Editors",
         "HSVPicker",
         "StandaloneFileBrowser",
-        "AssetStudio"
+        "AssetStudio",
+        "DiscordGameSDK"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

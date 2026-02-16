@@ -1,6 +1,6 @@
 {
     "name": "AssetStudio",
-    "rootNamespace": "",
+    "rootNamespace": "AssetStudio",
     "references": [],
     "includePlatforms": [],
     "excludePlatforms": [],

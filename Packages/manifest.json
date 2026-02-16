@@ -1,6 +1,6 @@
 {
   "dependencies": {
-    "com.discord.partnersdk": "file:../LocalPackages/com.discord.partnersdk",
+    "com.discord.gamesdk": "file:../LocalPackages/com.discord.gamesdk",
     "com.judahperez.hsvcolorpicker": "file:../LocalPackages/hsvcolorpicker",
     "com.perfare.assetstudio": "file:../LocalPackages/com.perfare.assetstudio",
     "com.unity.2d.sprite": "1.0.0",

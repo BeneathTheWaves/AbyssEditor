@@ -343,11 +343,56 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cbd2944e8e2e44e7a806743d9904d061, type: 3}
   m_Name: 
   m_EditorClassIdentifier: AbyssEditor::AbyssEditor.Scripts.Language
+--- !u!1 &1954690824
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1954690826}
+  - component: {fileID: 1954690827}
+  m_Layer: 0
+  m_Name: DiscordSocialSDKManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1954690826
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1954690824}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 1, z: -10}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1954690827
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1954690824}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eeee110e1be84264ba16ac8cdbcb429b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: AbyssEditor::AbyssEditor.Scripts.DiscordRPC.DiscordManager
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
   - {fileID: 1114879125}
   - {fileID: 995822091}
+  - {fileID: 1954690826}
   - {fileID: 720888037}
   - {fileID: 1026328536}

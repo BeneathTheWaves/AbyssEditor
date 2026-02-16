@@ -1,7 +1,7 @@
 {
   "dependencies": {
-    "com.discord.partnersdk": {
-      "version": "file:../LocalPackages/com.discord.partnersdk",
+    "com.discord.gamesdk": {
+      "version": "file:../LocalPackages/com.discord.gamesdk",
       "depth": 0,
       "source": "local",
       "dependencies": {}

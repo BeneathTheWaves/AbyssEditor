@@ -1,6 +1,7 @@
 using System.IO;
 using AbyssEditor.Scripts.SaveSystem;
 using UnityEngine;
+
 namespace AbyssEditor.Scripts {
     public class Globals : MonoBehaviour {
 
@@ -12,7 +13,7 @@ namespace AbyssEditor.Scripts {
         public Material boundaryGizmoMat;
         public bool belowzero;
         public string userBatchOutputPath;
-
+        
         public string batchSourcePath { get { return Path.Combine(Preferences.data.gamePath, gameDataFolder, dataToUnmanaged, gameExportWindow, "CompiledOctreesCache"); } }
         public string batchOutputPath { get { return exportIntoGame ? batchSourcePath : userBatchOutputPath; } }
         public string gameDataFolder { get { return belowzero ? "SubnauticaZero_Data" : "Subnautica_Data"; } }
