@@ -55,6 +55,8 @@ namespace AbyssEditor.Scripts.DiscordRPC
                 {
                     LargeImage = "voideditoricon", //Asset key is creating within discord dev portal, do not change this unless it's been update there
                     LargeText = Language.main.Get("Title"),
+                    SmallImage = "btwlogo",
+                    SmallText = "https://discord.gg/jKdBdPD46h",
                 },
                 Instance = true
             };
