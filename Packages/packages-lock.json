@@ -1,13 +1,7 @@
 {
   "dependencies": {
-    "com.discord.gamesdk": {
-      "version": "file:../LocalPackages/com.discord.gamesdk",
-      "depth": 0,
-      "source": "local",
-      "dependencies": {}
-    },
     "com.judahperez.hsvcolorpicker": {
-      "version": "file:../LocalPackages/hsvcolorpicker",
+      "version": "file:../LocalPackages/com.judahperez.hsvcolorpicker",
       "depth": 0,
       "source": "local",
       "dependencies": {}
@@ -221,6 +215,12 @@
         "com.unity.modules.ui": "1.0.0",
         "com.unity.modules.imgui": "1.0.0"
       }
+    },
+    "discord.rpc.csharp": {
+      "version": "file:../LocalPackages/discord.rpc.csharp",
+      "depth": 0,
+      "source": "local",
+      "dependencies": {}
     },
     "io.github.gkngkc.unity-standalone-file-browser": {
       "version": "file:../LocalPackages/io.github.gkngkc.unity-standalone-file-browser",
