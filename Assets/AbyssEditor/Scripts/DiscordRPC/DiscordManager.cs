@@ -53,8 +53,8 @@ namespace AbyssEditor.Scripts.DiscordRPC
                 },
                 Assets =
                 {
-                    LargeImage = "voideditoricon", // Replace with your asset key
-                    LargeText = "Abyss Editor",      // Tooltip for large image
+                    LargeImage = "voideditoricon", //Asset key is creating within discord dev portal, do not change this unless it's been update there
+                    LargeText = Language.main.Get("Title"),
                 },
                 Instance = true
             };
