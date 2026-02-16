@@ -1,0 +1,11 @@
+{
+  "name": "com.perfare.assetstudio",
+  "displayName": "Asset Studio Unity Scripts",
+  "author": {
+    "name": "perfare",
+    "url": "https://github.com/Perfare/AssetStudio"
+  },
+  "description": "Extract assets from another unity game at runtime!",
+  "version": "1.0.0",
+  "license": "MIT"
+}

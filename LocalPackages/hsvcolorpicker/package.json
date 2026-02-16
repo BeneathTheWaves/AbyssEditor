@@ -1,0 +1,11 @@
+{
+  "name": "com.judahperez.hsvcolorpicker",
+  "displayName": "HSV Color Picker",
+  "author": {
+    "name": "judah4",
+    "url": "https://github.com/judah4/HSV-Color-Picker-Unity"
+  },
+  "description": "HSV color picker for Unity UI",
+  "version": "3.3.0",
+  "license": "MIT"
+}

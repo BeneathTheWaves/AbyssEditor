@@ -1,15 +1,21 @@
 {
   "dependencies": {
-    "com.judahperez.hsvcolorpicker": {
-      "version": "file:hsvcolorpicker",
+    "com.discord.partnersdk": {
+      "version": "file:../LocalPackages/com.discord.partnersdk",
       "depth": 0,
-      "source": "embedded",
+      "source": "local",
+      "dependencies": {}
+    },
+    "com.judahperez.hsvcolorpicker": {
+      "version": "file:../LocalPackages/hsvcolorpicker",
+      "depth": 0,
+      "source": "local",
       "dependencies": {}
     },
     "com.perfare.assetstudio": {
-      "version": "file:com.perfare.assetstudio",
+      "version": "file:../LocalPackages/com.perfare.assetstudio",
       "depth": 0,
-      "source": "embedded",
+      "source": "local",
       "dependencies": {}
     },
     "com.unity.2d.sprite": {
@@ -217,9 +223,9 @@
       }
     },
     "io.github.gkngkc.unity-standalone-file-browser": {
-      "version": "file:io.github.gkngkc.unity-standalone-file-browser",
+      "version": "file:../LocalPackages/io.github.gkngkc.unity-standalone-file-browser",
       "depth": 0,
-      "source": "embedded",
+      "source": "local",
       "dependencies": {}
     },
     "com.unity.modules.accessibility": {
