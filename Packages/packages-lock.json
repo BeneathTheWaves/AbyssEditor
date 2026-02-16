@@ -1,5 +1,17 @@
 {
   "dependencies": {
+    "com.judahperez.hsvcolorpicker": {
+      "version": "file:hsvcolorpicker",
+      "depth": 0,
+      "source": "embedded",
+      "dependencies": {}
+    },
+    "com.perfare.assetstudio": {
+      "version": "file:com.perfare.assetstudio",
+      "depth": 0,
+      "source": "embedded",
+      "dependencies": {}
+    },
     "com.unity.2d.sprite": {
       "version": "1.0.0",
       "depth": 0,
@@ -203,6 +215,12 @@
         "com.unity.modules.ui": "1.0.0",
         "com.unity.modules.imgui": "1.0.0"
       }
+    },
+    "io.github.gkngkc.unity-standalone-file-browser": {
+      "version": "file:io.github.gkngkc.unity-standalone-file-browser",
+      "depth": 0,
+      "source": "embedded",
+      "dependencies": {}
     },
     "com.unity.modules.accessibility": {
       "version": "1.0.0",
