@@ -180,7 +180,7 @@ namespace AbyssEditor.Scripts {
                 statusHandle.SetStatus($"Reading patched {batchIndex}");
                 currentBatchIndex++;
                 
-                yield return ReadBatchCoroutine(container.Callback, batchIndex, true, true);
+                yield return ReadBatchCoroutine(container.Callback, batchIndex, allowModded: false, generateEmpty: true);
                 
                 Octree[,,] batchOctrees = container.nodes;
                 RasterDeRasterizeBatch(tempDensities, tempTypes, batchOctrees);
