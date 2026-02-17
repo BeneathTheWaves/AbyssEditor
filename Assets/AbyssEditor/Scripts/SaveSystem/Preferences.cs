@@ -35,6 +35,7 @@ namespace AbyssEditor.Scripts.SaveSystem
         public string gamePath = "";
         public bool fullscreen = false;
         public bool autoLoadMaterials = true;
+        public bool discordRPC = true;
     }
     
     public class Preferences : MonoBehaviour

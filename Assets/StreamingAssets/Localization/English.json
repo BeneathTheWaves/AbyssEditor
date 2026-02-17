@@ -64,6 +64,7 @@
   "FileBrowserTip": "Select a Subnautica or Below Zero game folder.",
   "EnableFullscreen": "Enable Fullscreen",
   "AutoLoadMats": "Auto Load Materials",
+  "DiscordRPC": "Discord RPC (Requires Restart)",
   
   //Materials
   "MaterialsTitle": "Materials",

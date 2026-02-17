@@ -7,15 +7,19 @@ using UnityEngine.UI;
 namespace AbyssEditor.Scripts.UI.Windows {
     public class UISettingsWindow : UIWindow
     {
-        public TextMeshProUGUI gamePathText;
-        public Toggle fullscreenToggleButton;
-        public Toggle autoLoadMaterialsToggleButton;
+        [SerializeField] private TextMeshProUGUI gamePathText;
+        [SerializeField] private Toggle fullscreenToggleButton;
+        [SerializeField] private Toggle autoLoadMaterialsToggleButton;
+        [SerializeField] private Toggle discordRPCToggleButton;
+
         
         private void Start()
         {
-            fullscreenToggleButton.isOn = Preferences.data.fullscreen;
+            fullscreenToggleButton.SetIsOnWithoutNotify(Preferences.data.fullscreen);
             
-            autoLoadMaterialsToggleButton.isOn = Preferences.data.autoLoadMaterials;
+            autoLoadMaterialsToggleButton.SetIsOnWithoutNotify(Preferences.data.autoLoadMaterials);
+
+            discordRPCToggleButton.SetIsOnWithoutNotify(Preferences.data.discordRPC);
         }
 
         public void BrowseGamePath() {
@@ -47,6 +51,12 @@ namespace AbyssEditor.Scripts.UI.Windows {
         public void OnAutoLoadMaterialsToggle(bool value)
         {
             Preferences.data.autoLoadMaterials = value;
+            Preferences.SavePreferences();
+        }
+
+        public void OnDiscordRPCToggle(bool value)
+        {
+            Preferences.data.discordRPC = value;
             Preferences.SavePreferences();
         }
     }

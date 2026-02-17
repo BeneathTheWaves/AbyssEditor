@@ -1,6 +1,7 @@
 using System;
 using AbyssEditor.Scripts.Essentials;
 using AbyssEditor.Scripts.VoxelTech;
+using AbyssEditor.Scripts.SaveSystem;
 using DiscordRPC;
 using DiscordRPC.Message;
 using UnityEngine;
@@ -15,6 +16,10 @@ namespace AbyssEditor.Scripts.DiscordRPC
 
         private void Awake()
         {
+            if(!Preferences.data.discordRPC){
+                Destroy(this.gameObject);//Just delete the component off of this
+            }
+
             client = new DiscordRpcClient(DISCORD_APP_ID);
             client.OnReady += (sender, readyMessage) => OnClientReady(readyMessage); 
         }
