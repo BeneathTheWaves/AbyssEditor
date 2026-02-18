@@ -6,6 +6,6 @@
     "url": "https://github.com/shiena/UnityStandaloneFileBrowser"
   },
   "description": "A simple wrapper for native file dialogs on Windows/Mac/Linux.",
-  "version": "1.2",
+  "version": "1.2.0",
   "license": "MIT"
 }
