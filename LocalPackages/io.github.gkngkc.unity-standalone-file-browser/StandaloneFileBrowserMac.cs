@@ -1,9 +1,9 @@
-#if UNITY_STANDALONE_OSX
+#if UNITY_STANDALONE_OSX || UNITY_EDITOR_OSX
 
 using System;
 using System.Runtime.InteropServices;
 
-namespace SFB {
+namespace StandaloneFileBrowser {
     public class StandaloneFileBrowserMac : IStandaloneFileBrowser {
         private static Action<string[]> _openFileCb;
         private static Action<string[]> _openFolderCb;
