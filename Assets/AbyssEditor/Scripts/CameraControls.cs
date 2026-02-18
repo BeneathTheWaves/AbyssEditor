@@ -74,7 +74,7 @@ namespace AbyssEditor.Scripts
             if (HoldingRMB)
                 UpdateInput();
             
-            HoldingRMB = Input.GetMouseButton(1);
+            HoldingRMB = input.ActivateFreeCam.IsPressed();
 
             // Physics
             velocity = Vector3.Lerp(velocity, Vector3.zero, dampingCoefficient * Time.deltaTime);
