@@ -6,7 +6,6 @@ using UnityEngine;
 namespace AbyssEditor.Scripts.Octrees {
     [System.Serializable]
     public class Octree {
-        
         public Vector3Int index;
         OctNode node;
         public int MaxDepth {
