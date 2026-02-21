@@ -99,13 +99,16 @@ namespace AbyssEditor.Scripts.VoxelTech {
             {
                 pointContainer.UpdateNeighborData();
             }
+            double elapsedMs2 = (double)sw.ElapsedTicks / System.Diagnostics.Stopwatch.Frequency * 1000.0;
+            DebugOverlay.LogMessage($"Neighbor Copy took {elapsedMs2:F4}ms");
             
+            sw.Restart();
             foreach(PointContainer pointContainer in modifiedContainers) {
                 pointContainer.UpdateMesh();
             }
             sw.Stop();
             double elapsedMs3 = (double)sw.ElapsedTicks / System.Diagnostics.Stopwatch.Frequency * 1000.0;
-            DebugOverlay.LogMessage($"Neighbor Copy/Mesh Rebuild took {elapsedMs3:F4}ms");
+            DebugOverlay.LogMessage($"Mesh Rebuild took {elapsedMs3:F4}ms");
         }
 
         public IEnumerator RegionReadCoroutine(bool allowModded, Vector3Int startBatch, Vector3Int endBatch, EditorProcessHandle statusHandle = null) {

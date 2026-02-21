@@ -1,14 +1,21 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using AbyssEditor.Scripts.UI;
 using AbyssEditor.Scripts.VoxelTech;
 using AbyssEditor.Scripts.VoxelTech.VoxelGrids;
 using Unity.Collections;
 using UnityEngine;
+using UnityEngine.Assertions.Must;
 using UnityEngine.Rendering;
 namespace AbyssEditor.Scripts.Mesh_Gen {
     public class MeshBuilder : MonoBehaviour {
         public static MeshBuilder builder;
+        
+        private const int MAX_ADJACENT_FACES = 24;
+        
+        private const int SUBMESH_BLOCK_TYPES_CAPACITY = 20;
+        private const int SUBMESH_QUAD_FACE_CAPACITY = 5000;
         
         // Compute stuff
         [SerializeField] private ComputeShader shader;
@@ -16,18 +23,25 @@ namespace AbyssEditor.Scripts.Mesh_Gen {
         private ComputeBuffer faceBuffer; 
         private ComputeBuffer triCountBuffer;
         
-        //TODO: Setup pools so multiple mesh gens can run at once
+        //Pooling/reusing arrays
         private uint[] packed;//Used for passing to the shader with greater efficiency
         private VoxelVertex[] verticesOfNodes;
         private readonly List<Vector3> vertices = new(10000);
+        private Dictionary<int, QuadFaceGroup> submeshFaces;
+        private readonly Stack<QuadFaceGroup> faceGroupPool = new();
         
         public void Awake() {
             builder = this;
+            
+            //Initialize vertices arrays, so we don't allocate in mesh building
             verticesOfNodes = new VoxelVertex[VoxelGrid.GRID_FULL_SIDE * VoxelGrid.GRID_FULL_SIDE * VoxelGrid.GRID_FULL_SIDE];
             for (int i = 0; i < verticesOfNodes.Length; i++)
             {
-                verticesOfNodes[i].adjFaces = new Face[VoxelVertex.MAX_ADJACENT_FACES];
+                verticesOfNodes[i] = new VoxelVertex(MAX_ADJACENT_FACES);
             }
+            
+            //Initialize SubMesh arrays, so we don't allocate in mesh building
+            submeshFaces = new Dictionary<int, QuadFaceGroup>(SUBMESH_BLOCK_TYPES_CAPACITY);
         }
 
         void OnDestroy() {
@@ -51,7 +65,7 @@ namespace AbyssEditor.Scripts.Mesh_Gen {
 
                 ReleaseBuffers();
                 voxelBuffer = new ComputeBuffer(numPoints, sizeof(uint));
-                faceBuffer = new ComputeBuffer (maxFaceCount, Face.GetStride(), ComputeBufferType.Append);
+                faceBuffer = new ComputeBuffer (maxFaceCount, QuadFace.GetStride(), ComputeBufferType.Append);
                 triCountBuffer = new ComputeBuffer (1, sizeof (int), ComputeBufferType.Raw);
                 packed = new uint[numPoints];
             }
@@ -62,13 +76,11 @@ namespace AbyssEditor.Scripts.Mesh_Gen {
                 faceBuffer.Release();
                 faceBuffer = null;
             }
-
             if (voxelBuffer != null)
             {
                 voxelBuffer.Release();
                 voxelBuffer = null;
             }
-
             if (triCountBuffer != null) {
                 triCountBuffer.Release();
                 triCountBuffer = null;
@@ -102,69 +114,54 @@ namespace AbyssEditor.Scripts.Mesh_Gen {
             shader.Dispatch (kernel, numThreads, numThreads, numThreads);
 
             // Retrieving data from shader
-
             ComputeBuffer.CopyCount (faceBuffer, triCountBuffer, 0);
             int[] triCountArray = new int[1];
             triCountBuffer.GetData (triCountArray);
             int numFaces = triCountArray[0];
 
-            Face[] faces = new Face[numFaces];
+            QuadFace[] faces = new QuadFace[numFaces];
 
             faceBuffer.GetData (faces, 0, 0, numFaces);
+            
 
             return MakeMeshes(faces, resolution, offset, out blocktypes);
         } 
 
-        Mesh MakeMeshes(Face[] faces, Vector3Int resolution, Vector3 offset, out int[] blocktypes) {
+        Mesh MakeMeshes(QuadFace[] faces, Vector3Int resolution, Vector3 offset, out int[] blocktypes) {
+            // Reset arrays without new allocations
+            for (int i = 0; i < verticesOfNodes.Length; i++)
+            {
+                verticesOfNodes[i].ResetDataNoAlloc();
+            }
+            vertices.Clear();
+            //NOTE: the submeshfaces dictionary is reset as we go later
+            
+            //Get the types within the mesh
+            for(int i = 0; i < faces.Length; i++) {
+                if (!submeshFaces.TryGetValue(faces[i].type, out QuadFaceGroup value)) {
+                    QuadFaceGroup faceGroup = GetPooledQuadFaceGroup();
+                    
+                    faceGroup.ResetDataNoAlloc();
+                    submeshFaces.Add(faces[i].type, faceGroup);
+                    faceGroup.AddFace(ref faces[i]);
+                    continue;
+                }
+                value!.AddFace(ref faces[i]);
+            }
+            blocktypes = submeshFaces.Keys.ToArray();
             
             System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch();
             sw.Start();
-            // calculate vertex positions
-            for (int i = 0; i < verticesOfNodes.Length; i++)
-            {
-                verticesOfNodes[i].ResetVertexDataNoAlloc();
-            }
-            vertices.Clear();
+            //Get mesh Vertices
+            //Note, this stores the vertices in "vertices", so we don't do a copy out
+            GetMeshVertices(blocktypes, resolution, ref offset);
 
-            //Get the types within the mesh
-            Dictionary<int, List<Face>> submeshFaces = new Dictionary<int, List<Face>>();
-            foreach (Face face in faces) {
-                if (!submeshFaces.TryGetValue(face.type, out var value)) {
-                    value = new List<Face>();
-                    submeshFaces.Add(face.type, value);
-                }
-                value.Add(face);
-            }
 
-            blocktypes = submeshFaces.Keys.ToArray();
-
-            Vector3 vertexOffsetSum = Vector3.one * -0.5f + offset;
-            float scaleFactor = Mathf.Pow(2, VoxelWorld.LEVEL_OF_DETAIL);
-            foreach (int blocktype in blocktypes) {
-                foreach (Face meshFace in submeshFaces[blocktype]) {
-                    for (int v = 0; v < 4; v++) {
-                        Vector3 dcCube = meshFace[v];
-                        if (dcCube.x >= 0 && dcCube.x < resolution.x && dcCube.y >= 0 && dcCube.y < resolution.y && dcCube.z >= 0 && dcCube.z < resolution.z) {
-                            int i = Globals.LinearIndex((int)dcCube.x, (int)dcCube.y, (int)dcCube.z, resolution);
-                            verticesOfNodes[i].AddNeighborFace(meshFace);
-                            verticesOfNodes[i].isSet = true;
-                            verticesOfNodes[i].addedToVertexArray = false;
-                        }
-                    }
-                }
-
-                for (int i = 0; i < verticesOfNodes.Length; i++) { 
-                    if (verticesOfNodes[i].isSet && !verticesOfNodes[i].addedToVertexArray) {
-                        verticesOfNodes[i].addedToVertexArray = true;
-                        verticesOfNodes[i].vertIndex = vertices.Count;
-                        vertices.Add((verticesOfNodes[i].ComputePos() + vertexOffsetSum) * scaleFactor);
-                    }
-                }
-            }
+            sw.Stop();
+            double elapsedMs = (double)sw.ElapsedTicks / System.Diagnostics.Stopwatch.Frequency * 1000.0;
+            DebugOverlay.LogMessage($"Gen verts: {elapsedMs:F4}ms");
 
             int submeshCount = blocktypes.Length;
-            int nextStart = 0;
-
             Mesh mesh = new Mesh();
             mesh.subMeshCount = submeshCount;
             
@@ -182,23 +179,26 @@ namespace AbyssEditor.Scripts.Mesh_Gen {
                 mesh.vertices = vertices.ToArray();
             }
             
+            int nextStart = 0;
             for (int k = 0; k < blocktypes.Length; k++) {
                 
-                int blocktype = blocktypes[k];
+                ref int blocktype = ref blocktypes[k];
                 int submeshStart = nextStart;
                 int countIndexes = 0;
                 List<int> submeshIndexes = new List<int>();
                 int basevertex = 0;
 
-                for (int i = 0; i < submeshFaces[blocktype].Count; i++) {
-                    Face faceNow = submeshFaces[blocktype][i];
-                    if (!faceNow.IsPartOfMesh(resolution.x)) continue;
+                QuadFaceGroup faceGroup = submeshFaces[blocktype];
+                
+                for (int i = 0; i < faceGroup.faceCount; i++) {
+                    ref QuadFace quadFaceNow = ref faceGroup.faces[i];
+                    if (!quadFaceNow.IsPartOfMesh(resolution.x)) continue;
 
                     int[] vertIndices = {
-                        Globals.LinearIndex((int)faceNow[0].x, (int)faceNow[0].y, (int)faceNow[0].z, resolution),
-                        Globals.LinearIndex((int)faceNow[1].x, (int)faceNow[1].y, (int)faceNow[1].z, resolution),
-                        Globals.LinearIndex((int)faceNow[2].x, (int)faceNow[2].y, (int)faceNow[2].z, resolution),
-                        Globals.LinearIndex((int)faceNow[3].x, (int)faceNow[3].y, (int)faceNow[3].z, resolution)
+                        Globals.LinearIndex((int)quadFaceNow[0].x, (int)quadFaceNow[0].y, (int)quadFaceNow[0].z, resolution),
+                        Globals.LinearIndex((int)quadFaceNow[1].x, (int)quadFaceNow[1].y, (int)quadFaceNow[1].z, resolution),
+                        Globals.LinearIndex((int)quadFaceNow[2].x, (int)quadFaceNow[2].y, (int)quadFaceNow[2].z, resolution),
+                        Globals.LinearIndex((int)quadFaceNow[3].x, (int)quadFaceNow[3].y, (int)quadFaceNow[3].z, resolution)
                     };
                     
                     // A, B, C, D
@@ -217,6 +217,9 @@ namespace AbyssEditor.Scripts.Mesh_Gen {
                 mesh.SetIndices(submeshIndexes.ToArray(), MeshTopology.Quads, k, false);
                 mesh.SetSubMesh(k, new SubMeshDescriptor(submeshStart, countIndexes, MeshTopology.Quads));
                 nextStart += countIndexes;
+                
+                submeshFaces.Remove(blocktype, out QuadFaceGroup group);
+                ReturnQuadFaceGroupToPool(group);
             }
 
             mesh.RecalculateNormals();
@@ -224,8 +227,88 @@ namespace AbyssEditor.Scripts.Mesh_Gen {
             
             return mesh;
         }
+        private void GetMeshVertices(int[] blocktypes, Vector3Int resolution, ref Vector3 offset)
+        {
+            Vector3 vertexOffsetSum = Vector3.one * -0.5f + offset;
+            float scaleFactor = Mathf.Pow(2, VoxelWorld.LEVEL_OF_DETAIL);
+            
+            for (int blockTypeIndex = 0; blockTypeIndex < blocktypes.Length; blockTypeIndex++) {
+                ref int blockType = ref blocktypes[blockTypeIndex];
+                QuadFaceGroup meshFaceGroup = submeshFaces[blockType];
+                
+                for(int i = 0; i < meshFaceGroup.faceCount; i++)
+                {
+                    ref QuadFace meshFace = ref meshFaceGroup.faces[i];
 
-        struct Face : IComparable {
+                    checkVert(ref meshFace, ref meshFace.a);
+                    checkVert(ref meshFace, ref meshFace.b);
+                    checkVert(ref meshFace, ref meshFace.c);
+                    checkVert(ref meshFace, ref meshFace.d);
+                    
+                    void checkVert(ref QuadFace meshFace, ref Vector3 dcCube)
+                    {
+                        if (dcCube.x >= 0 && dcCube.x < resolution.x && dcCube.y >= 0 && dcCube.y < resolution.y && dcCube.z >= 0 && dcCube.z < resolution.z) {
+                            int voxelIndex = Globals.LinearIndex((int)dcCube.x, (int)dcCube.y, (int)dcCube.z, resolution);
+                            ref VoxelVertex voxelVert = ref verticesOfNodes[voxelIndex];
+                            voxelVert.AddNeighborFace(ref meshFace);
+                            voxelVert.isSet = true;
+                            voxelVert.addedToVertexArray = false;
+                        }
+                    }
+                }
+
+                for (int i = 0; i < verticesOfNodes.Length; i++) { 
+                    ref VoxelVertex voxelVertex = ref verticesOfNodes[i];
+                    
+                    if (!voxelVertex.isSet || voxelVertex.addedToVertexArray) continue;
+                    
+                    voxelVertex.addedToVertexArray = true;
+                    voxelVertex.vertIndex = vertices.Count;
+                    vertices.Add((voxelVertex.ComputePos() + vertexOffsetSum) * scaleFactor);
+                }
+            }
+        }
+
+        private QuadFaceGroup GetPooledQuadFaceGroup()
+        {
+            if (faceGroupPool.Count == 0)
+            {
+                return new QuadFaceGroup(SUBMESH_QUAD_FACE_CAPACITY);
+            }
+            return faceGroupPool.Pop();
+        }
+
+        private void ReturnQuadFaceGroupToPool(QuadFaceGroup faceGroup)
+        {
+            faceGroupPool.Push(faceGroup);
+        }
+        
+        
+        private class QuadFaceGroup
+        {
+            public readonly QuadFace[] faces;
+            public int faceCount;
+
+            public QuadFaceGroup(int faceCountCapacity)
+            {
+                faces = new QuadFace[faceCountCapacity];
+                faceCount = 0;
+            }
+
+            public void AddFace(ref QuadFace face)
+            {
+                faces[faceCount] = face;
+                faceCount++;
+            }
+            
+
+            public void ResetDataNoAlloc()
+            {
+                faceCount = 0;
+            }
+        }
+
+        private  struct QuadFace : IComparable {
             public Vector3 a, b, c, d;
             public Vector3 surfaceIntersection;
             public int type;
@@ -260,23 +343,30 @@ namespace AbyssEditor.Scripts.Mesh_Gen {
 
             public int CompareTo(object obj)
             {
-                if (obj is Face) {
-                    if (type == ((Face)obj).type) return 0;
-                    return type > ((Face)obj).type ? -1 : 1;
+                if (obj is QuadFace) {
+                    if (type == ((QuadFace)obj).type) return 0;
+                    return type > ((QuadFace)obj).type ? -1 : 1;
                 }
                 return -1;
             }
         }
 
-        struct VoxelVertex {
-            public const int MAX_ADJACENT_FACES = 24;
-            
-            public Face[] adjFaces;
-            public int adjCount;
+        private struct VoxelVertex {
+            private readonly QuadFace[] adjFaces;
+            private int adjCount;
             
             public int vertIndex;
             public bool isSet;
             public bool addedToVertexArray;
+
+            public VoxelVertex(int adjFacesCapacity)
+            {
+                adjFaces = new QuadFace[adjFacesCapacity];
+                adjCount = 0;
+                vertIndex = 0;
+                isSet = false;
+                addedToVertexArray = false;
+            }
             
             public Vector3 ComputePos() {
 
@@ -291,13 +381,12 @@ namespace AbyssEditor.Scripts.Mesh_Gen {
                 return res / count;
             }
 
-            public void AddNeighborFace(Face _face) {
-                adjFaces[adjCount] = _face;
+            public void AddNeighborFace(ref QuadFace _quadFace) {
+                adjFaces[adjCount] = _quadFace;
                 adjCount++;
-                
             }
 
-            public void ResetVertexDataNoAlloc()
+            public void ResetDataNoAlloc()
             {
                 addedToVertexArray = false;
                 isSet = false;
