@@ -167,7 +167,20 @@ namespace AbyssEditor.Scripts.Mesh_Gen {
 
             Mesh mesh = new Mesh();
             mesh.subMeshCount = submeshCount;
-            mesh.vertices = vertices.ToArray();
+            
+            //Check if the vertices array can be reused, don't allocate a new one if so
+            if (vertices.Count <= mesh.vertices.Length)
+            {
+                for(int i = 0; i < mesh.vertices.Length; i++)
+                {
+                    mesh.vertices[i] = vertices[i];
+                }
+                mesh.RecalculateBounds();
+            }
+            else
+            {
+                mesh.vertices = vertices.ToArray();
+            }
             
             for (int k = 0; k < blocktypes.Length; k++) {
                 
