@@ -150,16 +150,9 @@ namespace AbyssEditor.Scripts.Mesh_Gen {
             }
             blocktypes = submeshFaces.Keys.ToArray();
             
-            System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch();
-            sw.Start();
             //Get mesh Vertices
             //Note, this stores the vertices in "vertices", so we don't do a copy out
             GetMeshVertices(blocktypes, resolution, ref offset);
-
-
-            sw.Stop();
-            double elapsedMs = (double)sw.ElapsedTicks / System.Diagnostics.Stopwatch.Frequency * 1000.0;
-            DebugOverlay.LogMessage($"Gen verts: {elapsedMs:F4}ms");
 
             int submeshCount = blocktypes.Length;
             Mesh mesh = new Mesh();
