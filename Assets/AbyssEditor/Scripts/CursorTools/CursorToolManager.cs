@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using AbyssEditor.Scripts.CursorTools.Brush;
-using AbyssEditor.Scripts.UI.HotBar;
 using AbyssEditor.Scripts.UI.HotBar.HotBarButtons;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -10,16 +9,16 @@ namespace AbyssEditor.Scripts.CursorTools
     public class CursorToolManager : MonoBehaviour
     {
         public static CursorToolManager main;
-        
+
         public BrushTool brushTool { get; private set; }
         public RemoveBatchTool batchRemoveTool { get; private set; }
 
         private readonly HashSet<ICursorTool> tools = new();
-        
+
         private readonly HashSet<MonoBehaviour> inputBlockingScripts = new();
 
         private ICursorTool activeTool;
-        
+
         private void Awake()
         {
             main = this;
@@ -42,13 +41,13 @@ namespace AbyssEditor.Scripts.CursorTools
                 activeTool = tools.OfType<T>().First();
             }
         }
-        
+
         public void Enable<T>() where T : ICursorTool
         {
             DisableOldToolSafe<T>();
             activeTool?.EnableTool();
         }
-        
+
         public void Enable<T>(HotBarButton hotBarButton) where T : ICursorTool
         {
             DisableOldToolSafe<T>();
@@ -72,9 +71,9 @@ namespace AbyssEditor.Scripts.CursorTools
         }
 
         private bool IsInputBlocked() => IsMouseOverUI() || HadBlockingScripts();
-        
-        private bool IsMouseOverUI() => EventSystem.current.IsPointerOverGameObject();
 
+        private bool IsMouseOverUI() => EventSystem.current.IsPointerOverGameObject();
+        
         private bool HadBlockingScripts() => inputBlockingScripts.Count > 0;
     }
 }

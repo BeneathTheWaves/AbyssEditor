@@ -119,12 +119,13 @@ namespace AbyssEditor.Scripts.VoxelTech {
                 DebugOverlay.LogMessage($"Neighbor Copy took {elapsedMs2:F4}ms");
                 sw.Restart();
             }
-            sw.Restart();
 
             foreach (var container in modifiedContainers)
             {
                 _ = container.UpdateMeshAsync();
             }
+
+            if (sw == null) return;
             
             sw.Stop();
             double elapsedMs3 = (double)sw.ElapsedTicks / System.Diagnostics.Stopwatch.Frequency * 1000.0;
