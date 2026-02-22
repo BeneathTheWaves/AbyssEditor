@@ -125,6 +125,7 @@ namespace AbyssEditor.Scripts {
             return fileName;
         }
 
+        //TODO: ensure this works still :/. After updating octrees being generated from scratch
         public static bool WriteOptoctrees(Vector3 batchIndex, Octree[,,] octrees)
         {
             string batchname = string.Format(Path.DirectorySeparatorChar + "compiled-batch-{0}-{1}-{2}.optoctrees", batchIndex.x, batchIndex.y, batchIndex.z);
@@ -215,7 +216,6 @@ namespace AbyssEditor.Scripts {
                 }
 
                 modifiedBatches.Add(batchIndex, batchOctrees);
-                //Debug.Log($"Patched batch {batchIndex}");
             }
 
             tempTypes.Dispose();
@@ -227,7 +227,7 @@ namespace AbyssEditor.Scripts {
 
         public static IEnumerator WriteOctreePatchCoroutine(VoxelMetaspace metaspace, EditorProcessHandle statusHandle = null)
         {
-            if (statusHandle == null) statusHandle = TaskManager.main.GetEditorProcessHandle(2);
+            if (statusHandle == null) statusHandle = TaskManager.main.GetEditorProcessHandle(1);
             
             DebugOverlay.LogMessage($"Writing {metaspace.meshes.Count} batch patches as {Globals.instance.batchOutputPath}");
 
@@ -237,15 +237,6 @@ namespace AbyssEditor.Scripts {
 
             int meshCount = metaspace.meshes.Count;
             int meshIndex = 0;
-            foreach (VoxelMesh batch in metaspace.meshes)
-            {
-                statusHandle.SetProgress((float)meshIndex / meshCount);
-                statusHandle.SetStatus($"Generating Octree {batch.batchIndex}");
-                batch.UpdateOctreeDensity();
-                yield return null;
-                meshIndex++;
-            }
-            statusHandle.CompletePhase();
 
             //we will reuse this array for each grid over and over since they are the same size.
             int res = VoxelWorld.RESOLUTION;
@@ -256,11 +247,12 @@ namespace AbyssEditor.Scripts {
             foreach (VoxelMesh batch in metaspace.meshes)
             {
                 statusHandle.SetProgress((float)meshIndex / meshCount);
-                statusHandle.SetStatus($"Writing patch {batch.batchIndex}");
+                statusHandle.SetStatus($"Generating octrees for {batch.batchIndex}");
+                Octree[,,] nodes = batch.ConvertGridsToOctree();
                 
-                Octree[,,] nodes = batch.nodes;
                 // load original nodes from file?
                 NodeContainer container = new NodeContainer();
+                statusHandle.SetStatus($"Loading old octrees for {batch.batchIndex}");
                 yield return ReadBatchCoroutine(container.Callback, batch.batchIndex, false, false);
                 Octree[,,] originalNodes = container.nodes;
 

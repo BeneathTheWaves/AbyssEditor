@@ -12,8 +12,6 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelMesh
     public class VoxelMesh : MonoBehaviour
     {
         internal PointContainer[] pointContainers;
-        public bool pointContainersLoaded = false;
-        public Octree[,,] nodes;
         public Vector3Int batchIndex;
         public Vector3Int octreeCounts;
 
@@ -57,18 +55,16 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelMesh
 
         public bool OctreesReadCallback(Octree[,,] _nodes)
         {
-            nodes = _nodes;
             for (int z = 0; z < octreeCounts.z; z++)
             {
                 for (int y = 0; y < octreeCounts.y; y++)
                 {
                     for (int x = 0; x < octreeCounts.x; x++)
                     {
-                        pointContainers[Globals.LinearIndex(x, y, z, octreeCounts)].SetOctree(nodes[z, y, x]);
+                        pointContainers[Globals.LinearIndex(x, y, z, octreeCounts)].SetOctree(_nodes[z, y, x]);
                     }
                 }
             }
-            pointContainersLoaded = true;
             return true;
         }
 
@@ -102,7 +98,7 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelMesh
             }
         }
 
-        public void Write() => BatchReadWriter.WriteOptoctrees(batchIndex, nodes);
+        public void Write() => BatchReadWriter.WriteOptoctrees(batchIndex, ConvertGridsToOctree());//TODO: Check if this works, not tested atm :/
 
         public void ApplyJobBasedDensityFunction(BrushStroke stroke, List<BrushJob> brushActions, List<PointContainer> modifiedContainers)
         {
@@ -117,19 +113,30 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelMesh
             }
         }
 
-        public void UpdateOctreeDensity()
+        public Octree[,,] ConvertGridsToOctree()
         {
+            Octree[,,] nodes = new Octree[VoxelWorld.CONTAINERS_PER_SIDE, VoxelWorld.CONTAINERS_PER_SIDE, VoxelWorld.CONTAINERS_PER_SIDE];
+            
             for (int z = 0; z < 5; z++)
             {
                 for (int y = 0; y < 5; y++)
                 {
                     for (int x = 0; x < 5; x++)
                     {
+                        ref Octree tree = ref nodes[z, y, x];
+                        tree = new Octree(x, y, z, VoxelWorld.OCTREE_WIDTH, batchIndex * VoxelWorld.BATCH_WIDTH);
+                        
+                        OctNodeData[] nodeData = new OctNodeData[1];
+                        nodeData[0] = new OctNodeData();
+                        
+                        tree.Write(nodeData);
+                        
                         PointContainer _container = pointContainers[Globals.LinearIndex(x, y, z, octreeCounts)];
-                        nodes[z, y, x].DeRasterizeGrid(_container.grid.densityGrid, _container.grid.typeGrid, VoxelGrid.GRID_PADDING, 5 - VoxelWorld.LEVEL_OF_DETAIL);
+                        tree.DeRasterizeGrid(_container.grid.densityGrid, _container.grid.typeGrid, VoxelGrid.GRID_PADDING, 5 - VoxelWorld.LEVEL_OF_DETAIL);
                     }
                 }
             }
+            return nodes;
         }
 
         /// <summary>
