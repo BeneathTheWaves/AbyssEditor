@@ -69,11 +69,11 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelGrids {
                     for (int z = -1; z <= 1; z++)
                     {
                         Vector3Int sampleVoxel = new Vector3Int(x, y, z);
-                        ParseSample(ref sampleVoxel);
+                        ParseSampleVoxel(ref sampleVoxel);
                     }
                 }
             }
-            void ParseSample(ref Vector3Int sampleVoxel)
+            void ParseSampleVoxel(ref Vector3Int sampleVoxel)
             {
                 int neighborGridCacheIndex = (sampleVoxel.x + 1) + (sampleVoxel.y + 1) * 3 + (sampleVoxel.z + 1) * 9;
                         
@@ -112,11 +112,7 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelGrids {
             Vector3Int neighbourGridOffset = NeighbourGridOffsetFromPaddedVoxel(ref voxel);
 
             //Cache is offset by 1 bc indexes cant be negative :/
-            int cacheX = neighbourGridOffset.x + 1;
-            int cacheY = neighbourGridOffset.y + 1;
-            int cacheZ = neighbourGridOffset.z + 1;
-            
-            VoxelGrid neighborGrid = neighboringGrids[cacheX + cacheY * 3 + cacheZ * 9];
+            VoxelGrid neighborGrid = neighboringGrids[(neighbourGridOffset.x + 1) + (neighbourGridOffset.y + 1) * 3 + (neighbourGridOffset.z + 1) * 9];
             if (neighborGrid == null)
             {
                 SetVoxel(densityGrid, ref voxel, 0);
