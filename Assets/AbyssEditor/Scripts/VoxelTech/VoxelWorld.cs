@@ -11,21 +11,20 @@ namespace AbyssEditor.Scripts.VoxelTech {
     public class VoxelWorld : MonoBehaviour {
         // constants
         // LOD. 0-5 lod => 32-1 resolution
-        public static int LEVEL_OF_DETAIL = 0;
+        public const int LEVEL_OF_DETAIL = 0;
         // this defines the in-game size of the meshes
         public const int OCTREE_WIDTH = 32;
         // this is the 'resolution' but for batches
         public const int CONTAINERS_PER_SIDE = 5;
-
-        public static int BATCH_WIDTH => OCTREE_WIDTH * CONTAINERS_PER_SIDE;
-        
-        // This defines the count of voxels (count = resolution^3)
-        public static int RESOLUTION => (int)Mathf.Pow(2, 5 - LEVEL_OF_DETAIL);
+        //the length/width/height of a batch in meters
+        public const int BATCH_WIDTH = 160;
+        // This defines the count of voxels (count = resolution^3) in a grid
+        public const int RESOLUTION = 32;//(int)Mathf.Pow(2, 5 - LEVEL_OF_DETAIL);
         
         public static VoxelWorld world;
         public static event Action OnRegionExported;
-
-        // Mono methods
+        
+        
         void Awake() {
             world = this;
         }
