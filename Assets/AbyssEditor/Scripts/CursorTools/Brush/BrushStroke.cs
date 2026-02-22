@@ -10,7 +10,7 @@ namespace AbyssEditor.Scripts.CursorTools.Brush
         public int strokeLength;
         float lastBrushTime;
         
-        private const float BRUSH_ACTION_PERIOD = 1.0f;
+        private const float BRUSH_ACTION_PERIOD = .5f;
 
         // Stroke frequency increases with more strokes
         public void FirstStroke(Vector3 _position, float _radius, float _strength, BrushMode _mode) {
