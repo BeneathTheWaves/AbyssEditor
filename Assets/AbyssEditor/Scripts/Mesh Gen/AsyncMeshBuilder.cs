@@ -12,7 +12,8 @@ namespace AbyssEditor.Scripts.Mesh_Gen
     public class AsyncMeshBuilder
     {
         public static AsyncMeshBuilder builder;
-        
+        public bool isBuildingMeshes => activeWorkerCount > 0;
+
         private const int WORKER_COUNT = 16;
         private int activeWorkerCount;
         
