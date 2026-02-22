@@ -12,6 +12,8 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelMesh
 {
     public class PointContainer
     {
+        public static int MeshesUpdatingCounter = 0;
+        
         Vector3Int batchIndex;
         Vector3Int octreeIndex;
 
@@ -86,11 +88,13 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelMesh
         
         public async Task UpdateMeshAsync()
         {
-            grid.GetFullGrids(out NativeArray<byte> _tempDensities, out NativeArray<byte> _tempTypes);
+            MeshesUpdatingCounter++;
+            
+            grid.GetFullGrids(out NativeArray<byte> gridDensity, out NativeArray<byte> gridType);
             
             Vector3 offset = octreeIndex * VoxelWorld.RESOLUTION;
             
-            AsyncMeshBuilder.MeshResult meshRequest = await AsyncMeshBuilder.builder.RequestMesh(_tempDensities, _tempTypes, grid.fullGridDim, offset);
+            AsyncMeshBuilder.MeshResult meshRequest = await AsyncMeshBuilder.builder.RequestMesh(gridDensity, gridType, grid.fullGridDim, offset);
             
             Mesh mesh = meshRequest.mesh;
             int[] blocktypes = meshRequest.blockTypes;
@@ -115,6 +119,7 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelMesh
                 meshFilter.mesh = null;
                 meshCollider.sharedMesh = null;
             }
+            MeshesUpdatingCounter--;
         }
 
         public void UpdateNeighborData()

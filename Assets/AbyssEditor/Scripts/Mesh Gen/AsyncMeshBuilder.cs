@@ -12,10 +12,8 @@ namespace AbyssEditor.Scripts.Mesh_Gen
     public class AsyncMeshBuilder
     {
         public static AsyncMeshBuilder builder;
-        public bool isBuildingMeshes => activeWorkerCount > 0;
-
+        
         private const int WORKER_COUNT = 16;
-        private int activeWorkerCount;
         
         private readonly BlockingCollection<MeshRequest> queue = new();
         private readonly Thread[] workers = new Thread[WORKER_COUNT];
@@ -69,7 +67,7 @@ namespace AbyssEditor.Scripts.Mesh_Gen
             return new MeshResult(mesh, data.blockTypes);
         }
 
-        
+        //This is the seperate thread,
         private void WorkerLoop()
         {
             var meshBuilder = new MeshBuilder();//each thread gets its own builder
@@ -78,8 +76,7 @@ namespace AbyssEditor.Scripts.Mesh_Gen
             {
                 try
                 {
-                    MeshRequest request = queue.Take(); // may throw if CompleteAdding called
-                    Interlocked.Increment(ref activeWorkerCount);
+                    MeshRequest request = queue.Take(); //NOTE: this does not make it busy wait, it will be awoken when queue has something for it
                     MeshData data = meshBuilder.MakeMeshData(request.faces, request.resolution, request.offset);
                     request.tcs.TrySetResult(data);
 
@@ -90,8 +87,6 @@ namespace AbyssEditor.Scripts.Mesh_Gen
                             Monitor.Wait(meshBuilder);
                         }
                     }
-                    
-                    Interlocked.Decrement(ref activeWorkerCount);
                 }
                 catch (InvalidOperationException)
                 {

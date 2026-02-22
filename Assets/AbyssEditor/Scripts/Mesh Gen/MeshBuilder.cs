@@ -192,7 +192,7 @@ namespace AbyssEditor.Scripts.Mesh_Gen {
     //TODO: Move to seperate file pls
     public class SubMeshIndexGroup
     {
-        public readonly int[] submeshVertsIndexes = new int[40000];
+        public readonly int[] submeshVertsIndexes = new int[70000];
         public int count;
         public void Add(ref int vertIndex)
         {
