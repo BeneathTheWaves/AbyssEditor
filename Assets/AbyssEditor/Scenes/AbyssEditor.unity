@@ -19329,7 +19329,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1959460719}
-  - component: {fileID: 1959460717}
+  - component: {fileID: 1959460720}
   m_Layer: 0
   m_Name: Voxeland Generators
   m_TagString: Untagged
@@ -19337,19 +19337,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1959460717
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1959460716}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ef34e4096eed608468426174617e0712, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  shader: {fileID: 7200000, guid: 55cc4efd8ad4d894eaef642d0589f65d, type: 3}
 --- !u!4 &1959460719
 Transform:
   m_ObjectHideFlags: 0
@@ -19365,6 +19352,19 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1959460720
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1959460716}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 060c05d11b29461bb16427f838f35e85, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: AbyssEditor::AbyssEditor.Scripts.Mesh_Gen.FaceGPUBuilder
+  shader: {fileID: 7200000, guid: 55cc4efd8ad4d894eaef642d0589f65d, type: 3}
 --- !u!1001 &1971492670
 PrefabInstance:
   m_ObjectHideFlags: 0
