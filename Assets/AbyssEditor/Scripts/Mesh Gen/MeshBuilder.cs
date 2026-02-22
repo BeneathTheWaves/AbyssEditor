@@ -11,7 +11,7 @@ using UnityEngine.Rendering;
 namespace AbyssEditor.Scripts.Mesh_Gen {
     public class MeshBuilder : MonoBehaviour {
         public static MeshBuilder builder;
-        
+
         private const int MAX_ADJACENT_FACES = 24;
         
         private const int SUBMESH_BLOCK_TYPES_CAPACITY = 20;
@@ -29,6 +29,7 @@ namespace AbyssEditor.Scripts.Mesh_Gen {
         private readonly List<Vector3> vertices = new(10000);
         private Dictionary<int, QuadFaceGroup> submeshFaces;
         private readonly Stack<QuadFaceGroup> faceGroupPool = new();
+        private readonly List<int> submeshVerts = new(10000);
         
         public void Awake() {
             builder = this;
@@ -103,13 +104,13 @@ namespace AbyssEditor.Scripts.Mesh_Gen {
             faceBuffer.SetCounterValue(0);
 
             int kernel = 0;
-            shader.SetBuffer(kernel, "voxels", voxelBuffer);
-            shader.SetBuffer (kernel, "faces", faceBuffer);
+            shader.SetBuffer(kernel, voxels, voxelBuffer);
+            shader.SetBuffer (kernel, faces1, faceBuffer);
 
-            shader.SetInt ("numPointsX", resolution.x);
-            shader.SetInt ("numPointsY", resolution.y);
-            shader.SetInt ("numPointsZ", resolution.z);
-            shader.SetVector("meshOffset", offset);
+            shader.SetInt (numPointsX, resolution.x);
+            shader.SetInt (numPointsY, resolution.y);
+            shader.SetInt (numPointsZ, resolution.z);
+            shader.SetVector(meshOffset, offset);
             
             shader.Dispatch (kernel, numThreads, numThreads, numThreads);
 
@@ -174,18 +175,14 @@ namespace AbyssEditor.Scripts.Mesh_Gen {
             
             int nextStart = 0;
             for (int k = 0; k < blocktypes.Length; k++) {
-                
+                submeshVerts.Clear();
                 ref int blocktype = ref blocktypes[k];
-                int submeshStart = nextStart;
-                int countIndexes = 0;
-                List<int> submeshIndexes = new List<int>();
-                int basevertex = 0;
-
                 QuadFaceGroup faceGroup = submeshFaces[blocktype];
+                int countIndexes = 0;
                 
                 for (int i = 0; i < faceGroup.faceCount; i++) {
                     ref QuadFace quadFaceNow = ref faceGroup.faces[i];
-                    if (!quadFaceNow.IsPartOfMesh(resolution.x)) continue;
+                    if (!quadFaceNow.IsPartOfMesh()) continue;
 
                     int[] vertIndices = {
                         Globals.LinearIndex((int)quadFaceNow[0].x, (int)quadFaceNow[0].y, (int)quadFaceNow[0].z, resolution),
@@ -195,20 +192,15 @@ namespace AbyssEditor.Scripts.Mesh_Gen {
                     };
                     
                     // A, B, C, D
-                    submeshIndexes.Add(verticesOfNodes[vertIndices[0]].vertIndex);
-                    submeshIndexes.Add(verticesOfNodes[vertIndices[1]].vertIndex);
-                    submeshIndexes.Add(verticesOfNodes[vertIndices[2]].vertIndex);
-                    submeshIndexes.Add(verticesOfNodes[vertIndices[3]].vertIndex);
+                    submeshVerts.Add(verticesOfNodes[vertIndices[0]].vertIndex);
+                    submeshVerts.Add(verticesOfNodes[vertIndices[1]].vertIndex);
+                    submeshVerts.Add(verticesOfNodes[vertIndices[2]].vertIndex);
+                    submeshVerts.Add(verticesOfNodes[vertIndices[3]].vertIndex);
                     countIndexes += 4;
-
-                    basevertex = Math.Min(verticesOfNodes[vertIndices[0]].vertIndex, basevertex);
-                    basevertex = Math.Min(verticesOfNodes[vertIndices[1]].vertIndex, basevertex);
-                    basevertex = Math.Min(verticesOfNodes[vertIndices[2]].vertIndex, basevertex);
-                    basevertex = Math.Min(verticesOfNodes[vertIndices[3]].vertIndex, basevertex);
                 }
                 
-                mesh.SetIndices(submeshIndexes.ToArray(), MeshTopology.Quads, k, false);
-                mesh.SetSubMesh(k, new SubMeshDescriptor(submeshStart, countIndexes, MeshTopology.Quads));
+                mesh.SetIndices(submeshVerts.ToArray(), MeshTopology.Quads, k, false);
+                mesh.SetSubMesh(k, new SubMeshDescriptor(nextStart, countIndexes, MeshTopology.Quads));
                 nextStart += countIndexes;
                 
                 submeshFaces.Remove(blocktype, out QuadFaceGroup group);
@@ -327,11 +319,11 @@ namespace AbyssEditor.Scripts.Mesh_Gen {
                 return sizeof(float) * 3 * 5 + sizeof(int);
             }
 
-            public bool IsPartOfMesh(int side) {
-                return IsVertexPartOfMesh(0, side) && IsVertexPartOfMesh(1, side) && IsVertexPartOfMesh(2, side) && IsVertexPartOfMesh(3, side);
+            public bool IsPartOfMesh() {
+                return IsVertexPartOfMesh(0) && IsVertexPartOfMesh(1) && IsVertexPartOfMesh(2) && IsVertexPartOfMesh(3);
             }
-            bool IsVertexPartOfMesh(int i, int side) {
-                return this[i].x > 0 && this[i].y > 0 && this[i].z > 0 && this[i].x < side && this[i].y < side && this[i].z < side;
+            bool IsVertexPartOfMesh(int i) {
+                return this[i].x > 0 && this[i].y > 0 && this[i].z > 0 && this[i].x < VoxelGrid.GRID_FULL_SIDE && this[i].y < VoxelGrid.GRID_FULL_SIDE && this[i].z < VoxelGrid.GRID_FULL_SIDE;
             }
 
             public int CompareTo(object obj)
@@ -387,5 +379,13 @@ namespace AbyssEditor.Scripts.Mesh_Gen {
                 adjCount = 0;
             }
         }
+        
+        //Down here cause I don't like to see them :/
+        private static readonly int meshOffset = Shader.PropertyToID("meshOffset");
+        private static readonly int numPointsZ = Shader.PropertyToID("numPointsZ");
+        private static readonly int numPointsY = Shader.PropertyToID("numPointsY");
+        private static readonly int numPointsX = Shader.PropertyToID("numPointsX");
+        private static readonly int faces1 = Shader.PropertyToID("faces");
+        private static readonly int voxels = Shader.PropertyToID("voxels");
     }
 }

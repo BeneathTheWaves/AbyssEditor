@@ -74,9 +74,6 @@ namespace AbyssEditor.Scripts {
                     curr_pos += (nodeCount * 4) + 2;
                     countOctrees++;
                 }
-
-                //Debug.Log($"Batch '{batchIndex}' was loaded!");
-                
                 readFinishedCall(octrees);
                 reader.Close();
             }
@@ -84,8 +81,6 @@ namespace AbyssEditor.Scripts {
             // if no batch file
             else
             {
-                //DebugOverlay.LogMessage("no file for batch " + filePath);
-                // TODO: remove dependency
                 EditorUI.DisplayErrorMessage($"No file for batch {batchIndex.x}-{batchIndex.y}-{batchIndex.z}\n" +
                                              $"Created an empty batch", EditorUI.NotificationType.Warning);
 
