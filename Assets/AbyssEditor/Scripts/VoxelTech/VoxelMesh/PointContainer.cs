@@ -65,6 +65,13 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelMesh
 
             octree.Rasterize(tempDensities, tempTypes, _res, 5 - VoxelWorld.LEVEL_OF_DETAIL);
 
+            //if this is an overwrite, we need to free the old native arrays before overwriting.
+            if (grid != null)
+            {
+                grid.DisposeGrids();
+                grid = null;
+            }
+            
             grid = new VoxelGrid(tempDensities, tempTypes, octreeIndex, batchIndex);
             //Note: we free the temporary arrays within the voxel grid once we initialize the grid to its padding
             //WE MAY want to change this so we don't have to do that tho :)
