@@ -51,6 +51,8 @@ namespace AbyssEditor.Scripts.VoxelTech {
                 DestroyImmediate(voxelMesh.gameObject);
             }
 
+            yield return RegenerateNeighboringVoxelGridsCache();
+            
             yield return RegenerateMeshesCoroutine(reloadBoundariesOnComplete: true);
         }
 
@@ -112,7 +114,7 @@ namespace AbyssEditor.Scripts.VoxelTech {
         }
 
         public IEnumerator RegionReadCoroutine(bool allowModded, Vector3Int startBatch, Vector3Int endBatch, EditorProcessHandle statusHandle = null) {
-            if(statusHandle == null) { statusHandle = TaskManager.main.GetEditorProcessHandle(2); }
+            if(statusHandle == null) { statusHandle = TaskManager.main.GetEditorProcessHandle(3); }
 
             int batchCount = startBatch.GetNumberOfPointsInRegion(endBatch);
             int readCount = 0;
@@ -131,11 +133,13 @@ namespace AbyssEditor.Scripts.VoxelTech {
             }
             statusHandle.CompletePhase();
 
+            yield return RegenerateNeighboringVoxelGridsCache(statusHandle);
+
             yield return RegenerateMeshesCoroutine(statusHandle, true);
         }
         
         public IEnumerator OctreePatchReadCoroutine(byte[] patchBytes, List<Vector3Int> batchesInPatch, EditorProcessHandle statusHandle = null) {
-            if(statusHandle == null) { statusHandle = TaskManager.main.GetEditorProcessHandle(3); }    
+            if(statusHandle == null) { statusHandle = TaskManager.main.GetEditorProcessHandle(4); }    
             
             PatchContainer patchContainer = new PatchContainer();
             
@@ -166,9 +170,32 @@ namespace AbyssEditor.Scripts.VoxelTech {
             }
             statusHandle.CompletePhase();
 
+            yield return RegenerateNeighboringVoxelGridsCache(statusHandle);
+            
             yield return RegenerateMeshesCoroutine(statusHandle, true);
         }
 
+        private IEnumerator RegenerateNeighboringVoxelGridsCache(EditorProcessHandle statusHandle = null)
+        {
+            if (statusHandle == null) { statusHandle = TaskManager.main.GetEditorProcessHandle(1); }
+            
+            int totalTasks = meshes.Count * VoxelWorld.CONTAINERS_PER_SIDE;
+            int completedTasks = 0;
+            
+            foreach (VoxelMesh.VoxelMesh mesh in meshes)
+            {
+                mesh.CacheNeighboringVoxelGrids();
+                
+                statusHandle.SetStatus($"Caching Neighbors for {mesh.batchIndex}");
+                completedTasks++;
+                statusHandle.SetProgress((float) completedTasks / totalTasks);
+                yield return null;
+            }
+            
+            statusHandle.CompletePhase();
+            yield return null;
+        }
+        
         public IEnumerator RegenerateMeshesCoroutine(EditorProcessHandle statusHandle = null, bool reloadBoundariesOnComplete = false)
         {
             if (statusHandle == null) { statusHandle = TaskManager.main.GetEditorProcessHandle(1); }

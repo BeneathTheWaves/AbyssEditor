@@ -15,7 +15,7 @@ namespace AbyssEditor.Scripts.Mesh_Gen {
         private const int MAX_ADJACENT_FACES = 24;
         
         private const int SUBMESH_BLOCK_TYPES_CAPACITY = 20;
-        private const int SUBMESH_QUAD_FACE_CAPACITY = 5000;
+        private const int SUBMESH_QUAD_FACE_CAPACITY = 10000;
         
         // Compute stuff
         [SerializeField] private ComputeShader shader;

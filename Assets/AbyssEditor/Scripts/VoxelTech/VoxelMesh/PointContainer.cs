@@ -109,6 +109,11 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelMesh
         {
             grid.NeighborDataUpdate();
         }
+        
+        public void CacheNeighborGrids()
+        {
+            grid.CacheNeighboringVoxelGrids();
+        }
 
         public byte SampleBlocktype(Vector3 worldPoint)
         {

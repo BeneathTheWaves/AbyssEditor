@@ -94,6 +94,14 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelMesh
             }
         }
 
+        public void CacheNeighboringVoxelGrids()
+        {
+            foreach (PointContainer container in pointContainers)
+            {
+                container.CacheNeighborGrids();
+            }
+        }
+
         public void Write() => BatchReadWriter.WriteOptoctrees(batchIndex, nodes);
 
         public void ApplyJobBasedDensityFunction(BrushStroke stroke, List<BrushJob> brushActions, List<PointContainer> modifiedContainers)

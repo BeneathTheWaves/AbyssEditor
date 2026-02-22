@@ -16,12 +16,12 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelGrids {
         public NativeArray<byte> densityGrid;
         public NativeArray<byte> typeGrid;
         public Vector3Int fullGridDim;
-        public readonly Vector3Int octreeIndex;
-        public readonly Vector3Int batchIndex;
-        //bool[] neighbourMap;
+        private readonly Vector3Int octreeIndex;
+        private readonly Vector3Int batchIndex;
+        private VoxelGrid[] neighboringGrids = new VoxelGrid[27];//the center is a reference to self, references can be null
         
         public static NativeArray<int3> neighboursToCheckInSmooth;
-        public static Vector3Int[] paddingVoxels;
+        private static Vector3Int[] paddingVoxels;
 
         public VoxelGrid(NativeArray<byte> _coreDensity, NativeArray<byte> _coreTypes, Vector3Int _octreeIndex, Vector3Int _batchIndex)
         {
@@ -58,58 +58,87 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelGrids {
             array[Globals.LinearIndex(x, y, z, VoxelWorld.RESOLUTION + GRID_PADDING*2)] = val;
         }
         
-        public static void SetVoxel(NativeArray<byte> array, Vector3Int voxel, byte val) {
+        public static void SetVoxel(NativeArray<byte> array, ref Vector3Int voxel, byte val) {
             array[Globals.LinearIndex(voxel.x, voxel.y, voxel.z, VoxelWorld.RESOLUTION + GRID_PADDING*2)] = val;
         }
 
-        public void NeighborDataUpdate() {
-            //neighbourMap = new bool[27];
-            //neighbourMap[13] = true;
-            foreach (Vector3Int voxel in paddingVoxels)
-            { 
-                UpdateNeighborVoxel(voxel);
-            }
-        }
-
-        private void UpdateNeighborVoxel(Vector3Int voxel)
+        public void CacheNeighboringVoxelGrids()
         {
-            Vector3Int neighbourGridOffset = NeighbourGridOffsetFromPaddedVoxel(voxel);
-
-            Vector3Int neighborContainerIndex = octreeIndex + neighbourGridOffset;
-            Vector3Int neighborBatchIndex = batchIndex;
-            
-            if (neighborContainerIndex.x < 0 || neighborContainerIndex.y < 0 || neighborContainerIndex.z < 0 ||
-                neighborContainerIndex.x >= VoxelWorld.CONTAINERS_PER_SIDE || neighborContainerIndex.y >= VoxelWorld.CONTAINERS_PER_SIDE || neighborContainerIndex.z >= VoxelWorld.CONTAINERS_PER_SIDE) 
-            {
-                //outside the current batch
-                neighborBatchIndex = NeighbourBatchFromPaddedVoxel(voxel.x, voxel.y, voxel.z);
-                if (!VoxelMetaspace.metaspace.BatchLoaded(neighborBatchIndex))
-                {
-                    SetVoxel(densityGrid, voxel, 0);
-                    SetVoxel(typeGrid, voxel, 0);
-                    return;
+            for (int x = -1; x <= 1; x++) {
+                for (int y = -1; y <= 1; y++) {
+                    for (int z = -1; z <= 1; z++)
+                    {
+                        Vector3Int sampleVoxel = new Vector3Int(x, y, z);
+                        ParseSample(ref sampleVoxel);
+                    }
                 }
-                
-                neighborContainerIndex = IndexMod(neighborContainerIndex, 5);
             }
+            void ParseSample(ref Vector3Int sampleVoxel)
+            {
+                int neighborGridCacheIndex = (sampleVoxel.x + 1) + (sampleVoxel.y + 1) * 3 + (sampleVoxel.z + 1) * 9;
+                        
+                
+                Vector3Int neighborContainerIndex = octreeIndex + sampleVoxel;
+                Vector3Int neighborBatchIndex = batchIndex;
             
-            VoxelGrid neighborGrid = VoxelMetaspace.metaspace.TryGetVoxelGrid(neighborBatchIndex, neighborContainerIndex);
-
-            Vector3Int sample = new Vector3Int(voxel.x, voxel.y, voxel.z);
-            if (voxel.x == 0) sample.x = VoxelWorld.RESOLUTION;
-            else if (voxel.x == VoxelWorld.RESOLUTION + 1) sample.x = 1;
-
-            if (voxel.y == 0) sample.y = VoxelWorld.RESOLUTION;
-            else if (voxel.y == VoxelWorld.RESOLUTION + 1) sample.y = 1;
-
-            if (voxel.z == 0) sample.z = VoxelWorld.RESOLUTION;
-            else if (voxel.z == VoxelWorld.RESOLUTION + 1) sample.z = 1;
-
-            SetVoxel(densityGrid, voxel, GetVoxel(neighborGrid.densityGrid, sample));
-            SetVoxel(typeGrid, voxel, GetVoxel(neighborGrid.typeGrid, sample));
+                if (neighborContainerIndex.x < 0 || neighborContainerIndex.y < 0 || neighborContainerIndex.z < 0 ||
+                    neighborContainerIndex.x >= VoxelWorld.CONTAINERS_PER_SIDE || neighborContainerIndex.y >= VoxelWorld.CONTAINERS_PER_SIDE || neighborContainerIndex.z >= VoxelWorld.CONTAINERS_PER_SIDE) 
+                {
+                    //outside the current batch
+                    neighborBatchIndex = NeighbourBatchFromSampleVoxel(ref sampleVoxel);
+                            
+                    if (!VoxelMetaspace.metaspace.BatchLoaded(neighborBatchIndex))
+                    {
+                        neighboringGrids[neighborGridCacheIndex] = null;
+                        return;
+                    }
+                
+                    neighborContainerIndex = IndexMod(ref neighborContainerIndex, 5);
+                }
+                        
+                neighboringGrids[neighborGridCacheIndex] = VoxelMetaspace.metaspace.TryGetVoxelGrid(neighborBatchIndex, neighborContainerIndex);
+            }
         }
         
-        private static Vector3Int NeighbourGridOffsetFromPaddedVoxel(Vector3Int voxel) {
+        public void NeighborDataUpdate() {
+            for (int i = 0; i < paddingVoxels.Length; i++)
+            {
+                UpdateNeighborVoxel(ref paddingVoxels[i]);
+            }
+        }
+
+        private void UpdateNeighborVoxel(ref Vector3Int voxel)
+        {
+            Vector3Int neighbourGridOffset = NeighbourGridOffsetFromPaddedVoxel(ref voxel);
+
+            //Cache is offset by 1 bc indexes cant be negative :/
+            int cacheX = neighbourGridOffset.x + 1;
+            int cacheY = neighbourGridOffset.y + 1;
+            int cacheZ = neighbourGridOffset.z + 1;
+            
+            VoxelGrid neighborGrid = neighboringGrids[cacheX + cacheY * 3 + cacheZ * 9];
+            if (neighborGrid == null)
+            {
+                SetVoxel(densityGrid, ref voxel, 0);
+                SetVoxel(typeGrid, ref voxel, 0);
+                return;
+            }
+            
+            Vector3Int sampleVoxel = new Vector3Int(voxel.x, voxel.y, voxel.z);
+            if (voxel.x == 0) sampleVoxel.x = VoxelWorld.RESOLUTION;
+            else if (voxel.x == VoxelWorld.RESOLUTION + 1) sampleVoxel.x = 1;
+
+            if (voxel.y == 0) sampleVoxel.y = VoxelWorld.RESOLUTION;
+            else if (voxel.y == VoxelWorld.RESOLUTION + 1) sampleVoxel.y = 1;
+
+            if (voxel.z == 0) sampleVoxel.z = VoxelWorld.RESOLUTION;
+            else if (voxel.z == VoxelWorld.RESOLUTION + 1) sampleVoxel.z = 1;
+
+            SetVoxel(densityGrid, ref voxel, GetVoxel(neighborGrid.densityGrid, sampleVoxel));
+            SetVoxel(typeGrid, ref voxel, GetVoxel(neighborGrid.typeGrid, sampleVoxel));
+        }
+        
+        private static Vector3Int NeighbourGridOffsetFromPaddedVoxel(ref Vector3Int voxel) {
             Vector3Int offset = Vector3Int.zero;
             if (voxel.x <= 0) offset.x = -1;                                                                                                
             else if (voxel.x >= VoxelWorld.RESOLUTION + GRID_PADDING) offset.x = 1;
@@ -124,16 +153,15 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelGrids {
         }
         
         /// <summary>
-        /// Gets a batch from a voxel.
+        /// Gets a batch from a sample voxel offset (between -1 and 1).
         /// Uses absolute positioning for calculations
         /// </summary>
-        private Vector3Int NeighbourBatchFromPaddedVoxel(int x, int y, int z)
+        private Vector3Int NeighbourBatchFromSampleVoxel(ref Vector3Int sampleVoxel)
         {
             Vector3Int batchPos = batchIndex * VoxelWorld.BATCH_WIDTH;
             Vector3Int octreePos = batchPos + (octreeIndex * VoxelWorld.OCTREE_WIDTH);
             int voxelWidth = 32 / VoxelWorld.RESOLUTION;
-            Vector3Int voxelPos = octreePos + new Vector3Int((x - 1) * voxelWidth, (y - 1) * voxelWidth, (z - 1) * voxelWidth);
-            
+            Vector3Int voxelPos = octreePos + new Vector3Int((sampleVoxel.x) * voxelWidth * VoxelWorld.RESOLUTION, (sampleVoxel.y) * voxelWidth * VoxelWorld.RESOLUTION, (sampleVoxel.z) * voxelWidth * VoxelWorld.RESOLUTION);
             return new Vector3Int(
                 Mathf.FloorToInt((float)voxelPos.x / VoxelWorld.BATCH_WIDTH),
                 Mathf.FloorToInt((float)voxelPos.y / VoxelWorld.BATCH_WIDTH),
@@ -141,7 +169,7 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelGrids {
             );
         }
         
-        private static Vector3Int IndexMod(Vector3Int octreeIndex, int mod) => new Vector3Int((octreeIndex.x + mod) % mod, (octreeIndex.y + mod) % mod, (octreeIndex.z + mod) % mod);
+        private static Vector3Int IndexMod(ref Vector3Int octreeIndex, int mod) => new Vector3Int((octreeIndex.x + mod) % mod, (octreeIndex.y + mod) % mod, (octreeIndex.z + mod) % mod);
         
         public void GetFullGrids(out NativeArray<byte> _fullDensityGrid, out NativeArray<byte> _fullTypeGrid) {
             _fullDensityGrid =   densityGrid;
@@ -243,13 +271,13 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelGrids {
         /// </summary>
         internal static void PrecomputePaddingVoxels()
         {
-            int _fullSide = VoxelWorld.RESOLUTION + 2;
-            
             List<Vector3Int> offsets = new List<Vector3Int>();
-            for (int z = 0; z < _fullSide; z++) {
-                for (int y = 0; y < _fullSide; y++) {
-                    for (int x = 0; x < _fullSide; x++) {
-                        if (NeighbourGridOffsetFromPaddedVoxel(new Vector3Int(x, y, z)) == Vector3Int.zero) {
+            for (int z = 0; z < GRID_FULL_SIDE; z++) {
+                for (int y = 0; y < GRID_FULL_SIDE; y++) {
+                    for (int x = 0; x < GRID_FULL_SIDE; x++)
+                    {
+                        Vector3Int voxel = new Vector3Int(x, y, z);
+                        if (NeighbourGridOffsetFromPaddedVoxel(ref voxel) == Vector3Int.zero) {
                             continue;
                         }
                         offsets.Add(new Vector3Int(x, y, z));
