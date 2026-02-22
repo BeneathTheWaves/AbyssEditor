@@ -84,7 +84,6 @@ namespace AbyssEditor.Scripts.CursorTools.Brush {
         {
             if (blockInput)
             {
-                DisableBrushGizmo();
                 return;
             }
             
