@@ -3273,6 +3273,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5521325026868519768, guid: 03e603faeae769fc8bc73ee73360d5a1,
+        type: 3}
+      propertyPath: text
+      value: HotbarButton_Eyedropper
+      objectReference: {fileID: 0}
     - target: {fileID: 8719787554850151309, guid: 03e603faeae769fc8bc73ee73360d5a1,
         type: 3}
       propertyPath: m_Name
@@ -10388,6 +10393,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5521325026868519768, guid: 03e603faeae769fc8bc73ee73360d5a1,
+        type: 3}
+      propertyPath: text
+      value: HotbarButton_RemoveBatches
+      objectReference: {fileID: 0}
     - target: {fileID: 8719787554850151309, guid: 03e603faeae769fc8bc73ee73360d5a1,
         type: 3}
       propertyPath: m_Name
@@ -11314,7 +11324,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Sprite
       value: 
-      objectReference: {fileID: 21300000, guid: 4d061ce82c58e2146a53b950702a987f,
+      objectReference: {fileID: 21300000, guid: 9ba49a171e9992b6fb05ab70c8b8ac59,
         type: 3}
     - target: {fileID: 5311393852137424036, guid: 03e603faeae769fc8bc73ee73360d5a1,
         type: 3}
@@ -11415,6 +11425,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5521325026868519768, guid: 03e603faeae769fc8bc73ee73360d5a1,
+        type: 3}
+      propertyPath: text
+      value: HotbarButton_Paint
       objectReference: {fileID: 0}
     - target: {fileID: 8719787554850151309, guid: 03e603faeae769fc8bc73ee73360d5a1,
         type: 3}
@@ -13707,7 +13722,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Sprite
       value: 
-      objectReference: {fileID: 21300000, guid: 7a023283a6a22a5c9b24da4a9461cf6c,
+      objectReference: {fileID: 21300000, guid: 956522fa1e953c64099f1a341a870d3d,
         type: 3}
     - target: {fileID: 5311393852137424036, guid: 03e603faeae769fc8bc73ee73360d5a1,
         type: 3}
@@ -13808,6 +13823,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5521325026868519768, guid: 03e603faeae769fc8bc73ee73360d5a1,
+        type: 3}
+      propertyPath: text
+      value: HotbarButton_Remove
       objectReference: {fileID: 0}
     - target: {fileID: 8719787554850151309, guid: 03e603faeae769fc8bc73ee73360d5a1,
         type: 3}
@@ -17242,6 +17262,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5521325026868519768, guid: 03e603faeae769fc8bc73ee73360d5a1,
+        type: 3}
+      propertyPath: text
+      value: HotbarButton_Smooth
       objectReference: {fileID: 0}
     - target: {fileID: 8719787554850151309, guid: 03e603faeae769fc8bc73ee73360d5a1,
         type: 3}
@@ -21665,6 +21690,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5521325026868519768, guid: 03e603faeae769fc8bc73ee73360d5a1,
+        type: 3}
+      propertyPath: text
+      value: HotbarButton_Add
       objectReference: {fileID: 0}
     - target: {fileID: 8719787554850151309, guid: 03e603faeae769fc8bc73ee73360d5a1,
         type: 3}

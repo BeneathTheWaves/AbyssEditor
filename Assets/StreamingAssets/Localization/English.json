@@ -14,6 +14,14 @@
   "TopBarButton_Lighting": "Lighting",
   "TopBarButton_Settings": "Settings",
   
+  // Hotbar buttons
+  "HotbarButton_Add": "Add terrain",
+  "HotbarButton_Remove": "Remove terrain",
+  "HotbarButton_Smooth": "Smooth terrain",
+  "HotbarButton_Eyedropper": "Material eyedropper",
+  "HotbarButton_Paint": "Paint material",
+  "HotbarButton_RemoveBatches": "Unload batches",
+  
   //Color Picker
   "HexPlaceholderText": "Hex Value",
   
