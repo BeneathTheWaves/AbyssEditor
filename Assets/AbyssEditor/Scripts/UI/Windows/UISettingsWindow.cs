@@ -10,22 +10,24 @@ namespace AbyssEditor.Scripts.UI.Windows {
         [SerializeField] private TextMeshProUGUI gamePathText;
         [SerializeField] private Toggle fullscreenToggleButton;
         [SerializeField] private Toggle autoLoadMaterialsToggleButton;
+        [SerializeField] private Toggle enableBrushLogsToggleButton;
         [SerializeField] private Toggle discordRPCToggleButton;
 
-        
+
         private void Start()
         {
             fullscreenToggleButton.SetIsOnWithoutNotify(Preferences.data.fullscreen);
-            
             autoLoadMaterialsToggleButton.SetIsOnWithoutNotify(Preferences.data.autoLoadMaterials);
-
+            enableBrushLogsToggleButton.SetIsOnWithoutNotify(Preferences.data.enableBrushLogs);
             discordRPCToggleButton.SetIsOnWithoutNotify(Preferences.data.discordRPC);
         }
 
-        public void BrowseGamePath() {
+        public void BrowseGamePath()
+        {
             string[] paths = StandaloneFileBrowser.StandaloneFileBrowser.OpenFolderPanel(Language.main.Get("FileBrowserTip"), Application.persistentDataPath, false);
 
-            if (paths.Length != 0) {
+            if (paths.Length != 0)
+            {
                 Preferences.data.gamePath = paths[0];
                 Preferences.SavePreferences();
                 UpdatePathDisplay(Preferences.data.gamePath);
@@ -51,6 +53,12 @@ namespace AbyssEditor.Scripts.UI.Windows {
         public void OnAutoLoadMaterialsToggle(bool value)
         {
             Preferences.data.autoLoadMaterials = value;
+            Preferences.SavePreferences();
+        }
+
+        public void OnEnableBrushLogsToggle(bool value)
+        {
+            Preferences.data.enableBrushLogs = value;
             Preferences.SavePreferences();
         }
 

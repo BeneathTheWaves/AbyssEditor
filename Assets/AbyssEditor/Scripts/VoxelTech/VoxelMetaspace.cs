@@ -5,6 +5,7 @@ using System.Linq;
 using AbyssEditor.Scripts.CursorTools;
 using AbyssEditor.Scripts.CursorTools.Brush;
 using AbyssEditor.Scripts.Octrees;
+using AbyssEditor.Scripts.SaveSystem;
 using AbyssEditor.Scripts.TaskSystem;
 using AbyssEditor.Scripts.UI;
 using AbyssEditor.Scripts.VoxelTech.VoxelGrids;
@@ -68,8 +69,12 @@ namespace AbyssEditor.Scripts.VoxelTech {
         
         public void ApplyJobBasedDensityAction(BrushStroke stroke)
         {
-            System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch();
-            sw.Start();
+            System.Diagnostics.Stopwatch sw = null;
+            if (Preferences.data.enableBrushLogs)
+            {
+                sw = new System.Diagnostics.Stopwatch();
+                sw.Start();
+            }
             
             List<PointContainer> modifiedContainers = new List<PointContainer>(8);
             List<BrushJob> brushJobs = new List<BrushJob>(8);
@@ -90,24 +95,33 @@ namespace AbyssEditor.Scripts.VoxelTech {
             {
                 brushJob.OnJobCompleteCleanup();
             }
+
+            if (sw != null)
+            {
+                sw.Stop();
+                double elapsedMs = (double)sw.ElapsedTicks / System.Diagnostics.Stopwatch.Frequency * 1000.0;
+                DebugOverlay.LogMessage($"Completed Brush Job in {elapsedMs:F4}ms with {brushJobs.Count} Scheduled");
+                sw.Restart();
+            }
             
-            sw.Stop();
-            double elapsedMs = (double)sw.ElapsedTicks / System.Diagnostics.Stopwatch.Frequency * 1000.0;
-            DebugOverlay.LogMessage($"Completed Brush Job in {elapsedMs:F4}ms with {brushJobs.Count} Scheduled");
-            
-            
-            sw.Restart();
             foreach (PointContainer pointContainer in modifiedContainers)
             {
                 pointContainer.UpdateNeighborData();
             }
-            double elapsedMs2 = (double)sw.ElapsedTicks / System.Diagnostics.Stopwatch.Frequency * 1000.0;
-            DebugOverlay.LogMessage($"Neighbor Copy took {elapsedMs2:F4}ms");
             
-            sw.Restart();
+            if (sw != null)
+            {
+                double elapsedMs2 = (double)sw.ElapsedTicks / System.Diagnostics.Stopwatch.Frequency * 1000.0;
+                DebugOverlay.LogMessage($"Neighbor Copy took {elapsedMs2:F4}ms");
+                sw.Restart();
+            }
+
             foreach(PointContainer pointContainer in modifiedContainers) {
                 pointContainer.UpdateMesh();
             }
+            
+            if (sw == null) return;
+            
             sw.Stop();
             double elapsedMs3 = (double)sw.ElapsedTicks / System.Diagnostics.Stopwatch.Frequency * 1000.0;
             DebugOverlay.LogMessage($"Mesh Rebuild took {elapsedMs3:F4}ms");
