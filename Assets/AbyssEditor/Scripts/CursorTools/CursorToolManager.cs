@@ -34,7 +34,6 @@ namespace AbyssEditor.Scripts.CursorTools
             activeTool?.HandleToolUpdate(IsInputBlocked());
         }
 
-
         private void DisableOldToolSafe<T>() where T : ICursorTool
         {
             if (activeTool == null || activeTool.GetType() != typeof(T))

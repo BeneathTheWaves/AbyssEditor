@@ -75,7 +75,7 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelMesh
         {
             foreach (var container in pointContainers)
             {
-                container.UpdateMeshAsync();
+                _ = container.UpdateMeshAsync();
             }
         }
 

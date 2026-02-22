@@ -123,7 +123,7 @@ namespace AbyssEditor.Scripts.VoxelTech {
 
             foreach (var container in modifiedContainers)
             {
-                container.UpdateMeshAsync();
+                _ = container.UpdateMeshAsync();
             }
             
             sw.Stop();
