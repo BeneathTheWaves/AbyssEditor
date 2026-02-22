@@ -72,7 +72,7 @@ namespace AbyssEditor.Scripts.TerrainMaterials
             
             if (updateMeshesOnLoad)
             {
-                VoxelMetaspace.metaspace.StartCoroutine(VoxelMetaspace.metaspace.RegenerateMeshesCoroutine(statusHandle));
+                _ = VoxelMetaspace.metaspace.RegenerateMeshesAsync(statusHandle);
             }
             
             statusHandle.CompletePhase();

@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Threading.Tasks;
 using AbyssEditor.Scripts.Octrees;
 using AbyssEditor.Scripts.TaskSystem;
 using AbyssEditor.Scripts.UI;
@@ -18,7 +19,7 @@ namespace AbyssEditor.Scripts {
         
         public delegate bool PatchReadFinishedCall( Dictionary<Vector3Int, Octree[,,]> patchedBatches );
         
-        public static IEnumerator ReadBatchCoroutine(ReadFinishedCall readFinishedCall, Vector3Int batchIndex, bool allowModded, bool generateEmpty)
+        public static async Task ReadBatchCoroutine(ReadFinishedCall readFinishedCall, Vector3Int batchIndex, bool allowModded, bool generateEmpty)
         {
             Vector3Int octreeDimensions = Vector3Int.one * VoxelWorld.CONTAINERS_PER_SIDE;
             if (batchIndex.x == 25) octreeDimensions.x = 3;
@@ -86,7 +87,7 @@ namespace AbyssEditor.Scripts {
 
                 if (generateEmpty && batchIndex != new Vector3Int(0, 13, 17))
                 {
-                    yield return ReadBatchCoroutine(readFinishedCall, new Vector3Int(0, 13, 17), false, false);
+                    await ReadBatchCoroutine(readFinishedCall, new Vector3Int(0, 13, 17), false, false);
                 }
                 else
                 {
@@ -145,7 +146,7 @@ namespace AbyssEditor.Scripts {
             return true;
         }
         
-        public static IEnumerator ReadOctreePatchCoroutine(PatchReadFinishedCall readFinishedCall, byte[] patchByteArray, List<Vector3Int> batchesInPatch, EditorProcessHandle statusHandle)
+        public static async Task ReadOctreePatchCoroutine(PatchReadFinishedCall readFinishedCall, byte[] patchByteArray, List<Vector3Int> batchesInPatch, EditorProcessHandle statusHandle)
         {
             int currentBatchIndex = 0;
             
@@ -160,6 +161,7 @@ namespace AbyssEditor.Scripts {
             //iterate cached data
             while (curr_pos < patchByteArray.Length)
             {
+                await Task.Yield();//TODO: this should not be here if we are on a different thread
                 short bx = (short)(patchByteArray[curr_pos] | (patchByteArray[curr_pos + 1] << 8));
                 short by = (short)(patchByteArray[curr_pos + 2] | (patchByteArray[curr_pos + 3] << 8));
                 short bz = (short)(patchByteArray[curr_pos + 4] | (patchByteArray[curr_pos + 5] << 8));
@@ -176,7 +178,7 @@ namespace AbyssEditor.Scripts {
                 statusHandle.SetStatus($"Reading patched {batchIndex}");
                 currentBatchIndex++;
                 
-                yield return ReadBatchCoroutine(container.Callback, batchIndex, allowModded: false, generateEmpty: true);
+                await ReadBatchCoroutine(container.Callback, batchIndex, allowModded: false, generateEmpty: true);
                 
                 Octree[,,] batchOctrees = container.nodes;
                 RasterDeRasterizeBatch(tempDensities, tempTypes, batchOctrees);
@@ -220,7 +222,7 @@ namespace AbyssEditor.Scripts {
             statusHandle.CompletePhase();
         }
 
-        public static IEnumerator WriteOctreePatchCoroutine(VoxelMetaspace metaspace, EditorProcessHandle statusHandle = null)
+        public static async Task WriteOctreePatchCoroutine(VoxelMetaspace metaspace, EditorProcessHandle statusHandle = null)
         {
             if (statusHandle == null) statusHandle = TaskManager.main.GetEditorProcessHandle(1);
             
@@ -244,14 +246,16 @@ namespace AbyssEditor.Scripts {
                 statusHandle.SetProgress((float)meshIndex / meshCount);
                 statusHandle.SetStatus($"Generating octrees for {batch.batchIndex}");
                 Octree[,,] nodes = batch.ConvertGridsToOctree();
+                await Task.Yield();
                 
-                // load original nodes from file?
+                // load original nodes from file
                 NodeContainer container = new NodeContainer();
                 statusHandle.SetStatus($"Loading old octrees for {batch.batchIndex}");
-                yield return ReadBatchCoroutine(container.Callback, batch.batchIndex, false, false);
+                await ReadBatchCoroutine(container.Callback, batch.batchIndex, false, false);
+                await Task.Yield();
                 Octree[,,] originalNodes = container.nodes;
 
-                // get changed octrees data
+                // Diff trees
                 List<Octree> batchChanges = GetChangedOctrees(nodes, originalNodes);
                 
                 DebugOverlay.LogMessage($"Patch contains {batchChanges.Count} changed octrees.");

@@ -43,22 +43,15 @@ namespace AbyssEditor.Scripts.UI.Windows {
                     Globals.instance.userBatchOutputPath = path;
                     break;
             }
-            if (modeSelection.selection == 1) {
-            }
-            else {
-            }
 
-            //VoxelWorld.OnRegionExported += EditorUI.DisableStatusBar;
-            //EditorUI.UpdateStatusBar("Exporting...", 1);
-
-            VoxelWorld.ExportRegion(modeSelection.selection);
+            _ = VoxelWorld.ExportRegionAsync(modeSelection.selection);
         }
 
-        public void OnCheckboxInteract() {
+        private void OnCheckboxInteract() {
             Globals.instance.exportIntoGame = checkbox.check;
         }
 
-        public void OnModeChanged() {
+        private void OnModeChanged() {
             if (modeSelection.selection != 0) {
                 checkboxGroup.SetActive(false);
                 Globals.instance.exportIntoGame = false;

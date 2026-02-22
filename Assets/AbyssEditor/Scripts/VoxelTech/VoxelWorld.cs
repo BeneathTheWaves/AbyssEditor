@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using AbyssEditor.Scripts.BatchOutline;
 using AbyssEditor.Scripts.CursorTools;
 using AbyssEditor.Scripts.TaskSystem;
@@ -23,52 +24,38 @@ namespace AbyssEditor.Scripts.VoxelTech {
         public const int RESOLUTION = 32;//(int)Mathf.Pow(2, 5 - LEVEL_OF_DETAIL);
         
         public static VoxelWorld world;
-        public static event Action OnRegionExported;
         
         
         void Awake() {
             world = this;
         }
-
-        public void LoadRegion(Vector3Int startBatch, Vector3Int endBatch, bool allowModded)
-        {
-            DebugOverlay.LogMessage($"Loading {startBatch} to {endBatch}");
-            StartCoroutine(RegionLoadCoroutine(allowModded, startBatch, endBatch));
-        }
-
-        public void LoadOctreePatch(byte[] patchBytes, List<Vector3Int> batchesInPatch)
-        {
-            StartCoroutine(OctreePatchCoroutine(patchBytes, batchesInPatch));
-        }
-        
-        IEnumerator OctreePatchCoroutine(byte[] patchBytes, List<Vector3Int> batchesInPatch)
+        public async Task OctreePatchCoroutine(byte[] patchBytes, List<Vector3Int> batchesInPatch)
         {
             CursorToolManager.main.RegisterInputBlock(this);
             
-            yield return StartCoroutine(VoxelMetaspace.metaspace.OctreePatchReadCoroutine(patchBytes, batchesInPatch));
+            await VoxelMetaspace.metaspace.OctreePatchReadAsync(patchBytes, batchesInPatch);
             
             BatchOutlineManager.main.ResetOutlines();
             
             CursorToolManager.main.UnregisterInputBlock(this);
         }
         
-        IEnumerator RegionLoadCoroutine(bool allowModded, Vector3Int startBatch, Vector3Int endBatch)
+        public async Task RegionLoadAsync(Vector3Int startBatch, Vector3Int endBatch, bool allowModded)
         {
+            DebugOverlay.LogMessage($"Loading {startBatch} to {endBatch}");
+            
             CursorToolManager.main.RegisterInputBlock(this);
             
             VoxelMetaspace.metaspace.AddRegion(startBatch, endBatch);
-            
-            yield return StartCoroutine(VoxelMetaspace.metaspace.RegionReadCoroutine(allowModded, startBatch, endBatch));
+
+            await VoxelMetaspace.metaspace.RegionReadCoroutine(allowModded, startBatch, endBatch);
             
             BatchOutlineManager.main.ResetOutlines();
             
             CursorToolManager.main.UnregisterInputBlock(this);
         }
-
-        public static void ExportRegion(int mode) {
-            world.StartCoroutine(world.ExportRegionCoroutine(mode));
-        }
-        IEnumerator ExportRegionCoroutine(int mode) {
+        
+        public static async Task ExportRegionAsync(int mode) {
             switch (mode) {
                 case 0:
                     //TODO: THIS SHOULD BE IN ITS OWN FUNCTION PROBABLY
@@ -79,23 +66,21 @@ namespace AbyssEditor.Scripts.VoxelTech {
                         statusHandle.SetProgress((float)meshIndex/meshCount);
                         statusHandle.SetStatus($"Writing {batch}");
                         batch.Write();
-                        yield return null;
+                        await Task.Yield();
                         meshIndex++;
                     }
                     statusHandle.CompletePhase();
                     break;
                 case 1:
-                    yield return StartCoroutine(BatchReadWriter.WriteOctreePatchCoroutine(VoxelMetaspace.metaspace));
+                    await BatchReadWriter.WriteOctreePatchCoroutine(VoxelMetaspace.metaspace);
                     break;
                 case 2:
-                    yield return StartCoroutine(ExportFBX.ExportMetaspaceAsync(VoxelMetaspace.metaspace, Globals.instance.batchOutputPath));
+                    //StartCoroutine(ExportFBX.ExportMetaspaceAsync(VoxelMetaspace.metaspace, Globals.instance.batchOutputPath));
                     break;
                 default:
                     DebugOverlay.LogError("Unexpected export mode!");
                     break;
             }
-
-            OnRegionExported?.Invoke();
         }
         
         public byte SampleBlocktype(Vector3 hitPoint, Ray cameraRay, int retryCount= 0) {

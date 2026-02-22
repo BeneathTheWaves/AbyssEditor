@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using AbyssEditor.Scripts.CursorTools.Brush;
 using AbyssEditor.Scripts.Octrees;
 using AbyssEditor.Scripts.VoxelTech.VoxelGrids;
@@ -67,12 +68,14 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelMesh
             return true;
         }
 
-        public void Regenerate()
+        public List<Task> ScheduleMeshRegenAsync()
         {
+            var tasks = new List<Task>();
             foreach (var container in pointContainers)
             {
-                _ = container.UpdateMeshAsync();
+                tasks.Add(container.UpdateMeshAsync());
             }
+            return tasks;
         }
 
         public VoxelGrid GetVoxelGrid(Vector3Int containerIndex)

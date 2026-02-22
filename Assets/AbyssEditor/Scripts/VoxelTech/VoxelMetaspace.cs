@@ -57,9 +57,9 @@ namespace AbyssEditor.Scripts.VoxelTech {
                 DestroyImmediate(voxelMesh.gameObject);
             }
 
-            yield return RegenerateNeighboringVoxelGridsCache();
+            RegenerateNeighboringVoxelGridsCache();
             
-            yield return RegenerateMeshesCoroutine(reloadBoundariesOnComplete: true);
+            yield return RegenerateMeshesAsync(reloadBoundariesOnComplete: true);
             
             CursorToolManager.main.UnregisterInputBlock(this);
         }
@@ -141,7 +141,7 @@ namespace AbyssEditor.Scripts.VoxelTech {
             DebugOverlay.LogMessage($"Scheduled Rebuilds in {elapsedMs3:F4}ms");
         }
 
-        public IEnumerator RegionReadCoroutine(bool allowModded, Vector3Int startBatch, Vector3Int endBatch, EditorProcessHandle statusHandle = null) {
+        public async Task RegionReadCoroutine(bool allowModded, Vector3Int startBatch, Vector3Int endBatch, EditorProcessHandle statusHandle = null) {
             if(statusHandle == null) { statusHandle = TaskManager.main.GetEditorProcessHandle(3); }
 
             int batchCount = startBatch.GetNumberOfPointsInRegion(endBatch);
@@ -157,21 +157,22 @@ namespace AbyssEditor.Scripts.VoxelTech {
                 
                 BatchReadWriter.GetPath(mesh.batchIndex, allowModded, out bool isModded);
                 
-                yield return BatchReadWriter.ReadBatchCoroutine(mesh.OctreesReadCallback, mesh.batchIndex, allowModded, true);
+                await BatchReadWriter.ReadBatchCoroutine(mesh.OctreesReadCallback, mesh.batchIndex, allowModded, true);
+                await Task.Yield();
             }
             statusHandle.CompletePhase();
 
-            yield return RegenerateNeighboringVoxelGridsCache(statusHandle);
+            RegenerateNeighboringVoxelGridsCache(statusHandle);
 
-            yield return RegenerateMeshesCoroutine(statusHandle, true);
+            await RegenerateMeshesAsync(statusHandle, true);
         }
         
-        public IEnumerator OctreePatchReadCoroutine(byte[] patchBytes, List<Vector3Int> batchesInPatch, EditorProcessHandle statusHandle = null) {
+        public async Task OctreePatchReadAsync(byte[] patchBytes, List<Vector3Int> batchesInPatch, EditorProcessHandle statusHandle = null) {
             if(statusHandle == null) { statusHandle = TaskManager.main.GetEditorProcessHandle(4); }    
             
             PatchContainer patchContainer = new PatchContainer();
             
-            yield return BatchReadWriter.ReadOctreePatchCoroutine(patchContainer.Callback, patchBytes, batchesInPatch, statusHandle);
+            await BatchReadWriter.ReadOctreePatchCoroutine(patchContainer.Callback, patchBytes, batchesInPatch, statusHandle);
             
 
             int batchCount = patchContainer.modifiedBatches.Keys.Count;
@@ -194,16 +195,15 @@ namespace AbyssEditor.Scripts.VoxelTech {
                 VoxelMesh.VoxelMesh mesh = TryGetVoxelMesh(modifiedBatch);
                 
                 mesh.OctreesReadCallback(nodes);
-                yield return null;
             }
             statusHandle.CompletePhase();
 
-            yield return RegenerateNeighboringVoxelGridsCache(statusHandle);
+            RegenerateNeighboringVoxelGridsCache(statusHandle);
             
-            yield return RegenerateMeshesCoroutine(statusHandle, true);
+            await RegenerateMeshesAsync(statusHandle, true);
         }
 
-        private IEnumerator RegenerateNeighboringVoxelGridsCache(EditorProcessHandle statusHandle = null)
+        private void RegenerateNeighboringVoxelGridsCache(EditorProcessHandle statusHandle = null)
         {
             if (statusHandle == null) { statusHandle = TaskManager.main.GetEditorProcessHandle(1); }
             
@@ -211,20 +211,18 @@ namespace AbyssEditor.Scripts.VoxelTech {
             int completedTasks = 0;
             
             foreach (VoxelMesh.VoxelMesh mesh in meshes)
-            {
+            { 
                 mesh.CacheNeighboringVoxelGrids();
                 
                 statusHandle.SetStatus($"Caching Neighbors for {mesh.batchIndex}");
                 completedTasks++;
                 statusHandle.SetProgress((float) completedTasks / totalTasks);
-                yield return null;
             }
             
             statusHandle.CompletePhase();
-            yield return null;
         }
         
-        public IEnumerator RegenerateMeshesCoroutine(EditorProcessHandle statusHandle = null, bool reloadBoundariesOnComplete = false)
+        public async Task RegenerateMeshesAsync(EditorProcessHandle statusHandle = null, bool reloadBoundariesOnComplete = false)
         {
             if (statusHandle == null) { statusHandle = TaskManager.main.GetEditorProcessHandle(1); }
             
@@ -237,19 +235,22 @@ namespace AbyssEditor.Scripts.VoxelTech {
                 statusHandle.SetStatus($"Updating Grid(s) for {mesh.batchIndex}");
                 completedTasks++;
                 statusHandle.SetProgress((float) completedTasks / totalTasks);
-                
-                yield return null;
+
+                await Task.Yield();
             }
 
+            List<Task> tasks = new List<Task>();
             foreach (VoxelMesh.VoxelMesh mesh in meshes) {
-                mesh.Regenerate();
+                tasks.AddRange(mesh.ScheduleMeshRegenAsync());
                 
-                statusHandle.SetStatus($"Regenerating mesh(es) for {mesh.batchIndex}");
+                statusHandle.SetStatus($"Scheduled mesh regen for {mesh.batchIndex}");
                 completedTasks++;
                 statusHandle.SetProgress((float) completedTasks / totalTasks);
-                
-                yield return null;
+                await Task.Yield();
             }
+            
+            await Task.WhenAll(tasks);
+            
             statusHandle.CompletePhase();
 
             if (reloadBoundariesOnComplete)

@@ -141,7 +141,7 @@ namespace AbyssEditor.Scripts.UI.Windows {
                     yield break;
                 }
             }
-            VoxelWorld.world.LoadOctreePatch(patchBytes, batchesInPatch);
+            _ = VoxelWorld.world.OctreePatchCoroutine(patchBytes, batchesInPatch);
             base.DisableWindow();
         }
 
@@ -225,7 +225,7 @@ namespace AbyssEditor.Scripts.UI.Windows {
                 }
             }
             
-            VoxelWorld.world.LoadRegion(startBatchIndex, endBatchIndex, moddedBatchesCheckbox.isOn);
+            VoxelWorld.world.RegionLoadAsync(startBatchIndex, endBatchIndex, moddedBatchesCheckbox.isOn);
             base.DisableWindow();//we don't want it to remove the outlines until the loading is done so just call base method
         }
 
