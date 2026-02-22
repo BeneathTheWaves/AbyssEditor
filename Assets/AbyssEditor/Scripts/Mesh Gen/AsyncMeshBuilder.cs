@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using AbyssEditor.Scripts.Mesh_Gen.Datas;
 using Unity.Collections;
 using UnityEngine;
+using UnityEngine.Profiling;
 using UnityEngine.Rendering;
 
 namespace AbyssEditor.Scripts.Mesh_Gen
@@ -12,17 +13,19 @@ namespace AbyssEditor.Scripts.Mesh_Gen
     public class AsyncMeshBuilder
     {
         public static AsyncMeshBuilder builder;
-        
-        private const int WORKER_COUNT = 16;
-        
+
         private readonly BlockingCollection<MeshRequest> queue = new();
-        private readonly Thread[] workers = new Thread[WORKER_COUNT];
+        private readonly Thread[] workers;
         private bool running = true;
         
         public AsyncMeshBuilder()
         {
             builder = this;
-            for (int i = 0; i < WORKER_COUNT; i++)
+
+            int worker_count = SystemInfo.processorCount - 1;
+            workers = new Thread[worker_count];
+            
+            for (int i = 0; i < worker_count; i++)
             {
                 workers[i] = new Thread(WorkerLoop);
                 workers[i].Start();
@@ -67,6 +70,8 @@ namespace AbyssEditor.Scripts.Mesh_Gen
         //This is the seperate thread,
         private void WorkerLoop()
         {
+            Profiler.BeginThreadProfiling("AsyncMeshBuilders", "Worker");
+            
             var meshBuilder = new MeshBuilder();//each thread gets its own builder
 
             while (running)
