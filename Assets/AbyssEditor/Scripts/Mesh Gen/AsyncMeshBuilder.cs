@@ -55,11 +55,9 @@ namespace AbyssEditor.Scripts.Mesh_Gen
             int nextStart = 0;
             for (int materialIndex = 0; materialIndex < data.blockTypes.Length; materialIndex++)
             {
-                int[] arr = new int[data.subMeshVertIndexesGroups[materialIndex].count];
-                System.Array.Copy(data.subMeshVertIndexesGroups[materialIndex].submeshVertsIndexes, arr, arr.Length);
-                mesh.SetIndices(arr, MeshTopology.Quads, materialIndex, false);
-                mesh.SetSubMesh(materialIndex, new SubMeshDescriptor(nextStart, data.subMeshVertIndexesGroups[materialIndex].count, MeshTopology.Quads));
-                nextStart += data.subMeshVertIndexesGroups[materialIndex].count;
+                mesh.SetIndices(data.subMeshVertIndexesGroups[materialIndex].ToArray(), MeshTopology.Quads, materialIndex, false);
+                mesh.SetSubMesh(materialIndex, new SubMeshDescriptor(nextStart, data.subMeshVertIndexesGroups[materialIndex].Count, MeshTopology.Quads));
+                nextStart += data.subMeshVertIndexesGroups[materialIndex].Count;
             }
             mesh.RecalculateNormals();
             mesh.RecalculateTangents();

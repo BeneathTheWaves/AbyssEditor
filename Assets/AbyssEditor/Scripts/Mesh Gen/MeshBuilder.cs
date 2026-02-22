@@ -22,8 +22,8 @@ namespace AbyssEditor.Scripts.Mesh_Gen {
         private readonly List<Vector3> vertices = new(10000);
         private readonly Dictionary<int, QuadFaceGroup> submeshFaces;
         private readonly Stack<QuadFaceGroup> faceGroupPool = new();
-        private readonly Stack<SubMeshIndexGroup> subMeshVertPool = new();
-        private readonly List<SubMeshIndexGroup> submeshVerticesIndexes = new();
+        private readonly Stack<List<int>> subMeshVertPool = new();
+        private readonly List<List<int>> submeshVerticesIndexes = new();
         
         public MeshBuilder() {
             //Initialize vertices arrays, so we don't allocate in mesh building
@@ -49,7 +49,7 @@ namespace AbyssEditor.Scripts.Mesh_Gen {
             vertices.Clear();
             for (int i = 0; i < submeshVerticesIndexes.Count; i++)
             {
-                submeshVerticesIndexes[i].count = 0;
+                submeshVerticesIndexes[i].Clear();
                 ReturnSubMeshVertsGroupToPool(submeshVerticesIndexes[i]);
             }
             submeshVerticesIndexes.Clear();
@@ -73,25 +73,21 @@ namespace AbyssEditor.Scripts.Mesh_Gen {
             //Note, this stores the vertices in "vertices", so we don't do a copy out
             GetMeshVertices(blocktypes, resolution, ref offset);
             
-            int nextStart = 0;
             for (int k = 0; k < blocktypes.Length; k++)
             {
-                SubMeshIndexGroup submeshVertsArray = GetPooledSubMeshVertsGroup();
+                List<int> submeshVertsArray = GetPooledSubMeshVertsGroup();
                 ref int blocktype = ref blocktypes[k];
                 QuadFaceGroup faceGroup = submeshFaces[blocktype];
-                int countIndexes = 0;
                 
                 for (int i = 0; i < faceGroup.faceCount; i++) {
                     ref QuadFace quadFaceNow = ref faceGroup.faces[i];
                     if (!quadFaceNow.IsPartOfMesh()) continue;
                     // A, B, C, D
-                    submeshVertsArray.Add(ref verticesOfNodes[Globals.LinearIndex((int)quadFaceNow[0].x, (int)quadFaceNow[0].y, (int)quadFaceNow[0].z, resolution)].vertIndex);
-                    submeshVertsArray.Add(ref verticesOfNodes[Globals.LinearIndex((int)quadFaceNow[1].x, (int)quadFaceNow[1].y, (int)quadFaceNow[1].z, resolution)].vertIndex);
-                    submeshVertsArray.Add(ref verticesOfNodes[Globals.LinearIndex((int)quadFaceNow[2].x, (int)quadFaceNow[2].y, (int)quadFaceNow[2].z, resolution)].vertIndex);
-                    submeshVertsArray.Add(ref verticesOfNodes[Globals.LinearIndex((int)quadFaceNow[3].x, (int)quadFaceNow[3].y, (int)quadFaceNow[3].z, resolution)].vertIndex);
-                    countIndexes += 4;
+                    submeshVertsArray.Add(verticesOfNodes[Globals.LinearIndex((int)quadFaceNow[0].x, (int)quadFaceNow[0].y, (int)quadFaceNow[0].z, resolution)].vertIndex);
+                    submeshVertsArray.Add(verticesOfNodes[Globals.LinearIndex((int)quadFaceNow[1].x, (int)quadFaceNow[1].y, (int)quadFaceNow[1].z, resolution)].vertIndex);
+                    submeshVertsArray.Add(verticesOfNodes[Globals.LinearIndex((int)quadFaceNow[2].x, (int)quadFaceNow[2].y, (int)quadFaceNow[2].z, resolution)].vertIndex);
+                    submeshVertsArray.Add(verticesOfNodes[Globals.LinearIndex((int)quadFaceNow[3].x, (int)quadFaceNow[3].y, (int)quadFaceNow[3].z, resolution)].vertIndex);
                 }
-                nextStart += countIndexes;
                 
                 submeshFaces.Remove(blocktype, out QuadFaceGroup group);
                 ReturnQuadFaceGroupToPool(group);
@@ -148,16 +144,16 @@ namespace AbyssEditor.Scripts.Mesh_Gen {
             }
         }
         
-        private SubMeshIndexGroup GetPooledSubMeshVertsGroup()
+        private List<int> GetPooledSubMeshVertsGroup()
         {
             if (subMeshVertPool.Count == 0)
             {
-                return new SubMeshIndexGroup();
+                return new List<int>(40000);
             }
             return subMeshVertPool.Pop();
         }
 
-        private void ReturnSubMeshVertsGroupToPool(SubMeshIndexGroup faceGroup)
+        private void ReturnSubMeshVertsGroupToPool(List<int> faceGroup)
         {
             subMeshVertPool.Push(faceGroup);
         }
@@ -189,23 +185,11 @@ namespace AbyssEditor.Scripts.Mesh_Gen {
         }
     }
     
-    //TODO: Move to seperate file pls
-    public class SubMeshIndexGroup
-    {
-        public readonly int[] submeshVertsIndexes = new int[70000];
-        public int count;
-        public void Add(ref int vertIndex)
-        {
-            submeshVertsIndexes[count] = vertIndex;
-            count++;
-        }
-    }
-    
     public class MeshData
     {
         public int[] blockTypes;
         public List<Vector3> vertices;
-        public List<SubMeshIndexGroup> subMeshVertIndexesGroups;
+        public List<List<int>> subMeshVertIndexesGroups;
         public MeshBuilder builder;
     }
 }
