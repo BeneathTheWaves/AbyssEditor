@@ -1,12 +1,17 @@
-﻿using AbyssEditor.Scripts.CursorTools;
+﻿using System.Collections;
+using System.Threading.Tasks;
+using AbyssEditor.Scripts.CursorTools;
 using AbyssEditor.Scripts.CursorTools.Brush;
 using AbyssEditor.Scripts.Mesh_Gen;
+using AbyssEditor.Scripts.Mesh_Gen.Datas;
 using AbyssEditor.Scripts.Octrees;
 using AbyssEditor.Scripts.TerrainMaterials;
 using AbyssEditor.Scripts.VoxelTech.VoxelGrids;
 using AbyssEditor.Scripts.VoxelTech.VoxelGrids.Brushes;
 using Unity.Collections;
+using UnityEditor.VersionControl;
 using UnityEngine;
+using Task = System.Threading.Tasks.Task;
 namespace AbyssEditor.Scripts.VoxelTech.VoxelMesh
 {
     public class PointContainer
@@ -76,12 +81,18 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelMesh
             return null;
         }
         
-        public void UpdateMesh()
+        public async Task UpdateMeshAsync()
         {
             grid.GetFullGrids(out NativeArray<byte> _tempDensities, out NativeArray<byte> _tempTypes);
-
+            
             Vector3 offset = octreeIndex * VoxelWorld.RESOLUTION;
-            mesh = MeshBuilder.builder.GenerateMesh(_tempDensities, _tempTypes, grid.fullGridDim, offset, out int[] blocktypes);
+            
+            QuadFace[] faces = FaceGPUBuilder.builder.GenerateFaces(_tempDensities, _tempTypes, grid.fullGridDim, offset);
+            
+            AsyncMeshBuilder.MeshResult meshRequest = await AsyncMeshBuilder.builder.RequestMesh(faces, grid.fullGridDim, offset);
+            
+            Mesh mesh = meshRequest.mesh;
+            int[] blocktypes = meshRequest.blockTypes;
 
             // update data
             if (mesh.triangles.Length > 0)
@@ -124,5 +135,9 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelMesh
 
             return VoxelGrid.GetVoxel(grid.typeGrid, x + 1, y + 1, z + 1, VoxelGrid.GRID_PADDING);
         }
+    }
+    public class MeshUpdateHandle
+    {
+        public bool isComplete;
     }
 }

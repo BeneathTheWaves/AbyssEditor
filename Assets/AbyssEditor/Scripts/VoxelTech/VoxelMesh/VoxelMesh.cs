@@ -1,4 +1,7 @@
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using AbyssEditor.Scripts.CursorTools;
 using AbyssEditor.Scripts.CursorTools.Brush;
 using AbyssEditor.Scripts.Octrees;
@@ -70,9 +73,9 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelMesh
 
         public void Regenerate()
         {
-            for (int i = 0; i < pointContainers.Length; i++)
+            foreach (var container in pointContainers)
             {
-                pointContainers[i].UpdateMesh();
+                container.UpdateMeshAsync();
             }
         }
 

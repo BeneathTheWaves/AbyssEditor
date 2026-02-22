@@ -2,8 +2,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using AbyssEditor.Scripts.CursorTools;
 using AbyssEditor.Scripts.CursorTools.Brush;
+using AbyssEditor.Scripts.Mesh_Gen;
 using AbyssEditor.Scripts.Octrees;
 using AbyssEditor.Scripts.SaveSystem;
 using AbyssEditor.Scripts.TaskSystem;
@@ -24,6 +26,8 @@ namespace AbyssEditor.Scripts.VoxelTech {
             metaspace = this;
             VoxelGrid.PrecomputeNeighborOffsets();
             VoxelGrid.PrecomputePaddingVoxels();
+
+            new AsyncMeshBuilder();//This is kinda scuffed, change it
         }
 
         public void AddRegion(Vector3Int startBatch, Vector3Int endBatch) {
@@ -115,12 +119,12 @@ namespace AbyssEditor.Scripts.VoxelTech {
                 DebugOverlay.LogMessage($"Neighbor Copy took {elapsedMs2:F4}ms");
                 sw.Restart();
             }
+            sw.Restart();
 
-            foreach(PointContainer pointContainer in modifiedContainers) {
-                pointContainer.UpdateMesh();
+            foreach (var container in modifiedContainers)
+            {
+                container.UpdateMeshAsync();
             }
-            
-            if (sw == null) return;
             
             sw.Stop();
             double elapsedMs3 = (double)sw.ElapsedTicks / System.Diagnostics.Stopwatch.Frequency * 1000.0;
@@ -272,6 +276,7 @@ namespace AbyssEditor.Scripts.VoxelTech {
             }
             BrushJob.DisposeNativeArrayPool();
             VoxelGrid.neighboursToCheckInSmooth.Dispose();
+            AsyncMeshBuilder.builder.Dispose();
         }
         
         public VoxelMesh.VoxelMesh TryGetVoxelMesh(Vector3Int batchIndex)
