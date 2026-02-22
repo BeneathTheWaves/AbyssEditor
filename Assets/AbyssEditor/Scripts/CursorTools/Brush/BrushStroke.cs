@@ -1,4 +1,5 @@
 using UnityEngine;
+
 namespace AbyssEditor.Scripts.CursorTools.Brush
 {
     public struct BrushStroke {

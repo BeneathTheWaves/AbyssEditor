@@ -1,8 +1,4 @@
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using AbyssEditor.Scripts.CursorTools;
 using AbyssEditor.Scripts.CursorTools.Brush;
 using AbyssEditor.Scripts.Octrees;
 using AbyssEditor.Scripts.VoxelTech.VoxelGrids;

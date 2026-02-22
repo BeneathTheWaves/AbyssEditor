@@ -1,6 +1,5 @@
 ﻿using System;
 using AbyssEditor.Scripts.InputMaps;
-using AbyssEditor.Scripts.UI.HotBar;
 using AbyssEditor.Scripts.UI.HotBar.HotBarButtons;
 using AbyssEditor.Scripts.VoxelTech;
 using UnityEngine;
@@ -85,12 +84,11 @@ namespace AbyssEditor.Scripts.CursorTools.Brush {
         {
             if (blockInput)
             {
-                DisableTool();
+                DisableBrushGizmo();
                 return;
             }
             
-            EnableTool();
-            BrushAction(input.ActivateBrush.IsPressed());
+            BrushAction(input.ActivateBrush.IsInProgress());
         }
 
         private void OnScrollWheel(InputAction.CallbackContext ctx)

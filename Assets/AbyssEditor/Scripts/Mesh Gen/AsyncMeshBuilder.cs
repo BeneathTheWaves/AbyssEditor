@@ -31,7 +31,6 @@ namespace AbyssEditor.Scripts.Mesh_Gen
         
         public async Task<MeshResult> RequestMesh(NativeArray<byte> densityGrid, NativeArray<byte> typeGrid, Vector3Int resolution, Vector3 offset)
         {
-            
             //get faces from GPU
             QuadFace[] faces = FaceGPUBuilder.builder.GenerateFaces(densityGrid, typeGrid, resolution, offset);
             

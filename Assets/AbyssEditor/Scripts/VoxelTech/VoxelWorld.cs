@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using AbyssEditor.Scripts.BatchOutline;
+using AbyssEditor.Scripts.CursorTools;
 using AbyssEditor.Scripts.TaskSystem;
 using AbyssEditor.Scripts.UI;
 using UnityEngine;
@@ -42,18 +43,26 @@ namespace AbyssEditor.Scripts.VoxelTech {
         
         IEnumerator OctreePatchCoroutine(byte[] patchBytes, List<Vector3Int> batchesInPatch)
         {
+            CursorToolManager.main.RegisterInputBlock(this);
+            
             yield return StartCoroutine(VoxelMetaspace.metaspace.OctreePatchReadCoroutine(patchBytes, batchesInPatch));
             
             BatchOutlineManager.main.ResetOutlines();
+            
+            CursorToolManager.main.UnregisterInputBlock(this);
         }
         
         IEnumerator RegionLoadCoroutine(bool allowModded, Vector3Int startBatch, Vector3Int endBatch)
         {
+            CursorToolManager.main.RegisterInputBlock(this);
+            
             VoxelMetaspace.metaspace.AddRegion(startBatch, endBatch);
             
             yield return StartCoroutine(VoxelMetaspace.metaspace.RegionReadCoroutine(allowModded, startBatch, endBatch));
             
             BatchOutlineManager.main.ResetOutlines();
+            
+            CursorToolManager.main.UnregisterInputBlock(this);
         }
 
         public static void ExportRegion(int mode) {

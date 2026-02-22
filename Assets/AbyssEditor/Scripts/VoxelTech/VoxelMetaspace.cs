@@ -46,6 +46,7 @@ namespace AbyssEditor.Scripts.VoxelTech {
 
         public IEnumerator RemoveBatch(Vector3Int batchIndex)
         {
+            CursorToolManager.main.RegisterInputBlock(this);
             if (TryGetVoxelMesh(batchIndex, out VoxelMesh.VoxelMesh voxelMesh))
             {
                 meshes.Remove(voxelMesh);
@@ -59,6 +60,8 @@ namespace AbyssEditor.Scripts.VoxelTech {
             yield return RegenerateNeighboringVoxelGridsCache();
             
             yield return RegenerateMeshesCoroutine(reloadBoundariesOnComplete: true);
+            
+            CursorToolManager.main.UnregisterInputBlock(this);
         }
 
         public VoxelGrid TryGetVoxelGrid(Vector3Int batchIndex, Vector3Int containerIndex)

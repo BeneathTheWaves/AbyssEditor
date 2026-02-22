@@ -12,17 +12,18 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelMesh
 {
     public class PointContainer
     {
-        public static int MeshesUpdatingCounter = 0;
-        
-        Vector3Int batchIndex;
-        Vector3Int octreeIndex;
+        public static bool isAnyUpdatingMeshes => meshesUpdatingCounter > 0;
+        private static int meshesUpdatingCounter = 0;
+
+        private readonly Vector3Int batchIndex;
+        private readonly Vector3Int octreeIndex;
 
         // density data
         public VoxelGrid grid;
 
         // other objects
         public Bounds bounds;
-        public GameObject meshObj;
+        private GameObject meshObj;
 
         private Mesh mesh;
         private MeshFilter meshFilter;
@@ -88,7 +89,7 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelMesh
         
         public async Task UpdateMeshAsync()
         {
-            MeshesUpdatingCounter++;
+            meshesUpdatingCounter++;
             
             grid.GetFullGrids(out NativeArray<byte> gridDensity, out NativeArray<byte> gridType);
             
@@ -119,7 +120,7 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelMesh
                 meshFilter.mesh = null;
                 meshCollider.sharedMesh = null;
             }
-            MeshesUpdatingCounter--;
+            meshesUpdatingCounter--;
         }
 
         public void UpdateNeighborData()

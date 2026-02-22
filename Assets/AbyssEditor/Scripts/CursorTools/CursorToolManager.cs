@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using AbyssEditor.Scripts.CursorTools.Brush;
 using AbyssEditor.Scripts.UI.HotBar.HotBarButtons;
+using AbyssEditor.Scripts.VoxelTech.VoxelMesh;
 using UnityEngine;
 using UnityEngine.EventSystems;
 namespace AbyssEditor.Scripts.CursorTools
@@ -70,7 +71,7 @@ namespace AbyssEditor.Scripts.CursorTools
             inputBlockingScripts.Remove(script);
         }
 
-        private bool IsInputBlocked() => IsMouseOverUI() || HadBlockingScripts();
+        private bool IsInputBlocked() => IsMouseOverUI() || HadBlockingScripts() || PointContainer.isAnyUpdatingMeshes;
 
         private bool IsMouseOverUI() => EventSystem.current.IsPointerOverGameObject();
         
