@@ -12,7 +12,7 @@ namespace AbyssEditor.Scripts.CursorTools.Brush {
         private static readonly int blendRadius = Shader.PropertyToID("_BlendRadius");
         private static readonly int cursorWorldPos = Shader.PropertyToID("_CursorWorldPos");
         public const float MIN_BRUSH_SIZE = 1;
-        public const float MAX_BRUSH_SIZE = 32;
+        public const float MAX_BRUSH_SIZE = 64;
         private const float MIN_BRUSH_STRENGTH = 0;
         private const float MAX_BRUSH_STRENGTH = 1;
 

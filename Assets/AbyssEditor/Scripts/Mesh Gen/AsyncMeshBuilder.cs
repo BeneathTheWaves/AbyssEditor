@@ -1,10 +1,9 @@
 using System;
 using System.Collections.Concurrent;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using AbyssEditor.Scripts.Mesh_Gen.Datas;
-using AbyssEditor.Scripts.VoxelTech;
+using Unity.Collections;
 using UnityEngine;
 using UnityEngine.Rendering;
 
@@ -15,6 +14,7 @@ namespace AbyssEditor.Scripts.Mesh_Gen
         public static AsyncMeshBuilder builder;
         
         private const int WORKER_COUNT = 16;
+        private int activeWorkerCount;
         
         private readonly BlockingCollection<MeshRequest> queue = new();
         private readonly Thread[] workers = new Thread[WORKER_COUNT];
@@ -30,8 +30,13 @@ namespace AbyssEditor.Scripts.Mesh_Gen
             }
         }
         
-        public async Task<MeshResult> RequestMesh(QuadFace[] faces, Vector3Int resolution, Vector3 offset)
+        public async Task<MeshResult> RequestMesh(NativeArray<byte> densityGrid, NativeArray<byte> typeGrid, Vector3Int resolution, Vector3 offset)
         {
+            
+            //get faces from GPU
+            QuadFace[] faces = FaceGPUBuilder.builder.GenerateFaces(densityGrid, typeGrid, resolution, offset);
+            
+            //Build mesh from faces
             TaskCompletionSource<MeshData> meshBuildTcs = new();
             queue.Add(new MeshRequest
             {
@@ -59,31 +64,38 @@ namespace AbyssEditor.Scripts.Mesh_Gen
             }
             mesh.RecalculateNormals();
             mesh.RecalculateTangents();
-            data.builder.Locked = false;
+            data.builder.SetLocked(false);//release the builder back to the thread
             return new MeshResult(mesh, data.blockTypes);
         }
 
         
         private void WorkerLoop()
         {
-            var builder = new MeshBuilder();//each thread gets its own builder
+            var meshBuilder = new MeshBuilder();//each thread gets its own builder
 
             while (running)
             {
                 try
                 {
                     MeshRequest request = queue.Take(); // may throw if CompleteAdding called
-                    MeshData data = builder.MakeMeshData(request.faces, request.resolution, request.offset);
+                    Interlocked.Increment(ref activeWorkerCount);
+                    MeshData data = meshBuilder.MakeMeshData(request.faces, request.resolution, request.offset);
                     request.tcs.TrySetResult(data);
 
-                    while (builder.Locked)
+                    lock (meshBuilder)//wait for the main thread to release the builder back
                     {
-                        Thread.Sleep(1);
+                        while (meshBuilder.Locked)
+                        {
+                            Monitor.Wait(meshBuilder);
+                        }
                     }
+                    
+                    Interlocked.Decrement(ref activeWorkerCount);
                 }
                 catch (InvalidOperationException)
                 {
-                    // queue is empty & CompleteAdding was called
+                    // happens if the thread is started with no value for Take()
+                    // when we are trying to dispose the thread
                     break;
                 }
             }

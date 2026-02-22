@@ -1,17 +1,13 @@
-﻿using System.Collections;
-using System.Threading.Tasks;
-using AbyssEditor.Scripts.CursorTools;
-using AbyssEditor.Scripts.CursorTools.Brush;
+﻿using AbyssEditor.Scripts.CursorTools.Brush;
 using AbyssEditor.Scripts.Mesh_Gen;
-using AbyssEditor.Scripts.Mesh_Gen.Datas;
 using AbyssEditor.Scripts.Octrees;
 using AbyssEditor.Scripts.TerrainMaterials;
 using AbyssEditor.Scripts.VoxelTech.VoxelGrids;
 using AbyssEditor.Scripts.VoxelTech.VoxelGrids.Brushes;
 using Unity.Collections;
-using UnityEditor.VersionControl;
 using UnityEngine;
 using Task = System.Threading.Tasks.Task;
+
 namespace AbyssEditor.Scripts.VoxelTech.VoxelMesh
 {
     public class PointContainer
@@ -87,9 +83,7 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelMesh
             
             Vector3 offset = octreeIndex * VoxelWorld.RESOLUTION;
             
-            QuadFace[] faces = FaceGPUBuilder.builder.GenerateFaces(_tempDensities, _tempTypes, grid.fullGridDim, offset);
-            
-            AsyncMeshBuilder.MeshResult meshRequest = await AsyncMeshBuilder.builder.RequestMesh(faces, grid.fullGridDim, offset);
+            AsyncMeshBuilder.MeshResult meshRequest = await AsyncMeshBuilder.builder.RequestMesh(_tempDensities, _tempTypes, grid.fullGridDim, offset);
             
             Mesh mesh = meshRequest.mesh;
             int[] blocktypes = meshRequest.blockTypes;

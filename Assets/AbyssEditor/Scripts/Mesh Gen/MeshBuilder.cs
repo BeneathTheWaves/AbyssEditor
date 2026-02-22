@@ -1,18 +1,16 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Threading;
 using AbyssEditor.Scripts.Mesh_Gen.Datas;
 using AbyssEditor.Scripts.VoxelTech;
-using AbyssEditor.Scripts.VoxelTech.VoxelGrids;
-
 using UnityEngine;
-using UnityEngine.Rendering;
 
 namespace AbyssEditor.Scripts.Mesh_Gen {
     public class MeshBuilder
     {
 
-        public bool Locked = false;
+        public bool Locked { get; private set; }
         
         private const int MAX_ADJACENT_FACES = 24;
         private const int SUBMESH_BLOCK_TYPES_CAPACITY = 20;
@@ -93,10 +91,6 @@ namespace AbyssEditor.Scripts.Mesh_Gen {
                     submeshVertsArray.Add(ref verticesOfNodes[Globals.LinearIndex((int)quadFaceNow[3].x, (int)quadFaceNow[3].y, (int)quadFaceNow[3].z, resolution)].vertIndex);
                     countIndexes += 4;
                 }
-                
-                
-                //mesh.SetIndices(submeshVerts.ToArray(), MeshTopology.Quads, k, false);
-                //mesh.SetSubMesh(k, new SubMeshDescriptor(nextStart, countIndexes, MeshTopology.Quads));
                 nextStart += countIndexes;
                 
                 submeshFaces.Remove(blocktype, out QuadFaceGroup group);
@@ -180,6 +174,18 @@ namespace AbyssEditor.Scripts.Mesh_Gen {
         private void ReturnQuadFaceGroupToPool(QuadFaceGroup faceGroup)
         {
             faceGroupPool.Push(faceGroup);
+        }
+        
+        public void SetLocked(bool value)
+        {
+            lock (this)
+            {
+                Locked = value;
+                if (!Locked)
+                {
+                    Monitor.PulseAll(this); // wake any waiting threads
+                }
+            }
         }
     }
     

@@ -1,7 +1,7 @@
-using System;
 using AbyssEditor.Scripts.Mesh_Gen.Datas;
 using Unity.Collections;
 using UnityEngine;
+
 namespace AbyssEditor.Scripts.Mesh_Gen
 {
     public class FaceGPUBuilder : MonoBehaviour

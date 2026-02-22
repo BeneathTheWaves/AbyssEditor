@@ -128,7 +128,7 @@ namespace AbyssEditor.Scripts.VoxelTech {
             
             sw.Stop();
             double elapsedMs3 = (double)sw.ElapsedTicks / System.Diagnostics.Stopwatch.Frequency * 1000.0;
-            DebugOverlay.LogMessage($"Mesh Rebuild took {elapsedMs3:F4}ms");
+            DebugOverlay.LogMessage($"Scheduled Rebuilds in {elapsedMs3:F4}ms");
         }
 
         public IEnumerator RegionReadCoroutine(bool allowModded, Vector3Int startBatch, Vector3Int endBatch, EditorProcessHandle statusHandle = null) {
