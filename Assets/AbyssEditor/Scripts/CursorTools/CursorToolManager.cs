@@ -71,7 +71,7 @@ namespace AbyssEditor.Scripts.CursorTools
             inputBlockingScripts.Remove(script);
         }
 
-        private bool IsInputBlocked() => IsMouseOverUI() || HadBlockingScripts() || PointContainer.isAnyUpdatingMeshes;
+        private bool IsInputBlocked() => IsMouseOverUI() || HadBlockingScripts();
 
         private bool IsMouseOverUI() => EventSystem.current.IsPointerOverGameObject();
         

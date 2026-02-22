@@ -52,7 +52,6 @@ namespace AbyssEditor.Scripts.Mesh_Gen
             Mesh mesh = new();
             mesh.subMeshCount = data.blockTypes.Length;
             mesh.vertices = data.vertices.ToArray();
-            //mesh.RecalculateBounds();
 
             int nextStart = 0;
             for (int materialIndex = 0; materialIndex < data.blockTypes.Length; materialIndex++)

@@ -138,7 +138,7 @@ namespace AbyssEditor.Scripts.CursorTools.Brush {
                 if (stroke.strokeLength == 0) stroke.FirstStroke(hit.point, currentBrushSize, currentBrushStrength, activeMode);
                 else stroke.ContinueStroke(hit.point, activeMode);
 
-                VoxelMetaspace.metaspace.ApplyJobBasedDensityAction(stroke);
+                VoxelMetaspace.metaspace.ApplyJobBasedDensityActionAsync(stroke);
             }
         }
         

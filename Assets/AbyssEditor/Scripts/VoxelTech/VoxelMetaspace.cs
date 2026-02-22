@@ -74,8 +74,10 @@ namespace AbyssEditor.Scripts.VoxelTech {
             return null;
         }
         
-        public void ApplyJobBasedDensityAction(BrushStroke stroke)
+        public async Task ApplyJobBasedDensityActionAsync(BrushStroke stroke)
         {
+            CursorToolManager.main.RegisterInputBlock(this);
+            
             System.Diagnostics.Stopwatch sw = null;
             if (Preferences.data.enableBrushLogs)
             {
@@ -123,11 +125,15 @@ namespace AbyssEditor.Scripts.VoxelTech {
                 sw.Restart();
             }
 
-            foreach (var container in modifiedContainers)
+            var tasks = new List<Task>();
+            foreach (PointContainer container in modifiedContainers)
             {
-                _ = container.UpdateMeshAsync();
+                tasks.Add(container.UpdateMeshAsync());
             }
+            await Task.WhenAll(tasks);
 
+            CursorToolManager.main.UnregisterInputBlock(this);
+            
             if (sw == null) return;
             
             sw.Stop();
