@@ -57,7 +57,7 @@ namespace AbyssEditor.Scripts.Mesh_Gen {
             int numVoxels = (pointCounts.x - 1) * (pointCounts.y - 1) * (pointCounts.z - 1);
             int maxFaceCount = numVoxels * 6;
 
-            // Always create buffers in editor (since buffers are released immediately to prevent memory leak)
+            // Always create buffers in editor (since buffers are released immediately to MeshStreamingprevent memory leak)
             // Otherwise, only create if null or if size has changed
             bool bufferSizeChanged = false;
             if (voxelBuffer != null) bufferSizeChanged = numPoints != voxelBuffer.count;
@@ -183,19 +183,11 @@ namespace AbyssEditor.Scripts.Mesh_Gen {
                 for (int i = 0; i < faceGroup.faceCount; i++) {
                     ref QuadFace quadFaceNow = ref faceGroup.faces[i];
                     if (!quadFaceNow.IsPartOfMesh()) continue;
-
-                    int[] vertIndices = {
-                        Globals.LinearIndex((int)quadFaceNow[0].x, (int)quadFaceNow[0].y, (int)quadFaceNow[0].z, resolution),
-                        Globals.LinearIndex((int)quadFaceNow[1].x, (int)quadFaceNow[1].y, (int)quadFaceNow[1].z, resolution),
-                        Globals.LinearIndex((int)quadFaceNow[2].x, (int)quadFaceNow[2].y, (int)quadFaceNow[2].z, resolution),
-                        Globals.LinearIndex((int)quadFaceNow[3].x, (int)quadFaceNow[3].y, (int)quadFaceNow[3].z, resolution)
-                    };
-                    
                     // A, B, C, D
-                    submeshVerts.Add(verticesOfNodes[vertIndices[0]].vertIndex);
-                    submeshVerts.Add(verticesOfNodes[vertIndices[1]].vertIndex);
-                    submeshVerts.Add(verticesOfNodes[vertIndices[2]].vertIndex);
-                    submeshVerts.Add(verticesOfNodes[vertIndices[3]].vertIndex);
+                    submeshVerts.Add(verticesOfNodes[Globals.LinearIndex((int)quadFaceNow[0].x, (int)quadFaceNow[0].y, (int)quadFaceNow[0].z, resolution)].vertIndex);
+                    submeshVerts.Add(verticesOfNodes[Globals.LinearIndex((int)quadFaceNow[1].x, (int)quadFaceNow[1].y, (int)quadFaceNow[1].z, resolution)].vertIndex);
+                    submeshVerts.Add(verticesOfNodes[Globals.LinearIndex((int)quadFaceNow[2].x, (int)quadFaceNow[2].y, (int)quadFaceNow[2].z, resolution)].vertIndex);
+                    submeshVerts.Add(verticesOfNodes[Globals.LinearIndex((int)quadFaceNow[3].x, (int)quadFaceNow[3].y, (int)quadFaceNow[3].z, resolution)].vertIndex);
                     countIndexes += 4;
                 }
                 
