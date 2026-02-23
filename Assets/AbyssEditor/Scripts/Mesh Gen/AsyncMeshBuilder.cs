@@ -32,7 +32,7 @@ namespace AbyssEditor.Scripts.Mesh_Gen
             }
         }
         
-        public async Task<MeshResult> RequestMesh(NativeArray<byte> densityGrid, NativeArray<byte> typeGrid, Vector3Int resolution, Vector3 offset)
+        public async Task<MeshResult> RequestMesh(NativeArray<byte> densityGrid, NativeArray<byte> typeGrid, Vector3Int resolution, Vector3 offset, Mesh meshObjToReuse = null)
         {
             //get faces from GPU
             QuadFace[] faces = FaceGPUBuilder.builder.GenerateFaces(densityGrid, typeGrid, resolution, offset);
@@ -48,8 +48,18 @@ namespace AbyssEditor.Scripts.Mesh_Gen
             });
 
             MeshData data = await meshBuildTcs.Task;
-            
-            Mesh mesh = new();
+
+
+            Mesh mesh = meshObjToReuse;
+            if (!meshObjToReuse)//null
+            {
+                mesh = new Mesh();
+            }
+            else
+            {
+                mesh.Clear();
+            }
+
             mesh.subMeshCount = data.blockTypes.Length;
             mesh.vertices = data.vertices.ToArray();
 

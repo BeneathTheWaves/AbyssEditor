@@ -49,6 +49,9 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelMesh
             meshCollider = meshObj.AddComponent<MeshCollider>();
             meshObj.transform.SetParent(batchTransform);
             meshObj.transform.localPosition = Vector3.zero;
+            mesh = new Mesh();
+            meshFilter.sharedMesh = mesh;
+            meshCollider.sharedMesh = mesh;
         }
 
         public void SetOctree(Octree octree)
@@ -90,17 +93,16 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelMesh
             
             Vector3 offset = octreeIndex * VoxelWorld.RESOLUTION;
             
-            AsyncMeshBuilder.MeshResult meshRequest = await AsyncMeshBuilder.builder.RequestMesh(gridDensity, gridType, grid.fullGridDim, offset);
+            AsyncMeshBuilder.MeshResult meshRequest = await AsyncMeshBuilder.builder.RequestMesh(gridDensity, gridType, grid.fullGridDim, offset, mesh);
             
-            Mesh mesh = meshRequest.mesh;
+            Mesh newMesh = meshRequest.mesh;
             int[] blocktypes = meshRequest.blockTypes;
 
             // update data
-            if (mesh.triangles.Length > 0)
+            if (newMesh.triangles.Length > 0)
             {
-                meshFilter.sharedMesh = mesh;
-
-                meshCollider.sharedMesh = mesh;
+                meshFilter.sharedMesh = newMesh;
+                meshCollider.sharedMesh = newMesh;
                 
                 Material[] materials = new Material[blocktypes.Length];
                 for (int b = 0; b < blocktypes.Length; b++)
@@ -112,8 +114,7 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelMesh
             }
             else
             {
-                meshFilter.mesh = null;
-                meshCollider.sharedMesh = null;
+                mesh.Clear();
             }
         }
 
