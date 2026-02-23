@@ -3,18 +3,20 @@ using UnityEngine;
 namespace AbyssEditor.Scripts.TerrainMaterials
 {
     public class BlocktypeMaterial {
-        public string originalName;
-        public string prettyName;
-        public int blocktype;
-        public bool hasDeco;
+        private readonly string originalName;
+        public readonly string prettyName;
+        public readonly int blockType;
+        public readonly bool hasDeco;
         private bool useCap;
         public Dictionary<long, string> propertyFromPathIDMap = new Dictionary<long, string>();
-        public Texture2D[] textures;
+        private Texture2D[] textures;
 
-        public BlocktypeMaterial(string _originalName, string _prettyName, int _blocktype, bool _hasDeco) {
+        private Material madeMaterial;
+
+        public BlocktypeMaterial(string _originalName, string _prettyName, int _blockType, bool _hasDeco) {
             originalName = _originalName;
             prettyName = _prettyName;
-            blocktype = _blocktype;
+            blockType = _blockType;
             hasDeco = _hasDeco;
         }
 
@@ -62,7 +64,10 @@ namespace AbyssEditor.Scripts.TerrainMaterials
             }
         } 
 
-        public Material MakeMaterial() {
+        public Material GetUnityMaterial()
+        {
+            if (madeMaterial) return madeMaterial;
+            
             Material mat;
             if (useCap) {
                 mat = new Material(Globals.instance.batchCappedMat);
@@ -81,6 +86,8 @@ namespace AbyssEditor.Scripts.TerrainMaterials
             
             mat.name = originalName;
 
+            madeMaterial = mat;
+            
             return mat;
         }
     }

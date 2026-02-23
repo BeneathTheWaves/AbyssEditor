@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-using AssetStudio.AssetStudio;
 using AbyssEditor.Scripts.TaskSystem;
 using AbyssEditor.Scripts.UI;
 using AbyssEditor.Scripts.VoxelTech;
@@ -177,7 +176,7 @@ namespace AbyssEditor.Scripts.TerrainMaterials
         
         public static Material GetMaterialForType(int b) {
             if (instance.contentLoaded && instance.blocktypesData[b] != null && instance.blocktypesData[b].ExistsInGame) {
-                return instance.blocktypesData[b].MakeMaterial();
+                return instance.blocktypesData[b].GetUnityMaterial();
             }
 
             Material colorMat = new Material(Globals.GetBatchMat());

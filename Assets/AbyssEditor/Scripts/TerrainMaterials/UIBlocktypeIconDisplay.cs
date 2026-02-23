@@ -21,18 +21,18 @@ namespace AbyssEditor.Scripts.TerrainMaterials
                 get
                 {
                     if (!favorited.HasValue)
-                        favorited = Preferences.data.favoritedMaterials.Contains(mat.blocktype);
+                        favorited = Preferences.data.favoritedMaterials.Contains(mat.blockType);
                     return favorited.Value;
                 }
                 set
                 {
                     if (value)
                     {
-                        Preferences.data.favoritedMaterials.Add(mat.blocktype);
+                        Preferences.data.favoritedMaterials.Add(mat.blockType);
                     }
                     else
                     {
-                        Preferences.data.favoritedMaterials.Remove(mat.blocktype);
+                        Preferences.data.favoritedMaterials.Remove(mat.blockType);
                     }
                     Preferences.SavePreferences();
                     favorited = value;
@@ -50,7 +50,7 @@ namespace AbyssEditor.Scripts.TerrainMaterials
                     materialName = string.Concat(materialName.Split(' ')[0], "-deco");
                 }
 
-                string title = $"{mat.blocktype}) {materialName}";
+                string title = $"{mat.blockType}) {materialName}";
                 gameObject.GetComponentInChildren<TextMeshProUGUI>().text = title;
 
                 gameObject.GetComponent<Button>().onClick.AddListener(OnMaterialSelected);
@@ -79,7 +79,7 @@ namespace AbyssEditor.Scripts.TerrainMaterials
 
             public void OnMaterialSelected()
             {
-                CursorToolManager.main.brushTool.SetBrushMaterial((byte)mat.blocktype);
+                CursorToolManager.main.brushTool.SetBrushMaterial((byte)mat.blockType);
             }
 
             public void OnFavoriteButtonPressed()

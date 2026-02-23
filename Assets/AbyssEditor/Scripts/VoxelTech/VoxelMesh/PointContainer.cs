@@ -103,8 +103,6 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelMesh
             AsyncMeshBuilder.MeshResult meshRequest = await AsyncMeshBuilder.builder.RequestMesh(gridDensity, gridType, grid.fullGridDim, offset, mesh);
             
             int[] blocktypes = meshRequest.blockTypes;
-
-
             
             // update materials
             if (mesh.triangles.Length > 0)
