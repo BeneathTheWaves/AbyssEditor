@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using AbyssEditor.Scripts.InputMaps;
 using AbyssEditor.Scripts.UI.HotBar.HotBarButtons;
 using AbyssEditor.Scripts.VoxelTech;
@@ -7,7 +8,6 @@ using UnityEngine.InputSystem;
 
 namespace AbyssEditor.Scripts.CursorTools.Brush {
     public class BrushTool : ICursorTool {
-        private static readonly int wireframeColor = Shader.PropertyToID("_WireframeColor");
         private static readonly int blendRadius = Shader.PropertyToID("_BlendRadius");
         private static readonly int cursorWorldPos = Shader.PropertyToID("_CursorWorldPos");
         public const float MIN_BRUSH_SIZE = 1;
@@ -26,9 +26,11 @@ namespace AbyssEditor.Scripts.CursorTools.Brush {
         
         private BrushMode activeMode;
         private BrushStroke stroke;
-        //
+        
         private AbyssEditorInput.BrushActions input = new AbyssEditorInput().Brush;
         private GameObject brushAreaObject;
+
+        private bool brushActionHappening = false;
 
         public BrushTool()
         {
@@ -82,8 +84,14 @@ namespace AbyssEditor.Scripts.CursorTools.Brush {
         
         public void HandleToolUpdate(bool blockInput)
         {
+            if (brushActionHappening)
+            {
+                //we want the gizmo to stay alive despite the input being blocked
+                return;
+            }
             if (blockInput)
             {
+                DisableBrushGizmo();
                 return;
             }
             
@@ -138,8 +146,18 @@ namespace AbyssEditor.Scripts.CursorTools.Brush {
                 if (stroke.strokeLength == 0) stroke.FirstStroke(hit.point, currentBrushSize, currentBrushStrength, activeMode);
                 else stroke.ContinueStroke(hit.point, activeMode);
 
-                _ = VoxelMetaspace.metaspace.ApplyJobBasedDensityActionAsync(stroke);
+                _ = ApplyBrushActionToMetaspace();
             }
+        }
+
+        /// <summary>
+        /// The only reason this is able to keep track is because only 1 brush action can happen at a time
+        /// </summary>
+        private async Task ApplyBrushActionToMetaspace()
+        {
+            brushActionHappening = true;
+            await VoxelMetaspace.metaspace.ApplyJobBasedDensityActionAsync(stroke);
+            brushActionHappening = false;
         }
         
         private void EnableBrushGizmo(Vector3 position, Vector3 normal) {

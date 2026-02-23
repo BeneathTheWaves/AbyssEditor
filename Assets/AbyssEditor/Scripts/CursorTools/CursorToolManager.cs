@@ -20,6 +20,8 @@ namespace AbyssEditor.Scripts.CursorTools
 
         private ICursorTool activeTool;
 
+        private bool activeToolHidden;
+
         private void Awake()
         {
             main = this;
@@ -71,10 +73,10 @@ namespace AbyssEditor.Scripts.CursorTools
             inputBlockingScripts.Remove(script);
         }
 
-        private bool IsInputBlocked() => IsMouseOverUI() || HadBlockingScripts();
+        private bool IsInputBlocked() => IsMouseOverUI() || HasBlockingScripts();
 
         private bool IsMouseOverUI() => EventSystem.current.IsPointerOverGameObject();
         
-        private bool HadBlockingScripts() => inputBlockingScripts.Count > 0;
+        private bool HasBlockingScripts() => inputBlockingScripts.Count > 0;
     }
 }
