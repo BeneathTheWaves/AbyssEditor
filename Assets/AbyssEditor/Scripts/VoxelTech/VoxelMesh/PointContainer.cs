@@ -41,6 +41,11 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelMesh
             CreateMeshObject(batchTransform);
         }
 
+        public void DisposeMesh()
+        {
+            Object.Destroy(mesh);
+        } 
+
         void CreateMeshObject(Transform batchTransform)
         {
             meshObj = new GameObject($"OctreeMesh-");
@@ -50,6 +55,7 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelMesh
             meshObj.transform.SetParent(batchTransform);
             meshObj.transform.localPosition = Vector3.zero;
             mesh = new Mesh();
+            mesh.MarkDynamic();
             meshFilter.sharedMesh = mesh;
             meshCollider.sharedMesh = mesh;
         }
@@ -93,16 +99,19 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelMesh
             
             Vector3 offset = octreeIndex * VoxelWorld.RESOLUTION;
             
+            //Note, this will overwrite the old mesh so "mesh" becomes the new one inherently
             AsyncMeshBuilder.MeshResult meshRequest = await AsyncMeshBuilder.builder.RequestMesh(gridDensity, gridType, grid.fullGridDim, offset, mesh);
             
-            Mesh newMesh = meshRequest.mesh;
             int[] blocktypes = meshRequest.blockTypes;
 
-            // update data
-            if (newMesh.triangles.Length > 0)
+
+            
+            // update materials
+            if (mesh.triangles.Length > 0)
             {
-                meshFilter.sharedMesh = newMesh;
-                meshCollider.sharedMesh = newMesh;
+                //This is the only way to force the collider to update. We just re-set the reference to update itself
+                meshCollider.enabled = true;
+                meshCollider.sharedMesh = mesh;
                 
                 Material[] materials = new Material[blocktypes.Length];
                 for (int b = 0; b < blocktypes.Length; b++)
@@ -114,7 +123,7 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelMesh
             }
             else
             {
-                mesh.Clear();
+                meshCollider.enabled = false;
             }
         }
 

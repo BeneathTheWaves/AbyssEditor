@@ -50,7 +50,7 @@ namespace AbyssEditor.Scripts.VoxelTech {
             if (TryGetVoxelMesh(batchIndex, out VoxelMesh.VoxelMesh voxelMesh))
             {
                 meshes.Remove(voxelMesh);
-                voxelMesh.DisposeGrids();
+                voxelMesh.Dispose();
 
                 Debug.Log("REMOVED: " + voxelMesh.name);
                 
@@ -283,7 +283,7 @@ namespace AbyssEditor.Scripts.VoxelTech {
             Debug.Log("Disposing Native Arrays");
             foreach (VoxelMesh.VoxelMesh mesh in meshes)
             {
-                mesh.DisposeGrids();
+                mesh.Dispose();
             }
             BrushJob.DisposeNativeArrayPool();
             VoxelGrid.neighboursToCheckInSmooth.Dispose();

@@ -144,11 +144,12 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelMesh
         /// <summary>
         /// This should be called when closing the player to free the memory
         /// </summary>
-        public void DisposeGrids()
+        public void Dispose()
         {
             foreach (PointContainer pointContainer in pointContainers)
             {
                 pointContainer.grid.DisposeGrids();
+                pointContainer.DisposeMesh();
             }
         }
 
@@ -163,6 +164,7 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelMesh
             Vector3Int max = VoxelWorld.GetBatchOrigin(batchIndex) + (Vector3Int.one * VoxelWorld.BATCH_WIDTH);
             return max;
         }
+        
         
         public void RedrawBoundaryPlanes()
         {
@@ -209,8 +211,8 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelMesh
             }
         }
 
-        
-        public bool[] GetActiveNeighboringMeshes()
+
+        private bool[] GetActiveNeighboringMeshes()
         {
             bool[] neighboringMeshes = new bool[6];
             
