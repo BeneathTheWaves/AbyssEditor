@@ -225,7 +225,7 @@ namespace AbyssEditor.Scripts.UI.Windows {
                 }
             }
             
-            VoxelWorld.world.RegionLoadAsync(startBatchIndex, endBatchIndex, moddedBatchesCheckbox.isOn);
+            _ = VoxelWorld.world.RegionLoadAsync(startBatchIndex, endBatchIndex, moddedBatchesCheckbox.isOn);
             base.DisableWindow();//we don't want it to remove the outlines until the loading is done so just call base method
         }
 
