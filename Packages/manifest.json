@@ -16,6 +16,7 @@
     "com.unity.timeline": "1.8.10",
     "com.unity.toolchain.linux-x86_64-linux": "1.0.2",
     "com.unity.ugui": "2.0.0",
+    "com.unity.vectorgraphics": "3.0.0-preview.7",
     "discord.rpc.csharp": "file:../LocalPackages/discord.rpc.csharp",
     "io.github.gkngkc.unity-standalone-file-browser": "file:../LocalPackages/io.github.gkngkc.unity-standalone-file-browser",
     "com.unity.modules.accessibility": "1.0.0",
