@@ -3,6 +3,14 @@
 ## What is Abyss Editor? ##
 Abyss Editor is a Terrain (Optoctreepatch) Editor based on Reef Editor and Void Editor, which comes with tons of features, fixes, and performance improvements!
 
+**Current OS Support:**
+
+| Operating System      | Support         | 
+|-----------------------|-----------------|
+| Windows               | ✅              |
+| Linux                 | ✅              |
+| MacOS                 | ❌              |
+
 <hr>
 
 **Major improvements and features:**
@@ -22,7 +30,9 @@ Abyss Editor is a Terrain (Optoctreepatch) Editor based on Reef Editor and Void 
 - Autoloading Materials on startup
 - Scene light customization
 - Brush toggling
-and more!
+- Batch grids
+- Water level indicator
+  
 
 --- 
 
