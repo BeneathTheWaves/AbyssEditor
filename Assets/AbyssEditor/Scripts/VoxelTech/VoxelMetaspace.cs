@@ -126,9 +126,10 @@ namespace AbyssEditor.Scripts.VoxelTech {
             }
 
             var tasks = new List<Task>();
-            foreach (PointContainer container in modifiedContainers)
+            for(int i = 0; i < brushJobs.Count; i++)
             {
-                tasks.Add(container.UpdateMeshAsync());
+                tasks.Add(modifiedContainers[i].UpdateMeshAsync());
+                if(i % 16 == 0) await Task.Yield();//wait till next frame every 16 to stop freezes on LARGE edits
             }
             await Task.WhenAll(tasks);
 
@@ -147,6 +148,8 @@ namespace AbyssEditor.Scripts.VoxelTech {
             int batchCount = startBatch.GetNumberOfPointsInRegion(endBatch);
             int readCount = 0;
             
+            
+            
             foreach (Vector3Int batchIndex in startBatch.IterateTo(endBatch))
             {
                 statusHandle.SetProgress((float)readCount/batchCount);
@@ -158,7 +161,7 @@ namespace AbyssEditor.Scripts.VoxelTech {
                 BatchReadWriter.GetPath(mesh.batchIndex, allowModded, out bool isModded);
                 
                 await BatchReadWriter.ReadBatchCoroutine(mesh.OctreesReadCallback, mesh.batchIndex, allowModded, true);
-                await Task.Yield();
+                await Task.Yield();//This is a Band-Aid solution until we can get async batch reading
             }
             statusHandle.CompletePhase();
 
