@@ -430,6 +430,15 @@ namespace AbyssEditor.Scripts.InputMaps
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""MousePositon"",
+                    ""type"": ""Value"",
+                    ""id"": ""cfc97e1c-440f-473c-94b3-6ec79fc8c899"",
+                    ""expectedControlType"": ""Vector2"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
                 }
             ],
             ""bindings"": [
@@ -498,6 +507,17 @@ namespace AbyssEditor.Scripts.InputMaps
                     ""action"": ""ActivateBrushScale"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""09114c88-9116-44ef-b10c-a05937612fb0"",
+                    ""path"": ""<Mouse>/position"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""MousePositon"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         },
@@ -513,6 +533,15 @@ namespace AbyssEditor.Scripts.InputMaps
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""MousePositon"",
+                    ""type"": ""Value"",
+                    ""id"": ""3dd4dbaa-ad40-482a-8faa-6536b443d50e"",
+                    ""expectedControlType"": ""Vector2"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
                 }
             ],
             ""bindings"": [
@@ -524,6 +553,73 @@ namespace AbyssEditor.Scripts.InputMaps
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""SelectBatch"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""65ed07ce-d289-4ef5-9f27-083729bb05f7"",
+                    ""path"": ""<Mouse>/position"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""MousePositon"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
+        },
+        {
+            ""name"": ""ToolTip"",
+            ""id"": ""0b0cc23d-f21c-410f-b329-ec3c988cc31a"",
+            ""actions"": [
+                {
+                    ""name"": ""MousePosition"",
+                    ""type"": ""Value"",
+                    ""id"": ""e5bc4f4d-5a0e-4b1f-bce1-762f7b71d4dc"",
+                    ""expectedControlType"": ""Vector2"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""aa4dce8e-a8fa-4ccd-805f-0a30bd9e6405"",
+                    ""path"": ""<Mouse>/position"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""MousePosition"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
+        },
+        {
+            ""name"": ""DragWindow"",
+            ""id"": ""d2d36df2-8eda-44f7-bf04-e5881cce7887"",
+            ""actions"": [
+                {
+                    ""name"": ""MousePosition"",
+                    ""type"": ""Value"",
+                    ""id"": ""a39951e8-0676-42e5-9e37-132e340572d3"",
+                    ""expectedControlType"": ""Vector2"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""3385e5c2-9d93-4f77-85e6-660f482bba51"",
+                    ""path"": ""<Mouse>/position"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""MousePosition"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -548,9 +644,17 @@ namespace AbyssEditor.Scripts.InputMaps
             m_Brush_ScrollWheelScale = m_Brush.FindAction("ScrollWheelScale", throwIfNotFound: true);
             m_Brush_ActivateBrushScale = m_Brush.FindAction("ActivateBrushScale", throwIfNotFound: true);
             m_Brush_ActivateBrushStrengthScale = m_Brush.FindAction("ActivateBrushStrengthScale", throwIfNotFound: true);
+            m_Brush_MousePositon = m_Brush.FindAction("MousePositon", throwIfNotFound: true);
             // RemoveBatch
             m_RemoveBatch = asset.FindActionMap("RemoveBatch", throwIfNotFound: true);
             m_RemoveBatch_SelectBatch = m_RemoveBatch.FindAction("SelectBatch", throwIfNotFound: true);
+            m_RemoveBatch_MousePositon = m_RemoveBatch.FindAction("MousePositon", throwIfNotFound: true);
+            // ToolTip
+            m_ToolTip = asset.FindActionMap("ToolTip", throwIfNotFound: true);
+            m_ToolTip_MousePosition = m_ToolTip.FindAction("MousePosition", throwIfNotFound: true);
+            // DragWindow
+            m_DragWindow = asset.FindActionMap("DragWindow", throwIfNotFound: true);
+            m_DragWindow_MousePosition = m_DragWindow.FindAction("MousePosition", throwIfNotFound: true);
         }
 
         ~@AbyssEditorInput()
@@ -559,6 +663,8 @@ namespace AbyssEditor.Scripts.InputMaps
             UnityEngine.Debug.Assert(!m_HotBar.enabled, "This will cause a leak and performance issues, AbyssEditorInput.HotBar.Disable() has not been called.");
             UnityEngine.Debug.Assert(!m_Brush.enabled, "This will cause a leak and performance issues, AbyssEditorInput.Brush.Disable() has not been called.");
             UnityEngine.Debug.Assert(!m_RemoveBatch.enabled, "This will cause a leak and performance issues, AbyssEditorInput.RemoveBatch.Disable() has not been called.");
+            UnityEngine.Debug.Assert(!m_ToolTip.enabled, "This will cause a leak and performance issues, AbyssEditorInput.ToolTip.Disable() has not been called.");
+            UnityEngine.Debug.Assert(!m_DragWindow.enabled, "This will cause a leak and performance issues, AbyssEditorInput.DragWindow.Disable() has not been called.");
         }
 
         /// <summary>
@@ -874,6 +980,7 @@ namespace AbyssEditor.Scripts.InputMaps
         private readonly InputAction m_Brush_ScrollWheelScale;
         private readonly InputAction m_Brush_ActivateBrushScale;
         private readonly InputAction m_Brush_ActivateBrushStrengthScale;
+        private readonly InputAction m_Brush_MousePositon;
         /// <summary>
         /// Provides access to input actions defined in input action map "Brush".
         /// </summary>
@@ -901,6 +1008,10 @@ namespace AbyssEditor.Scripts.InputMaps
             /// Provides access to the underlying input action "Brush/ActivateBrushStrengthScale".
             /// </summary>
             public InputAction @ActivateBrushStrengthScale => m_Wrapper.m_Brush_ActivateBrushStrengthScale;
+            /// <summary>
+            /// Provides access to the underlying input action "Brush/MousePositon".
+            /// </summary>
+            public InputAction @MousePositon => m_Wrapper.m_Brush_MousePositon;
             /// <summary>
             /// Provides access to the underlying input action map instance.
             /// </summary>
@@ -939,6 +1050,9 @@ namespace AbyssEditor.Scripts.InputMaps
                 @ActivateBrushStrengthScale.started += instance.OnActivateBrushStrengthScale;
                 @ActivateBrushStrengthScale.performed += instance.OnActivateBrushStrengthScale;
                 @ActivateBrushStrengthScale.canceled += instance.OnActivateBrushStrengthScale;
+                @MousePositon.started += instance.OnMousePositon;
+                @MousePositon.performed += instance.OnMousePositon;
+                @MousePositon.canceled += instance.OnMousePositon;
             }
 
             /// <summary>
@@ -962,6 +1076,9 @@ namespace AbyssEditor.Scripts.InputMaps
                 @ActivateBrushStrengthScale.started -= instance.OnActivateBrushStrengthScale;
                 @ActivateBrushStrengthScale.performed -= instance.OnActivateBrushStrengthScale;
                 @ActivateBrushStrengthScale.canceled -= instance.OnActivateBrushStrengthScale;
+                @MousePositon.started -= instance.OnMousePositon;
+                @MousePositon.performed -= instance.OnMousePositon;
+                @MousePositon.canceled -= instance.OnMousePositon;
             }
 
             /// <summary>
@@ -1000,6 +1117,7 @@ namespace AbyssEditor.Scripts.InputMaps
         private readonly InputActionMap m_RemoveBatch;
         private List<IRemoveBatchActions> m_RemoveBatchActionsCallbackInterfaces = new List<IRemoveBatchActions>();
         private readonly InputAction m_RemoveBatch_SelectBatch;
+        private readonly InputAction m_RemoveBatch_MousePositon;
         /// <summary>
         /// Provides access to input actions defined in input action map "RemoveBatch".
         /// </summary>
@@ -1015,6 +1133,10 @@ namespace AbyssEditor.Scripts.InputMaps
             /// Provides access to the underlying input action "RemoveBatch/SelectBatch".
             /// </summary>
             public InputAction @SelectBatch => m_Wrapper.m_RemoveBatch_SelectBatch;
+            /// <summary>
+            /// Provides access to the underlying input action "RemoveBatch/MousePositon".
+            /// </summary>
+            public InputAction @MousePositon => m_Wrapper.m_RemoveBatch_MousePositon;
             /// <summary>
             /// Provides access to the underlying input action map instance.
             /// </summary>
@@ -1044,6 +1166,9 @@ namespace AbyssEditor.Scripts.InputMaps
                 @SelectBatch.started += instance.OnSelectBatch;
                 @SelectBatch.performed += instance.OnSelectBatch;
                 @SelectBatch.canceled += instance.OnSelectBatch;
+                @MousePositon.started += instance.OnMousePositon;
+                @MousePositon.performed += instance.OnMousePositon;
+                @MousePositon.canceled += instance.OnMousePositon;
             }
 
             /// <summary>
@@ -1058,6 +1183,9 @@ namespace AbyssEditor.Scripts.InputMaps
                 @SelectBatch.started -= instance.OnSelectBatch;
                 @SelectBatch.performed -= instance.OnSelectBatch;
                 @SelectBatch.canceled -= instance.OnSelectBatch;
+                @MousePositon.started -= instance.OnMousePositon;
+                @MousePositon.performed -= instance.OnMousePositon;
+                @MousePositon.canceled -= instance.OnMousePositon;
             }
 
             /// <summary>
@@ -1091,6 +1219,198 @@ namespace AbyssEditor.Scripts.InputMaps
         /// Provides a new <see cref="RemoveBatchActions" /> instance referencing this action map.
         /// </summary>
         public RemoveBatchActions @RemoveBatch => new RemoveBatchActions(this);
+
+        // ToolTip
+        private readonly InputActionMap m_ToolTip;
+        private List<IToolTipActions> m_ToolTipActionsCallbackInterfaces = new List<IToolTipActions>();
+        private readonly InputAction m_ToolTip_MousePosition;
+        /// <summary>
+        /// Provides access to input actions defined in input action map "ToolTip".
+        /// </summary>
+        public struct ToolTipActions
+        {
+            private @AbyssEditorInput m_Wrapper;
+
+            /// <summary>
+            /// Construct a new instance of the input action map wrapper class.
+            /// </summary>
+            public ToolTipActions(@AbyssEditorInput wrapper) { m_Wrapper = wrapper; }
+            /// <summary>
+            /// Provides access to the underlying input action "ToolTip/MousePosition".
+            /// </summary>
+            public InputAction @MousePosition => m_Wrapper.m_ToolTip_MousePosition;
+            /// <summary>
+            /// Provides access to the underlying input action map instance.
+            /// </summary>
+            public InputActionMap Get() { return m_Wrapper.m_ToolTip; }
+            /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Enable()" />
+            public void Enable() { Get().Enable(); }
+            /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Disable()" />
+            public void Disable() { Get().Disable(); }
+            /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.enabled" />
+            public bool enabled => Get().enabled;
+            /// <summary>
+            /// Implicitly converts an <see ref="ToolTipActions" /> to an <see ref="InputActionMap" /> instance.
+            /// </summary>
+            public static implicit operator InputActionMap(ToolTipActions set) { return set.Get(); }
+            /// <summary>
+            /// Adds <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
+            /// </summary>
+            /// <param name="instance">Callback instance.</param>
+            /// <remarks>
+            /// If <paramref name="instance" /> is <c>null</c> or <paramref name="instance"/> have already been added this method does nothing.
+            /// </remarks>
+            /// <seealso cref="ToolTipActions" />
+            public void AddCallbacks(IToolTipActions instance)
+            {
+                if (instance == null || m_Wrapper.m_ToolTipActionsCallbackInterfaces.Contains(instance)) return;
+                m_Wrapper.m_ToolTipActionsCallbackInterfaces.Add(instance);
+                @MousePosition.started += instance.OnMousePosition;
+                @MousePosition.performed += instance.OnMousePosition;
+                @MousePosition.canceled += instance.OnMousePosition;
+            }
+
+            /// <summary>
+            /// Removes <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
+            /// </summary>
+            /// <remarks>
+            /// Calling this method when <paramref name="instance" /> have not previously been registered has no side-effects.
+            /// </remarks>
+            /// <seealso cref="ToolTipActions" />
+            private void UnregisterCallbacks(IToolTipActions instance)
+            {
+                @MousePosition.started -= instance.OnMousePosition;
+                @MousePosition.performed -= instance.OnMousePosition;
+                @MousePosition.canceled -= instance.OnMousePosition;
+            }
+
+            /// <summary>
+            /// Unregisters <param cref="instance" /> and unregisters all input action callbacks via <see cref="ToolTipActions.UnregisterCallbacks(IToolTipActions)" />.
+            /// </summary>
+            /// <seealso cref="ToolTipActions.UnregisterCallbacks(IToolTipActions)" />
+            public void RemoveCallbacks(IToolTipActions instance)
+            {
+                if (m_Wrapper.m_ToolTipActionsCallbackInterfaces.Remove(instance))
+                    UnregisterCallbacks(instance);
+            }
+
+            /// <summary>
+            /// Replaces all existing callback instances and previously registered input action callbacks associated with them with callbacks provided via <param cref="instance" />.
+            /// </summary>
+            /// <remarks>
+            /// If <paramref name="instance" /> is <c>null</c>, calling this method will only unregister all existing callbacks but not register any new callbacks.
+            /// </remarks>
+            /// <seealso cref="ToolTipActions.AddCallbacks(IToolTipActions)" />
+            /// <seealso cref="ToolTipActions.RemoveCallbacks(IToolTipActions)" />
+            /// <seealso cref="ToolTipActions.UnregisterCallbacks(IToolTipActions)" />
+            public void SetCallbacks(IToolTipActions instance)
+            {
+                foreach (var item in m_Wrapper.m_ToolTipActionsCallbackInterfaces)
+                    UnregisterCallbacks(item);
+                m_Wrapper.m_ToolTipActionsCallbackInterfaces.Clear();
+                AddCallbacks(instance);
+            }
+        }
+        /// <summary>
+        /// Provides a new <see cref="ToolTipActions" /> instance referencing this action map.
+        /// </summary>
+        public ToolTipActions @ToolTip => new ToolTipActions(this);
+
+        // DragWindow
+        private readonly InputActionMap m_DragWindow;
+        private List<IDragWindowActions> m_DragWindowActionsCallbackInterfaces = new List<IDragWindowActions>();
+        private readonly InputAction m_DragWindow_MousePosition;
+        /// <summary>
+        /// Provides access to input actions defined in input action map "DragWindow".
+        /// </summary>
+        public struct DragWindowActions
+        {
+            private @AbyssEditorInput m_Wrapper;
+
+            /// <summary>
+            /// Construct a new instance of the input action map wrapper class.
+            /// </summary>
+            public DragWindowActions(@AbyssEditorInput wrapper) { m_Wrapper = wrapper; }
+            /// <summary>
+            /// Provides access to the underlying input action "DragWindow/MousePosition".
+            /// </summary>
+            public InputAction @MousePosition => m_Wrapper.m_DragWindow_MousePosition;
+            /// <summary>
+            /// Provides access to the underlying input action map instance.
+            /// </summary>
+            public InputActionMap Get() { return m_Wrapper.m_DragWindow; }
+            /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Enable()" />
+            public void Enable() { Get().Enable(); }
+            /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Disable()" />
+            public void Disable() { Get().Disable(); }
+            /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.enabled" />
+            public bool enabled => Get().enabled;
+            /// <summary>
+            /// Implicitly converts an <see ref="DragWindowActions" /> to an <see ref="InputActionMap" /> instance.
+            /// </summary>
+            public static implicit operator InputActionMap(DragWindowActions set) { return set.Get(); }
+            /// <summary>
+            /// Adds <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
+            /// </summary>
+            /// <param name="instance">Callback instance.</param>
+            /// <remarks>
+            /// If <paramref name="instance" /> is <c>null</c> or <paramref name="instance"/> have already been added this method does nothing.
+            /// </remarks>
+            /// <seealso cref="DragWindowActions" />
+            public void AddCallbacks(IDragWindowActions instance)
+            {
+                if (instance == null || m_Wrapper.m_DragWindowActionsCallbackInterfaces.Contains(instance)) return;
+                m_Wrapper.m_DragWindowActionsCallbackInterfaces.Add(instance);
+                @MousePosition.started += instance.OnMousePosition;
+                @MousePosition.performed += instance.OnMousePosition;
+                @MousePosition.canceled += instance.OnMousePosition;
+            }
+
+            /// <summary>
+            /// Removes <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
+            /// </summary>
+            /// <remarks>
+            /// Calling this method when <paramref name="instance" /> have not previously been registered has no side-effects.
+            /// </remarks>
+            /// <seealso cref="DragWindowActions" />
+            private void UnregisterCallbacks(IDragWindowActions instance)
+            {
+                @MousePosition.started -= instance.OnMousePosition;
+                @MousePosition.performed -= instance.OnMousePosition;
+                @MousePosition.canceled -= instance.OnMousePosition;
+            }
+
+            /// <summary>
+            /// Unregisters <param cref="instance" /> and unregisters all input action callbacks via <see cref="DragWindowActions.UnregisterCallbacks(IDragWindowActions)" />.
+            /// </summary>
+            /// <seealso cref="DragWindowActions.UnregisterCallbacks(IDragWindowActions)" />
+            public void RemoveCallbacks(IDragWindowActions instance)
+            {
+                if (m_Wrapper.m_DragWindowActionsCallbackInterfaces.Remove(instance))
+                    UnregisterCallbacks(instance);
+            }
+
+            /// <summary>
+            /// Replaces all existing callback instances and previously registered input action callbacks associated with them with callbacks provided via <param cref="instance" />.
+            /// </summary>
+            /// <remarks>
+            /// If <paramref name="instance" /> is <c>null</c>, calling this method will only unregister all existing callbacks but not register any new callbacks.
+            /// </remarks>
+            /// <seealso cref="DragWindowActions.AddCallbacks(IDragWindowActions)" />
+            /// <seealso cref="DragWindowActions.RemoveCallbacks(IDragWindowActions)" />
+            /// <seealso cref="DragWindowActions.UnregisterCallbacks(IDragWindowActions)" />
+            public void SetCallbacks(IDragWindowActions instance)
+            {
+                foreach (var item in m_Wrapper.m_DragWindowActionsCallbackInterfaces)
+                    UnregisterCallbacks(item);
+                m_Wrapper.m_DragWindowActionsCallbackInterfaces.Clear();
+                AddCallbacks(instance);
+            }
+        }
+        /// <summary>
+        /// Provides a new <see cref="DragWindowActions" /> instance referencing this action map.
+        /// </summary>
+        public DragWindowActions @DragWindow => new DragWindowActions(this);
         /// <summary>
         /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "FreeCam" which allows adding and removing callbacks.
         /// </summary>
@@ -1184,6 +1504,13 @@ namespace AbyssEditor.Scripts.InputMaps
             /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
             /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
             void OnActivateBrushStrengthScale(InputAction.CallbackContext context);
+            /// <summary>
+            /// Method invoked when associated input action "MousePositon" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+            /// </summary>
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+            void OnMousePositon(InputAction.CallbackContext context);
         }
         /// <summary>
         /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "RemoveBatch" which allows adding and removing callbacks.
@@ -1199,6 +1526,43 @@ namespace AbyssEditor.Scripts.InputMaps
             /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
             /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
             void OnSelectBatch(InputAction.CallbackContext context);
+            /// <summary>
+            /// Method invoked when associated input action "MousePositon" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+            /// </summary>
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+            void OnMousePositon(InputAction.CallbackContext context);
+        }
+        /// <summary>
+        /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "ToolTip" which allows adding and removing callbacks.
+        /// </summary>
+        /// <seealso cref="ToolTipActions.AddCallbacks(IToolTipActions)" />
+        /// <seealso cref="ToolTipActions.RemoveCallbacks(IToolTipActions)" />
+        public interface IToolTipActions
+        {
+            /// <summary>
+            /// Method invoked when associated input action "MousePosition" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+            /// </summary>
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+            void OnMousePosition(InputAction.CallbackContext context);
+        }
+        /// <summary>
+        /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "DragWindow" which allows adding and removing callbacks.
+        /// </summary>
+        /// <seealso cref="DragWindowActions.AddCallbacks(IDragWindowActions)" />
+        /// <seealso cref="DragWindowActions.RemoveCallbacks(IDragWindowActions)" />
+        public interface IDragWindowActions
+        {
+            /// <summary>
+            /// Method invoked when associated input action "MousePosition" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+            /// </summary>
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+            void OnMousePosition(InputAction.CallbackContext context);
         }
     }
 }

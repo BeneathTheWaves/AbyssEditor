@@ -37,11 +37,11 @@ namespace AbyssEditor.Scripts
         private void Awake()
         {
             main = this;
-            input = new AbyssEditorInput().FreeCam;
         }
         
         private void Start()
         {
+            input = InputManager.main.input.FreeCam;
             input.Enable();
             brushTool = CursorToolManager.main.brushTool;
         }

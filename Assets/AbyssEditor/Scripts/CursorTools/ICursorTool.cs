@@ -8,6 +8,11 @@ namespace AbyssEditor.Scripts.CursorTools
     public interface ICursorTool
     {
         /// <summary>
+        /// Called once within the Start unity event. Use to initialize variables/input
+        /// </summary>
+        public void Start() {}
+        
+        /// <summary>
         /// Enable the tool
         /// </summary>
         public void EnableTool();

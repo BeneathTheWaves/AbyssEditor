@@ -13,17 +13,18 @@ namespace AbyssEditor.Scripts.CursorTools
 {
     public class RemoveBatchTool : ICursorTool
     {
-        private AbyssEditorInput.RemoveBatchActions input = new AbyssEditorInput().RemoveBatch;
+        private AbyssEditorInput.RemoveBatchActions input;
 
         private BatchOutline.BatchOutline hoveredOutline;
 
         private bool dialogOpen = false;
         
-        public RemoveBatchTool()
+        public void Start()
         {
+            input = InputManager.main.input.RemoveBatch;
             input.SelectBatch.performed += OnSelectBatchKeybind;
         }
-        
+
         public void EnableTool()
         {
             input.Enable();
@@ -58,7 +59,7 @@ namespace AbyssEditor.Scripts.CursorTools
 
         private BatchOutline.BatchOutline GetHoveredBatchOutline()
         {
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            Ray ray = Camera.main.ScreenPointToRay(input.MousePositon.ReadValue<Vector2>());
             
             Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, 1);
 

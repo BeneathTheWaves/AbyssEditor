@@ -27,13 +27,14 @@ namespace AbyssEditor.Scripts.CursorTools.Brush {
         private BrushMode activeMode;
         private BrushStroke stroke;
         
-        private AbyssEditorInput.BrushActions input = new AbyssEditorInput().Brush;
+        private AbyssEditorInput.BrushActions input;
         private GameObject brushAreaObject;
 
         private bool brushActionHappening = false;
 
-        public BrushTool()
+        public void Start()
         {
+            input = InputManager.main.input.Brush;
             input.ScrollWheelScale.performed += OnScrollWheel;
         }
 
@@ -117,8 +118,7 @@ namespace AbyssEditor.Scripts.CursorTools.Brush {
 
 
         private void BrushAction(bool doAction) {
-            
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            Ray ray = Camera.main.ScreenPointToRay(input.MousePositon.ReadValue<Vector2>());
             
             Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, 1);
 

@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Linq;
 using AbyssEditor.Scripts.CursorTools.Brush;
 using AbyssEditor.Scripts.UI.HotBar.HotBarButtons;
-using AbyssEditor.Scripts.VoxelTech.VoxelMesh;
 using UnityEngine;
 using UnityEngine.EventSystems;
 namespace AbyssEditor.Scripts.CursorTools
@@ -29,6 +28,14 @@ namespace AbyssEditor.Scripts.CursorTools
             batchRemoveTool = new RemoveBatchTool();
             tools.Add(brushTool);
             tools.Add(batchRemoveTool);
+        }
+
+        private void Start()
+        {
+            foreach (ICursorTool tool in tools)
+            {
+                tool.Start();
+            }
         }
 
         private void Update()

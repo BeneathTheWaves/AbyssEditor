@@ -1,3 +1,4 @@
+using AbyssEditor.Scripts.InputMaps;
 using TMPro;
 using UnityEngine;
 
@@ -12,6 +13,7 @@ namespace AbyssEditor.Scripts.UI.TooltipSystem
         
         private static TooltipSingleton instance;
 
+        private AbyssEditorInput.ToolTipActions input;
         private ITooltipSource source;
 
         private void Awake()
@@ -20,8 +22,13 @@ namespace AbyssEditor.Scripts.UI.TooltipSystem
             {
                 Debug.LogWarning("Multiple TooltipSingleton instances exist!");
             }
-
             instance = this;
+        }
+
+        private void Start()
+        {
+            input = InputManager.main.input.ToolTip;
+            input.Enable();
         }
 
         public static void AddTooltipSource(ITooltipSource source)
@@ -49,7 +56,7 @@ namespace AbyssEditor.Scripts.UI.TooltipSystem
             if (source != null)
             {
                 text.text = source.GetText();
-                if (RectTransformUtility.ScreenPointToLocalPointInRectangle(canvas, Input.mousePosition,
+                if (RectTransformUtility.ScreenPointToLocalPointInRectangle(canvas, input.MousePosition.ReadValue<Vector2>(),
                         Camera.current, out var point))
                 {
                     pivot.localPosition = point;
