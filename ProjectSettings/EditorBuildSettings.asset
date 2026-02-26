@@ -15,6 +15,12 @@ EditorBuildSettings:
     path: Assets/AbyssEditor/Scenes/AbyssEditor.unity
     guid: 8212c4c847b9a2a4ebe6993a8c064094
   m_configObjects:
+    com.unity.adaptivePerformance.basic.provider_settings: {fileID: 11400000, guid: 62faad68c3591e0e8be577c03ecc0fd0,
+      type: 2}
+    com.unity.adaptiveperformance.loader_settings: {fileID: 11400000, guid: 67b5b4058ae43fcde832e59d0a137df5,
+      type: 2}
+    com.unity.adaptiveperformance.simulator.provider_settings: {fileID: 11400000,
+      guid: c4e935439c2b261b3837b3ede715dc97, type: 2}
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: aacc6d915fd6fa649957aa710d5bc574,
       type: 3}
   m_UseUCBPForAssetBundles: 0
