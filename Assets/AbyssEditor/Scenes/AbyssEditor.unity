@@ -2811,6 +2811,7 @@ GameObject:
   m_Component:
   - component: {fileID: 301147898}
   - component: {fileID: 301147897}
+  - component: {fileID: 301147899}
   m_Layer: 0
   m_Name: IconGenerator
   m_TagString: Untagged
@@ -2849,6 +2850,23 @@ Transform:
   - {fileID: 785136298}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &301147899
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 301147896}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0df909b4c68143bab6e35914da20a8d7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: AbyssEditor::AbyssEditor.Scripts.TerrainMaterials.MaterialIconGenerator
+  matIconPrefab: {fileID: 5130545098176443335, guid: eb3a5f2cd564cf44ab86a3d32d8f0a5b,
+    type: 3}
+  favoritedButton: {fileID: 21300000, guid: a1a9404ea5c252c4ab14daebed0242c2, type: 3}
+  unfavoritedButton: {fileID: 21300000, guid: 8e4d7247e91ee714b9b7f8113b012127, type: 3}
+  loadingMaterialIcons: 0
 --- !u!1001 &326207487
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -16739,7 +16757,6 @@ GameObject:
   - component: {fileID: 1700670798}
   - component: {fileID: 1700670804}
   - component: {fileID: 1700670805}
-  - component: {fileID: 1700670806}
   - component: {fileID: 1700670807}
   - component: {fileID: 1700670808}
   - component: {fileID: 1700670809}
@@ -16825,23 +16842,6 @@ MonoBehaviour:
   brushLight: {fileID: 0}
   sunLights:
   - {fileID: 1092007917}
---- !u!114 &1700670806
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1700670797}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0df909b4c68143bab6e35914da20a8d7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: AbyssEditor::AbyssEditor.Scripts.TerrainMaterials.MaterialIconGenerator
-  matIconPrefab: {fileID: 5130545098176443335, guid: eb3a5f2cd564cf44ab86a3d32d8f0a5b,
-    type: 3}
-  favoritedButton: {fileID: 21300000, guid: a1a9404ea5c252c4ab14daebed0242c2, type: 3}
-  unfavoritedButton: {fileID: 21300000, guid: 8e4d7247e91ee714b9b7f8113b012127, type: 3}
-  loadingMaterialIcons: 0
 --- !u!114 &1700670807
 MonoBehaviour:
   m_ObjectHideFlags: 0
