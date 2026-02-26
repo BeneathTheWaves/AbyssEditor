@@ -21,10 +21,12 @@ Abyss Editor is a Terrain (Optoctreepatch) Editor based on Reef Editor and Void 
 - Discord Rich Presence
 - Correct exporting (No more corrupted or cubed batches!)
 - Ability to create terrain *anywhere* in the Subnautica World (No batch restrictions!)
+  
+and more
 
 ---
 
-  **QOL Features:**
+  **Notable QOL Features:**
  
 - Faster saving and loading
 - Autoloading Materials on startup
@@ -32,8 +34,9 @@ Abyss Editor is a Terrain (Optoctreepatch) Editor based on Reef Editor and Void 
 - Brush toggling
 - Batch grids
 - Water level indicator
-  
 
+  and more
+  
 --- 
 
 **This project would not be possible without the following people (Make sure to thank them!):**
