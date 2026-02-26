@@ -1,54 +1,51 @@
 using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using AbyssEditor.Scripts.Mesh_Gen.Datas;
+using AbyssEditor.Scripts.ThreadingManager;
 using Unity.Collections;
 using UnityEngine;
-using UnityEngine.Profiling;
 using UnityEngine.Rendering;
 
 namespace AbyssEditor.Scripts.Mesh_Gen
 {
     public class AsyncMeshBuilder
     {
-        public static AsyncMeshBuilder builder;
-
-        private readonly BlockingCollection<MeshRequest> queue = new();
-        private readonly Thread[] workers;
-        private bool running = true;
+        private readonly ConcurrentStack<MeshBuilder> meshBuilders;
+        
+        public static AsyncMeshBuilder main;
         
         public AsyncMeshBuilder()
         {
-            builder = this;
-
-            int worker_count = SystemInfo.processorCount - 1;
-            workers = new Thread[worker_count];
+            main = this;
             
-            for (int i = 0; i < worker_count; i++)
+            meshBuilders = new ConcurrentStack<MeshBuilder>();
+            for (int i = 0; i < AsyncThreadScheduler.main.workersCount; i++)
             {
-                workers[i] = new Thread(WorkerLoop);
-                workers[i].Start();
+                meshBuilders.Push(new MeshBuilder());
             }
         }
         
         public async Task<MeshResult> RequestMesh(NativeArray<byte> densityGrid, NativeArray<byte> typeGrid, Vector3Int resolution, Vector3 offset, Mesh meshObjToReuse = null)
         {
             //get faces from GPU
+            //This is sync btw, accessing gpu is blocking in unity (ALTHOUGH VERY fast)
             QuadFace[] faces = FaceGPUBuilder.builder.GenerateFaces(densityGrid, typeGrid, resolution, offset);
             
             //Build mesh from faces
             TaskCompletionSource<MeshData> meshBuildTcs = new();
-            queue.Add(new MeshRequest
-            {
+            
+            AsyncThreadScheduler.main.Enqueue(() => 
+                MeshBuildThreaded(new MeshRequest {
                 faces = faces,
                 resolution = resolution,
                 offset = offset,
-                tcs = meshBuildTcs,
-            });
+                tcs = meshBuildTcs
+            }));
 
             MeshData data = await meshBuildTcs.Task;
-
 
             Mesh mesh = meshObjToReuse;
             if (!meshObjToReuse)//null
@@ -76,57 +73,31 @@ namespace AbyssEditor.Scripts.Mesh_Gen
             return new MeshResult(mesh, data.blockTypes);
         }
 
-        //This is the seperate thread,
-        private void WorkerLoop()
+        private void MeshBuildThreaded(MeshRequest meshRequest)
         {
-            Profiler.BeginThreadProfiling("AsyncMeshBuilders", "Worker");
-            
-            var meshBuilder = new MeshBuilder();//each thread gets its own builder
-
-            while (running)
+            if (!meshBuilders.TryPop(out MeshBuilder meshBuilder))
             {
-                try
-                {
-                    MeshRequest request = queue.Take(); //NOTE: this does not make it busy wait, it will be awoken when queue has something for it
-                    MeshData data = meshBuilder.MakeMeshData(request.faces, request.resolution, request.offset);
-                    request.tcs.TrySetResult(data);
+                Debug.LogError($"No mesh builders available for mesh build!!! there needs to be at least as many as the worker count");
+            }
+            
+            MeshData data = meshBuilder.MakeMeshData(meshRequest.faces, meshRequest.resolution, meshRequest.offset);
+            meshRequest.tcs.TrySetResult(data);
 
-                    lock (meshBuilder)//wait for the main thread to release the builder back
-                    {
-                        while (meshBuilder.Locked)
-                        {
-                            Monitor.Wait(meshBuilder);
-                        }
-                    }
-                }
-                catch (InvalidOperationException)
+            lock (meshBuilder)//wait for the main thread to release the builder back
+            {
+                while (meshBuilder.threadLocked)
                 {
-                    // happens if the thread is started with no value for Take()
-                    // when we are trying to dispose the thread
-                    break;
+                    Monitor.Wait(meshBuilder);
                 }
             }
-        }
-
-        public void Dispose()
-        {
-            running = false;
-            queue.CompleteAdding();
             
-            foreach (var worker in workers)
-            {
-                if (worker != null && worker.IsAlive)
-                {
-                    worker.Join();
-                }
-            }
+            meshBuilders.Push(meshBuilder);//return the builder :)
         }
-        
         
         public class MeshResult
         {
-            public Mesh mesh;
-            public int[] blockTypes;
+            public readonly Mesh mesh;
+            public readonly int[] blockTypes;
             public MeshResult(Mesh mesh, int[] blockTypes)
             {
                 this.mesh = mesh;
@@ -139,7 +110,7 @@ namespace AbyssEditor.Scripts.Mesh_Gen
             public QuadFace[] faces;
             public Vector3Int resolution;
             public Vector3 offset;
-            public TaskCompletionSource<MeshData> tcs; 
+            public TaskCompletionSource<MeshData> tcs;
         }
     }
 }

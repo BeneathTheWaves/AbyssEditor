@@ -100,7 +100,7 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelMesh
             Vector3 offset = octreeIndex * VoxelWorld.RESOLUTION;
             
             //Note, this will overwrite the old mesh so "mesh" becomes the new one inherently
-            AsyncMeshBuilder.MeshResult meshRequest = await AsyncMeshBuilder.builder.RequestMesh(gridDensity, gridType, grid.fullGridDim, offset, mesh);
+            AsyncMeshBuilder.MeshResult meshRequest = await AsyncMeshBuilder.main.RequestMesh(gridDensity, gridType, grid.fullGridDim, offset, mesh);
             
             int[] blocktypes = meshRequest.blockTypes;
             

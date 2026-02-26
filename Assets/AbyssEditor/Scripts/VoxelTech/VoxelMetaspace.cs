@@ -9,6 +9,7 @@ using AbyssEditor.Scripts.Mesh_Gen;
 using AbyssEditor.Scripts.Octrees;
 using AbyssEditor.Scripts.SaveSystem;
 using AbyssEditor.Scripts.TaskSystem;
+using AbyssEditor.Scripts.ThreadingManager;
 using AbyssEditor.Scripts.UI;
 using AbyssEditor.Scripts.VoxelTech.VoxelGrids;
 using AbyssEditor.Scripts.VoxelTech.VoxelGrids.Brushes;
@@ -27,7 +28,8 @@ namespace AbyssEditor.Scripts.VoxelTech {
             VoxelGrid.PrecomputeNeighborOffsets();
             VoxelGrid.PrecomputePaddingVoxels();
 
-            new AsyncMeshBuilder();//This is kinda scuffed, change it
+            new AsyncThreadScheduler();//This is kinda scuffed, change it
+            new AsyncMeshBuilder();
         }
 
         public void AddRegion(Vector3Int startBatch, Vector3Int endBatch) {
@@ -290,7 +292,7 @@ namespace AbyssEditor.Scripts.VoxelTech {
             }
             BrushJob.DisposeNativeArrayPool();
             VoxelGrid.neighboursToCheckInSmooth.Dispose();
-            AsyncMeshBuilder.builder.Dispose();
+            AsyncThreadScheduler.main.Dispose();
         }
         
         public VoxelMesh.VoxelMesh TryGetVoxelMesh(Vector3Int batchIndex)

@@ -9,8 +9,7 @@ using UnityEngine;
 namespace AbyssEditor.Scripts.Mesh_Gen {
     public class MeshBuilder
     {
-
-        public bool Locked { get; private set; }
+        public bool threadLocked { get; private set; }
         
         private const int MAX_ADJACENT_FACES = 24;
         private const int SUBMESH_BLOCK_TYPES_CAPACITY = 20;
@@ -39,7 +38,7 @@ namespace AbyssEditor.Scripts.Mesh_Gen {
 
         public MeshData MakeMeshData(QuadFace[] faces, Vector3Int resolution, Vector3 offset)
         {
-            Locked = true;
+            threadLocked = true;
             // Reset arrays without new allocations
             //TODO: move reset stuff to its own function
             for (int i = 0; i < verticesOfNodes.Length; i++)
@@ -176,8 +175,8 @@ namespace AbyssEditor.Scripts.Mesh_Gen {
         {
             lock (this)
             {
-                Locked = value;
-                if (!Locked)
+                threadLocked = value;
+                if (!threadLocked)
                 {
                     Monitor.PulseAll(this); // wake any waiting threads
                 }
