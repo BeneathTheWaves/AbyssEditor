@@ -1,7 +1,9 @@
 # Abyss Editor
 
-## What is Abyss Editor?
-Abyss Editor is a Terrain (Optoctreepatch) Editor based on Reef Editor and Void Editor, which allows for most notable features and improvements like:
+## What is Abyss Editor? ##
+Abyss Editor is a Terrain (Optoctreepatch) Editor based on Reef Editor and Void Editor, which comes with tons of features, fixes, and performance improvements!
+
+<hr>
 
 **Major improvements and features:**
 
@@ -12,14 +14,17 @@ Abyss Editor is a Terrain (Optoctreepatch) Editor based on Reef Editor and Void 
 - Correct exporting (No more corrupted or cubed batches!)
 - Ability to create terrain *anywhere* in the Subnautica World (No batch restrictions!)
 
+---
 
   **QOL Features:**
-  
+ 
 - Faster saving and loading
 - Autoloading Materials on startup
 - Scene light customization
 - Brush toggling
 and more!
+
+--- 
 
 **This project would not be possible without the following people (Make sure to thank them!):**
 
