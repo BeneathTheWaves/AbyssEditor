@@ -9,7 +9,6 @@ using AbyssEditor.Scripts.UI;
 using AbyssEditor.Scripts.VoxelTech;
 using AbyssEditor.Scripts.VoxelTech.VoxelMesh;
 using Unity.Collections;
-using UnityEditor;
 using UnityEngine;
 
 namespace AbyssEditor.Scripts {

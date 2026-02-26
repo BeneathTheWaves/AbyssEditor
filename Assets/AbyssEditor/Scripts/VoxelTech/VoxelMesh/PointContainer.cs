@@ -62,15 +62,15 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelMesh
 
         public void SetOctree(Octree octree)
         {
-            meshObj.name = $"OctreeMesh-{octree.index}";
+            //meshObj.name = $"OctreeMesh-{octree.index}";
             RasterizeOctree(octree);
         }
 
         public void RasterizeOctree(Octree octree)
         {
             int _res = VoxelWorld.RESOLUTION;
-            NativeArray<byte> tempTypes = new NativeArray<byte>(_res * _res * _res, Allocator.Temp);
-            NativeArray<byte> tempDensities = new NativeArray<byte>(_res * _res * _res, Allocator.Temp);
+            NativeArray<byte> tempTypes = new NativeArray<byte>(_res * _res * _res, Allocator.Persistent);
+            NativeArray<byte> tempDensities = new NativeArray<byte>(_res * _res * _res, Allocator.Persistent);
 
             octree.Rasterize(tempDensities, tempTypes, _res, 5 - VoxelWorld.LEVEL_OF_DETAIL);
 

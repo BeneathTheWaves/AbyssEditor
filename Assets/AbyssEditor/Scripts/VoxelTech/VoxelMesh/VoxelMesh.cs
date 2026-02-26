@@ -52,6 +52,7 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelMesh
             coll.size = octreeCounts * octreeSide;
             coll.isTrigger = true;
         }
+        
 
         public bool OctreesReadCallback(Octree[,,] _nodes)
         {

@@ -127,11 +127,11 @@ namespace AbyssEditor.Scripts.VoxelTech {
                 sw.Restart();
             }
 
-            var tasks = new List<Task>();
+            List<Task> tasks = new List<Task>();
             for(int i = 0; i < brushJobs.Count; i++)
             {
                 tasks.Add(modifiedContainers[i].UpdateMeshAsync());
-                if(i % 16 == 0) await Task.Yield();//wait till next frame every 16 to stop freezes on LARGE edits
+                if(i % AsyncThreadScheduler.main.workersCount == 0) await Task.Yield();
             }
             await Task.WhenAll(tasks);
 
@@ -148,23 +148,21 @@ namespace AbyssEditor.Scripts.VoxelTech {
             if(statusHandle == null) { statusHandle = TaskManager.main.GetEditorProcessHandle(3); }
 
             int batchCount = startBatch.GetNumberOfPointsInRegion(endBatch);
-            int readCount = 0;
             
-            
-            
+            statusHandle.SetTasksToCompleteForPhase(batchCount);
+            statusHandle.SetStatus($"Reading Batches");
+            List<Task> tasks = new();
             foreach (Vector3Int batchIndex in startBatch.IterateTo(endBatch))
             {
-                statusHandle.SetProgress((float)readCount/batchCount);
-                statusHandle.SetStatus($"Reading {batchIndex}");
-                readCount++;
-                
                 VoxelMesh.VoxelMesh mesh = TryGetVoxelMesh(batchIndex);
                 
                 BatchReadWriter.GetPath(mesh.batchIndex, allowModded, out bool isModded);
                 
-                await BatchReadWriter.ReadBatchCoroutine(mesh.OctreesReadCallback, mesh.batchIndex, allowModded, true);
-                await Task.Yield();//This is a Band-Aid solution until we can get async batch reading
+                tasks.Add(ThreadedBatchReadWriter.ReadBatchParallelable(mesh.OctreesReadCallback, mesh.batchIndex, allowModded, true, statusHandle));
             }
+
+            await Task.WhenAll(tasks);
+            
             statusHandle.CompletePhase();
 
             RegenerateNeighboringVoxelGridsCache(statusHandle);
@@ -178,7 +176,6 @@ namespace AbyssEditor.Scripts.VoxelTech {
             PatchContainer patchContainer = new PatchContainer();
             
             await BatchReadWriter.ReadOctreePatchCoroutine(patchContainer.Callback, patchBytes, batchesInPatch, statusHandle);
-            
 
             int batchCount = patchContainer.modifiedBatches.Keys.Count;
             int readIndex = 0;
@@ -212,7 +209,7 @@ namespace AbyssEditor.Scripts.VoxelTech {
         {
             if (statusHandle == null) { statusHandle = TaskManager.main.GetEditorProcessHandle(1); }
             
-            int totalTasks = meshes.Count * VoxelWorld.CONTAINERS_PER_SIDE;
+            int totalTasks = meshes.Count * VoxelWorld.CONTAINERS_PER_SIDE * 2;
             int completedTasks = 0;
             
             foreach (VoxelMesh.VoxelMesh mesh in meshes)

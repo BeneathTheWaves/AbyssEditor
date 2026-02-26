@@ -36,6 +36,9 @@ namespace AbyssEditor.Scripts.TaskSystem
                 TaskManager.main.CompleteEditorProcess(this);
                 GameObject.Destroy(displayObject.gameObject);
             }
+
+            tasksCount = 0;
+            tasksCompleted = 0;
         }
         
         /// <summary>
@@ -45,6 +48,21 @@ namespace AbyssEditor.Scripts.TaskSystem
         public void SetStatus(string status)
         {
             displayObject.SetStatusText(status);
+        }
+
+        private int tasksCount;
+        private int tasksCompleted;
+        
+        public void SetTasksToCompleteForPhase(int taskCount)
+        {
+            tasksCount = taskCount;
+        }
+
+        public void IncrementTasksComplete()
+        {
+            tasksCompleted++;
+            SetProgress((float) tasksCompleted / tasksCount);
+            SetStatus("COMPLETED: " + tasksCompleted);
         }
     }
 }
