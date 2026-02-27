@@ -1,11 +1,9 @@
-using System;
 using AbyssEditor.Scripts.Octrees;
 using AbyssEditor.Scripts.VoxelTech;
 using System.IO;
 using System.Threading.Tasks;
 using AbyssEditor.Scripts.TaskSystem;
 using AbyssEditor.Scripts.ThreadingManager;
-using AbyssEditor.Scripts.UI;
 using UnityEngine;
 
 namespace AbyssEditor.Scripts
@@ -15,31 +13,12 @@ namespace AbyssEditor.Scripts
     /// </summary>
     public static partial class ThreadedBatchReadWriter
     {
-        
-        public static async Task ReadBatchParallelable(BatchReadWriter.ReadFinishedCall readFinishedCall, Vector3Int batchIndex, bool generateEmpty = true, bool allowModded = false, EditorProcessHandle statusHandle = null)
+        public static async Task<Octree[,,]> ReadBatchOctrees(Vector3Int batchIndex, bool generateEmpty = true, bool allowModded = false, EditorProcessHandle statusHandle = null)
         {
-            TaskCompletionSource<ReadBatchResult> readBatchTcs = new();
-            AsyncThreadScheduler.main.Enqueue(() => ReadBatchThreaded(readBatchTcs, batchIndex, generateEmpty, allowModded));
-            
-            ReadBatchResult data = await readBatchTcs.Task;
-            
-            statusHandle?.IncrementTasksComplete();
-            
-            TaskCompletionSource<Boolean> applyBatch = new();
-            AsyncThreadScheduler.main.Enqueue(() => Test(applyBatch, readFinishedCall, data.octrees));
-
-            await applyBatch.Task;
-                        
-            statusHandle?.IncrementTasksComplete();
-        }
-
-        private static void Test(TaskCompletionSource<Boolean> tcs, BatchReadWriter.ReadFinishedCall readFinishedCall, Octree[,,] octrees)
-        {
-            readFinishedCall(octrees);
-            tcs.SetResult(true);
+            return await WorkerThreadScheduler.main.ScheduleParallel(() => ReadBatchThreaded(batchIndex, generateEmpty, allowModded));
         }
         
-        private static void ReadBatchThreaded(TaskCompletionSource<ReadBatchResult> tcs, Vector3Int batchIndex, bool allowModded, bool generateEmpty)
+        private static Octree[,,] ReadBatchThreaded(Vector3Int batchIndex, bool allowModded, bool generateEmpty)
         {
             Vector3Int octreeDimensions = Vector3Int.one * VoxelWorld.CONTAINERS_PER_SIDE;
             if (batchIndex.x == 25) octreeDimensions.x = 3;
@@ -90,33 +69,20 @@ namespace AbyssEditor.Scripts
                     curr_pos += (nodeCount * 4) + 2;
                     countOctrees++;
                 }
-                tcs.SetResult(new ReadBatchResult(octrees));
+                return octrees;
             }
 
             // if no batch file
+            /*EditorUI.DisplayErrorMessage($"No file for batch {batchIndex.x}-{batchIndex.y}-{batchIndex.z}\n" $"Created an empty batch", EditorUI.NotificationType.Warning);*/
+
+            if (generateEmpty && batchIndex != new Vector3Int(0, 13, 17))
+            {
+                //This is honestly so stupid but ig it works
+                return ReadBatchThreaded(new Vector3Int(0, 13, 17), false, false);
+            }
             else
             {
-                /*EditorUI.DisplayErrorMessage($"No file for batch {batchIndex.x}-{batchIndex.y}-{batchIndex.z}\n" +
-                                             $"Created an empty batch", EditorUI.NotificationType.Warning);*/
-
-                if (generateEmpty && batchIndex != new Vector3Int(0, 13, 17))
-                {
-                    //This is honestly so stupid but ig it works
-                    ReadBatchThreaded(tcs, new Vector3Int(0, 13, 17), false, false);
-                }
-                else
-                {
-                    tcs.SetResult(null);
-                }
-            }
-        }
-
-        public class ReadBatchResult
-        {
-            public Octree[,,] octrees;
-            public ReadBatchResult(Octree[,,] octrees)
-            {
-                this.octrees = octrees;
+                return null;
             }
         }
     }

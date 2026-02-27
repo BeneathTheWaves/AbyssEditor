@@ -1,22 +1,24 @@
 using System;
 using System.Collections.Concurrent;
 using System.Threading;
+using System.Threading.Tasks;
+using AbyssEditor.Scripts.Octrees;
 using UnityEngine;
 using UnityEngine.Profiling;
+using Object = UnityEngine.Object;
 
 namespace AbyssEditor.Scripts.ThreadingManager
 {
-    public class AsyncThreadScheduler : IDisposable
+    public class WorkerThreadScheduler : IDisposable
     {
-        public static AsyncThreadScheduler main;
+        public static WorkerThreadScheduler main;
         
         private readonly BlockingCollection<Action> taskQueue = new();
         private readonly Thread[] workers;
         public int workersCount => workers.Length;
         private bool threadsShouldRun = true;
-        private IDisposable disposableImplementation;
 
-        public AsyncThreadScheduler()
+        public WorkerThreadScheduler()
         {
             main = this;
             
@@ -29,14 +31,41 @@ namespace AbyssEditor.Scripts.ThreadingManager
                 workers[i].Start();
             }
         }
-        
-        public void Enqueue(Action syncTask)
+
+        public void ScheduleParallelManualLocking(Action syncTask)
         {
             if (syncTask == null) throw new ArgumentNullException(nameof(syncTask));
             taskQueue.Add(syncTask);
         }
+
+        public Task ScheduleParallel(Action syncTask)
+        {
+            TaskCompletionSource<bool> tcs = new();
+            if (syncTask == null) throw new ArgumentNullException(nameof(syncTask));
+            taskQueue.Add(() =>
+            {
+                syncTask.Invoke();
+                tcs.SetResult(true);
+            });
+            return tcs.Task;
+        }
         
-        //This is the seperate thread,
+        public Task<T> ScheduleParallel<T>(Func<T> syncTask)
+        {
+            TaskCompletionSource<T> tcs = new();
+            if (syncTask == null) throw new ArgumentNullException(nameof(syncTask));
+            
+            taskQueue.Add(() =>
+            {
+                T result = syncTask.Invoke();
+                tcs.SetResult(result);
+            });
+            
+            return tcs.Task;
+        }
+        
+        
+        //This is the separate thread,
         private void WorkerLoop()
         {
             Profiler.BeginThreadProfiling("AsyncMeshBuilders", "Worker");

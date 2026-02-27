@@ -20,7 +20,7 @@ namespace AbyssEditor.Scripts.Mesh_Gen
             main = this;
             
             meshBuilders = new ConcurrentStack<MeshBuilder>();
-            for (int i = 0; i < AsyncThreadScheduler.main.workersCount; i++)
+            for (int i = 0; i < WorkerThreadScheduler.main.workersCount; i++)
             {
                 meshBuilders.Push(new MeshBuilder());
             }
@@ -35,7 +35,7 @@ namespace AbyssEditor.Scripts.Mesh_Gen
             //Build mesh from faces
             TaskCompletionSource<MeshData> meshBuildTcs = new();
             
-            AsyncThreadScheduler.main.Enqueue(() => 
+            WorkerThreadScheduler.main.ScheduleParallelManualLocking(() => 
                 MeshBuildThreaded(new MeshRequest {
                 faces = faces,
                 resolution = resolution,
@@ -68,7 +68,7 @@ namespace AbyssEditor.Scripts.Mesh_Gen
             mesh.RecalculateNormals();
             mesh.RecalculateTangents();
             data.builder.SetLocked(false);//release the builder back to the thread
-            return new MeshResult(mesh, data.blockTypes);
+            return new MeshResult(data.blockTypes);
         }
 
         private void MeshBuildThreaded(MeshRequest meshRequest)
@@ -94,11 +94,9 @@ namespace AbyssEditor.Scripts.Mesh_Gen
         
         public class MeshResult
         {
-            public readonly Mesh mesh;
             public readonly int[] blockTypes;
-            public MeshResult(Mesh mesh, int[] blockTypes)
+            public MeshResult(int[] blockTypes)
             {
-                this.mesh = mesh;
                 this.blockTypes = blockTypes;
             }
         }

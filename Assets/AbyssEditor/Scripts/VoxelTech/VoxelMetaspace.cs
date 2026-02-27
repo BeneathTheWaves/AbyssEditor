@@ -28,7 +28,7 @@ namespace AbyssEditor.Scripts.VoxelTech {
             VoxelGrid.PrecomputeNeighborOffsets();
             VoxelGrid.PrecomputePaddingVoxels();
 
-            new AsyncThreadScheduler();//This is kinda scuffed, change it
+            new WorkerThreadScheduler();//This is kinda scuffed, change it
             new AsyncMeshBuilder();
         }
 
@@ -132,7 +132,7 @@ namespace AbyssEditor.Scripts.VoxelTech {
             {
                 tasks.Add(modifiedContainers[i].UpdateMeshAsync());
                 //delay returns slightly to reduce stutters when Unity has to parse the data on main thread
-                if(i % AsyncThreadScheduler.main.workersCount == 0) await Task.Yield();
+                if(i % WorkerThreadScheduler.main.workersCount == 0) await Task.Yield();
             }
             await Task.WhenAll(tasks);
 
@@ -151,7 +151,7 @@ namespace AbyssEditor.Scripts.VoxelTech {
             int batchCount = startBatch.GetNumberOfPointsInRegion(endBatch);
             
             statusHandle.SetTasksToCompleteForPhase(batchCount * 2);
-            statusHandle.SetPhasePrefix("Reading Batches (%completedTasks%/%totalTasks%)");
+            statusHandle.SetPhasePrefix("Batch Load Tasks (%completedTasks%/%totalTasks%)");
             List<Task> tasks = new();
             foreach (Vector3Int batchIndex in startBatch.IterateTo(endBatch))
             {
@@ -159,9 +159,10 @@ namespace AbyssEditor.Scripts.VoxelTech {
                 
                 BatchReadWriter.GetPath(mesh.batchIndex, allowModded, out bool isModded);
                 
-                tasks.Add(ThreadedBatchReadWriter.ReadBatchParallelable(mesh.OctreesReadCallback, mesh.batchIndex, allowModded, true, statusHandle));
+                tasks.Add(mesh.LoadGridsFromBatchesAsync(allowModded, statusHandle));
             }
             await Task.WhenAll(tasks);
+            
             statusHandle.CompletePhase();
 
             RegenerateNeighboringVoxelGridsCache(statusHandle);
@@ -282,7 +283,7 @@ namespace AbyssEditor.Scripts.VoxelTech {
             }
             BrushJob.DisposeNativeArrayPool();
             VoxelGrid.neighboursToCheckInSmooth.Dispose();
-            AsyncThreadScheduler.main.Dispose();
+            WorkerThreadScheduler.main.Dispose();
         }
         
         public VoxelMesh.VoxelMesh TryGetVoxelMesh(Vector3Int batchIndex)

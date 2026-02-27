@@ -1,7 +1,9 @@
-﻿using AbyssEditor.Scripts.CursorTools.Brush;
+﻿using System.Threading.Tasks;
+using AbyssEditor.Scripts.CursorTools.Brush;
 using AbyssEditor.Scripts.Mesh_Gen;
 using AbyssEditor.Scripts.Octrees;
 using AbyssEditor.Scripts.TerrainMaterials;
+using AbyssEditor.Scripts.ThreadingManager;
 using AbyssEditor.Scripts.VoxelTech.VoxelGrids;
 using AbyssEditor.Scripts.VoxelTech.VoxelGrids.Brushes;
 using Unity.Collections;
@@ -60,13 +62,18 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelMesh
             meshCollider.sharedMesh = mesh;
         }
 
+        public async Task ScheduleParseOctreeAsync(Octree octree)
+        {
+            meshObj.name = $"OctreeMesh-{octree.index}";
+            await WorkerThreadScheduler.main.ScheduleParallel(() => RasterizeOctree(octree));
+        }
+
         public void SetOctree(Octree octree)
         {
-            //meshObj.name = $"OctreeMesh-{octree.index}";
             RasterizeOctree(octree);
         }
 
-        public void RasterizeOctree(Octree octree)
+        private void RasterizeOctree(Octree octree)
         {
             int _res = VoxelWorld.RESOLUTION;
             NativeArray<byte> tempTypes = new NativeArray<byte>(_res * _res * _res, Allocator.Persistent);

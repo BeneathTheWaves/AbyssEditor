@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using AbyssEditor.Scripts.CursorTools.Brush;
 using AbyssEditor.Scripts.Octrees;
+using AbyssEditor.Scripts.TaskSystem;
 using AbyssEditor.Scripts.VoxelTech.VoxelGrids;
 using AbyssEditor.Scripts.VoxelTech.VoxelGrids.Brushes;
 using UnityEngine;
@@ -75,6 +76,30 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelMesh
             foreach (var container in pointContainers)
             {
                 tasks.Add(container.UpdateMeshAsync());
+            }
+            return tasks;
+        }
+        
+        public async Task LoadGridsFromBatchesAsync(bool allowModded, EditorProcessHandle statusHandle)
+        {
+            Octree[,,] octrees = await ThreadedBatchReadWriter.ReadBatchOctrees(batchIndex, true, allowModded, statusHandle);
+            statusHandle.IncrementTasksComplete();
+            
+            List<Task> tasks = ScheduleCreateGridsFromOctreesAsync(octrees);
+            await Task.WhenAll(tasks);
+            
+            statusHandle.IncrementTasksComplete();
+        }
+
+        private List<Task> ScheduleCreateGridsFromOctreesAsync(Octree[,,] octrees)
+        {
+            var tasks = new List<Task>();
+            for (int z = 0; z < octreeCounts.z; z++) {
+                for (int y = 0; y < octreeCounts.y; y++) {
+                    for (int x = 0; x < octreeCounts.x; x++) {
+                        tasks.Add(pointContainers[Globals.LinearIndex(x, y, z, octreeCounts)].ScheduleParseOctreeAsync(octrees[z, y, x]));
+                    }
+                }
             }
             return tasks;
         }
