@@ -48,7 +48,7 @@ namespace AbyssEditor.Scripts.VoxelTech {
             
             VoxelMetaspace.metaspace.AddRegion(startBatch, endBatch);
 
-            await VoxelMetaspace.metaspace.RegionReadCoroutine(allowModded, startBatch, endBatch);
+            await VoxelMetaspace.metaspace.RegionReadAsync(allowModded, startBatch, endBatch);
             
             BatchOutlineManager.main.ResetOutlines();
             

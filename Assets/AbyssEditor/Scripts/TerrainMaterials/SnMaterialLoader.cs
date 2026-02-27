@@ -33,40 +33,29 @@ namespace AbyssEditor.Scripts.TerrainMaterials
         //NOTE: the status handle needs to check if another processPhase is needed for reloading meshes before this is called
         public IEnumerator LoadMaterialsFromGameAsync(bool updateMeshesOnLoad, EditorProcessHandle statusHandle)
         {
-            statusHandle.SetStatus("Loading material names");
-            statusHandle.SetProgress(0);
+            statusHandle.SetTasksToCompleteForPhase(12);
+            statusHandle.SetPhasePrefix("Loading material names");
             
-            int totalTasks = 12;
-
-            System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch();
-            sw.Start();
             yield return StartCoroutine(LoadMaterialNamesAsync());
-            sw.Stop();
-            DebugOverlay.LogMessage($"Loaded material names in {sw.ElapsedMilliseconds}ms");
             
-            statusHandle.SetStatus("Getting assets");
-            statusHandle.SetProgress(1f / totalTasks);
-
-            sw.Restart();
+            statusHandle.IncrementTasksComplete();
+            
             List<AssetStudio.Classes.Texture2D> textureAssets = new List<AssetStudio.Classes.Texture2D>();
             List<AssetStudio.Classes.Material> materialAssets = new List<AssetStudio.Classes.Material>();
             yield return StartCoroutine(GetMaterialAssetsAsync(textureAssets, materialAssets));
-            sw.Stop();
-            DebugOverlay.LogMessage($"Got assets in {sw.ElapsedMilliseconds}ms");
             
-            statusHandle.SetStatus("Setting materials");
-            statusHandle.SetProgress(4f / totalTasks);
-            sw.Restart();
+            statusHandle.SetPhasePrefix("Setting materials");
+            statusHandle.IncrementTasksComplete(3);
+            
             SetMaterials(materialAssets.ToArray());
             yield return null;
-            statusHandle.SetStatus("Setting textures");
-            statusHandle.SetProgress(8f / totalTasks);
-            yield return null;
-            SetTextures(textureAssets.ToArray());
-            sw.Stop();
             
+            statusHandle.SetPhasePrefix("Setting textures");
+            statusHandle.IncrementTasksComplete(8);
+            
+            SetTextures(textureAssets.ToArray());
             yield return null;
-            DebugOverlay.LogMessage($"Set assets in {sw.ElapsedMilliseconds}ms");
+            
             contentLoaded = true;
             
             if (updateMeshesOnLoad)

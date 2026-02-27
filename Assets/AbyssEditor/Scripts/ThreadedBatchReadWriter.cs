@@ -15,7 +15,7 @@ namespace AbyssEditor.Scripts
     /// </summary>
     public static partial class ThreadedBatchReadWriter
     {
-        public const int MAX_BATCH_UPDATES_PER_FRAME = 5;
+        
         public static async Task ReadBatchParallelable(BatchReadWriter.ReadFinishedCall readFinishedCall, Vector3Int batchIndex, bool generateEmpty = true, bool allowModded = false, EditorProcessHandle statusHandle = null)
         {
             TaskCompletionSource<ReadBatchResult> readBatchTcs = new();

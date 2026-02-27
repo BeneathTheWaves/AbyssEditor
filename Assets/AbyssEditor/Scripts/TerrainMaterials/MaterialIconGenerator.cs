@@ -66,25 +66,24 @@ namespace AbyssEditor.Scripts.TerrainMaterials
             }
 
             BlocktypeMaterial[] blockTypes = SnMaterialLoader.instance.blocktypesData;
-
-            int successCount = 0;
+            
+            
+            statusHandle.SetTasksToCompleteForPhase(blockTypes.Length);
+            statusHandle.SetPhasePrefix($"Generating Icons (%completedTasks%/%totalTasks%)");
             
             for (int i = 0; i < blockTypes.Length; i++)
             {
                 BlocktypeMaterial mat = blockTypes[i];
                 
-                statusHandle.SetStatus($"Generating Icon For {i}");
-                statusHandle.SetProgress((float) i / blockTypes.Length);
+                statusHandle.IncrementTasksComplete();
                 
                 if (mat != null && mat.ExistsInGame)
                 {
                     GameObject newIconGameObj = Instantiate(matIconPrefab, this.transform);
                     UIBlocktypeIconDisplay newicon = new UIBlocktypeIconDisplay(newIconGameObj, mat);
                     icons.Add(newicon);
-                    successCount++;
                 }
             }
-            DebugOverlay.LogMessage($"Finished loading {successCount} materials.");
             
             if (onCompleteCallback != null)
             {

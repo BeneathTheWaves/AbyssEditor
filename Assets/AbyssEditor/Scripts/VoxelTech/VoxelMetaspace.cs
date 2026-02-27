@@ -131,6 +131,7 @@ namespace AbyssEditor.Scripts.VoxelTech {
             for(int i = 0; i < brushJobs.Count; i++)
             {
                 tasks.Add(modifiedContainers[i].UpdateMeshAsync());
+                //delay returns slightly to reduce stutters when Unity has to parse the data on main thread
                 if(i % AsyncThreadScheduler.main.workersCount == 0) await Task.Yield();
             }
             await Task.WhenAll(tasks);
@@ -144,13 +145,13 @@ namespace AbyssEditor.Scripts.VoxelTech {
             DebugOverlay.LogMessage($"Scheduled Rebuilds in {elapsedMs3:F4}ms");
         }
 
-        public async Task RegionReadCoroutine(bool allowModded, Vector3Int startBatch, Vector3Int endBatch, EditorProcessHandle statusHandle = null) {
+        public async Task RegionReadAsync(bool allowModded, Vector3Int startBatch, Vector3Int endBatch, EditorProcessHandle statusHandle = null) {
             if(statusHandle == null) { statusHandle = TaskManager.main.GetEditorProcessHandle(3); }
 
             int batchCount = startBatch.GetNumberOfPointsInRegion(endBatch);
             
-            statusHandle.SetTasksToCompleteForPhase(batchCount);
-            statusHandle.SetStatus($"Reading Batches");
+            statusHandle.SetTasksToCompleteForPhase(batchCount * 2);
+            statusHandle.SetPhasePrefix("Reading Batches (%completedTasks%/%totalTasks%)");
             List<Task> tasks = new();
             foreach (Vector3Int batchIndex in startBatch.IterateTo(endBatch))
             {
@@ -160,9 +161,7 @@ namespace AbyssEditor.Scripts.VoxelTech {
                 
                 tasks.Add(ThreadedBatchReadWriter.ReadBatchParallelable(mesh.OctreesReadCallback, mesh.batchIndex, allowModded, true, statusHandle));
             }
-
             await Task.WhenAll(tasks);
-            
             statusHandle.CompletePhase();
 
             RegenerateNeighboringVoxelGridsCache(statusHandle);
@@ -209,16 +208,14 @@ namespace AbyssEditor.Scripts.VoxelTech {
         {
             if (statusHandle == null) { statusHandle = TaskManager.main.GetEditorProcessHandle(1); }
             
-            int totalTasks = meshes.Count * VoxelWorld.CONTAINERS_PER_SIDE * 2;
-            int completedTasks = 0;
+            statusHandle.SetTasksToCompleteForPhase(meshes.Count);
+            statusHandle.SetPhasePrefix("Setting tree neighbor caches (%completedTasks%/%totalTasks%)");
             
             foreach (VoxelMesh.VoxelMesh mesh in meshes)
             { 
                 mesh.CacheNeighboringVoxelGrids();
                 
-                statusHandle.SetStatus($"Caching Neighbors for {mesh.batchIndex}");
-                completedTasks++;
-                statusHandle.SetProgress((float) completedTasks / totalTasks);
+                statusHandle.IncrementTasksComplete();
             }
             
             statusHandle.CompletePhase();
@@ -228,26 +225,22 @@ namespace AbyssEditor.Scripts.VoxelTech {
         {
             if (statusHandle == null) { statusHandle = TaskManager.main.GetEditorProcessHandle(1); }
             
-            int totalTasks = meshes.Count * 2;
-            int completedTasks = 0;
+            statusHandle.SetTasksToCompleteForPhase(meshes.Count * 2);
             
+            statusHandle.SetPhasePrefix($"Updating Grid(s) (%completedTasks%/%totalTasks%)");
             foreach (VoxelMesh.VoxelMesh mesh in meshes) {
                 mesh.UpdateFullGrids();
-                
-                statusHandle.SetStatus($"Updating Grid(s) for {mesh.batchIndex}");
-                completedTasks++;
-                statusHandle.SetProgress((float) completedTasks / totalTasks);
-
+                statusHandle.IncrementTasksComplete();
                 await Task.Yield();
             }
 
+            statusHandle.SetPhasePrefix($"Scheduling mesh regenerations (%completedTasks%/%totalTasks%)\"");
             List<Task> tasks = new List<Task>();
             foreach (VoxelMesh.VoxelMesh mesh in meshes) {
                 tasks.AddRange(mesh.ScheduleMeshRegenAsync());
                 
-                statusHandle.SetStatus($"Scheduled mesh regen for {mesh.batchIndex}");
-                completedTasks++;
-                statusHandle.SetProgress((float) completedTasks / totalTasks);
+                statusHandle.IncrementTasksComplete();
+                
                 await Task.Yield();
             }
             
