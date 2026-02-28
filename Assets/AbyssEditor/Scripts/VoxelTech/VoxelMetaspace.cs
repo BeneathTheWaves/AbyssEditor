@@ -226,8 +226,10 @@ namespace AbyssEditor.Scripts.VoxelTech {
         public async Task RegenerateMeshesAsync(EditorProcessHandle statusHandle = null, bool reloadBoundariesOnComplete = false)
         {
             if (statusHandle == null) { statusHandle = TaskManager.main.GetEditorProcessHandle(1); }
-            
-            statusHandle.SetTasksToCompleteForPhase(meshes.Count * 2);
+
+            const int meshesToUpdatePerBatch = VoxelWorld.CONTAINERS_PER_SIDE * VoxelWorld.CONTAINERS_PER_SIDE * VoxelWorld.CONTAINERS_PER_SIDE;
+            int totalTasks = meshes.Count + (meshes.Count * meshesToUpdatePerBatch);
+            statusHandle.SetTasksToCompleteForPhase(totalTasks);
             
             statusHandle.SetPhasePrefix($"Updating Grid(s) (%completedTasks%/%totalTasks%)");
             foreach (VoxelMesh.VoxelMesh mesh in meshes) {
@@ -236,13 +238,10 @@ namespace AbyssEditor.Scripts.VoxelTech {
                 await Task.Yield();
             }
 
-            statusHandle.SetPhasePrefix($"Scheduling mesh regenerations (%completedTasks%/%totalTasks%)\"");
+            statusHandle.SetPhasePrefix($"Regenerating Meshes (%completedTasks%/%totalTasks%)");
             List<Task> tasks = new List<Task>();
             foreach (VoxelMesh.VoxelMesh mesh in meshes) {
-                tasks.AddRange(mesh.ScheduleMeshRegenAsync());
-                
-                statusHandle.IncrementTasksComplete();
-                
+                tasks.AddRange(mesh.ScheduleMeshRegenAsync(statusHandle));
                 await Task.Yield();
             }
             

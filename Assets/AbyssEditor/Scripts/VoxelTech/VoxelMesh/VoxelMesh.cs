@@ -69,12 +69,12 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelMesh
             return true;
         }
 
-        public List<Task> ScheduleMeshRegenAsync()
+        public List<Task> ScheduleMeshRegenAsync(EditorProcessHandle statusHandle)
         {
             var tasks = new List<Task>();
             foreach (var container in pointContainers)
             {
-                tasks.Add(container.UpdateMeshAsync());
+                tasks.Add(container.UpdateMeshAsync(statusHandle));
             }
             return tasks;
         }

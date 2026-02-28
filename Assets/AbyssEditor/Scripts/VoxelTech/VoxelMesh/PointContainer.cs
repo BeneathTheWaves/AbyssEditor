@@ -2,6 +2,7 @@
 using AbyssEditor.Scripts.CursorTools.Brush;
 using AbyssEditor.Scripts.Mesh_Gen;
 using AbyssEditor.Scripts.Octrees;
+using AbyssEditor.Scripts.TaskSystem;
 using AbyssEditor.Scripts.TerrainMaterials;
 using AbyssEditor.Scripts.ThreadingManager;
 using AbyssEditor.Scripts.VoxelTech.VoxelGrids;
@@ -94,7 +95,7 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelMesh
             return null;
         }
         
-        public async Task UpdateMeshAsync()
+        public async Task UpdateMeshAsync(EditorProcessHandle statusHandle = null)//Handle can be null, increments on complete
         {
             grid.GetFullGrids(out NativeArray<byte> gridDensity, out NativeArray<byte> gridType);
             
@@ -124,6 +125,8 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelMesh
             {
                 meshCollider.enabled = false;
             }
+
+            statusHandle?.IncrementTasksComplete();
         }
 
         public void UpdateNeighborData()
