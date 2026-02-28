@@ -178,6 +178,7 @@ namespace AbyssEditor.Scripts {
                 await ReadBatchCoroutine(container.Callback, batch.batchIndex, false, false);
                 await Task.Yield();
                 Octree[,,] originalNodes = container.nodes;
+                ThreadedBinaryReadWriter.RasterDeRasterizeBatch(tempDensities, tempTypes, originalNodes);
 
                 // Diff trees
                 List<Octree> batchChanges = GetChangedOctrees(nodes, originalNodes);
