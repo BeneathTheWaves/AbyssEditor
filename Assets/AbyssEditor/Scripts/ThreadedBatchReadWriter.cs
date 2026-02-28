@@ -15,7 +15,7 @@ namespace AbyssEditor.Scripts
     {
         public static async Task<Octree[,,]> ReadBatchOctrees(Vector3Int batchIndex, bool generateEmpty = true, bool allowModded = false, EditorProcessHandle statusHandle = null)
         {
-            return await WorkerThreadScheduler.main.ScheduleParallel(() => ReadBatchThreaded(batchIndex, generateEmpty, allowModded));
+            return await WorkerThreadScheduler.main.ScheduleParallel(() => ReadBatchThreaded(batchIndex, allowModded, generateEmpty));
         }
         
         private static Octree[,,] ReadBatchThreaded(Vector3Int batchIndex, bool allowModded, bool generateEmpty)
