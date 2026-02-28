@@ -8,17 +8,14 @@ using UnityEngine;
 
 namespace AbyssEditor.Scripts
 {
-    /// <summary>
-    /// NOTE. None of this is async due to the INSANE GC allocations since the Tree is made of Objects :skull:
-    /// </summary>
     public static partial class ThreadedBatchReadWriter
     {
-        public static async Task<Octree[,,]> ReadBatchOctrees(Vector3Int batchIndex, bool generateEmpty = true, bool allowModded = false, EditorProcessHandle statusHandle = null)
+        public static async Task<Octree[,,]> GetBatchOctreesAsync(Vector3Int batchIndex,  bool allowModded = false, bool generateEmpty = true, EditorProcessHandle statusHandle = null)
         {
-            return await WorkerThreadScheduler.main.ScheduleParallel(() => ReadBatchThreaded(batchIndex, allowModded, generateEmpty));
+            return await WorkerThreadScheduler.main.ScheduleParallel(() => ReadBatchThreadable(batchIndex, allowModded, generateEmpty));
         }
         
-        private static Octree[,,] ReadBatchThreaded(Vector3Int batchIndex, bool allowModded, bool generateEmpty)
+        public static Octree[,,] ReadBatchThreadable(Vector3Int batchIndex, bool allowModded, bool generateEmpty)
         {
             Vector3Int octreeDimensions = Vector3Int.one * VoxelWorld.CONTAINERS_PER_SIDE;
             if (batchIndex.x == 25) octreeDimensions.x = 3;
@@ -78,7 +75,7 @@ namespace AbyssEditor.Scripts
             if (generateEmpty && batchIndex != new Vector3Int(0, 13, 17))
             {
                 //This is honestly so stupid but ig it works
-                return ReadBatchThreaded(new Vector3Int(0, 13, 17), false, false);
+                return ReadBatchThreadable(new Vector3Int(0, 13, 17), false, false);
             }
             else
             {

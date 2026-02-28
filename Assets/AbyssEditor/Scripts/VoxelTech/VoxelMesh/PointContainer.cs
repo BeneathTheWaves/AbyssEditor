@@ -62,12 +62,6 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelMesh
             meshCollider.sharedMesh = mesh;
         }
 
-        public async Task ScheduleParseOctreeAsync(Octree octree)
-        {
-            meshObj.name = $"OctreeMesh-{octree.index}";
-            await WorkerThreadScheduler.main.ScheduleParallel(() => RasterizeOctree(octree));
-        }
-
         public void SetOctree(Octree octree)
         {
             RasterizeOctree(octree);

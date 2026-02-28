@@ -150,7 +150,7 @@ namespace AbyssEditor.Scripts.VoxelTech {
 
             int batchCount = startBatch.GetNumberOfPointsInRegion(endBatch);
             
-            statusHandle.SetTasksToCompleteForPhase(batchCount * 2);
+            statusHandle.SetTasksToCompleteForPhase(batchCount);
             statusHandle.SetPhasePrefix("Batch Load Tasks (%completedTasks%/%totalTasks%)");
             List<Task> tasks = new();
             foreach (Vector3Int batchIndex in startBatch.IterateTo(endBatch))
@@ -196,7 +196,7 @@ namespace AbyssEditor.Scripts.VoxelTech {
                 
                 VoxelMesh.VoxelMesh mesh = TryGetVoxelMesh(modifiedBatch);
                 
-                mesh.OctreesReadCallback(nodes);
+                mesh.CreateGridsFromOctrees(nodes);
             }
             statusHandle.CompletePhase();
 

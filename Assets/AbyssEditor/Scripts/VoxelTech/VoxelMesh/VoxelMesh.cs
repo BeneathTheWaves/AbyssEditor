@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using AbyssEditor.Scripts.CursorTools.Brush;
 using AbyssEditor.Scripts.Octrees;
 using AbyssEditor.Scripts.TaskSystem;
+using AbyssEditor.Scripts.ThreadingManager;
 using AbyssEditor.Scripts.VoxelTech.VoxelGrids;
 using AbyssEditor.Scripts.VoxelTech.VoxelGrids.Brushes;
 using UnityEngine;
@@ -55,14 +56,11 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelMesh
         }
         
 
-        public bool OctreesReadCallback(Octree[,,] _nodes)
+        public bool CreateGridsFromOctrees(Octree[,,] _nodes)
         {
-            for (int z = 0; z < octreeCounts.z; z++)
-            {
-                for (int y = 0; y < octreeCounts.y; y++)
-                {
-                    for (int x = 0; x < octreeCounts.x; x++)
-                    {
+            for (int z = 0; z < octreeCounts.z; z++) {
+                for (int y = 0; y < octreeCounts.y; y++) {
+                    for (int x = 0; x < octreeCounts.x; x++) {
                         pointContainers[Globals.LinearIndex(x, y, z, octreeCounts)].SetOctree(_nodes[z, y, x]);
                     }
                 }
@@ -82,26 +80,14 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelMesh
         
         public async Task LoadGridsFromBatchesAsync(bool allowModded, EditorProcessHandle statusHandle)
         {
-            Octree[,,] octrees = await ThreadedBatchReadWriter.ReadBatchOctrees(batchIndex, true, allowModded, statusHandle);
-            statusHandle.IncrementTasksComplete();
-            
-            List<Task> tasks = ScheduleCreateGridsFromOctreesAsync(octrees);
-            await Task.WhenAll(tasks);
-            
+            await WorkerThreadScheduler.main.ScheduleParallel(() => LoadGridsFromBatchesThreadable(allowModded));
             statusHandle.IncrementTasksComplete();
         }
-
-        private List<Task> ScheduleCreateGridsFromOctreesAsync(Octree[,,] octrees)
+        
+        private void LoadGridsFromBatchesThreadable(bool allowModded)
         {
-            var tasks = new List<Task>();
-            for (int z = 0; z < octreeCounts.z; z++) {
-                for (int y = 0; y < octreeCounts.y; y++) {
-                    for (int x = 0; x < octreeCounts.x; x++) {
-                        tasks.Add(pointContainers[Globals.LinearIndex(x, y, z, octreeCounts)].ScheduleParseOctreeAsync(octrees[z, y, x]));
-                    }
-                }
-            }
-            return tasks;
+            Octree[,,] octrees = ThreadedBatchReadWriter.ReadBatchThreadable(batchIndex, allowModded, true);
+            CreateGridsFromOctrees(octrees);
         }
 
         public VoxelGrid GetVoxelGrid(Vector3Int containerIndex)
