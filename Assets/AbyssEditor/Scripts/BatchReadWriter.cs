@@ -180,7 +180,7 @@ namespace AbyssEditor.Scripts {
                 await ReadBatchCoroutine(container.Callback, batchIndex, allowModded: false, generateEmpty: true);
                 
                 Octree[,,] batchOctrees = container.nodes;
-                RasterDeRasterizeBatch(tempDensities, tempTypes, batchOctrees);
+                //RasterDeRasterizeBatch(tempDensities, tempTypes, batchOctrees);
 
                 for (int i = 0; i < octreeCount; i++)
                 {

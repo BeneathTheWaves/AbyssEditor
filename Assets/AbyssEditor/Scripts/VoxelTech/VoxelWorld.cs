@@ -29,11 +29,11 @@ namespace AbyssEditor.Scripts.VoxelTech {
         void Awake() {
             world = this;
         }
-        public async Task OctreePatchCoroutine(byte[] patchBytes, List<Vector3Int> batchesInPatch)
+        public async Task LoadOctreePatchAsync(byte[] patchBytes, List<Vector3Int> batchesInPatch, List<int> batchOffsets)
         {
             CursorToolManager.main.RegisterInputBlock(this);
             
-            await VoxelMetaspace.metaspace.OctreePatchReadAsync(patchBytes, batchesInPatch);
+            await VoxelMetaspace.metaspace.OctreePatchReadAsync(patchBytes, batchesInPatch, batchOffsets);
             
             BatchOutlineManager.main.ResetOutlines();
             

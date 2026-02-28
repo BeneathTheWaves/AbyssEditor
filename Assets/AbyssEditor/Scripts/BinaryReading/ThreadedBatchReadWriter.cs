@@ -1,14 +1,15 @@
-using AbyssEditor.Scripts.Octrees;
-using AbyssEditor.Scripts.VoxelTech;
 using System.IO;
 using System.Threading.Tasks;
+using AbyssEditor.Scripts.Octrees;
 using AbyssEditor.Scripts.TaskSystem;
 using AbyssEditor.Scripts.ThreadingManager;
+using AbyssEditor.Scripts.VoxelTech;
 using UnityEngine;
 
-namespace AbyssEditor.Scripts
+
+namespace AbyssEditor.Scripts.BinaryReading
 {
-    public static partial class ThreadedBatchReadWriter
+    public static partial class ThreadedBinaryReadWriter
     {
         public static async Task<Octree[,,]> GetBatchOctreesAsync(Vector3Int batchIndex,  bool allowModded = false, bool generateEmpty = true, EditorProcessHandle statusHandle = null)
         {
@@ -68,9 +69,6 @@ namespace AbyssEditor.Scripts
                 }
                 return octrees;
             }
-
-            // if no batch file
-            /*EditorUI.DisplayErrorMessage($"No file for batch {batchIndex.x}-{batchIndex.y}-{batchIndex.z}\n" $"Created an empty batch", EditorUI.NotificationType.Warning);*/
 
             if (generateEmpty && batchIndex != new Vector3Int(0, 13, 17))
             {

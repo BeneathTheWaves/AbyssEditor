@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using AbyssEditor.Scripts.BatchOutline;
+using AbyssEditor.Scripts.BinaryReading;
 using AbyssEditor.Scripts.Essentials;
 using AbyssEditor.Scripts.VoxelTech;
 using TMPro;
@@ -24,6 +25,7 @@ namespace AbyssEditor.Scripts.UI.Windows {
         private string lastPatchPath;
         private byte[] patchBytes;
         private List<Vector3Int> batchesInPatch;
+        private List<int> batchOffsetsInPatch;
 
         private string lastMethod;
         
@@ -82,13 +84,16 @@ namespace AbyssEditor.Scripts.UI.Windows {
 
             patchFilePathText.text = lastPatchPath;
 
-            patchBytes = BatchReadWriter.GetPatchBytes(lastPatchPath);
-            batchesInPatch = BatchReadWriter.GetBatchIndexesFromPatch(patchBytes);
+            patchBytes = ThreadedBinaryReadWriter.GetPatchBytes(lastPatchPath);
+            
+            ThreadedBinaryReadWriter.GetBatchIndexesAndOffsetsFromPatch(patchBytes, out List<Vector3Int> batchIndexes, out List<int> batchOffsets);
+            batchesInPatch = batchIndexes;
+            batchOffsetsInPatch = batchOffsets;
 
             DrawPatchOutlines();
         }
 
-        public void DrawPatchOutlines()
+        private void DrawPatchOutlines()
         {
             if (batchesInPatch == null)
             {
@@ -113,8 +118,8 @@ namespace AbyssEditor.Scripts.UI.Windows {
         {
             StartCoroutine(ApplyPatch());
         }
-        
-        public IEnumerator ApplyPatch()
+
+        private IEnumerator ApplyPatch()
         {
             int overrideCount = 0;
             foreach (Vector3Int batchIndex in batchesInPatch)
@@ -141,7 +146,7 @@ namespace AbyssEditor.Scripts.UI.Windows {
                     yield break;
                 }
             }
-            _ = VoxelWorld.world.OctreePatchCoroutine(patchBytes, batchesInPatch);
+            _ = VoxelWorld.world.LoadOctreePatchAsync(patchBytes, batchesInPatch, batchOffsetsInPatch);
             base.DisableWindow();
         }
 
@@ -176,8 +181,8 @@ namespace AbyssEditor.Scripts.UI.Windows {
         {
             StartCoroutine(LoadBatch());
         }
-        
-        public IEnumerator LoadBatch() {
+
+        private IEnumerator LoadBatch() {
 
             if (!Globals.CheckIsGamePathValid()) {
                 EditorUI.DisplayErrorMessage("Please select a valid game path");

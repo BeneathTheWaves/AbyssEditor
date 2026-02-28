@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using AbyssEditor.Scripts.BinaryReading;
 using AbyssEditor.Scripts.CursorTools.Brush;
 using AbyssEditor.Scripts.Octrees;
 using AbyssEditor.Scripts.TaskSystem;
@@ -86,7 +87,19 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelMesh
         
         private void LoadGridsFromBatchesThreadable(bool allowModded)
         {
-            Octree[,,] octrees = ThreadedBatchReadWriter.ReadBatchThreadable(batchIndex, allowModded, true);
+            Octree[,,] octrees = ThreadedBinaryReadWriter.ReadBatchThreadable(batchIndex, allowModded, true);
+            CreateGridsFromOctrees(octrees);
+        }
+
+        public async Task LoadGridsFromPatchAsync(byte[] patchByteArray, int batchIndexOffset, EditorProcessHandle statusHandle)
+        {
+            await WorkerThreadScheduler.main.ScheduleParallel(() => LoadGridsFromPatchThreadable(patchByteArray, batchIndexOffset));
+            statusHandle.IncrementTasksComplete();
+        }
+        
+        private void LoadGridsFromPatchThreadable(byte[] patchByteArray, int batchIndexOffset)
+        {
+            Octree[,,] octrees = ThreadedBinaryReadWriter.GetPatchOctreesThreadable(patchByteArray, batchIndexOffset);
             CreateGridsFromOctrees(octrees);
         }
 

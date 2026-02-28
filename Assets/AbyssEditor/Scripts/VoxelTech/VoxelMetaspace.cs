@@ -31,6 +31,19 @@ namespace AbyssEditor.Scripts.VoxelTech {
             new WorkerThreadScheduler();//This is kinda scuffed, change it
             new AsyncMeshBuilder();
         }
+        
+        public VoxelMesh.VoxelMesh AddGetMesh(Vector3Int batchIndex) {
+            VoxelMesh.VoxelMesh voxelMesh = TryGetVoxelMesh(batchIndex);
+                
+            if(!voxelMesh)
+            {
+                voxelMesh = new GameObject($"batch-{batchIndex.x}-{batchIndex.y}-{batchIndex.z}").AddComponent<VoxelMesh.VoxelMesh>();
+                voxelMesh.Create(batchIndex);
+                meshes.Add(voxelMesh);
+            }
+
+            return voxelMesh;
+        }
 
         public void AddRegion(Vector3Int startBatch, Vector3Int endBatch) {
             foreach (Vector3Int batchIndex in startBatch.IterateTo(endBatch))
@@ -170,34 +183,22 @@ namespace AbyssEditor.Scripts.VoxelTech {
             await RegenerateMeshesAsync(statusHandle, true);
         }
         
-        public async Task OctreePatchReadAsync(byte[] patchBytes, List<Vector3Int> batchesInPatch, EditorProcessHandle statusHandle = null) {
-            if(statusHandle == null) { statusHandle = TaskManager.main.GetEditorProcessHandle(4); }    
+        public async Task OctreePatchReadAsync(byte[] patchBytes, List<Vector3Int> batchesInPatch, List<int> offsetsIntPatch, EditorProcessHandle statusHandle = null)
+        {
+            if (statusHandle == null) { statusHandle = TaskManager.main.GetEditorProcessHandle(3); }    
             
-            PatchContainer patchContainer = new PatchContainer();
-            
-            await BatchReadWriter.ReadOctreePatchCoroutine(patchContainer.Callback, patchBytes, batchesInPatch, statusHandle);
-
-            int batchCount = patchContainer.modifiedBatches.Keys.Count;
-            int readIndex = 0;
-            
-            foreach (Vector3Int modifiedBatch in patchContainer.modifiedBatches.Keys)
+            statusHandle.SetTasksToCompleteForPhase(batchesInPatch.Count);
+            statusHandle.SetPhasePrefix("Patch Load Tasks (%completedTasks%/%totalTasks%)");
+            List<Task> tasks = new List<Task>();
+            for(int i = 0; i < batchesInPatch.Count; i++)
             {
-                statusHandle.SetStatus($"Applying {modifiedBatch}");
-                statusHandle.SetProgress((float)readIndex/batchCount);
-                readIndex++;
+                Vector3Int batchIndex = batchesInPatch[i];
+                int offset = offsetsIntPatch[i];
+                VoxelMesh.VoxelMesh mesh = AddGetMesh(batchIndex);
                 
-                if (!patchContainer.modifiedBatches.TryGetValue(modifiedBatch, out Octree[,,] nodes))
-                {
-                    continue;
-                }
-                
-                //TODO: THIS IS SCUFFED ASF RN SMH TS PMO ONG ONG FRFR NO CAPA LAPA HI KOOKOO
-                AddRegion(modifiedBatch, modifiedBatch);
-                
-                VoxelMesh.VoxelMesh mesh = TryGetVoxelMesh(modifiedBatch);
-                
-                mesh.CreateGridsFromOctrees(nodes);
+                tasks.Add(mesh.LoadGridsFromPatchAsync(patchBytes, offset, statusHandle));
             }
+            await Task.WhenAll(tasks);
             statusHandle.CompletePhase();
 
             RegenerateNeighboringVoxelGridsCache(statusHandle);
