@@ -11,11 +11,6 @@ namespace AbyssEditor.Scripts.BinaryReading
 {
     public static partial class ThreadedBinaryReadWriter
     {
-        public static async Task<Octree[,,]> GetBatchOctreesAsync(Vector3Int batchIndex,  bool allowModded = false, bool generateEmpty = true, EditorProcessHandle statusHandle = null)
-        {
-            return await WorkerThreadScheduler.main.ScheduleParallel(() => ReadBatchThreadable(batchIndex, allowModded, generateEmpty));
-        }
-        
         public static Octree[,,] ReadBatchThreadable(Vector3Int batchIndex, bool allowModded, bool generateEmpty)
         {
             Vector3Int octreeDimensions = Vector3Int.one * VoxelWorld.CONTAINERS_PER_SIDE;

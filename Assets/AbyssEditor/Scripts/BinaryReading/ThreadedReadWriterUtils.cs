@@ -18,7 +18,7 @@ namespace AbyssEditor.Scripts.BinaryReading
         /// <param name="tempDensities">Temporary Densities to use, mainly so that new arrays don't need to be allocated for this operation</param>
         /// <param name="tempTypes">Temporary Types to use, mainly so that new arrays don't need to be allocated for this operation</param>
         /// <param name="originalNodes">Original nodes that are directly from a loaded batch, otherwise this isn't going to do much</param>
-        private static void RasterDeRasterizeBatch(NativeArray<byte> tempDensities, NativeArray<byte> tempTypes, Octree[,,] originalNodes)
+        /*PUBLIC FOR NOW*/public static void RasterDeRasterizeBatch(NativeArray<byte> tempDensities, NativeArray<byte> tempTypes, Octree[,,] originalNodes)
         {
             //if this becomes a performance issue there is nothing stopping it from becoming a unity job operation, each octree only looks at itself and its grid
             if (originalNodes != null)
