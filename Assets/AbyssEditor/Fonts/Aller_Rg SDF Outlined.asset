@@ -126,10 +126,10 @@ Material:
     - _GlossMapScale: 0
     - _Glossiness: 0
     - _GlossyReflections: 0
-    - _GlowInner: 0.05
-    - _GlowOffset: 0
-    - _GlowOuter: 0.05
-    - _GlowPower: 0.75
+    - _GlowInner: 0.327
+    - _GlowOffset: 1
+    - _GlowOuter: 0.313
+    - _GlowPower: 0
     - _GradientScale: 6
     - _LightAngle: 3.1416
     - _MaskSoftnessX: 0
@@ -139,15 +139,15 @@ Material:
     - _OutlineSoftness: 0.5
     - _OutlineUVSpeedX: 0
     - _OutlineUVSpeedY: 0
-    - _OutlineWidth: 0.2
+    - _OutlineWidth: 0
     - _Parallax: 0.005
     - _PerspectiveFilter: 0.875
     - _QueueOffset: 0
     - _ReceiveShadows: 1
     - _Reflectivity: 10
     - _ScaleRatioA: 0.8333333
-    - _ScaleRatioB: 1.5104166
-    - _ScaleRatioC: 1.5104166
+    - _ScaleRatioB: 1.1503555
+    - _ScaleRatioC: 0.7552083
     - _ScaleX: 1
     - _ScaleY: 1
     - _ShaderFlags: 0
@@ -169,7 +169,7 @@ Material:
     - _UnderlayDilate: 1
     - _UnderlayOffsetX: 0
     - _UnderlayOffsetY: 0
-    - _UnderlaySoftness: 0
+    - _UnderlaySoftness: 1
     - _VertexOffsetX: 0
     - _VertexOffsetY: 0
     - _WeightBold: 0.75
@@ -191,7 +191,7 @@ Material:
     - _ReflectOutlineColor: {r: 0, g: 0, b: 0, a: 1}
     - _SpecColor: {r: 0.2, g: 0.2, b: 0.2, a: 1}
     - _SpecularColor: {r: 1, g: 1, b: 1, a: 1}
-    - _UnderlayColor: {r: 0, g: 0, b: 0, a: 1}
+    - _UnderlayColor: {r: 0, g: 0, b: 0, a: 0.5686275}
   m_BuildTextureStacks: []
   m_AllowLocking: 1
 --- !u!114 &11400000
