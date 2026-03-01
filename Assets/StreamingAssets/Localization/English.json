@@ -73,6 +73,7 @@
   "EnableFullscreen": "Enable Fullscreen",
   "AutoLoadMats": "Auto Load Materials",
   "EnableBrushLog": "Enable Brush Logging",
+  "EnableStats": "Enable Stats",
   "DiscordRPC": "Discord RPC (Requires Restart)",
   
   //Materials
@@ -85,6 +86,9 @@
   "QuitConfirmationMessage": "Are you certain you want to close the editor? Any unexported data will be lost!",
   "ConfirmQuit": "Quit",
   "CancelQuit": "No!",
+  
+  //Stats
+  "StatsText": "Camera Batch: %CamBatch% \nCamera Pos: %CamPos%\nBatches Loaded: %BatchCount%\nMeshes Loaded: %MeshCount%",
   
   //Discord Game SDK
   "DiscordGameSDK_Details": "Subnautica Terrain Editor",

@@ -77,6 +77,7 @@ namespace AbyssEditor.Scripts.VoxelTech {
             yield return RegenerateMeshesAsync(reloadBoundariesOnComplete: true);
             
             CursorToolManager.main.UnregisterInputBlock(this);
+            StatsTextUI.main.UpdateStats();
         }
 
         public VoxelGrid TryGetVoxelGrid(Vector3Int batchIndex, Vector3Int containerIndex)

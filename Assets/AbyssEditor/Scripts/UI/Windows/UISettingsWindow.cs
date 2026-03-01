@@ -11,6 +11,7 @@ namespace AbyssEditor.Scripts.UI.Windows {
         [SerializeField] private Toggle fullscreenToggleButton;
         [SerializeField] private Toggle autoLoadMaterialsToggleButton;
         [SerializeField] private Toggle enableBrushLogsToggleButton;
+        [SerializeField] private Toggle enableStatsToggleButton;
         [SerializeField] private Toggle discordRPCToggleButton;
 
 
@@ -19,6 +20,7 @@ namespace AbyssEditor.Scripts.UI.Windows {
             fullscreenToggleButton.SetIsOnWithoutNotify(Preferences.data.fullscreen);
             autoLoadMaterialsToggleButton.SetIsOnWithoutNotify(Preferences.data.autoLoadMaterials);
             enableBrushLogsToggleButton.SetIsOnWithoutNotify(Preferences.data.enableBrushLogs);
+            enableStatsToggleButton.SetIsOnWithoutNotify(Preferences.data.enableStats);
             discordRPCToggleButton.SetIsOnWithoutNotify(Preferences.data.discordRPC);
         }
 
@@ -59,6 +61,13 @@ namespace AbyssEditor.Scripts.UI.Windows {
         public void OnEnableBrushLogsToggle(bool value)
         {
             Preferences.data.enableBrushLogs = value;
+            Preferences.SavePreferences();
+        }
+        
+        public void OnEnableStatsToggle(bool value)
+        {
+            Preferences.data.enableStats = value;
+            StatsTextUI.main.ToggleVisibility(value);
             Preferences.SavePreferences();
         }
 

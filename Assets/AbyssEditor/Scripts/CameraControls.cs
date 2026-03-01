@@ -1,6 +1,7 @@
 ﻿using AbyssEditor.Scripts.CursorTools;
 using AbyssEditor.Scripts.CursorTools.Brush;
 using AbyssEditor.Scripts.InputMaps;
+using AbyssEditor.Scripts.UI;
 using AbyssEditor.Scripts.VoxelTech;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -10,21 +11,18 @@ namespace AbyssEditor.Scripts
     {
         public static CameraControls main;
         
-        public AbyssEditorInput.FreeCamActions input;
+        private AbyssEditorInput.FreeCamActions input;
         
-        public bool moveLock = true;
+        private bool moveLock = true;
 
-        public bool dragging;
-        private BrushTool brushTool;
-
-        public float acceleration = 50; // how fast you accelerate
-        public float accSprintMultiplier = 4; // how much faster you go when "sprinting"
-        public float lookSensitivity = 1; // mouse look sensitivity
-        public float dampingCoefficient = 5; // how quickly you break to a halt after you stop your input
+        [SerializeField] private float acceleration = 50; // how fast you accelerate
+        [SerializeField] private float accSprintMultiplier = 4; // how much faster you go when "sprinting"
+        [SerializeField] private float lookSensitivity = 1; // mouse look sensitivity
+        [SerializeField] private float dampingCoefficient = 5; // how quickly you break to a halt after you stop your input
         
-        Vector3 velocity; // current velocity
+        private Vector3 velocity; // current velocity
 
-        static bool HoldingRMB
+        private static bool holdingRmb
         {
             get => Cursor.lockState == CursorLockMode.Locked;
             set
@@ -43,7 +41,6 @@ namespace AbyssEditor.Scripts
         {
             input = InputManager.main.input.FreeCam;
             input.Enable();
-            brushTool = CursorToolManager.main.brushTool;
         }
 
         /// <summary>
@@ -63,7 +60,7 @@ namespace AbyssEditor.Scripts
             transform.LookAt(regionCenter);
         }
 
-        void OnDisable() => HoldingRMB = false;
+        void OnDisable() => holdingRmb = false;
 
         private void Update()
         {
@@ -71,10 +68,10 @@ namespace AbyssEditor.Scripts
                 return;
 
             // Input
-            if (HoldingRMB)
+            if (holdingRmb)
                 UpdateInput();
             
-            HoldingRMB = input.ActivateFreeCam.IsPressed();
+            holdingRmb = input.ActivateFreeCam.IsPressed();
 
             // Physics
             velocity = Vector3.Lerp(velocity, Vector3.zero, dampingCoefficient * Time.deltaTime);
@@ -89,11 +86,20 @@ namespace AbyssEditor.Scripts
             Quaternion rotation = transform.rotation;
             Quaternion horiz = Quaternion.AngleAxis(mouseDelta.x, Vector3.up);
             Quaternion vert = Quaternion.AngleAxis(mouseDelta.y, Vector3.right);
-            
+
+            if (velocity.magnitude > 0.001f)
+            {
+                OnMove();
+            }
 
             //Apply
             transform.rotation = horiz * rotation * vert;
             velocity += GetAccelerationVector() * Time.deltaTime;// Position
+        }
+
+        private void OnMove()
+        {
+            StatsTextUI.main.UpdateStats();
         }
 
         Vector3 GetAccelerationVector()

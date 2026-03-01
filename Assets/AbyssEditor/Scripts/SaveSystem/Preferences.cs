@@ -36,6 +36,7 @@ namespace AbyssEditor.Scripts.SaveSystem
         public bool fullscreen = false;
         public bool autoLoadMaterials = true;
         public bool enableBrushLogs = false;
+        public bool enableStats = false;
         public bool discordRPC = true;
     }
     

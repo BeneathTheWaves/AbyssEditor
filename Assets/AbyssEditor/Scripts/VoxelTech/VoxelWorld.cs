@@ -1,5 +1,3 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using AbyssEditor.Scripts.BatchOutline;
@@ -38,6 +36,7 @@ namespace AbyssEditor.Scripts.VoxelTech {
             BatchOutlineManager.main.ResetOutlines();
             
             CursorToolManager.main.UnregisterInputBlock(this);
+            StatsTextUI.main.UpdateStats();;
         }
         
         public async Task RegionLoadAsync(Vector3Int startBatch, Vector3Int endBatch, bool allowModded)
@@ -53,6 +52,7 @@ namespace AbyssEditor.Scripts.VoxelTech {
             BatchOutlineManager.main.ResetOutlines();
             
             CursorToolManager.main.UnregisterInputBlock(this);
+            StatsTextUI.main.UpdateStats();
         }
         
         public static async Task ExportRegionAsync(int mode) {
