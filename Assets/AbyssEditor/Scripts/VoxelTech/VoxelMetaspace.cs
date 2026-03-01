@@ -241,7 +241,7 @@ namespace AbyssEditor.Scripts.VoxelTech {
             statusHandle.SetPhasePrefix($"Regenerating Meshes (%completedTasks%/%totalTasks%)");
             List<Task> tasks = new List<Task>();
             foreach (VoxelMesh.VoxelMesh mesh in meshes) {
-                tasks.AddRange(mesh.ScheduleMeshRegenAsync(statusHandle));
+                tasks.AddRange(await mesh.ScheduleMeshRegenAsync(statusHandle));
                 await Task.Yield();
             }
             

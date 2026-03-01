@@ -18,6 +18,8 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelMesh
         public Vector3Int batchIndex;
         public Vector3Int octreeCounts;
 
+        private readonly int queuesPerFrame = WorkerThreadScheduler.main.workersCount;
+        
         GameObject[] boundaryPlanes;
         
         public void Create(Vector3Int _batchIndex)
@@ -69,12 +71,16 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelMesh
             return true;
         }
 
-        public List<Task> ScheduleMeshRegenAsync(EditorProcessHandle statusHandle)
+        public async Task<List<Task>> ScheduleMeshRegenAsync(EditorProcessHandle statusHandle)
         {
             var tasks = new List<Task>();
-            foreach (var container in pointContainers)
+            for (int i = 0; i < pointContainers.Length; i++)
             {
-                tasks.Add(container.UpdateMeshAsync(statusHandle));
+                tasks.Add(pointContainers[i].UpdateMeshAsync(statusHandle));
+                if (i % queuesPerFrame == 0)
+                {
+                    await Task.Yield();
+                }
             }
             return tasks;
         }
