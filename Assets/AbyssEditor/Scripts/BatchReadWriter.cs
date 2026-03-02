@@ -160,7 +160,7 @@ namespace AbyssEditor.Scripts {
             int meshIndex = 0;
 
             //we will reuse this array for each grid over and over since they are the same size.
-            int res = VoxelWorld.RESOLUTION;
+            const int res = VoxelWorld.RESOLUTION;
             NativeArray<byte> tempTypes = new NativeArray<byte>(res * res * res, Allocator.Persistent);
             NativeArray<byte> tempDensities = new NativeArray<byte>(res * res * res, Allocator.Persistent);
 

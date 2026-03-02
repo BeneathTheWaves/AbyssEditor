@@ -150,12 +150,9 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelMesh
         {
             Octree[,,] nodes = new Octree[VoxelWorld.CONTAINERS_PER_SIDE, VoxelWorld.CONTAINERS_PER_SIDE, VoxelWorld.CONTAINERS_PER_SIDE];
             
-            for (int z = 0; z < 5; z++)
-            {
-                for (int y = 0; y < 5; y++)
-                {
-                    for (int x = 0; x < 5; x++)
-                    {
+            for (int z = 0; z < 5; z++) {
+                for (int y = 0; y < 5; y++) {
+                    for (int x = 0; x < 5; x++) {
                         ref Octree tree = ref nodes[z, y, x];
                         tree = new Octree(x, y, z, VoxelWorld.OCTREE_WIDTH, batchIndex * VoxelWorld.BATCH_WIDTH);
                         

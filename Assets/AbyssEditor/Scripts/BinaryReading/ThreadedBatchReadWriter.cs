@@ -65,15 +65,13 @@ namespace AbyssEditor.Scripts.BinaryReading
                 return octrees;
             }
 
-            if (generateEmpty && batchIndex != new Vector3Int(0, 13, 17))
+            if (generateEmpty)
             {
                 //This is honestly so stupid but ig it works
-                return ReadBatchThreadable(new Vector3Int(0, 13, 17), false, false);
+                return GenerateEmptyTreesForBatch(batchIndex);
             }
-            else
-            {
-                return null;
-            }
+            
+            return null;
         }
     }
 }
