@@ -71,16 +71,18 @@ namespace AbyssEditor.Scripts.TerrainMaterials
             Material mat;
             if (useCap) {
                 mat = new Material(Globals.instance.batchCappedMat);
+                mat.enableInstancing = true;
 
-                mat.SetTexture("_MainTex", textures[0]);
-                mat.SetTexture("_NormalMap", textures[1]);
-                mat.SetTexture("_SideTex", textures[2]);
-                mat.SetTexture("_SideNormalMap", textures[3]);
+                mat.SetTexture(mainTex, textures[0]);
+                mat.SetTexture(normalMap, textures[1]);
+                mat.SetTexture(sideTex, textures[2]);
+                mat.SetTexture(sideNormalMap, textures[3]);
             } else {
                 mat = new Material(Globals.instance.batchMat);
-
-                mat.SetTexture("_MainTex", textures[0]);
-                mat.SetTexture("_NormalMap", textures[1]);
+                mat.enableInstancing = true;
+                
+                mat.SetTexture(mainTex, textures[0]);
+                mat.SetTexture(normalMap, textures[1]);
             }
             mat.SetFloat("Tile", 1f);
             
@@ -90,5 +92,10 @@ namespace AbyssEditor.Scripts.TerrainMaterials
             
             return mat;
         }
+        
+        private static readonly int mainTex = Shader.PropertyToID("_MainTex");
+        private static readonly int normalMap = Shader.PropertyToID("_NormalMap");
+        private static readonly int sideTex = Shader.PropertyToID("_SideTex");
+        private static readonly int sideNormalMap = Shader.PropertyToID("_SideNormalMap");
     }
 }

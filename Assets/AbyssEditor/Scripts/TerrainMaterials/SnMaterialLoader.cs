@@ -11,6 +11,7 @@ using UnityEngine;
 using Material = UnityEngine.Material;
 using MonoBehaviour = UnityEngine.MonoBehaviour;
 using Object = AssetStudio.Classes.Object;
+using Shader = UnityEngine.Shader;
 using TextAsset = UnityEngine.TextAsset;
 using Texture2D = UnityEngine.Texture2D;
 using TextureFormat = UnityEngine.TextureFormat;
@@ -19,7 +20,7 @@ namespace AbyssEditor.Scripts.TerrainMaterials
 {
     public class SnMaterialLoader : MonoBehaviour {
         public static SnMaterialLoader instance;
-        
+
         //TODO: this should prob be moved to metaspace (maybe make this class static as well)
         public BlocktypeMaterial[] blocktypesData;
         
@@ -169,8 +170,9 @@ namespace AbyssEditor.Scripts.TerrainMaterials
             }
 
             Material colorMat = new Material(Globals.GetBatchMat());
+            colorMat.enableInstancing = true;
             colorMat.name = $"Material of type {b}";
-            colorMat.SetColor("_Color", Globals.ColorFromType(b));
+            colorMat.SetColor(color, Globals.ColorFromType(b));
             return colorMat;
         }
         
@@ -189,5 +191,7 @@ namespace AbyssEditor.Scripts.TerrainMaterials
 
             return blocktypes.Count > 0;
         }
+        
+        private static readonly int color = Shader.PropertyToID("_Color");
     }
 }
