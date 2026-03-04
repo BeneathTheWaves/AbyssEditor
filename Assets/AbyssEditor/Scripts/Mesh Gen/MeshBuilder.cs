@@ -11,6 +11,15 @@ namespace AbyssEditor.Scripts.Mesh_Gen {
     public class MeshBuilder
     {
         public bool threadLocked { get; private set; }
+
+        //Yes this is kind of hacky to fix *most* seams between lods, seems to work good enough tho
+        private static readonly Dictionary<int, float> lodScales = new Dictionary<int, float>
+        {
+            { 0, 1f },
+            { 1, 1.15f },
+            { 2, 1.25f },
+            { 3, 1.6f },
+        };
         
         private const int MAX_ADJACENT_FACES = 24;
         private const int SUBMESH_BLOCK_TYPES_CAPACITY = 20;
@@ -57,9 +66,14 @@ namespace AbyssEditor.Scripts.Mesh_Gen {
             }
             int[] blocktypes = submeshFaces.Keys.ToArray();
             
+            if(!lodScales.TryGetValue(lodLevel, out var lodVoxelScale))
+            {
+                Debug.LogError($"No scale for {lodLevel} found!");
+                return null;
+            }
             //Get mesh Vertices
             //Note, this stores the vertices in "vertices", so we don't do a copy out
-            GetMeshVertices(blocktypes, resolution, ref offset, ref lodLevel);
+            GetMeshVertices(blocktypes, resolution, ref offset, ref lodLevel, ref lodVoxelScale);
             
             for (int k = 0; k < blocktypes.Length; k++)
             {
@@ -90,10 +104,10 @@ namespace AbyssEditor.Scripts.Mesh_Gen {
             meshData.builder = this;
             return meshData;
         }
-        private void GetMeshVertices(int[] blocktypes, Vector3Int resolution, ref Vector3 offset, ref int lodLevel)
+        private void GetMeshVertices(int[] blocktypes, Vector3Int resolution, ref Vector3 meshOffsetWithinBatch, ref int lodLevel, ref float lodVoxelScale)
         {
-            int voxelSize = 1 << lodLevel; // 2^lodLevel
-            Vector3 vertexOffsetSum = (Vector3.one * -0.5f + offset) * voxelSize;
+            int voxelSize = 1 << lodLevel; // 2 ^ lodLevel
+            Vector3 vertexOffset = (Vector3.one * -0.5f + meshOffsetWithinBatch) * voxelSize;
             
             for (int blockTypeIndex = 0; blockTypeIndex < blocktypes.Length; blockTypeIndex++) {
                 ref int blockType = ref blocktypes[blockTypeIndex];
@@ -127,7 +141,8 @@ namespace AbyssEditor.Scripts.Mesh_Gen {
                     
                     voxelVertex.addedToVertexArray = true;
                     voxelVertex.vertIndex = vertices.Count;
-                    vertices.Add((voxelVertex.ComputePos() * voxelSize + (Vector3.one * 4)) + vertexOffsetSum);
+                    
+                    vertices.Add(voxelVertex.ComputePos() * (voxelSize * lodVoxelScale) + vertexOffset);
                 }
             }
         }
