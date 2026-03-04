@@ -7,6 +7,7 @@ using Unity.Collections;
 using UnityEngine;
 using UnityEngine.Rendering;
 
+
 namespace AbyssEditor.Scripts.Mesh_Gen
 {
     public class AsyncMeshBuilder
@@ -25,12 +26,12 @@ namespace AbyssEditor.Scripts.Mesh_Gen
                 meshBuilders.Push(new MeshBuilder());
             }
         }
-        
-        public async Task<MeshResult> RequestMesh(NativeArray<byte> densityGrid, NativeArray<byte> typeGrid, Vector3Int resolution, Vector3 offset, Mesh meshObjToReuse = null)
+        //TODO: lod level is a enum?
+        public async Task<MeshResult> RequestMesh(NativeArray<byte> densityGrid, NativeArray<byte> typeGrid, Vector3Int resolution, Vector3 offset, Mesh meshObjToReuse = null, int lodLevel = 1)
         {
             //get faces from GPU
             //This is sync btw, accessing gpu is blocking in unity (ALTHOUGH VERY fast)
-            QuadFace[] faces = FaceGPUBuilder.builder.GenerateFaces(densityGrid, typeGrid, resolution, offset);
+            QuadFace[] faces = FaceGPUBuilder.builder.GenerateFaces(densityGrid, typeGrid, resolution, offset, lodLevel);
             
             //Build mesh from faces
             TaskCompletionSource<MeshData> meshBuildTcs = new();
@@ -40,13 +41,14 @@ namespace AbyssEditor.Scripts.Mesh_Gen
                 faces = faces,
                 resolution = resolution,
                 offset = offset,
+                lodLevel = lodLevel,
                 tcs = meshBuildTcs
             }));
 
             MeshData data = await meshBuildTcs.Task;
 
             Mesh mesh = meshObjToReuse;
-            if (!meshObjToReuse)//null
+            if (!meshObjToReuse)
             {
                 mesh = new Mesh();
             }
@@ -78,7 +80,7 @@ namespace AbyssEditor.Scripts.Mesh_Gen
                 Debug.LogError($"No mesh builders available for mesh build!!! there needs to be at least as many as the worker count");
             }
             
-            MeshData data = meshBuilder.MakeMeshData(meshRequest.faces, meshRequest.resolution, meshRequest.offset);
+            MeshData data = meshBuilder.MakeMeshData(meshRequest.faces, meshRequest.resolution, meshRequest.offset, meshRequest.lodLevel);
             meshRequest.tcs.TrySetResult(data);
 
             lock (meshBuilder)//wait for the main thread to release the builder back
@@ -106,6 +108,7 @@ namespace AbyssEditor.Scripts.Mesh_Gen
             public QuadFace[] faces;
             public Vector3Int resolution;
             public Vector3 offset;
+            public int lodLevel;
             public TaskCompletionSource<MeshData> tcs;
         }
     }

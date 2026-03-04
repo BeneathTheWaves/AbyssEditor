@@ -18,6 +18,7 @@ struct Triangle {
         }
     }
 };
+
 struct Face {
     float3 vertexA;
     float3 vertexB;
@@ -36,6 +37,7 @@ AppendStructuredBuffer<Face> faces;
 int numPointsX;
 int numPointsY;
 int numPointsZ;
+int lodLevel;
 float3 meshOffset;
 
 int linearIndex(uint x, uint y, uint z) {
@@ -164,7 +166,7 @@ int FindBestType(uint x, uint y, uint z) {
 void DualContour(int3 id : SV_DispatchThreadID) {
 
     if (checkBoundsAll(id)) {
-
+        
         // action per each cell
         int faceSignedDist;
         int faceType;

@@ -21,7 +21,7 @@ namespace AbyssEditor.Scripts.Mesh_Gen
             builder = this;
         }
 
-        public QuadFace[] GenerateFaces(NativeArray<byte> densityGrid, NativeArray<byte> typeGrid, Vector3Int resolution, Vector3 offset) {
+        public QuadFace[] GenerateFaces(NativeArray<byte> densityGrid, NativeArray<byte> typeGrid, Vector3Int resolution, Vector3 offset, int lodLevel = 0) {
             // Setting data inside shader
             CreateBuffers(resolution);
 
@@ -43,6 +43,7 @@ namespace AbyssEditor.Scripts.Mesh_Gen
             shader.SetInt (numPointsX, resolution.x);
             shader.SetInt (numPointsY, resolution.y);
             shader.SetInt (numPointsZ, resolution.z);
+            shader.SetInt (lodLevelShaderProp, lodLevel);
             shader.SetVector(meshOffset, offset);
             
             shader.Dispatch (kernel, numThreads, numThreads, numThreads);
@@ -109,6 +110,7 @@ namespace AbyssEditor.Scripts.Mesh_Gen
         private static readonly int numPointsZ = Shader.PropertyToID("numPointsZ");
         private static readonly int numPointsY = Shader.PropertyToID("numPointsY");
         private static readonly int numPointsX = Shader.PropertyToID("numPointsX");
+        private static readonly int lodLevelShaderProp = Shader.PropertyToID("lodLevel");
         private static readonly int faces1 = Shader.PropertyToID("faces");
         private static readonly int voxels = Shader.PropertyToID("voxels");
     }

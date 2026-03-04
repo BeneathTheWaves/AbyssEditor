@@ -3,8 +3,8 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using AbyssEditor.Scripts.Mesh_Gen.Datas;
-using AbyssEditor.Scripts.VoxelTech;
 using UnityEngine;
+
 
 namespace AbyssEditor.Scripts.Mesh_Gen {
     public class MeshBuilder
@@ -36,7 +36,7 @@ namespace AbyssEditor.Scripts.Mesh_Gen {
             submeshFaces = new Dictionary<int, QuadFaceGroup>(SUBMESH_BLOCK_TYPES_CAPACITY);
         }
 
-        public MeshData MakeMeshData(QuadFace[] faces, Vector3Int resolution, Vector3 offset)
+        public MeshData MakeMeshData(QuadFace[] faces, Vector3Int resolution, Vector3 offset, int lodLevel)
         {
             threadLocked = true;
             // Reset arrays without new allocations
@@ -70,7 +70,7 @@ namespace AbyssEditor.Scripts.Mesh_Gen {
             
             //Get mesh Vertices
             //Note, this stores the vertices in "vertices", so we don't do a copy out
-            GetMeshVertices(blocktypes, resolution, ref offset);
+            GetMeshVertices(blocktypes, resolution, ref offset, ref lodLevel);
             
             for (int k = 0; k < blocktypes.Length; k++)
             {
@@ -101,10 +101,10 @@ namespace AbyssEditor.Scripts.Mesh_Gen {
             meshData.builder = this;
             return meshData;
         }
-        private void GetMeshVertices(int[] blocktypes, Vector3Int resolution, ref Vector3 offset)
+        private void GetMeshVertices(int[] blocktypes, Vector3Int resolution, ref Vector3 offset, ref int lodLevel)
         {
             Vector3 vertexOffsetSum = Vector3.one * -0.5f + offset;
-            float scaleFactor = 1;//scale pos based on LOD
+            float scaleFactor = Mathf.Pow(2, lodLevel);//scale pos based on LOD
             
             for (int blockTypeIndex = 0; blockTypeIndex < blocktypes.Length; blockTypeIndex++) {
                 ref int blockType = ref blocktypes[blockTypeIndex];
