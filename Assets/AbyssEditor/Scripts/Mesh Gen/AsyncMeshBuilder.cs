@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using AbyssEditor.Scripts.Mesh_Gen.Datas;
 using AbyssEditor.Scripts.ThreadingManager;
+using AbyssEditor.Scripts.VoxelTech.VoxelGrids;
 using Unity.Collections;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -27,11 +28,17 @@ namespace AbyssEditor.Scripts.Mesh_Gen
             }
         }
         //TODO: lod level is a enum?
-        public async Task<MeshResult> RequestMesh(NativeArray<byte> densityGrid, NativeArray<byte> typeGrid, Vector3Int resolution, Vector3 offset, Mesh meshObjToReuse = null, int lodLevel = 1)
+        public async Task<MeshResult> RequestMesh(NativeArray<byte> densityGrid, NativeArray<byte> typeGrid, Vector3Int resolution, Vector3 offset, Mesh meshObjToReuse = null, int lodLevel = 0)
         {
             //get faces from GPU
             //This is sync btw, accessing gpu is blocking in unity (ALTHOUGH VERY fast)
+                
             QuadFace[] faces = FaceGPUBuilder.builder.GenerateFaces(densityGrid, typeGrid, resolution, offset, lodLevel);
+            
+            int blockwidth = 1 << lodLevel;
+            int lodGridWidth = (int) Mathf.Pow(2, 5 - lodLevel) + (VoxelGrid.GRID_PADDING * 2);
+            Vector3Int lodResolution = new Vector3Int(lodGridWidth, lodGridWidth, lodGridWidth);
+            offset /= blockwidth;
             
             //Build mesh from faces
             TaskCompletionSource<MeshData> meshBuildTcs = new();
@@ -39,7 +46,7 @@ namespace AbyssEditor.Scripts.Mesh_Gen
             WorkerThreadScheduler.main.ScheduleParallelManualLocking(() => 
                 MeshBuildThreaded(new MeshRequest {
                 faces = faces,
-                resolution = resolution,
+                resolution = lodResolution,
                 offset = offset,
                 lodLevel = lodLevel,
                 tcs = meshBuildTcs
@@ -70,6 +77,7 @@ namespace AbyssEditor.Scripts.Mesh_Gen
             mesh.RecalculateNormals();
             mesh.RecalculateTangents();
             data.builder.SetLocked(false);//release the builder back to the thread
+            
             return new MeshResult(data.blockTypes);
         }
 

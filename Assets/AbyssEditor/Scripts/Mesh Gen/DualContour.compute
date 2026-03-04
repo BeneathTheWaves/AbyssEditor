@@ -164,28 +164,27 @@ int FindBestType(uint x, uint y, uint z) {
 
 [numthreads(numthreads, numthreads, numthreads)]
 void DualContour(int3 id : SV_DispatchThreadID) {
+    
+    if (!checkBoundsAll(id)) return;
+    
+    // action per each cell
+    int faceSignedDist;
+    int faceType;
+    ReadVoxel(linearIndex(id.x, id.y, id.z), faceSignedDist, faceType);
 
-    if (checkBoundsAll(id)) {
+    if (!isBelowSurface(faceType, faceSignedDist)) return; 
         
-        // action per each cell
-        int faceSignedDist;
-        int faceType;
-        ReadVoxel(linearIndex(id.x, id.y, id.z), faceSignedDist, faceType);
+    for (int dir = 0; dir < 6; dir++) {
+        int3 dirV = directionToPos[dir];
+        int3 id1 = int3(id.x + dirV.x, id.y + dirV.y, id.z + dirV.z);
 
-        if (isBelowSurface(faceType, faceSignedDist)) {
-            for (int dir = 0; dir < 6; dir++) {
-                int3 dirV = directionToPos[dir];
-                int3 id1 = int3(id.x + dirV.x, id.y + dirV.y, id.z + dirV.z);
+        if (checkBoundsAll(id1)) {
+            int density1;
+            int type1;
+            ReadVoxel(linearIndex(id1.x, id1.y, id1.z), density1, type1);
 
-                if (checkBoundsAll(id1)) {
-                    int density1;
-                    int type1;
-                    ReadVoxel(linearIndex(id1.x, id1.y, id1.z), density1, type1);
-
-                    if (!isBelowSurface(type1, density1)) {
-                        faces.Append(MakeFace(id, id1, faceSignedDist, density1, dir, faceType));
-                    }
-                }
+            if (!isBelowSurface(type1, density1)) {
+                faces.Append(MakeFace(id, id1, faceSignedDist, density1, dir, faceType));
             }
         }
     }

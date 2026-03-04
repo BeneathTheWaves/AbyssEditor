@@ -285,6 +285,7 @@ namespace AbyssEditor.Scripts.VoxelTech {
             BrushJob.DisposeNativeArrayPool();
             VoxelGrid.neighboursToCheckInSmooth.Dispose();
             WorkerThreadScheduler.main.Dispose();
+            FaceGPUBuilder.builder.DisposeNativeArrays();
         }
         
         public VoxelMesh.VoxelMesh TryGetVoxelMesh(Vector3Int batchIndex)

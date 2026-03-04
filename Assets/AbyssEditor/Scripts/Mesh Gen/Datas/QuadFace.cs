@@ -6,7 +6,7 @@ namespace AbyssEditor.Scripts.Mesh_Gen.Datas
 {
     public struct QuadFace : IComparable {
         public Vector3 a, b, c, d;
-        public Vector3 surfaceIntersection;//Assigned in compute shader, DONT BELIEVE RIDERS LIES
+        public Vector3 surfaceIntersection;//Assigned in compute shader, DON'T BELIEVE RIDERS LIES
         public int type;
         public Vector3 this [int i] {
             get {
