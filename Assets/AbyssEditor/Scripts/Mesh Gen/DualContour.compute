@@ -38,7 +38,6 @@ int numPointsX;
 int numPointsY;
 int numPointsZ;
 int lodLevel;
-float3 meshOffset;
 
 int linearIndex(uint x, uint y, uint z) {
     return z * numPointsX * numPointsY + y * numPointsX + x;

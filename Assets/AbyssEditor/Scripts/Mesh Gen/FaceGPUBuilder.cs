@@ -41,15 +41,14 @@ namespace AbyssEditor.Scripts.Mesh_Gen
             }
         }
 
-        public QuadFace[] GenerateFaces(NativeArray<byte> densityGrid, NativeArray<byte> typeGrid, Vector3Int resolution, Vector3 offset, int lodLevel) {
+        public QuadFace[] GenerateFaces(NativeArray<byte> densityGrid, NativeArray<byte> typeGrid, Vector3Int resolution, int lodLevel) {
             // Setting data inside shader
             const int kernel = 0;
             
             //this is FUCKING awefull for now.... NEED to cleanup majorly
             if (lodLevel > 0)
             {
-                LODGridGroup lodGrids = GenerateLodGrids(densityGrid, typeGrid, resolution, offset, lodLevel);
-                offset /= lodGrids.blockWidth;
+                LODGridGroup lodGrids = GenerateLodGrids(densityGrid, typeGrid, resolution, lodLevel);
             
                 CreateBuffers(lodGrids.resolution);
 
@@ -70,7 +69,6 @@ namespace AbyssEditor.Scripts.Mesh_Gen
                 shader.SetInt (numPointsX, lodGrids.resolution.x);
                 shader.SetInt (numPointsY, lodGrids.resolution.y);
                 shader.SetInt (numPointsZ, lodGrids.resolution.z);
-                shader.SetVector(meshOffset, offset);
             
                 shader.Dispatch (kernel, numThreads, numThreads, numThreads);
 
@@ -105,7 +103,6 @@ namespace AbyssEditor.Scripts.Mesh_Gen
             shader.SetInt (numPointsX, resolution.x);
             shader.SetInt (numPointsY, resolution.y);
             shader.SetInt (numPointsZ, resolution.z);
-            shader.SetVector(meshOffset, offset);
             
             shader.Dispatch (kernel, numFullThreads, numFullThreads, numFullThreads);
 
@@ -144,7 +141,7 @@ namespace AbyssEditor.Scripts.Mesh_Gen
             }
         }
 
-        private LODGridGroup GenerateLodGrids(NativeArray<byte> originalDensityGrid, NativeArray<byte> originalTypeGrid, Vector3Int originalResolution, Vector3 originalOffset, int lodLevel)
+        private LODGridGroup GenerateLodGrids(NativeArray<byte> originalDensityGrid, NativeArray<byte> originalTypeGrid, Vector3Int originalResolution, int lodLevel)
         {
 
             if (!lodCacheGrids.TryGetValue(lodLevel, out LODGridGroup lodGridGroup))
@@ -154,8 +151,6 @@ namespace AbyssEditor.Scripts.Mesh_Gen
 
             NativeArray<byte> lodDensityGrid = lodGridGroup.densityGrid;
             NativeArray<byte> lodTypeGrid = lodGridGroup.typeGrid;
-                
-            Debug.Log(originalResolution);
             
             float scale = (originalResolution.x - 1) / (float)(lodGridGroup.resolution.x - 1);
             
@@ -269,7 +264,6 @@ namespace AbyssEditor.Scripts.Mesh_Gen
         }
                 
         //Down here cause I don't like to see them :/
-        private static readonly int meshOffset = Shader.PropertyToID("meshOffset");
         private static readonly int numPointsZ = Shader.PropertyToID("numPointsZ");
         private static readonly int numPointsY = Shader.PropertyToID("numPointsY");
         private static readonly int numPointsX = Shader.PropertyToID("numPointsX");
