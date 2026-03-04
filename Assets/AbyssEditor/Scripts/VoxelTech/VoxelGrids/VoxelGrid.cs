@@ -11,7 +11,7 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelGrids {
     public class VoxelGrid
     {
         public const int GRID_PADDING = 1;
-        public static int GRID_FULL_SIDE = VoxelWorld.RESOLUTION + 2;
+        public static int GRID_FULL_SIDE = VoxelWorld.GRID_RESOLUTION + 2;
         
         public NativeArray<byte> densityGrid;
         public NativeArray<byte> typeGrid;
@@ -29,9 +29,9 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelGrids {
             densityGrid = new NativeArray<byte>(gridSize, Allocator.Persistent);
             typeGrid = new NativeArray<byte>(gridSize, Allocator.Persistent);
             
-            for (int z = 0; z < VoxelWorld.RESOLUTION; z++) {
-                for (int y = 0; y < VoxelWorld.RESOLUTION; y++) {
-                    for (int x = 0; x < VoxelWorld.RESOLUTION; x++) {
+            for (int z = 0; z < VoxelWorld.GRID_RESOLUTION; z++) {
+                for (int y = 0; y < VoxelWorld.GRID_RESOLUTION; y++) {
+                    for (int x = 0; x < VoxelWorld.GRID_RESOLUTION; x++) {
                         SetVoxel(densityGrid, x + GRID_PADDING, y + GRID_PADDING, z + GRID_PADDING, GetVoxel(_coreDensity, x, y, z, 0));
                         SetVoxel(typeGrid, x + GRID_PADDING, y + GRID_PADDING, z + GRID_PADDING, GetVoxel(_coreTypes, x, y, z, 0));
                     }
@@ -48,18 +48,18 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelGrids {
         }
 
         public static byte GetVoxel(NativeArray<byte> array, int x, int y, int z, int padding) {
-            return array[Globals.LinearIndex(x, y, z, VoxelWorld.RESOLUTION + padding*2)];
+            return array[Globals.LinearIndex(x, y, z, VoxelWorld.GRID_RESOLUTION + padding*2)];
         }
         public static byte GetVoxel(NativeArray<byte> array, Vector3Int voxel) {
-            return array[Globals.LinearIndex(voxel.x, voxel.y, voxel.z, VoxelWorld.RESOLUTION + GRID_PADDING * 2)];
+            return array[Globals.LinearIndex(voxel.x, voxel.y, voxel.z, VoxelWorld.GRID_RESOLUTION + GRID_PADDING * 2)];
         }
         
         public static void SetVoxel(NativeArray<byte> array, int x, int y, int z, byte val) {
-            array[Globals.LinearIndex(x, y, z, VoxelWorld.RESOLUTION + GRID_PADDING*2)] = val;
+            array[Globals.LinearIndex(x, y, z, VoxelWorld.GRID_RESOLUTION + GRID_PADDING*2)] = val;
         }
         
         public static void SetVoxel(NativeArray<byte> array, ref Vector3Int voxel, byte val) {
-            array[Globals.LinearIndex(voxel.x, voxel.y, voxel.z, VoxelWorld.RESOLUTION + GRID_PADDING*2)] = val;
+            array[Globals.LinearIndex(voxel.x, voxel.y, voxel.z, VoxelWorld.GRID_RESOLUTION + GRID_PADDING*2)] = val;
         }
 
         public void CacheNeighboringVoxelGrids()
@@ -121,14 +121,14 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelGrids {
             }
             
             Vector3Int sampleVoxel = new Vector3Int(voxel.x, voxel.y, voxel.z);
-            if (voxel.x == 0) sampleVoxel.x = VoxelWorld.RESOLUTION;
-            else if (voxel.x == VoxelWorld.RESOLUTION + 1) sampleVoxel.x = 1;
+            if (voxel.x == 0) sampleVoxel.x = VoxelWorld.GRID_RESOLUTION;
+            else if (voxel.x == VoxelWorld.GRID_RESOLUTION + 1) sampleVoxel.x = 1;
 
-            if (voxel.y == 0) sampleVoxel.y = VoxelWorld.RESOLUTION;
-            else if (voxel.y == VoxelWorld.RESOLUTION + 1) sampleVoxel.y = 1;
+            if (voxel.y == 0) sampleVoxel.y = VoxelWorld.GRID_RESOLUTION;
+            else if (voxel.y == VoxelWorld.GRID_RESOLUTION + 1) sampleVoxel.y = 1;
 
-            if (voxel.z == 0) sampleVoxel.z = VoxelWorld.RESOLUTION;
-            else if (voxel.z == VoxelWorld.RESOLUTION + 1) sampleVoxel.z = 1;
+            if (voxel.z == 0) sampleVoxel.z = VoxelWorld.GRID_RESOLUTION;
+            else if (voxel.z == VoxelWorld.GRID_RESOLUTION + 1) sampleVoxel.z = 1;
 
             SetVoxel(densityGrid, ref voxel, GetVoxel(neighborGrid.densityGrid, sampleVoxel));
             SetVoxel(typeGrid, ref voxel, GetVoxel(neighborGrid.typeGrid, sampleVoxel));
@@ -137,13 +137,13 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelGrids {
         private static Vector3Int NeighbourGridOffsetFromPaddedVoxel(ref Vector3Int voxel) {
             Vector3Int offset = Vector3Int.zero;
             if (voxel.x <= 0) offset.x = -1;                                                                                                
-            else if (voxel.x >= VoxelWorld.RESOLUTION + GRID_PADDING) offset.x = 1;
+            else if (voxel.x >= VoxelWorld.GRID_RESOLUTION + GRID_PADDING) offset.x = 1;
 
             if (voxel.y <= 0) offset.y = -1;                                                                                                              
-            else if (voxel.y >= VoxelWorld.RESOLUTION + GRID_PADDING) offset.y = 1;
+            else if (voxel.y >= VoxelWorld.GRID_RESOLUTION + GRID_PADDING) offset.y = 1;
 
             if (voxel.z <= 0) offset.z = -1;
-            else if (voxel.z >= VoxelWorld.RESOLUTION + GRID_PADDING) offset.z = 1;
+            else if (voxel.z >= VoxelWorld.GRID_RESOLUTION + GRID_PADDING) offset.z = 1;
 
             return offset;
         }
@@ -156,8 +156,8 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelGrids {
         {
             Vector3Int batchPos = batchIndex * VoxelWorld.BATCH_WIDTH;
             Vector3Int octreePos = batchPos + (octreeIndex * VoxelWorld.OCTREE_WIDTH);
-            int voxelWidth = 32 / VoxelWorld.RESOLUTION;
-            Vector3Int voxelPos = octreePos + new Vector3Int((sampleVoxel.x) * voxelWidth * VoxelWorld.RESOLUTION, (sampleVoxel.y) * voxelWidth * VoxelWorld.RESOLUTION, (sampleVoxel.z) * voxelWidth * VoxelWorld.RESOLUTION);
+            int voxelWidth = 32 / VoxelWorld.GRID_RESOLUTION;
+            Vector3Int voxelPos = octreePos + new Vector3Int((sampleVoxel.x) * voxelWidth * VoxelWorld.GRID_RESOLUTION, (sampleVoxel.y) * voxelWidth * VoxelWorld.GRID_RESOLUTION, (sampleVoxel.z) * voxelWidth * VoxelWorld.GRID_RESOLUTION);
             return new Vector3Int(
                 Mathf.FloorToInt((float)voxelPos.x / VoxelWorld.BATCH_WIDTH),
                 Mathf.FloorToInt((float)voxelPos.y / VoxelWorld.BATCH_WIDTH),
@@ -298,7 +298,7 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelGrids {
         /// <returns>the number of voxels excluding the padding of 1 voxel that is present in each direction</returns>
         internal static int GetGridInnerSize()
         {
-            int innerSide = VoxelWorld.RESOLUTION;
+            int innerSide = VoxelWorld.GRID_RESOLUTION;
             return innerSide * innerSide * innerSide;
         }
     }

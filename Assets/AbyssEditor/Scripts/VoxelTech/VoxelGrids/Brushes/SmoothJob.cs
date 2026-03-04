@@ -30,7 +30,7 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelGrids.Brushes
                 brushIntensity = brushIntensity,
                 brushRadius = brushRadius,
                 neighboursToCheckInSmooth = VoxelGrid.neighboursToCheckInSmooth,
-                dim = VoxelWorld.RESOLUTION + 2,
+                dim = VoxelWorld.GRID_RESOLUTION + 2,
             };
             
             int voxelsToUpdateCount = VoxelGrid.GetGridInnerSize();

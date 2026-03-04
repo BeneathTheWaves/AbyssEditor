@@ -25,8 +25,8 @@ namespace AbyssEditor.Scripts.BinaryReading
             {
                 foreach (Octree node in originalNodes)
                 {
-                    node.Rasterize(tempDensities, tempTypes, VoxelWorld.RESOLUTION, 5 - VoxelWorld.LEVEL_OF_DETAIL);
-                    node.DeRasterizeGrid(tempDensities, tempTypes, 0, 5 - VoxelWorld.LEVEL_OF_DETAIL);
+                    node.Rasterize(tempDensities, tempTypes, VoxelWorld.GRID_RESOLUTION, VoxelWorld.MAX_OCTREE_DEPTH);
+                    node.DeRasterizeGrid(tempDensities, tempTypes, 0, VoxelWorld.MAX_OCTREE_DEPTH);
                 }
             }
         }

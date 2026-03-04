@@ -30,7 +30,7 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelGrids.Brushes
                 brushSelectedType = brushSelectedType,
                 shouldRemoveDensity = shouldRemoveDensity,
                 brushRadius = brushRadius,
-                dim = VoxelWorld.RESOLUTION + 2,
+                dim = VoxelWorld.GRID_RESOLUTION + 2,
             };
 
             int voxelsToUpdateCount = VoxelGrid.GetGridInnerSize();

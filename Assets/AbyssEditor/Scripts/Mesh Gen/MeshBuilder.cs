@@ -104,7 +104,7 @@ namespace AbyssEditor.Scripts.Mesh_Gen {
         private void GetMeshVertices(int[] blocktypes, Vector3Int resolution, ref Vector3 offset)
         {
             Vector3 vertexOffsetSum = Vector3.one * -0.5f + offset;
-            float scaleFactor = Mathf.Pow(2, VoxelWorld.LEVEL_OF_DETAIL);
+            float scaleFactor = 1;//scale pos based on LOD
             
             for (int blockTypeIndex = 0; blockTypeIndex < blocktypes.Length; blockTypeIndex++) {
                 ref int blockType = ref blocktypes[blockTypeIndex];

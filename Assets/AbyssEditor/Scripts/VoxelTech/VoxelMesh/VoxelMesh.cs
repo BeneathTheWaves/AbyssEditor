@@ -162,7 +162,7 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelMesh
                         tree.Write(nodeData);
                         
                         PointContainer _container = pointContainers[Globals.LinearIndex(x, y, z, octreeCounts)];
-                        tree.DeRasterizeGrid(_container.grid.densityGrid, _container.grid.typeGrid, VoxelGrid.GRID_PADDING, 5 - VoxelWorld.LEVEL_OF_DETAIL);
+                        tree.DeRasterizeGrid(_container.grid.densityGrid, _container.grid.typeGrid, VoxelGrid.GRID_PADDING, VoxelWorld.MAX_OCTREE_DEPTH);
                     }
                 }
             }

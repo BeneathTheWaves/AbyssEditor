@@ -34,11 +34,11 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelMesh
         {
             this.octreeIndex = octreeIndex;
             this.batchIndex = batchIndex;
-            int fullGridSide = VoxelWorld.RESOLUTION + 2;
+            int fullGridSide = VoxelWorld.GRID_RESOLUTION + 2;
             // assume bounds has a center relative to game object origin
             
             bounds = new Bounds(
-                VoxelWorld.GetBatchOrigin(batchIndex) + this.octreeIndex * VoxelWorld.RESOLUTION + Vector3.one * fullGridSide / 2,
+                VoxelWorld.GetBatchOrigin(batchIndex) + this.octreeIndex * VoxelWorld.GRID_RESOLUTION + Vector3.one * fullGridSide / 2,
                 Vector3.one * fullGridSide);
 
             CreateMeshObject(batchTransform);
@@ -70,11 +70,11 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelMesh
 
         private void RasterizeOctree(Octree octree)
         {
-            int _res = VoxelWorld.RESOLUTION;
+            int _res = VoxelWorld.GRID_RESOLUTION;
             NativeArray<byte> tempTypes = new NativeArray<byte>(_res * _res * _res, Allocator.Persistent);
             NativeArray<byte> tempDensities = new NativeArray<byte>(_res * _res * _res, Allocator.Persistent);
 
-            octree.Rasterize(tempDensities, tempTypes, _res, 5 - VoxelWorld.LEVEL_OF_DETAIL);
+            octree.Rasterize(tempDensities, tempTypes, _res, VoxelWorld.MAX_OCTREE_DEPTH);
 
             //if this is an overwrite, we need to free the old native arrays before overwriting.
             if (grid != null)
@@ -99,7 +99,7 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelMesh
         {
             grid.GetFullGrids(out NativeArray<byte> gridDensity, out NativeArray<byte> gridType);
             
-            Vector3 offset = octreeIndex * VoxelWorld.RESOLUTION;
+            Vector3 offset = octreeIndex * VoxelWorld.GRID_RESOLUTION;
             
             //Note, this will overwrite the old mesh so "mesh" becomes the new one inherently
             AsyncMeshBuilder.MeshResult meshRequest = await AsyncMeshBuilder.main.RequestMesh(gridDensity, gridType, grid.fullGridDim, offset, mesh);
@@ -141,7 +141,7 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelMesh
 
         public byte SampleBlocktype(Vector3 worldPoint)
         {
-            Vector3 localPoint = worldPoint - octreeIndex * VoxelWorld.RESOLUTION - meshObj.transform.parent.position;
+            Vector3 localPoint = worldPoint - octreeIndex * VoxelWorld.GRID_RESOLUTION - meshObj.transform.parent.position;
             int x = (int)localPoint.x;
             int y = (int)localPoint.y;
             int z = (int)localPoint.z;

@@ -222,14 +222,14 @@ namespace AbyssEditor.Scripts.Octrees {
                     }
                 } else {
                     
-                    Vector3 localPos = (position - octreeOrigin) / (Mathf.Pow(2, VoxelWorld.LEVEL_OF_DETAIL));
+                    Vector3 localPos = (position - octreeOrigin);
                     Vector3Int start = new Vector3Int((int)localPos.x, (int)localPos.y, (int)localPos.z);
 
                     for (int k = start.z; k < start.z + thisCubeSize; ++k) {
                         for (int j = start.y; j < start.y + thisCubeSize; ++j) {
                             for (int i = start.x; i < start.x + thisCubeSize; ++i) {
-                                typeGrid[Globals.LinearIndex(i, j, k, VoxelWorld.RESOLUTION)] = data.type;
-                                densityGrid[Globals.LinearIndex(i, j, k, VoxelWorld.RESOLUTION)] = data.signedDist;
+                                typeGrid[Globals.LinearIndex(i, j, k, VoxelWorld.GRID_RESOLUTION)] = data.type;
+                                densityGrid[Globals.LinearIndex(i, j, k, VoxelWorld.GRID_RESOLUTION)] = data.signedDist;
                             }
                         }
                     }

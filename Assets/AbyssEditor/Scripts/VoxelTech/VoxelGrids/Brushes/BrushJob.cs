@@ -80,7 +80,7 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelGrids.Brushes
                 typeGrid = typeGrid,
                 resultingDensities = resultingDensities,
                 resultingTypes = resultingTypes,
-                dim = VoxelWorld.RESOLUTION + 2,
+                dim = VoxelWorld.GRID_RESOLUTION + 2,
             };
             JobHandle handle = job.ScheduleParallel(VoxelGrid.GetGridInnerSize(), VoxelGrid.GetGridInnerSize() / 128, new JobHandle());
             handle.Complete();
