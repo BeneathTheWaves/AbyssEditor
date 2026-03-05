@@ -21,6 +21,7 @@
   "HotbarButton_Eyedropper": "Material eyedropper",
   "HotbarButton_Paint": "Paint material",
   "HotbarButton_RemoveBatches": "Unload batches",
+  "HotbarButton_SizeRefTool": "Size reference",
   
   //Color Picker
   "HexPlaceholderText": "Hex Value",
