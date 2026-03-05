@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 namespace AbyssEditor.Scripts.UI.HotBar.HotBarButtons
 {
-    public class HotBarButton: MonoBehaviour
+    public abstract class HotBarButton: MonoBehaviour
     {
         private Toggle toggle;
         private Action<HotBarButton> hotBarOnPress;
