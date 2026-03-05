@@ -36,6 +36,12 @@ namespace AbyssEditor.Scripts.Mesh_Gen.VoxelDownsampling
             int startY = lodY * sampleBlockWidth;
             int startZ = lodZ * sampleBlockWidth;
 
+            // Shift the block if it goes beyond the grid
+            // moving the sample area back into the padding grid with valid positions to get a general density
+            if (startX + sampleBlockWidth > originalRes.x) startX = originalRes.x - sampleBlockWidth;
+            if (startY + sampleBlockWidth > originalRes.y) startY = originalRes.y - sampleBlockWidth;
+            if (startZ + sampleBlockWidth > originalRes.z) startZ = originalRes.z - sampleBlockWidth;
+            
             int densitySum = 0;
             int count = 0;
 

@@ -141,6 +141,9 @@ namespace AbyssEditor.Scripts.Mesh_Gen
             
             Debug.Log(lodGridGroup.resolution);
             
+            //this iteration is fucked but idk why it *generally works*, there are still holes sometimes but it's not too bad
+            //its sampling data from inside the padded voxels on 3 axises, but this somehow fixes the meshes generally ig idk.
+            //its cursed but it works. if you want to fix it we will likely need fixes for the dual contour compute shader
             for (int x = VoxelGrid.GRID_PADDING; x < lodGridGroup.resolution.x - VoxelGrid.GRID_PADDING; x++) 
             for (int y = VoxelGrid.GRID_PADDING; y < lodGridGroup.resolution.y - VoxelGrid.GRID_PADDING; y++) 
             for (int z = VoxelGrid.GRID_PADDING; z < lodGridGroup.resolution.z - VoxelGrid.GRID_PADDING; z++)

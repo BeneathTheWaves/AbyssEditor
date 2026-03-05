@@ -28,8 +28,13 @@ namespace AbyssEditor.Scripts.Mesh_Gen
             }
         }
         //TODO: lod level is a enum?
-        public async Task<MeshResult> RequestMesh(NativeArray<byte> densityGrid, NativeArray<byte> typeGrid, Vector3Int resolution, Vector3 offset, Mesh meshObjToReuse = null, int lodLevel = 1)
+        public async Task<MeshResult> RequestMesh(NativeArray<byte> densityGrid, NativeArray<byte> typeGrid, Vector3Int resolution, Vector3 offset, Mesh meshObjToReuse = null, int lodLevel = 3)
         {
+            if (lodLevel is > 3 or < 0)
+            {
+                Debug.LogError("INVALID LOD REQUESTED");
+                return null;
+            }
             //get faces from GPU
             //This is sync btw, accessing gpu is blocking in unity (ALTHOUGH VERY fast)
                 
