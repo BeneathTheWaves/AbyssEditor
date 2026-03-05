@@ -30,7 +30,7 @@ namespace AbyssEditor.Scripts.UI.Windows {
         public override void EnableWindow()
         {
             base.EnableWindow();
-            brushTool = CursorToolManager.main.brushTool;
+            brushTool = CursorToolManager.main.BrushTool;
 
             RedrawValues();
         }

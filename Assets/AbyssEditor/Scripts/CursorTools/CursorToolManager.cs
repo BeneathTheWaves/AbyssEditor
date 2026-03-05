@@ -10,9 +10,9 @@ namespace AbyssEditor.Scripts.CursorTools
     {
         public static CursorToolManager main;
 
-        public BrushTool brushTool { get; private set; }
-        public RemoveBatchTool batchRemoveTool { get; private set; }
-        public SizeRefTool sizeRefTool { get; private set; }
+        public BrushTool BrushTool { get; private set; }
+        public RemoveBatchTool BatchRemoveTool { get; private set; }
+        public SizeRefTool SizeRefTool { get; private set; }
 
         private readonly HashSet<ICursorTool> tools = new();
 
@@ -25,12 +25,12 @@ namespace AbyssEditor.Scripts.CursorTools
         private void Awake()
         {
             main = this;
-            brushTool = new BrushTool();
-            batchRemoveTool = new RemoveBatchTool();
-            sizeRefTool = new SizeRefTool();
-            tools.Add(brushTool);
-            tools.Add(batchRemoveTool);
-            tools.Add(sizeRefTool);
+            BrushTool = new BrushTool();
+            BatchRemoveTool = new RemoveBatchTool();
+            SizeRefTool = new SizeRefTool();
+            tools.Add(BrushTool);
+            tools.Add(BatchRemoveTool);
+            tools.Add(SizeRefTool);
         }
 
         private void Start()
