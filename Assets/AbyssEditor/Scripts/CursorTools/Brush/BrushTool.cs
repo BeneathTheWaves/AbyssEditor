@@ -101,7 +101,6 @@ namespace AbyssEditor.Scripts.CursorTools.Brush {
 
         private void OnScrollWheel(InputAction.CallbackContext ctx)
         {
-            ctx.ReadValue<float>();
             if (input.ActivateBrushScale.IsPressed())
             {
                 float newSize = currentBrushSize + (ctx.ReadValue<float>() * SIZE_SCROLL_SPEED);
