@@ -83,6 +83,10 @@ namespace AbyssEditor.Scripts.ThreadingManager
                     // when we are trying to dispose the thread
                     break;
                 }
+                catch (Exception e)
+                {
+                    Debug.LogException(e);
+                }
             }
         }
         

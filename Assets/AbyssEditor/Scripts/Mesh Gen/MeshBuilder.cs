@@ -16,9 +16,9 @@ namespace AbyssEditor.Scripts.Mesh_Gen {
         private static readonly Dictionary<int, float> lodScales = new Dictionary<int, float>
         {
             { 0, 1f },
-            { 1, 1.15f },
-            { 2, 1.25f },
-            { 3, 1.6f },
+            { 1, 1f/*1.15f*/ },
+            { 2, 1f },
+            { 3, 1f },
         };
         
         private const int MAX_ADJACENT_FACES = 24;
@@ -121,6 +121,7 @@ namespace AbyssEditor.Scripts.Mesh_Gen {
                     CheckVert(ref meshFace, ref meshFace.b);
                     CheckVert(ref meshFace, ref meshFace.c);
                     CheckVert(ref meshFace, ref meshFace.d);
+                    
                     [MethodImpl(MethodImplOptions.AggressiveInlining)]
                     void CheckVert(ref QuadFace meshFace, ref Vector3 dcCube)
                     {

@@ -18,7 +18,7 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelGrids {
         public Vector3Int fullGridDim;
         private readonly Vector3Int octreeIndex;
         private readonly Vector3Int batchIndex;
-        private VoxelGrid[] neighboringGrids = new VoxelGrid[27];//the center is a reference to self, references can be null
+        private readonly VoxelGrid[] neighboringGrids = new VoxelGrid[27];//the center is a reference to self, references can be null
         
         public static NativeArray<int3> neighboursToCheckInSmooth;
         private static Vector3Int[] paddingVoxels;
@@ -134,7 +134,7 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelGrids {
             SetVoxel(typeGrid, ref voxel, GetVoxel(neighborGrid.typeGrid, sampleVoxel));
         }
         
-        private static Vector3Int NeighbourGridOffsetFromPaddedVoxel(ref Vector3Int voxel) {
+        public static Vector3Int NeighbourGridOffsetFromPaddedVoxel(ref Vector3Int voxel) {
             Vector3Int offset = Vector3Int.zero;
             if (voxel.x <= 0) offset.x = -1;                                                                                                
             else if (voxel.x >= VoxelWorld.GRID_RESOLUTION + GRID_PADDING) offset.x = 1;

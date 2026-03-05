@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using AbyssEditor.Scripts.Mesh_Gen.Datas;
+using AbyssEditor.Scripts.Mesh_Gen.VoxelDownsampling;
+using AbyssEditor.Scripts.VoxelTech.VoxelGrids;
 using Unity.Collections;
 using UnityEngine;
 
@@ -10,6 +12,8 @@ namespace AbyssEditor.Scripts.Mesh_Gen
     {
         public static FaceGPUBuilder builder;
         
+        private VoxelDownsampler voxelDownsampler;
+        
         [SerializeField] private ComputeShader shader;
         private ComputeBuffer voxelBuffer;
         private ComputeBuffer faceBuffer; 
@@ -17,28 +21,11 @@ namespace AbyssEditor.Scripts.Mesh_Gen
         
         //Used for passing to the shader without new allocations
         private uint[] packed;
-        
-        Dictionary<int, LODGridGroup> lodCacheGrids = new(); 
 
         public void Awake()
         {
             builder = this;
-            for (int i = 1; i <= 5; i++)
-            {
-
-                LODGridGroup gridGroup = new();
-                gridGroup.blockWidth = 1 << i;
-                gridGroup.gridWidth = (int) Mathf.Pow(2, 5 - i);
-                gridGroup.resolution = new Vector3Int(gridGroup.gridWidth, gridGroup.gridWidth, gridGroup.gridWidth);
-                
-                int gridLinearSize = gridGroup.gridWidth * gridGroup.gridWidth * gridGroup.gridWidth;
-                
-                gridGroup.densityGrid = new NativeArray<byte>(gridLinearSize, Allocator.Persistent);
-                gridGroup.typeGrid = new NativeArray<byte>(gridLinearSize, Allocator.Persistent);
-
-                
-                lodCacheGrids.Add(i, gridGroup);
-            }
+            voxelDownsampler = new VoxelDownsampler();
         }
 
         public QuadFace[] GenerateFaces(NativeArray<byte> densityGrid, NativeArray<byte> typeGrid, Vector3Int resolution, int lodLevel) {
@@ -64,7 +51,7 @@ namespace AbyssEditor.Scripts.Mesh_Gen
                 faceBuffer.SetCounterValue(0);
 
                 shader.SetBuffer(kernel, voxels, voxelBuffer);
-                shader.SetBuffer (kernel, faces1, faceBuffer);
+                shader.SetBuffer(kernel, faces1, faceBuffer);
 
                 shader.SetInt (numPointsX, lodGrids.resolution.x);
                 shader.SetInt (numPointsY, lodGrids.resolution.y);
@@ -144,7 +131,7 @@ namespace AbyssEditor.Scripts.Mesh_Gen
         private LODGridGroup GenerateLodGrids(NativeArray<byte> originalDensityGrid, NativeArray<byte> originalTypeGrid, Vector3Int originalResolution, int lodLevel)
         {
 
-            if (!lodCacheGrids.TryGetValue(lodLevel, out LODGridGroup lodGridGroup))
+            if (!voxelDownsampler.lodCacheGrids.TryGetValue(lodLevel, out LODGridGroup lodGridGroup))
             {
                 Debug.LogError($"LODLevel {lodLevel} does not exist");
             }
@@ -152,20 +139,25 @@ namespace AbyssEditor.Scripts.Mesh_Gen
             NativeArray<byte> lodDensityGrid = lodGridGroup.densityGrid;
             NativeArray<byte> lodTypeGrid = lodGridGroup.typeGrid;
             
-            float scale = (originalResolution.x - 1) / (float)(lodGridGroup.resolution.x - 1);
+            Debug.Log(lodGridGroup.resolution);
             
-            for (int x = 0; x < lodGridGroup.resolution.x; x++) {
-                for (int y = 0; y < lodGridGroup.resolution.y; y++) {
-                    for (int z = 0; z < lodGridGroup.resolution.z; z++)
-                    {
-                        DownSampleVoxel(originalDensityGrid, originalTypeGrid, originalResolution, scale, x, y, z, out byte sampledDensity, out byte sampledType);
+            for (int x = VoxelGrid.GRID_PADDING; x < lodGridGroup.resolution.x - VoxelGrid.GRID_PADDING; x++) 
+            for (int y = VoxelGrid.GRID_PADDING; y < lodGridGroup.resolution.y - VoxelGrid.GRID_PADDING; y++) 
+            for (int z = VoxelGrid.GRID_PADDING; z < lodGridGroup.resolution.z - VoxelGrid.GRID_PADDING; z++)
+            {
+                voxelDownsampler.DownSampleInnerVoxel(originalDensityGrid, originalTypeGrid, originalResolution, lodGridGroup.blockWidth, x, y, z, out byte sampledDensity, out byte sampledType);
                         
-                        lodTypeGrid[Globals.LinearIndex(x, y, z, lodGridGroup.resolution)] = sampledType;
-                        lodDensityGrid[Globals.LinearIndex(x, y, z, lodGridGroup.resolution)] = sampledDensity;
-                    }
-                }
+                lodTypeGrid[Globals.LinearIndex(x, y, z, lodGridGroup.resolution)] = sampledType;
+                lodDensityGrid[Globals.LinearIndex(x, y, z, lodGridGroup.resolution)] = sampledDensity;
             }
             
+            foreach (Vector3Int paddingVoxel in lodGridGroup.paddingVoxels)
+            {
+                voxelDownsampler.DownSamplePaddedVoxel(originalDensityGrid, originalTypeGrid, originalResolution, lodGridGroup.blockWidth, paddingVoxel.x, paddingVoxel.y, paddingVoxel.z, out byte sampledDensity, out byte sampledType);
+                
+                lodTypeGrid[Globals.LinearIndex(paddingVoxel.x, paddingVoxel.y, paddingVoxel.z, lodGridGroup.resolution)] = sampledType;
+                lodDensityGrid[Globals.LinearIndex(paddingVoxel.x, paddingVoxel.y, paddingVoxel.z, lodGridGroup.resolution)] = sampledDensity;
+            }
             return lodGridGroup;
         }
         
@@ -175,6 +167,11 @@ namespace AbyssEditor.Scripts.Mesh_Gen
             }
         }
 
+        public void DisposeNativeArrays()
+        {
+            voxelDownsampler.DisposeNativeArrays();
+        }
+        
         private void ReleaseBuffers() {
             if (faceBuffer != null) {
                 faceBuffer.Release();
@@ -190,84 +187,11 @@ namespace AbyssEditor.Scripts.Mesh_Gen
                 triCountBuffer = null;
             }
         }
-
-        public void DisposeNativeArrays()
-        {
-            foreach (KeyValuePair<int, LODGridGroup> gridGoup in lodCacheGrids)
-            {
-                gridGoup.Value.densityGrid.Dispose();
-                gridGoup.Value.typeGrid.Dispose();
-            }
-        }
-
-        private struct LODGridGroup
-        {
-            public NativeArray<byte> densityGrid;
-            public NativeArray<byte> typeGrid;
-            public int gridWidth;
-            public int blockWidth;
-            public Vector3Int resolution;
-        }
-        
-        private static void DownSampleVoxel(NativeArray<byte> densityGrid, NativeArray<byte> typeGrid, Vector3Int res, float scale, int lx, int ly, int lz, out byte outDensity, out byte outType)
-        {
-            float startX = lx * scale;
-            float startY = ly * scale;
-            float startZ = lz * scale;
-
-            float endX = (lx + 1) * scale;
-            float endY = (ly + 1) * scale;
-            float endZ = (lz + 1) * scale;
-
-            int x0 = Mathf.FloorToInt(startX);
-            int y0 = Mathf.FloorToInt(startY);
-            int z0 = Mathf.FloorToInt(startZ);
-
-            int x1 = Mathf.CeilToInt(endX);
-            int y1 = Mathf.CeilToInt(endY);
-            int z1 = Mathf.CeilToInt(endZ);
-
-            int densitySum = 0;
-            int count = 0;
-
-            byte nearestValidType = 0;
-            
-            for (int x = x0; x < x1; x++)
-            for (int y = y0; y < y1; y++)
-            for (int z = z0; z < z1; z++)
-            {
-                int cx = Mathf.Clamp(x, 0, res.x - 1);
-                int cy = Mathf.Clamp(y, 0, res.y - 1);
-                int cz = Mathf.Clamp(z, 0, res.z - 1);
-
-                int index = Globals.LinearIndex(cx, cy, cz, res);
-
-                byte density = densityGrid[index];
-                byte type = typeGrid[index];
-                
-                int effectiveDensity = density;
-                if (density == 0 && type != 0)
-                    effectiveDensity = 252;
-
-                densitySum += effectiveDensity;
-                count++;
-
-                if (nearestValidType == 0 && type != 0)
-                {
-                    nearestValidType = type;
-                }
-            }
-
-            outDensity = (byte)(densitySum / count);
-
-            outType = nearestValidType;
-        }
                 
         //Down here cause I don't like to see them :/
         private static readonly int numPointsZ = Shader.PropertyToID("numPointsZ");
         private static readonly int numPointsY = Shader.PropertyToID("numPointsY");
         private static readonly int numPointsX = Shader.PropertyToID("numPointsX");
-        private static readonly int lodLevelShaderProp = Shader.PropertyToID("lodLevel");
         private static readonly int faces1 = Shader.PropertyToID("faces");
         private static readonly int voxels = Shader.PropertyToID("voxels");
     }

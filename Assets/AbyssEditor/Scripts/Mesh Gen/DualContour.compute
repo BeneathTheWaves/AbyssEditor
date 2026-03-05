@@ -3,6 +3,7 @@
 
 // MUST be equal to Globals.threadGroupSize
 static const int numthreads = 8;
+static const int ghostOffset = 1; 
 
 struct Triangle {
     float3 vertexA;
@@ -46,9 +47,6 @@ int linearIndex(uint x, uint y, uint z) {
 bool checkBoundsAll(int3 pos) {
     return pos.x >= 0 && pos.y >= 0 && pos.z >= 0 && pos.x < numPointsX && pos.y < numPointsY && pos.z < numPointsZ;
 }
-bool checkBoundsOuterMesh(int3 pos) {
-    return pos.x > 0 && pos.y > 0 && pos.z > 0 && pos.x < 35 && pos.y < 35 && pos.z < 35;
-}
 
 void ReadVoxel(uint idx, out int density, out int type)
 {
@@ -62,85 +60,86 @@ Face MakeFace(int3 p1, int3 p2, int d1, int d2, int dir, int type) {
     Face face;
     face.type = type;
 
-    // For each edge that exhibits a sign change,
-    // generate a quad connecting the minimizing vertices of the four cubes containing the edge.
-
-    int3 cube1Index, cube2Index, cube3Index, cube4Index; 
-
+    // Compute minimum corner
     int3 pMin = int3(min(p1.x, p2.x), min(p1.y, p2.y), min(p1.z, p2.z));
-    
-    switch(dir) {
-        default:
-        case 0:
-            // p1->p2 = y+
-            cube1Index = int3(pMin.x - 1, pMin.y, pMin.z - 1);
-            cube2Index = int3(pMin.x - 1, pMin.y, pMin.z);
-            cube3Index = int3(pMin.x, pMin.y, pMin.z);
-            cube4Index = int3(pMin.x, pMin.y, pMin.z - 1);
-            break;
-        case 1:
-            // p1->p2 = y-
-            cube1Index = int3(pMin.x - 1, pMin.y, pMin.z - 1);
-            cube2Index = int3(pMin.x, pMin.y, pMin.z - 1);
-            cube3Index = int3(pMin.x, pMin.y, pMin.z);
-            cube4Index = int3(pMin.x - 1, pMin.y, pMin.z);
-            break;
-        case 2:
-            // p1->p2 = x+
-            cube1Index = int3(pMin.x, pMin.y - 1, pMin.z - 1);
-            cube2Index = int3(pMin.x, pMin.y, pMin.z - 1);
-            cube3Index = int3(pMin.x, pMin.y, pMin.z);
-            cube4Index = int3(pMin.x, pMin.y - 1, pMin.z);
-            break;
-        case 3:
-            // p1->p2 = x-
-            cube1Index = int3(pMin.x, pMin.y - 1, pMin.z - 1);
-            cube2Index = int3(pMin.x, pMin.y - 1, pMin.z);
-            cube3Index = int3(pMin.x, pMin.y, pMin.z);
-            cube4Index = int3(pMin.x, pMin.y, pMin.z - 1);
-            break;
-        case 4:
-            // p1->p2 = z+
-            cube1Index = int3(pMin.x - 1, pMin.y - 1, pMin.z);
-            cube2Index = int3(pMin.x, pMin.y - 1, pMin.z);
-            cube3Index = int3(pMin.x, pMin.y, pMin.z);
-            cube4Index = int3(pMin.x - 1, pMin.y, pMin.z);
-            break;
-        case 5:
-            // p1->p2 = z-
-            cube1Index = int3(pMin.x - 1, pMin.y - 1, pMin.z);
-            cube2Index = int3(pMin.x - 1, pMin.y,     pMin.z);
-            cube3Index = int3(pMin.x, pMin.y,         pMin.z);
-            cube4Index = int3(pMin.x, pMin.y - 1,     pMin.z);
-            break;
-    }
+    int3 pMinWithGhost = pMin + ghostOffset;
 
+    // Compute edge intersection
     float3 delta = p2 - p1;
     float invLen = rsqrt(dot(delta, delta));
     float3 normalized = delta * invLen;
 
     float3 intx;
-    if (d1 == d2 && d1 == 0) intx = (p1 + p2) / (uint)2;
-    else if (d1 == 0) intx = decodeDensity(d2) * normalized + p2;
-    else if (d2 == 0) intx = decodeDensity(d1) * normalized + p1;
+    if (d1 == d2 && d1 == 0) intx = (p1 + p2) / 2.0;
+    else if (d1 == 0) intx = p2 + decodeDensity(d2) * normalized;
+    else if (d2 == 0) intx = p1 + decodeDensity(d1) * normalized;
     else {
-        float t;
+        float t = 0;
         float density1 = decodeDensity(d1);
         float density2 = decodeDensity(d2);
         if (density1 != density2) {
             t = (-density2) / (density1 - density2);
         }
-        intx = (1 - t) * p2 + t * p1;
+        intx = lerp(p2, p1, t); // same as (1-t)*p2 + t*p1
+    }
+    face.surfaceIntersection = intx;
+
+    // Generate cube corners for the face
+    int3 minIndex = int3(0,0,0);
+    int3 maxIndex = int3(numPointsX-1, numPointsY-1, numPointsZ-1);
+
+    int3 cube1Index, cube2Index, cube3Index, cube4Index;
+
+    switch(dir) {
+        case 0: // y+
+            cube1Index = int3(pMinWithGhost.x - 1, pMinWithGhost.y,     pMinWithGhost.z - 1);
+            cube2Index = int3(pMinWithGhost.x - 1, pMinWithGhost.y,     pMinWithGhost.z);
+            cube3Index = int3(pMinWithGhost.x,     pMinWithGhost.y,     pMinWithGhost.z);
+            cube4Index = int3(pMinWithGhost.x,     pMinWithGhost.y,     pMinWithGhost.z - 1);
+            break;
+        case 1: // y-
+            cube1Index = int3(pMinWithGhost.x - 1, pMinWithGhost.y,     pMinWithGhost.z - 1);
+            cube2Index = int3(pMinWithGhost.x,     pMinWithGhost.y,     pMinWithGhost.z - 1);
+            cube3Index = int3(pMinWithGhost.x,     pMinWithGhost.y,     pMinWithGhost.z);
+            cube4Index = int3(pMinWithGhost.x - 1, pMinWithGhost.y,     pMinWithGhost.z);
+            break;
+        case 2: // x+
+            cube1Index = int3(pMinWithGhost.x, pMinWithGhost.y - 1, pMinWithGhost.z - 1);
+            cube2Index = int3(pMinWithGhost.x, pMinWithGhost.y,     pMinWithGhost.z - 1);
+            cube3Index = int3(pMinWithGhost.x, pMinWithGhost.y,     pMinWithGhost.z);
+            cube4Index = int3(pMinWithGhost.x, pMinWithGhost.y - 1, pMinWithGhost.z);
+            break;
+        case 3: // x-
+            cube1Index = int3(pMinWithGhost.x, pMinWithGhost.y - 1, pMinWithGhost.z - 1);
+            cube2Index = int3(pMinWithGhost.x, pMinWithGhost.y - 1, pMinWithGhost.z);
+            cube3Index = int3(pMinWithGhost.x, pMinWithGhost.y,     pMinWithGhost.z);
+            cube4Index = int3(pMinWithGhost.x, pMinWithGhost.y,     pMinWithGhost.z - 1);
+            break;
+        case 4: // z+
+            cube1Index = int3(pMinWithGhost.x - 1, pMinWithGhost.y - 1, pMinWithGhost.z);
+            cube2Index = int3(pMinWithGhost.x,     pMinWithGhost.y - 1, pMinWithGhost.z);
+            cube3Index = int3(pMinWithGhost.x,     pMinWithGhost.y,     pMinWithGhost.z);
+            cube4Index = int3(pMinWithGhost.x - 1, pMinWithGhost.y,     pMinWithGhost.z);
+            break;
+        case 5: // z-
+            cube1Index = int3(pMinWithGhost.x - 1, pMinWithGhost.y - 1, pMinWithGhost.z);
+            cube2Index = int3(pMinWithGhost.x - 1, pMinWithGhost.y,     pMinWithGhost.z);
+            cube3Index = int3(pMinWithGhost.x,     pMinWithGhost.y,     pMinWithGhost.z);
+            cube4Index = int3(pMinWithGhost.x,     pMinWithGhost.y - 1, pMinWithGhost.z);
+            break;
     }
 
-    //adding a vector.one - probably a hack
-    // TODO: why does this work?
-    int3 onev = int3(1, 1, 1);
-    face.vertexA = cube1Index + onev;
-    face.vertexB = cube2Index + onev;
-    face.vertexC = cube3Index + onev;
-    face.vertexD = cube4Index + onev;
-    face.surfaceIntersection = intx;
+    // **CLAMP THE CUBE INDICES**
+    cube1Index = clamp(cube1Index, minIndex, maxIndex);
+    cube2Index = clamp(cube2Index, minIndex, maxIndex);
+    cube3Index = clamp(cube3Index, minIndex, maxIndex);
+    cube4Index = clamp(cube4Index, minIndex, maxIndex);
+
+    // assign vertices
+    face.vertexA = float3(cube1Index);
+    face.vertexB = float3(cube2Index);
+    face.vertexC = float3(cube3Index);
+    face.vertexD = float3(cube4Index);
 
     return face;
 }
@@ -176,6 +175,8 @@ void DualContour(int3 id : SV_DispatchThreadID) {
     for (int dir = 0; dir < 6; dir++) {
         int3 dirV = directionToPos[dir];
         int3 id1 = int3(id.x + dirV.x, id.y + dirV.y, id.z + dirV.z);
+        
+        id1 = clamp(id1, int3(0,0,0), int3(numPointsX-1, numPointsY-1, numPointsZ-1));
 
         if (checkBoundsAll(id1)) {
             int density1;
