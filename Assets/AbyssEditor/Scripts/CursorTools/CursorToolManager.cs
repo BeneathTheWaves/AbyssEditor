@@ -12,6 +12,7 @@ namespace AbyssEditor.Scripts.CursorTools
 
         public BrushTool brushTool { get; private set; }
         public RemoveBatchTool batchRemoveTool { get; private set; }
+        public SizeRefTool sizeRefTool { get; private set; }
 
         private readonly HashSet<ICursorTool> tools = new();
 
@@ -26,8 +27,10 @@ namespace AbyssEditor.Scripts.CursorTools
             main = this;
             brushTool = new BrushTool();
             batchRemoveTool = new RemoveBatchTool();
+            sizeRefTool = new SizeRefTool();
             tools.Add(brushTool);
             tools.Add(batchRemoveTool);
+            tools.Add(sizeRefTool);
         }
 
         private void Start()

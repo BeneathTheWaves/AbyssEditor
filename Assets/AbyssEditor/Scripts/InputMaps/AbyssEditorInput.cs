@@ -624,6 +624,116 @@ namespace AbyssEditor.Scripts.InputMaps
                     ""isPartOfComposite"": false
                 }
             ]
+        },
+        {
+            ""name"": ""SizeRefTool"",
+            ""id"": ""d4cd1e4c-28da-473c-a7ad-7ef65a320d1b"",
+            ""actions"": [
+                {
+                    ""name"": ""Place"",
+                    ""type"": ""Button"",
+                    ""id"": ""2bb59209-aa1b-45da-8e2b-579286eac62e"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""MousePosition"",
+                    ""type"": ""Value"",
+                    ""id"": ""c6a8b562-b30a-451f-b0ae-07292f388a70"",
+                    ""expectedControlType"": ""Vector2"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""Rotation"",
+                    ""type"": ""Value"",
+                    ""id"": ""00aa3f5a-f20f-4a2d-ae0b-3868e652ea27"",
+                    ""expectedControlType"": ""Axis"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""AllowPlacingMultiple"",
+                    ""type"": ""Button"",
+                    ""id"": ""1c3ded96-f791-4f7f-bac8-c15ed79311ee"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""111a75fb-a6c2-42a5-b217-9dec11a73440"",
+                    ""path"": ""<Mouse>/leftButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Place"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""3245cefb-f36f-465f-afb6-dd4fd118643d"",
+                    ""path"": ""<Mouse>/position"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""MousePosition"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""1D Axis"",
+                    ""id"": ""82430c44-83ce-47b1-89ed-00679c572e86"",
+                    ""path"": ""1DAxis"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Rotation"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""negative"",
+                    ""id"": ""5ed65a27-9458-4f9c-ab78-355e5631d43e"",
+                    ""path"": ""<Mouse>/scroll/down"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Rotation"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""positive"",
+                    ""id"": ""185f8abd-5f4c-4795-8bb0-4f6514eb0a14"",
+                    ""path"": ""<Mouse>/scroll/up"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Rotation"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""a3565d7c-0a61-4abe-b798-22bc7e224933"",
+                    ""path"": ""<Keyboard>/shift"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""AllowPlacingMultiple"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
         }
     ],
     ""controlSchemes"": []
@@ -655,6 +765,12 @@ namespace AbyssEditor.Scripts.InputMaps
             // DragWindow
             m_DragWindow = asset.FindActionMap("DragWindow", throwIfNotFound: true);
             m_DragWindow_MousePosition = m_DragWindow.FindAction("MousePosition", throwIfNotFound: true);
+            // SizeRefTool
+            m_SizeRefTool = asset.FindActionMap("SizeRefTool", throwIfNotFound: true);
+            m_SizeRefTool_Place = m_SizeRefTool.FindAction("Place", throwIfNotFound: true);
+            m_SizeRefTool_MousePosition = m_SizeRefTool.FindAction("MousePosition", throwIfNotFound: true);
+            m_SizeRefTool_Rotation = m_SizeRefTool.FindAction("Rotation", throwIfNotFound: true);
+            m_SizeRefTool_AllowPlacingMultiple = m_SizeRefTool.FindAction("AllowPlacingMultiple", throwIfNotFound: true);
         }
 
         ~@AbyssEditorInput()
@@ -665,6 +781,7 @@ namespace AbyssEditor.Scripts.InputMaps
             UnityEngine.Debug.Assert(!m_RemoveBatch.enabled, "This will cause a leak and performance issues, AbyssEditorInput.RemoveBatch.Disable() has not been called.");
             UnityEngine.Debug.Assert(!m_ToolTip.enabled, "This will cause a leak and performance issues, AbyssEditorInput.ToolTip.Disable() has not been called.");
             UnityEngine.Debug.Assert(!m_DragWindow.enabled, "This will cause a leak and performance issues, AbyssEditorInput.DragWindow.Disable() has not been called.");
+            UnityEngine.Debug.Assert(!m_SizeRefTool.enabled, "This will cause a leak and performance issues, AbyssEditorInput.SizeRefTool.Disable() has not been called.");
         }
 
         /// <summary>
@@ -1411,6 +1528,135 @@ namespace AbyssEditor.Scripts.InputMaps
         /// Provides a new <see cref="DragWindowActions" /> instance referencing this action map.
         /// </summary>
         public DragWindowActions @DragWindow => new DragWindowActions(this);
+
+        // SizeRefTool
+        private readonly InputActionMap m_SizeRefTool;
+        private List<ISizeRefToolActions> m_SizeRefToolActionsCallbackInterfaces = new List<ISizeRefToolActions>();
+        private readonly InputAction m_SizeRefTool_Place;
+        private readonly InputAction m_SizeRefTool_MousePosition;
+        private readonly InputAction m_SizeRefTool_Rotation;
+        private readonly InputAction m_SizeRefTool_AllowPlacingMultiple;
+        /// <summary>
+        /// Provides access to input actions defined in input action map "SizeRefTool".
+        /// </summary>
+        public struct SizeRefToolActions
+        {
+            private @AbyssEditorInput m_Wrapper;
+
+            /// <summary>
+            /// Construct a new instance of the input action map wrapper class.
+            /// </summary>
+            public SizeRefToolActions(@AbyssEditorInput wrapper) { m_Wrapper = wrapper; }
+            /// <summary>
+            /// Provides access to the underlying input action "SizeRefTool/Place".
+            /// </summary>
+            public InputAction @Place => m_Wrapper.m_SizeRefTool_Place;
+            /// <summary>
+            /// Provides access to the underlying input action "SizeRefTool/MousePosition".
+            /// </summary>
+            public InputAction @MousePosition => m_Wrapper.m_SizeRefTool_MousePosition;
+            /// <summary>
+            /// Provides access to the underlying input action "SizeRefTool/Rotation".
+            /// </summary>
+            public InputAction @Rotation => m_Wrapper.m_SizeRefTool_Rotation;
+            /// <summary>
+            /// Provides access to the underlying input action "SizeRefTool/AllowPlacingMultiple".
+            /// </summary>
+            public InputAction @AllowPlacingMultiple => m_Wrapper.m_SizeRefTool_AllowPlacingMultiple;
+            /// <summary>
+            /// Provides access to the underlying input action map instance.
+            /// </summary>
+            public InputActionMap Get() { return m_Wrapper.m_SizeRefTool; }
+            /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Enable()" />
+            public void Enable() { Get().Enable(); }
+            /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Disable()" />
+            public void Disable() { Get().Disable(); }
+            /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.enabled" />
+            public bool enabled => Get().enabled;
+            /// <summary>
+            /// Implicitly converts an <see ref="SizeRefToolActions" /> to an <see ref="InputActionMap" /> instance.
+            /// </summary>
+            public static implicit operator InputActionMap(SizeRefToolActions set) { return set.Get(); }
+            /// <summary>
+            /// Adds <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
+            /// </summary>
+            /// <param name="instance">Callback instance.</param>
+            /// <remarks>
+            /// If <paramref name="instance" /> is <c>null</c> or <paramref name="instance"/> have already been added this method does nothing.
+            /// </remarks>
+            /// <seealso cref="SizeRefToolActions" />
+            public void AddCallbacks(ISizeRefToolActions instance)
+            {
+                if (instance == null || m_Wrapper.m_SizeRefToolActionsCallbackInterfaces.Contains(instance)) return;
+                m_Wrapper.m_SizeRefToolActionsCallbackInterfaces.Add(instance);
+                @Place.started += instance.OnPlace;
+                @Place.performed += instance.OnPlace;
+                @Place.canceled += instance.OnPlace;
+                @MousePosition.started += instance.OnMousePosition;
+                @MousePosition.performed += instance.OnMousePosition;
+                @MousePosition.canceled += instance.OnMousePosition;
+                @Rotation.started += instance.OnRotation;
+                @Rotation.performed += instance.OnRotation;
+                @Rotation.canceled += instance.OnRotation;
+                @AllowPlacingMultiple.started += instance.OnAllowPlacingMultiple;
+                @AllowPlacingMultiple.performed += instance.OnAllowPlacingMultiple;
+                @AllowPlacingMultiple.canceled += instance.OnAllowPlacingMultiple;
+            }
+
+            /// <summary>
+            /// Removes <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
+            /// </summary>
+            /// <remarks>
+            /// Calling this method when <paramref name="instance" /> have not previously been registered has no side-effects.
+            /// </remarks>
+            /// <seealso cref="SizeRefToolActions" />
+            private void UnregisterCallbacks(ISizeRefToolActions instance)
+            {
+                @Place.started -= instance.OnPlace;
+                @Place.performed -= instance.OnPlace;
+                @Place.canceled -= instance.OnPlace;
+                @MousePosition.started -= instance.OnMousePosition;
+                @MousePosition.performed -= instance.OnMousePosition;
+                @MousePosition.canceled -= instance.OnMousePosition;
+                @Rotation.started -= instance.OnRotation;
+                @Rotation.performed -= instance.OnRotation;
+                @Rotation.canceled -= instance.OnRotation;
+                @AllowPlacingMultiple.started -= instance.OnAllowPlacingMultiple;
+                @AllowPlacingMultiple.performed -= instance.OnAllowPlacingMultiple;
+                @AllowPlacingMultiple.canceled -= instance.OnAllowPlacingMultiple;
+            }
+
+            /// <summary>
+            /// Unregisters <param cref="instance" /> and unregisters all input action callbacks via <see cref="SizeRefToolActions.UnregisterCallbacks(ISizeRefToolActions)" />.
+            /// </summary>
+            /// <seealso cref="SizeRefToolActions.UnregisterCallbacks(ISizeRefToolActions)" />
+            public void RemoveCallbacks(ISizeRefToolActions instance)
+            {
+                if (m_Wrapper.m_SizeRefToolActionsCallbackInterfaces.Remove(instance))
+                    UnregisterCallbacks(instance);
+            }
+
+            /// <summary>
+            /// Replaces all existing callback instances and previously registered input action callbacks associated with them with callbacks provided via <param cref="instance" />.
+            /// </summary>
+            /// <remarks>
+            /// If <paramref name="instance" /> is <c>null</c>, calling this method will only unregister all existing callbacks but not register any new callbacks.
+            /// </remarks>
+            /// <seealso cref="SizeRefToolActions.AddCallbacks(ISizeRefToolActions)" />
+            /// <seealso cref="SizeRefToolActions.RemoveCallbacks(ISizeRefToolActions)" />
+            /// <seealso cref="SizeRefToolActions.UnregisterCallbacks(ISizeRefToolActions)" />
+            public void SetCallbacks(ISizeRefToolActions instance)
+            {
+                foreach (var item in m_Wrapper.m_SizeRefToolActionsCallbackInterfaces)
+                    UnregisterCallbacks(item);
+                m_Wrapper.m_SizeRefToolActionsCallbackInterfaces.Clear();
+                AddCallbacks(instance);
+            }
+        }
+        /// <summary>
+        /// Provides a new <see cref="SizeRefToolActions" /> instance referencing this action map.
+        /// </summary>
+        public SizeRefToolActions @SizeRefTool => new SizeRefToolActions(this);
         /// <summary>
         /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "FreeCam" which allows adding and removing callbacks.
         /// </summary>
@@ -1563,6 +1809,42 @@ namespace AbyssEditor.Scripts.InputMaps
             /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
             /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
             void OnMousePosition(InputAction.CallbackContext context);
+        }
+        /// <summary>
+        /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "SizeRefTool" which allows adding and removing callbacks.
+        /// </summary>
+        /// <seealso cref="SizeRefToolActions.AddCallbacks(ISizeRefToolActions)" />
+        /// <seealso cref="SizeRefToolActions.RemoveCallbacks(ISizeRefToolActions)" />
+        public interface ISizeRefToolActions
+        {
+            /// <summary>
+            /// Method invoked when associated input action "Place" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+            /// </summary>
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+            void OnPlace(InputAction.CallbackContext context);
+            /// <summary>
+            /// Method invoked when associated input action "MousePosition" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+            /// </summary>
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+            void OnMousePosition(InputAction.CallbackContext context);
+            /// <summary>
+            /// Method invoked when associated input action "Rotation" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+            /// </summary>
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+            void OnRotation(InputAction.CallbackContext context);
+            /// <summary>
+            /// Method invoked when associated input action "AllowPlacingMultiple" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+            /// </summary>
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+            void OnAllowPlacingMultiple(InputAction.CallbackContext context);
         }
     }
 }

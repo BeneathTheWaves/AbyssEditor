@@ -118,6 +118,10 @@ namespace AbyssEditor.Scripts.UI.HotBar
             {
                 CursorToolManager.main.Enable<RemoveBatchTool>();
             }
+            else if (newButton is SizeRefHotBarButton)
+            {
+                CursorToolManager.main.Enable<SizeRefTool>();
+            }
         }
     }
 }
