@@ -19,6 +19,8 @@ namespace AbyssEditor.Scripts.Mesh_Gen {
             { 1, 1f/*1.15f*/ },
             { 2, 1f },
             { 3, 1f },
+            { 4, 1f },
+            { 5, 1f },
         };
         
         private const int MAX_ADJACENT_FACES = 24;

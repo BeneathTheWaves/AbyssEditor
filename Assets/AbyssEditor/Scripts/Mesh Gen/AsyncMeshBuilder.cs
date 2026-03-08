@@ -2,6 +2,7 @@ using System.Collections.Concurrent;
 using System.Threading;
 using System.Threading.Tasks;
 using AbyssEditor.Scripts.Mesh_Gen.Datas;
+using AbyssEditor.Scripts.Mesh_Gen.VoxelDownsampling;
 using AbyssEditor.Scripts.ThreadingManager;
 using AbyssEditor.Scripts.VoxelTech.VoxelGrids;
 using Unity.Collections;
@@ -28,17 +29,20 @@ namespace AbyssEditor.Scripts.Mesh_Gen
             }
         }
         //TODO: lod level is a enum?
-        public async Task<MeshResult> RequestMesh(NativeArray<byte> densityGrid, NativeArray<byte> typeGrid, Vector3Int resolution, Vector3 offset, Mesh meshObjToReuse = null, int lodLevel = 3)
+        public async Task<MeshResult> RequestMesh(VoxelGrid grid, Vector3 offset, Mesh meshObjToReuse = null, int lodLevel = 0)
         {
-            if (lodLevel is > 3 or < 0)
-            {
-                Debug.LogError("INVALID LOD REQUESTED");
-                return null;
-            }
             //get faces from GPU
             //This is sync btw, accessing gpu is blocking in unity (ALTHOUGH VERY fast)
-                
-            QuadFace[] faces = FaceGPUBuilder.builder.GenerateFaces(densityGrid, typeGrid, resolution, lodLevel);
+            QuadFace[] faces;
+            if (lodLevel > 0)
+            {
+                LODGridGroup lodGridGroup = grid.GetDownscaledLodGroup(lodLevel);
+                faces = FaceGPUBuilder.builder.GenerateFaces(lodGridGroup.densityGrid, lodGridGroup.typeGrid, lodGridGroup.lodFullResolution);
+            }
+            else
+            {
+                faces = FaceGPUBuilder.builder.GenerateFaces(grid.densityGrid, grid.typeGrid, VoxelGrid.fullResolution);
+            }
             
             int blockwidth = 1 << lodLevel;
             int lodGridWidth = (int) Mathf.Pow(2, 5 - lodLevel) + (VoxelGrid.GRID_PADDING * 2);

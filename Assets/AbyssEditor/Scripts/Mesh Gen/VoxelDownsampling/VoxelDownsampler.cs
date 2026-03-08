@@ -19,28 +19,28 @@ namespace AbyssEditor.Scripts.Mesh_Gen.VoxelDownsampling
                 gridGroup.blockWidth = 1 << i;
                 gridGroup.gridInnerWidth = (int) Mathf.Pow(2, 5 - i);
                 int gridFullWidth = gridGroup.gridInnerWidth + VoxelGrid.GRID_PADDING*2;
-                gridGroup.resolution = new Vector3Int(gridFullWidth, gridFullWidth, gridFullWidth);
+                gridGroup.lodFullResolution = new Vector3Int(gridFullWidth, gridFullWidth, gridFullWidth);
                 
                 int gridLinearSize = gridFullWidth * gridFullWidth * gridFullWidth;
                 
                 gridGroup.densityGrid = new NativeArray<byte>(gridLinearSize, Allocator.Persistent);
                 gridGroup.typeGrid = new NativeArray<byte>(gridLinearSize, Allocator.Persistent);
-                gridGroup.paddingVoxels = PrecomputePaddingVoxels(gridGroup.resolution);
+                gridGroup.paddingVoxels = PrecomputePaddingVoxels(gridGroup.lodFullResolution);
                 lodCacheGrids.Add(i, gridGroup);
             }
         }
         
         public void DownSampleInnerVoxel(NativeArray<byte> originalDensityGrid, NativeArray<byte> originalTypeGrid, Vector3Int originalRes, int sampleBlockWidth, int lodX, int lodY, int lodZ, out byte outDensity, out byte outType)
         {
-            int startX = lodX * sampleBlockWidth;
-            int startY = lodY * sampleBlockWidth;
-            int startZ = lodZ * sampleBlockWidth;
+            int startX = VoxelGrid.GRID_PADDING + lodX * sampleBlockWidth;
+            int startY = VoxelGrid.GRID_PADDING + lodY * sampleBlockWidth;
+            int startZ = VoxelGrid.GRID_PADDING + lodZ * sampleBlockWidth;
 
             // Shift the block if it goes beyond the grid
             // moving the sample area back into the padding grid with valid positions to get a general density
-            if (startX + sampleBlockWidth > originalRes.x) startX = originalRes.x - sampleBlockWidth;
+            /*if (startX + sampleBlockWidth > originalRes.x) startX = originalRes.x - sampleBlockWidth;
             if (startY + sampleBlockWidth > originalRes.y) startY = originalRes.y - sampleBlockWidth;
-            if (startZ + sampleBlockWidth > originalRes.z) startZ = originalRes.z - sampleBlockWidth;
+            if (startZ + sampleBlockWidth > originalRes.z) startZ = originalRes.z - sampleBlockWidth;*/
             
             int densitySum = 0;
             int count = 0;
@@ -68,58 +68,6 @@ namespace AbyssEditor.Scripts.Mesh_Gen.VoxelDownsampling
             }
 
             outDensity = (byte)(densitySum / count);
-
-            outType = nearestValidType;
-        }
-
-        public void DownSamplePaddedVoxel(NativeArray<byte> originalDensityGrid, NativeArray<byte> originalTypeGrid, Vector3Int originalRes, int sampleBlockWidth, int lodX, int lodY, int lodZ, out byte outDensity, out byte outType)
-        {
-            int startX = lodX * sampleBlockWidth;
-            int startY = lodY * sampleBlockWidth;
-            int startZ = lodZ * sampleBlockWidth;
-
-            // Shift the block if it goes beyond the grid
-            // moving the sample area back into the padding grid with valid positions to get a general density
-            if (startX + sampleBlockWidth > originalRes.x) startX = originalRes.x - sampleBlockWidth;
-            if (startY + sampleBlockWidth > originalRes.y) startY = originalRes.y - sampleBlockWidth;
-            if (startZ + sampleBlockWidth > originalRes.z) startZ = originalRes.z - sampleBlockWidth;
-
-            int densitySum = 0;
-            int count = 0;
-            byte nearestValidType = 0;
-
-            for (int x = startX; x < startX + sampleBlockWidth; x++)
-            for (int y = startY; y < startY + sampleBlockWidth; y++)
-            for (int z = startZ; z < startZ + sampleBlockWidth; z++)
-            {
-                Vector3Int voxel = new Vector3Int(x, y, z);
-                if (IsInnerVoxel(ref originalRes, ref voxel)) continue;
-                
-                int index = Globals.LinearIndex(x, y, z, originalRes);
-
-                byte density = originalDensityGrid[index];
-                byte type = originalTypeGrid[index];
-    
-                int effectiveDensity = density;
-                if (density == 0 && type != 0)
-                    effectiveDensity = 252;
-
-                densitySum += effectiveDensity;
-                count++;
-
-                if (nearestValidType == 0 && type != 0)
-                    nearestValidType = type;
-            }
-
-            if (count == 0)
-            {
-                outDensity = 0;
-            }
-            else
-            {
-                outDensity = (byte)(densitySum / count);
-            }
-
 
             outType = nearestValidType;
         }
@@ -175,6 +123,6 @@ namespace AbyssEditor.Scripts.Mesh_Gen.VoxelDownsampling
         public NativeArray<Vector3Int> paddingVoxels;
         public int gridInnerWidth;
         public int blockWidth;
-        public Vector3Int resolution;
+        public Vector3Int lodFullResolution;
     }
 }

@@ -12,7 +12,7 @@ namespace AbyssEditor.Scripts.Mesh_Gen
     {
         public static FaceGPUBuilder builder;
         
-        private VoxelDownsampler voxelDownsampler;
+        public VoxelDownsampler voxelDownsampler;
         
         [SerializeField] private ComputeShader shader;
         private ComputeBuffer voxelBuffer;
@@ -28,48 +28,9 @@ namespace AbyssEditor.Scripts.Mesh_Gen
             voxelDownsampler = new VoxelDownsampler();
         }
 
-        public QuadFace[] GenerateFaces(NativeArray<byte> densityGrid, NativeArray<byte> typeGrid, Vector3Int resolution, int lodLevel) {
+        public QuadFace[] GenerateFaces(NativeArray<byte> densityGrid, NativeArray<byte> typeGrid, Vector3Int resolution) {
             // Setting data inside shader
             const int kernel = 0;
-            
-            //this is FUCKING awefull for now.... NEED to cleanup majorly
-            if (lodLevel > 0)
-            {
-                LODGridGroup lodGrids = GenerateLodGrids(densityGrid, typeGrid, resolution, lodLevel);
-            
-                CreateBuffers(lodGrids.resolution);
-
-                int numThreads = Mathf.CeilToInt ((lodGrids.resolution.x) / (float) Globals.THREAD_GROUP_SIZE);
-            
-                int numPoints = lodGrids.densityGrid.Length;
-            
-                for (int i = 0; i < numPoints; i++) {
-                    packed[i] = (uint)(lodGrids.densityGrid[i] | (lodGrids.typeGrid[i] << 8));
-                }
-            
-                voxelBuffer.SetData(packed);
-                faceBuffer.SetCounterValue(0);
-
-                shader.SetBuffer(kernel, voxels, voxelBuffer);
-                shader.SetBuffer(kernel, faces1, faceBuffer);
-
-                shader.SetInt (numPointsX, lodGrids.resolution.x);
-                shader.SetInt (numPointsY, lodGrids.resolution.y);
-                shader.SetInt (numPointsZ, lodGrids.resolution.z);
-            
-                shader.Dispatch (kernel, numThreads, numThreads, numThreads);
-
-                // Retrieving data from shader
-                ComputeBuffer.CopyCount (faceBuffer, triCountBuffer, 0);
-                int[] triCountArray = new int[1];
-                triCountBuffer.GetData (triCountArray);
-                int numFaces = triCountArray[0];
-
-                QuadFace[] faces = new QuadFace[numFaces];
-
-                faceBuffer.GetData (faces, 0, 0, numFaces);
-                return faces;
-            }
             
             CreateBuffers(resolution);
 
@@ -126,42 +87,6 @@ namespace AbyssEditor.Scripts.Mesh_Gen
                 triCountBuffer = new ComputeBuffer(1, sizeof (int), ComputeBufferType.Raw);
                 packed = new uint[numPoints];
             }
-        }
-
-        private LODGridGroup GenerateLodGrids(NativeArray<byte> originalDensityGrid, NativeArray<byte> originalTypeGrid, Vector3Int originalResolution, int lodLevel)
-        {
-
-            if (!voxelDownsampler.lodCacheGrids.TryGetValue(lodLevel, out LODGridGroup lodGridGroup))
-            {
-                Debug.LogError($"LODLevel {lodLevel} does not exist");
-            }
-
-            NativeArray<byte> lodDensityGrid = lodGridGroup.densityGrid;
-            NativeArray<byte> lodTypeGrid = lodGridGroup.typeGrid;
-            
-            Debug.Log(lodGridGroup.resolution);
-            
-            //this iteration is fucked but idk why it *generally works*, there are still holes sometimes but it's not too bad
-            //its sampling data from inside the padded voxels on 3 axises, but this somehow fixes the meshes generally ig idk.
-            //its cursed but it works. if you want to fix it we will likely need fixes for the dual contour compute shader
-            for (int x = VoxelGrid.GRID_PADDING; x < lodGridGroup.resolution.x - VoxelGrid.GRID_PADDING; x++) 
-            for (int y = VoxelGrid.GRID_PADDING; y < lodGridGroup.resolution.y - VoxelGrid.GRID_PADDING; y++) 
-            for (int z = VoxelGrid.GRID_PADDING; z < lodGridGroup.resolution.z - VoxelGrid.GRID_PADDING; z++)
-            {
-                voxelDownsampler.DownSampleInnerVoxel(originalDensityGrid, originalTypeGrid, originalResolution, lodGridGroup.blockWidth, x, y, z, out byte sampledDensity, out byte sampledType);
-                        
-                lodTypeGrid[Globals.LinearIndex(x, y, z, lodGridGroup.resolution)] = sampledType;
-                lodDensityGrid[Globals.LinearIndex(x, y, z, lodGridGroup.resolution)] = sampledDensity;
-            }
-            
-            foreach (Vector3Int paddingVoxel in lodGridGroup.paddingVoxels)
-            {
-                voxelDownsampler.DownSamplePaddedVoxel(originalDensityGrid, originalTypeGrid, originalResolution, lodGridGroup.blockWidth, paddingVoxel.x, paddingVoxel.y, paddingVoxel.z, out byte sampledDensity, out byte sampledType);
-                
-                lodTypeGrid[Globals.LinearIndex(paddingVoxel.x, paddingVoxel.y, paddingVoxel.z, lodGridGroup.resolution)] = sampledType;
-                lodDensityGrid[Globals.LinearIndex(paddingVoxel.x, paddingVoxel.y, paddingVoxel.z, lodGridGroup.resolution)] = sampledDensity;
-            }
-            return lodGridGroup;
         }
         
         private void OnDestroy() {

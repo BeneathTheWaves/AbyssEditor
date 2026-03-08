@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using AbyssEditor.Scripts.CursorTools;
 using AbyssEditor.Scripts.CursorTools.Brush;
+using AbyssEditor.Scripts.Mesh_Gen;
+using AbyssEditor.Scripts.Mesh_Gen.VoxelDownsampling;
 using AbyssEditor.Scripts.VoxelTech.VoxelGrids.Brushes;
 using Unity.Collections;
 using Unity.Mathematics;
@@ -15,7 +17,7 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelGrids {
         
         public NativeArray<byte> densityGrid;
         public NativeArray<byte> typeGrid;
-        public Vector3Int fullGridDim;
+        public static Vector3Int fullResolution;
         private readonly Vector3Int octreeIndex;
         private readonly Vector3Int batchIndex;
         private readonly VoxelGrid[] neighboringGrids = new VoxelGrid[27];//the center is a reference to self, references can be null
@@ -38,7 +40,7 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelGrids {
                 }
             }
 
-            fullGridDim = Vector3Int.one * GRID_FULL_SIDE;
+            fullResolution = Vector3Int.one * GRID_FULL_SIDE;
 
             octreeIndex = _octreeIndex;
             batchIndex = _batchIndex;
@@ -50,15 +52,15 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelGrids {
         public static byte GetVoxel(NativeArray<byte> array, int x, int y, int z, int padding) {
             return array[Globals.LinearIndex(x, y, z, VoxelWorld.GRID_RESOLUTION + padding*2)];
         }
-        public static byte GetVoxel(NativeArray<byte> array, Vector3Int voxel) {
+        private static byte GetVoxel(NativeArray<byte> array, Vector3Int voxel) {
             return array[Globals.LinearIndex(voxel.x, voxel.y, voxel.z, VoxelWorld.GRID_RESOLUTION + GRID_PADDING * 2)];
         }
-        
-        public static void SetVoxel(NativeArray<byte> array, int x, int y, int z, byte val) {
+
+        private static void SetVoxel(NativeArray<byte> array, int x, int y, int z, byte val) {
             array[Globals.LinearIndex(x, y, z, VoxelWorld.GRID_RESOLUTION + GRID_PADDING*2)] = val;
         }
-        
-        public static void SetVoxel(NativeArray<byte> array, ref Vector3Int voxel, byte val) {
+
+        private static void SetVoxel(NativeArray<byte> array, ref Vector3Int voxel, byte val) {
             array[Globals.LinearIndex(voxel.x, voxel.y, voxel.z, VoxelWorld.GRID_RESOLUTION + GRID_PADDING*2)] = val;
         }
 
@@ -109,7 +111,7 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelGrids {
 
         private void UpdateNeighborVoxel(ref Vector3Int voxel)
         {
-            Vector3Int neighbourGridOffset = NeighbourGridOffsetFromPaddedVoxel(ref voxel);
+            Vector3Int neighbourGridOffset = NeighbourGridOffsetFromPaddedVoxel(ref voxel, ref fullResolution);
 
             //Cache is offset by 1 bc indexes cant be negative :/
             VoxelGrid neighborGrid = neighboringGrids[(neighbourGridOffset.x + 1) + (neighbourGridOffset.y + 1) * 3 + (neighbourGridOffset.z + 1) * 9];
@@ -134,16 +136,16 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelGrids {
             SetVoxel(typeGrid, ref voxel, GetVoxel(neighborGrid.typeGrid, sampleVoxel));
         }
         
-        public static Vector3Int NeighbourGridOffsetFromPaddedVoxel(ref Vector3Int voxel) {
+        private static Vector3Int NeighbourGridOffsetFromPaddedVoxel(ref Vector3Int voxel, ref Vector3Int fullResolution) {
             Vector3Int offset = Vector3Int.zero;
             if (voxel.x <= 0) offset.x = -1;                                                                                                
-            else if (voxel.x >= VoxelWorld.GRID_RESOLUTION + GRID_PADDING) offset.x = 1;
+            else if (voxel.x >= fullResolution.x - GRID_PADDING) offset.x = 1;
 
             if (voxel.y <= 0) offset.y = -1;                                                                                                              
-            else if (voxel.y >= VoxelWorld.GRID_RESOLUTION + GRID_PADDING) offset.y = 1;
+            else if (voxel.y >= fullResolution.y - GRID_PADDING) offset.y = 1;
 
             if (voxel.z <= 0) offset.z = -1;
-            else if (voxel.z >= VoxelWorld.GRID_RESOLUTION + GRID_PADDING) offset.z = 1;
+            else if (voxel.z >= fullResolution.z - GRID_PADDING) offset.z = 1;
 
             return offset;
         }
@@ -273,7 +275,7 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelGrids {
                     for (int x = 0; x < GRID_FULL_SIDE; x++)
                     {
                         Vector3Int voxel = new Vector3Int(x, y, z);
-                        if (NeighbourGridOffsetFromPaddedVoxel(ref voxel) == Vector3Int.zero) {
+                        if (NeighbourGridOffsetFromPaddedVoxel(ref voxel, ref fullResolution) == Vector3Int.zero) {
                             continue;
                         }
                         offsets.Add(new Vector3Int(x, y, z));
@@ -300,6 +302,71 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelGrids {
         {
             int innerSide = VoxelWorld.GRID_RESOLUTION;
             return innerSide * innerSide * innerSide;
+        }
+
+        /// <summary>
+        /// Pass in already sized grids for the passed lod level
+        /// </summary>
+        public LODGridGroup GetDownscaledLodGroup(int lodLevel)
+        {
+            VoxelDownsampler voxelDownsampler = FaceGPUBuilder.builder.voxelDownsampler;
+            
+            if (!voxelDownsampler.lodCacheGrids.TryGetValue(lodLevel, out LODGridGroup lodGridGroup))
+            {
+                Debug.LogError($"LODLevel {lodLevel} does not exist");
+            }
+
+            NativeArray<byte> lodDensityGrid = lodGridGroup.densityGrid;
+            NativeArray<byte> lodTypeGrid = lodGridGroup.typeGrid;
+            
+            for (int x = 0; x < lodGridGroup.lodFullResolution.x - GRID_PADDING * 2; x++) 
+            for (int y = 0; y < lodGridGroup.lodFullResolution.y - GRID_PADDING * 2; y++)
+            for (int z = 0; z < lodGridGroup.lodFullResolution.z - GRID_PADDING * 2; z++)
+            {
+                voxelDownsampler.DownSampleInnerVoxel(densityGrid, typeGrid, fullResolution, lodGridGroup.blockWidth, x, y, z, out byte sampledDensity, out byte sampledType);
+                        
+                lodTypeGrid[Globals.LinearIndex(GRID_PADDING + x, GRID_PADDING + y, GRID_PADDING + z, lodGridGroup.lodFullResolution)] = sampledType;
+                lodDensityGrid[Globals.LinearIndex(GRID_PADDING + x, GRID_PADDING + y, GRID_PADDING + z, lodGridGroup.lodFullResolution)] = sampledDensity;
+            }
+            foreach (Vector3Int paddingVoxel in lodGridGroup.paddingVoxels)
+            {
+                //padding voxels between 0..9 inclusive
+                Vector3Int pVoxel = paddingVoxel;
+                Vector3Int neighbourGridOffset = NeighbourGridOffsetFromPaddedVoxel(ref pVoxel, ref lodGridGroup.lodFullResolution);
+                VoxelGrid neighborGrid = neighboringGrids[(neighbourGridOffset.x + 1) + (neighbourGridOffset.y + 1) * 3 + (neighbourGridOffset.z + 1) * 9];
+
+                if (neighborGrid == null)
+                {
+                    lodTypeGrid[Globals.LinearIndex(paddingVoxel.x, paddingVoxel.y, paddingVoxel.z, lodGridGroup.lodFullResolution)] = 0;
+                    lodDensityGrid[Globals.LinearIndex(paddingVoxel.x, paddingVoxel.y, paddingVoxel.z, lodGridGroup.lodFullResolution)] = 0;
+                    continue;
+                }
+                
+                //Offset by 1 to move into a space the downscaler can support
+                pVoxel -= Vector3Int.one;
+                //NOTE: sample voxel is in lod voxel cords space, not full 34x34x34 (gets converted in downsampler)
+                Vector3Int sampleVoxel = new Vector3Int(pVoxel.x, pVoxel.y, pVoxel.z);
+                
+                //Wrap voxel to sample around//
+                int innerWidth = lodGridGroup.lodFullResolution.x - GRID_PADDING * 2;
+                int innerMax = innerWidth - 1;
+                
+                if (pVoxel.x == -1) sampleVoxel.x = innerMax;
+                else if (pVoxel.x == innerWidth) sampleVoxel.x = 0;
+
+                if (pVoxel.y == -1) sampleVoxel.y = innerMax;
+                else if (pVoxel.y == innerWidth) sampleVoxel.y = 0;
+
+                if (pVoxel.z == -1) sampleVoxel.z = innerMax;
+                else if (pVoxel.z == innerWidth) sampleVoxel.z = 0;
+                
+                voxelDownsampler.DownSampleInnerVoxel(neighborGrid.densityGrid, neighborGrid.typeGrid, fullResolution, lodGridGroup.blockWidth, sampleVoxel.x, sampleVoxel.y, sampleVoxel.z, out byte sampledDensity, out byte sampledType);
+
+                lodTypeGrid[Globals.LinearIndex(paddingVoxel.x, paddingVoxel.y, paddingVoxel.z, lodGridGroup.lodFullResolution)] = sampledType;
+                lodDensityGrid[Globals.LinearIndex(paddingVoxel.x, paddingVoxel.y, paddingVoxel.z, lodGridGroup.lodFullResolution)] = sampledDensity;
+            }
+            
+            return lodGridGroup;
         }
     }
 }
