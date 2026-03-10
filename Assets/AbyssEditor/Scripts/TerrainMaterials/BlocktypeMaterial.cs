@@ -84,7 +84,7 @@ namespace AbyssEditor.Scripts.TerrainMaterials
                 mat.SetTexture(mainTex, textures[0]);
                 mat.SetTexture(normalMap, textures[1]);
             }
-            mat.SetFloat("Tile", 1f);
+            mat.SetFloat("Tile", 0.5f);
             
             mat.name = originalName;
 
