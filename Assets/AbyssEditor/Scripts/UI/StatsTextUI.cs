@@ -14,6 +14,8 @@ namespace AbyssEditor.Scripts.UI
         
         private TextMeshProUGUI statsText;
 
+        private bool _updatedFirstTime;
+
         private void Awake()
         {
             main = this;
@@ -22,6 +24,7 @@ namespace AbyssEditor.Scripts.UI
 
         private void Start()
         {
+            statsText.enabled = false;
             ToggleVisibility(Preferences.data.enableStats);
         }
 
@@ -33,6 +36,11 @@ namespace AbyssEditor.Scripts.UI
         public void UpdateStats()
         {
             if (!gameObject.activeInHierarchy) return;
+            if (!_updatedFirstTime)
+            {
+                statsText.enabled = true;
+                _updatedFirstTime = true;
+            }
 
             Vector3 cameraPos = CameraControls.main.transform.position;
             Vector3Int cameraBatch = new Vector3Int(
