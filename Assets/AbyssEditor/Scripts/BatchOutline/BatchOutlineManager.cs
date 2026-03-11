@@ -15,8 +15,9 @@ namespace AbyssEditor.Scripts.BatchOutline
         
         private BatchOutline hoveredOutline;
 
-        private static readonly Color DefaultColor = new Color(0.88f, 0.95f, 0.95f);
-        private static readonly Color DeleteColor = new Color(0.93f, 0, 0);
+        private static readonly Color DefaultColor = new(0.88f, 0.95f, 0.95f);
+        private static readonly Color DeleteColor = new(0.93f, 0, 0);
+        private static readonly Color LoadColor = Color.rebeccaPurple;
         
         private void Awake()
         {
@@ -106,11 +107,11 @@ namespace AbyssEditor.Scripts.BatchOutline
             if (VoxelMetaspace.metaspace.TryGetVoxelMesh(batchIndex) != null)
             {
                 //batch exists to make it red
-                meshRenderer.material.SetColor(wireframeColor, Color.red );
+                meshRenderer.material.SetColor(wireframeColor, DeleteColor );
                 return outline;
             }
             
-            meshRenderer.material.SetColor(wireframeColor, Color.rebeccaPurple );
+            meshRenderer.material.SetColor(wireframeColor, LoadColor);
             return outline;
         }
         
