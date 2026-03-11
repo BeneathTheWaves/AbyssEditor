@@ -38,7 +38,7 @@ namespace AbyssEditor.Scripts.SaveSystem
         public bool enableBrushLogs = false;
         public bool enableStats = false;
         public bool discordRPC = true;
-        public float fieldOfView = 60;
+        public float fieldOfView = 75;
     }
     
     public class Preferences : MonoBehaviour
