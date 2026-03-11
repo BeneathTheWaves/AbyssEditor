@@ -36,7 +36,7 @@ namespace AbyssEditor.Scripts.SaveSystem
         public bool fullscreen = false;
         public bool autoLoadMaterials = true;
         public bool enableBrushLogs = false;
-        public bool enableStats = false;
+        public bool enableStats = true; // camera position, batch, etc.
         public bool discordRPC = true;
         public float fieldOfView = 75;
     }
