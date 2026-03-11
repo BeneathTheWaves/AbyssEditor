@@ -14,6 +14,9 @@ namespace AbyssEditor.Scripts.BatchOutline
         private GameObject[] batchLoadOutlines;
         
         private BatchOutline hoveredOutline;
+
+        private static readonly Color DefaultColor = new Color(0.88f, 0.95f, 0.95f);
+        private static readonly Color DeleteColor = new Color(0.93f, 0, 0);
         
         private void Awake()
         {
@@ -81,14 +84,14 @@ namespace AbyssEditor.Scripts.BatchOutline
             // Reset old
             if (hoveredOutline != null)
             {
-                hoveredOutline.GetMeshRenderer().material.SetColor(wireframeColor, Color.white);
+                hoveredOutline.GetMeshRenderer().material.SetColor(wireframeColor, DefaultColor);
             }
             
             hoveredOutline = outline;
 
             if (hoveredOutline != null)
             {
-                hoveredOutline.GetMeshRenderer().material.SetColor(wireframeColor, Color.red);
+                hoveredOutline.GetMeshRenderer().material.SetColor(wireframeColor, DeleteColor);
             }
         }
         
@@ -118,7 +121,7 @@ namespace AbyssEditor.Scripts.BatchOutline
 
             GameObject cube = outline.transform.GetChild(0).gameObject;
             cube.AddComponent<BatchOutline>();
-            cube.GetComponent<MeshRenderer>().material.SetColor(wireframeColor, Color.white );
+            cube.GetComponent<MeshRenderer>().material.SetColor(wireframeColor, DefaultColor);
             
             return outline;
         }
