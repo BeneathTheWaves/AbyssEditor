@@ -10,7 +10,7 @@ using UnityEngine;
 namespace AbyssEditor.Scripts.SaveSystem
 {
     /// <summary>
-    /// When adding to this format make sure to edit V1Loaders format with the same data and update the 
+    /// When adding to this format make sure to edit V1Loaders format with the same data and update the version
     /// </summary>
     [Serializable]
     public class PreferencesMainFormat : DataFormatSnapshot
@@ -38,6 +38,7 @@ namespace AbyssEditor.Scripts.SaveSystem
         public bool enableBrushLogs = false;
         public bool enableStats = false;
         public bool discordRPC = true;
+        public float fieldOfView = 60;
     }
     
     public class Preferences : MonoBehaviour

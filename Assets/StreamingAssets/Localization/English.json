@@ -76,6 +76,7 @@
   "EnableBrushLog": "Enable Brush Logging",
   "EnableStats": "Enable Stats",
   "DiscordRPC": "Discord RPC (Requires Restart)",
+  "FieldOfView": "Field of View",
   
   //Materials
   "MaterialsTitle": "Materials",

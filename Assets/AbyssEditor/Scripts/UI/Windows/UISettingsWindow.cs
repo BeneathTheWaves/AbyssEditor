@@ -13,6 +13,7 @@ namespace AbyssEditor.Scripts.UI.Windows {
         [SerializeField] private Toggle enableBrushLogsToggleButton;
         [SerializeField] private Toggle enableStatsToggleButton;
         [SerializeField] private Toggle discordRPCToggleButton;
+        [SerializeField] private UIHybridInput fieldOfViewSlider;
 
 
         private void Start()
@@ -22,6 +23,10 @@ namespace AbyssEditor.Scripts.UI.Windows {
             enableBrushLogsToggleButton.SetIsOnWithoutNotify(Preferences.data.enableBrushLogs);
             enableStatsToggleButton.SetIsOnWithoutNotify(Preferences.data.enableStats);
             discordRPCToggleButton.SetIsOnWithoutNotify(Preferences.data.discordRPC);
+            fieldOfViewSlider.OnValueUpdated += OnFieldOfViewChanged;
+            fieldOfViewSlider.OnEndDragging += SavePreferences;
+            fieldOfViewSlider.formatFunction = value => value.ToString("0");
+            fieldOfViewSlider.SetValue(Preferences.data.fieldOfView);
         }
 
         public void BrowseGamePath()
@@ -31,7 +36,7 @@ namespace AbyssEditor.Scripts.UI.Windows {
             if (paths.Length != 0)
             {
                 Preferences.data.gamePath = paths[0];
-                Preferences.SavePreferences();
+                SavePreferences();
                 UpdatePathDisplay(Preferences.data.gamePath);
             }
         }
@@ -49,31 +54,43 @@ namespace AbyssEditor.Scripts.UI.Windows {
         {
             Screen.fullScreenMode = (value ? FullScreenMode.ExclusiveFullScreen : FullScreenMode.Windowed);
             Preferences.data.fullscreen = value;
-            Preferences.SavePreferences();
+            SavePreferences();
         }
 
         public void OnAutoLoadMaterialsToggle(bool value)
         {
             Preferences.data.autoLoadMaterials = value;
-            Preferences.SavePreferences();
+            SavePreferences();
         }
 
         public void OnEnableBrushLogsToggle(bool value)
         {
             Preferences.data.enableBrushLogs = value;
-            Preferences.SavePreferences();
+            SavePreferences();
         }
         
         public void OnEnableStatsToggle(bool value)
         {
             Preferences.data.enableStats = value;
             StatsTextUI.main.ToggleVisibility(value);
-            Preferences.SavePreferences();
+            SavePreferences();
         }
 
         public void OnDiscordRPCToggle(bool value)
         {
             Preferences.data.discordRPC = value;
+            SavePreferences();
+        }
+        
+        private void OnFieldOfViewChanged()
+        {
+            var value = fieldOfViewSlider.lerpedValue;
+            Preferences.data.fieldOfView = value;
+            CameraControls.main.SetFieldOfView(value);
+        }
+
+        private static void SavePreferences()
+        {
             Preferences.SavePreferences();
         }
     }

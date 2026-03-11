@@ -1,6 +1,7 @@
 ﻿using AbyssEditor.Scripts.CursorTools;
 using AbyssEditor.Scripts.CursorTools.Brush;
 using AbyssEditor.Scripts.InputMaps;
+using AbyssEditor.Scripts.SaveSystem;
 using AbyssEditor.Scripts.UI;
 using AbyssEditor.Scripts.VoxelTech;
 using UnityEngine;
@@ -15,6 +16,7 @@ namespace AbyssEditor.Scripts
         
         private bool moveLock = true;
 
+        [SerializeField] private Camera camera;
         [SerializeField] private float acceleration = 50; // how fast you accelerate
         [SerializeField] private float accSprintMultiplier = 4; // how much faster you go when "sprinting"
         [SerializeField] private float lookSensitivity = 1; // mouse look sensitivity
@@ -41,6 +43,7 @@ namespace AbyssEditor.Scripts
         {
             input = InputManager.main.input.FreeCam;
             input.Enable();
+            SetFieldOfView(Preferences.data.fieldOfView);
         }
 
         /// <summary>
@@ -118,6 +121,11 @@ namespace AbyssEditor.Scripts
             if (input.SpeedUp.IsPressed())
                 return direction * (acceleration * accSprintMultiplier); // "sprinting"
             return direction * acceleration; // "walking"
+        }
+
+        public void SetFieldOfView(float fov)
+        {
+            camera.fieldOfView = fov;
         }
     }
 }
