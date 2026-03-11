@@ -2,6 +2,7 @@ using System.Collections;
 using AbyssEditor.Scripts.Essentials;
 using AbyssEditor.Scripts.UI.Windows;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace AbyssEditor.Scripts.UI
 {
@@ -28,7 +29,8 @@ namespace AbyssEditor.Scripts.UI
                 yield break;
             }
             
-            Application.Quit();
+            yield return SceneManager.LoadSceneAsync("MainMenu");
+            yield return SceneManager.UnloadSceneAsync("AbyssEditor");
         }
     }
 }

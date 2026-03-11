@@ -10,7 +10,7 @@ namespace AbyssEditor.Scripts.Essentials
         {
             if (IsSceneLoaded("MainMenu") || IsSceneLoaded("AbyssEditor") )
             {
-                Debug.LogWarning("Skipping Main Menu load, this should only happen in editor...");
+                Debug.LogWarning("Skipping Main Menu load");
                 yield break;
             }
             
