@@ -38,13 +38,22 @@ namespace AbyssEditor.Scripts.UI.Windows {
                 Preferences.data.gamePath = paths[0];
                 SavePreferences();
                 UpdatePathDisplay(Preferences.data.gamePath);
+                if (!Globals.CheckIsGamePathValid())
+                {
+                    DebugOverlay.LogError(Language.main.Get("GamePathNotValid"));
+                }
             }
         }
+        
         public override void EnableWindow()
         {
             if (Globals.CheckIsGamePathValid())
             {
                 UpdatePathDisplay(Preferences.data.gamePath);
+            }
+            else
+            {
+                DebugOverlay.LogError(Language.main.Get("GamePathNotValid"));
             }
             base.EnableWindow();
         }

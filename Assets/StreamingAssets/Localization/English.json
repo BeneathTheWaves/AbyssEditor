@@ -69,6 +69,7 @@
   "SettingsTitle": "Settings",
   "GamePath": "GamePath",
   "GamePath_SubText": "game path should be here...",
+  "GamePathNotValid": "Invalid game path detected. Please use the root Subnautica folder as the path.",
   "BrowseButton": "Browse...",
   "FileBrowserTip": "Select a Subnautica or Below Zero game folder.",
   "EnableFullscreen": "Enable Fullscreen",
