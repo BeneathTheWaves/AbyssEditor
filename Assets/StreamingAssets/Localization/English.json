@@ -1,11 +1,11 @@
 {
   // Main Menu
   "Title": "Abyss Editor",
-  "LoadBatch": "Load Batch",
+  "LoadEditorButton": "Open Editor",
   "Help": "Help",
   "Quit": "Quit",
   "CreatorCredit": "Original Creator: Eterna",
-  "Maintainers": "Active Maintainers: Jbeast291, Kallie23\nPast Contributors: Esper, Lyonic, Metious,  ",
+  "Maintainers": "Active Maintainers: Jbeast291, Kallie23\nPast Contributors: Esper, Lyonic, Metious",
   
   // Top bar buttons
   "TopBarButton_ImportBatches": "Import",
