@@ -2627,6 +2627,26 @@ PrefabInstance:
       propertyPath: m_Name
       value: Button_Quit
       objectReference: {fileID: 0}
+    - target: {fileID: 5793914064808592624, guid: 44754812827820fcd84691d1b4c0a5e1,
+        type: 3}
+      propertyPath: m_SizeDelta.x
+      value: -10
+      objectReference: {fileID: 0}
+    - target: {fileID: 5793914064808592624, guid: 44754812827820fcd84691d1b4c0a5e1,
+        type: 3}
+      propertyPath: m_SizeDelta.y
+      value: -10
+      objectReference: {fileID: 0}
+    - target: {fileID: 5793914064808592624, guid: 44754812827820fcd84691d1b4c0a5e1,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5793914064808592624, guid: 44754812827820fcd84691d1b4c0a5e1,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6105919798691848992, guid: 44754812827820fcd84691d1b4c0a5e1,
         type: 3}
       propertyPath: m_Pivot.x
