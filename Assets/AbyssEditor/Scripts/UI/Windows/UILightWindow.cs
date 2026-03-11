@@ -40,7 +40,7 @@ namespace AbyssEditor.Scripts.UI.Windows {
             brushLightToggle.SetIsOnWithoutNotify(Preferences.data.enableBrushLight);
         }
 
-        private string FormatAngle(float lerpedVal) => $"{Mathf.RoundToInt(lerpedVal)} deg";
+        private string FormatAngle(float lerpedVal) => $"{Mathf.RoundToInt(lerpedVal)}°";
         private string FormatScalar(float lerpedVal) => lerpedVal.ToString("0.00");
 
         // getting commands from UI
