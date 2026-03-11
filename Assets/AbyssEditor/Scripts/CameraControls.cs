@@ -74,6 +74,11 @@ namespace AbyssEditor.Scripts
             if (holdingRmb)
                 UpdateInput();
             
+            if (velocity.sqrMagnitude > 0.00001f)
+            {
+                OnMove();
+            }
+            
             holdingRmb = input.ActivateFreeCam.IsPressed();
 
             // Physics
@@ -89,11 +94,6 @@ namespace AbyssEditor.Scripts
             Quaternion rotation = transform.rotation;
             Quaternion horiz = Quaternion.AngleAxis(mouseDelta.x, Vector3.up);
             Quaternion vert = Quaternion.AngleAxis(mouseDelta.y, Vector3.right);
-
-            if (velocity.magnitude > 0.001f)
-            {
-                OnMove();
-            }
 
             //Apply
             transform.rotation = horiz * rotation * vert;
