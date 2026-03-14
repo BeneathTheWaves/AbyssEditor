@@ -10,7 +10,7 @@ using AbyssEditor.Scripts.VoxelTech.VoxelGrids.Brushes;
 using UnityEngine;
 using Vector3 = UnityEngine.Vector3;
 
-namespace AbyssEditor.Scripts.VoxelTech.VoxelMesh
+namespace AbyssEditor.Scripts.VoxelTech.VoxelMeshing
 {
     public class VoxelMesh : MonoBehaviour
     {

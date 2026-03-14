@@ -5,7 +5,7 @@ using AbyssEditor.Scripts.Essentials;
 using AbyssEditor.Scripts.InputMaps;
 using AbyssEditor.Scripts.UI.Windows;
 using AbyssEditor.Scripts.VoxelTech;
-using AbyssEditor.Scripts.VoxelTech.VoxelMesh;
+using AbyssEditor.Scripts.VoxelTech.VoxelMeshing;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -29,7 +29,7 @@ namespace AbyssEditor.Scripts.CursorTools
         {
             input.Enable();
             List<Vector3Int> loadedBatches = new List<Vector3Int>();
-            foreach (VoxelMesh voxelMesh in VoxelMetaspace.metaspace.meshes)
+            foreach (VoxelMesh voxelMesh in VoxelMetaspace.metaspace.meshes.Values)
             {
                 loadedBatches.Add(voxelMesh.batchIndex);
             }

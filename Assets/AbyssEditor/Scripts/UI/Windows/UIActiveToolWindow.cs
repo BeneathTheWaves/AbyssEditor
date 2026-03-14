@@ -51,8 +51,8 @@ namespace AbyssEditor.Scripts.UI.Windows {
         }*/
 
         // formatting
-        private string FormatSize(float val) => System.Math.Round(val, 1).ToString("0.0");
-        private string FormatStrength(float val) => System.Math.Round(val, 3).ToString("0.000");
+        private string FormatSize(float val) => Math.Round(val, 1).ToString("0.0");
+        private string FormatStrength(float val) => Math.Round(val, 3).ToString("0.000");
 
         // For redrawing UI
         private void RedrawValues() {

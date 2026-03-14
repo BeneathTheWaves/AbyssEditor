@@ -79,7 +79,7 @@ namespace AbyssEditor.Scripts.TerrainMaterials
                 
                 if (mat != null && mat.ExistsInGame)
                 {
-                    GameObject newIconGameObj = Instantiate(matIconPrefab, this.transform);
+                    GameObject newIconGameObj = Instantiate(matIconPrefab, transform);
                     UIBlocktypeIconDisplay newicon = new UIBlocktypeIconDisplay(newIconGameObj, mat);
                     icons.Add(newicon);
                 }

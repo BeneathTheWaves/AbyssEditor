@@ -63,7 +63,7 @@ namespace AbyssEditor.Scripts.UI
     
         private void SpawnPicker()
         {
-            pickerObject = Instantiate(pickerAsset, this.transform.parent);
+            pickerObject = Instantiate(pickerAsset, transform.parent);
             ColorPicker colorPickerInstance = pickerObject.GetComponent<ColorPicker>();
             colorPickerInstance.CurrentColor = color;
             colorPickerInstance.onValueChanged.AddListener(OnPickerColorChanged);

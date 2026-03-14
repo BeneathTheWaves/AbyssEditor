@@ -1,17 +1,15 @@
-﻿using System.Threading.Tasks;
-using AbyssEditor.Scripts.CursorTools.Brush;
+﻿using AbyssEditor.Scripts.CursorTools.Brush;
 using AbyssEditor.Scripts.Mesh_Gen;
 using AbyssEditor.Scripts.Octrees;
 using AbyssEditor.Scripts.TaskSystem;
 using AbyssEditor.Scripts.TerrainMaterials;
-using AbyssEditor.Scripts.ThreadingManager;
 using AbyssEditor.Scripts.VoxelTech.VoxelGrids;
 using AbyssEditor.Scripts.VoxelTech.VoxelGrids.Brushes;
 using Unity.Collections;
 using UnityEngine;
 using Task = System.Threading.Tasks.Task;
 
-namespace AbyssEditor.Scripts.VoxelTech.VoxelMesh
+namespace AbyssEditor.Scripts.VoxelTech.VoxelMeshing
 {
     public class PointContainer
     {

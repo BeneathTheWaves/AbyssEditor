@@ -13,7 +13,7 @@ using AbyssEditor.Scripts.ThreadingManager;
 using AbyssEditor.Scripts.UI;
 using AbyssEditor.Scripts.VoxelTech.VoxelGrids;
 using AbyssEditor.Scripts.VoxelTech.VoxelGrids.Brushes;
-using AbyssEditor.Scripts.VoxelTech.VoxelMesh;
+using AbyssEditor.Scripts.VoxelTech.VoxelMeshing;
 using UnityEngine;
 
 namespace AbyssEditor.Scripts.VoxelTech {
@@ -21,7 +21,7 @@ namespace AbyssEditor.Scripts.VoxelTech {
     {
         public static VoxelMetaspace metaspace;
         
-        public List<VoxelMesh.VoxelMesh> meshes = new();
+        public readonly Dictionary<Vector3Int,VoxelMesh> meshes = new();
 
         void Awake() {
             metaspace = this;
@@ -31,40 +31,38 @@ namespace AbyssEditor.Scripts.VoxelTech {
             new WorkerThreadScheduler();//This is kinda scuffed, change it
             new AsyncMeshBuilder();
         }
-        
-        public VoxelMesh.VoxelMesh AddGetMesh(Vector3Int batchIndex) {
-            VoxelMesh.VoxelMesh voxelMesh = TryGetVoxelMesh(batchIndex);
-                
-            if(!voxelMesh)
-            {
-                voxelMesh = new GameObject($"batch-{batchIndex.x}-{batchIndex.y}-{batchIndex.z}").AddComponent<VoxelMesh.VoxelMesh>();
-                voxelMesh.Create(batchIndex);
-                meshes.Add(voxelMesh);
-            }
 
+        private VoxelMesh AddGetMesh(Vector3Int batchIndex) {
+            if(!TryGetVoxelMesh(batchIndex, out VoxelMesh voxelMesh))
+            {
+                return null;
+            }
+            voxelMesh = new GameObject($"batch-{batchIndex.x}-{batchIndex.y}-{batchIndex.z}").AddComponent<VoxelMesh>();
+            voxelMesh.Create(batchIndex);
+            meshes.Add(batchIndex, voxelMesh);
             return voxelMesh;
         }
 
         public void AddRegion(Vector3Int startBatch, Vector3Int endBatch) {
             foreach (Vector3Int batchIndex in startBatch.IterateTo(endBatch))
             {
-                VoxelMesh.VoxelMesh voxelMesh = TryGetVoxelMesh(batchIndex);
                 
-                if(!voxelMesh)
+                if(TryGetVoxelMesh(batchIndex, out VoxelMesh voxelMesh))
                 {
-                    voxelMesh = new GameObject($"batch-{batchIndex.x}-{batchIndex.y}-{batchIndex.z}").AddComponent<VoxelMesh.VoxelMesh>();
-                    voxelMesh.Create(batchIndex);
-                    meshes.Add(voxelMesh);
+                    continue;
                 }
+                voxelMesh = new GameObject($"batch-{batchIndex.x}-{batchIndex.y}-{batchIndex.z}").AddComponent<VoxelMesh>();
+                voxelMesh.Create(batchIndex);
+                meshes.Add(batchIndex, voxelMesh);
             }
         }
 
         public IEnumerator RemoveBatch(Vector3Int batchIndex)
         {
             CursorToolManager.main.RegisterInputBlock(this);
-            if (TryGetVoxelMesh(batchIndex, out VoxelMesh.VoxelMesh voxelMesh))
+            if (TryGetVoxelMesh(batchIndex, out VoxelMesh voxelMesh))
             {
-                meshes.Remove(voxelMesh);
+                meshes.Remove(batchIndex);
                 voxelMesh.Dispose();
 
                 Debug.Log("REMOVED: " + voxelMesh.name);
@@ -82,8 +80,7 @@ namespace AbyssEditor.Scripts.VoxelTech {
 
         public VoxelGrid TryGetVoxelGrid(Vector3Int batchIndex, Vector3Int containerIndex)
         {
-            VoxelMesh.VoxelMesh mesh = TryGetVoxelMesh(batchIndex);
-            if (mesh != null)
+            if (TryGetVoxelMesh(batchIndex, out VoxelMesh mesh))
             {
                 return mesh.GetVoxelGrid(containerIndex);
             }
@@ -100,10 +97,24 @@ namespace AbyssEditor.Scripts.VoxelTech {
                 sw = new System.Diagnostics.Stopwatch();
                 sw.Start();
             }
+
+            Vector3Int brushBatch = VoxelWorld.BatchSpacePosToBatchId(stroke.brushLocation);
+            int brushBatchRadius = 1;
+            brushBatchRadius += Mathf.CeilToInt(stroke.brushRadius) / VoxelWorld.BATCH_WIDTH;
+            
+            Vector3Int minCheck = brushBatch - (Vector3Int.one * brushBatchRadius);
+            Vector3Int maxCheck = brushBatch + (Vector3Int.one * brushBatchRadius);
+
+            Debug.Log(minCheck  + " " + maxCheck);
             
             List<PointContainer> modifiedContainers = new List<PointContainer>(8);
             List<BrushJob> brushJobs = new List<BrushJob>(8);
-            foreach(VoxelMesh.VoxelMesh mesh in meshes) {
+            foreach(Vector3Int batchIndex in minCheck.IterateTo(maxCheck))
+            {
+                if (!TryGetVoxelMesh(batchIndex, out VoxelMesh mesh))
+                {
+                    continue;
+                }
                 if (OctreeRaycasting.SquaredDistanceToBox(stroke.brushLocation, mesh.GetBatchMinBound(), mesh.GetBatchMaxBound()) <= stroke.squaredRadius) {
                     mesh.ApplyJobBasedDensityFunction(stroke, brushJobs, modifiedContainers);
                 }
@@ -169,7 +180,11 @@ namespace AbyssEditor.Scripts.VoxelTech {
             List<Task> tasks = new();
             foreach (Vector3Int batchIndex in startBatch.IterateTo(endBatch))
             {
-                VoxelMesh.VoxelMesh mesh = TryGetVoxelMesh(batchIndex);
+                if (!TryGetVoxelMesh(batchIndex, out VoxelMesh mesh))
+                {
+                    Debug.LogError("Failed to get batch in region read!");
+                    continue;
+                }
                 
                 BatchReadWriter.GetPath(mesh.batchIndex, allowModded, out bool isModded);
                 
@@ -195,7 +210,7 @@ namespace AbyssEditor.Scripts.VoxelTech {
             {
                 Vector3Int batchIndex = batchesInPatch[i];
                 int offset = offsetsIntPatch[i];
-                VoxelMesh.VoxelMesh mesh = AddGetMesh(batchIndex);
+                VoxelMesh mesh = AddGetMesh(batchIndex);
                 
                 tasks.Add(mesh.LoadGridsFromPatchAsync(patchBytes, offset, statusHandle));
             }
@@ -214,7 +229,7 @@ namespace AbyssEditor.Scripts.VoxelTech {
             statusHandle.SetTasksToCompleteForPhase(meshes.Count);
             statusHandle.SetPhasePrefix("Setting tree neighbor caches (%completedTasks%/%totalTasks%)");
             
-            foreach (VoxelMesh.VoxelMesh mesh in meshes)
+            foreach (VoxelMesh mesh in meshes.Values)
             { 
                 mesh.CacheNeighboringVoxelGrids();
                 
@@ -233,7 +248,7 @@ namespace AbyssEditor.Scripts.VoxelTech {
             statusHandle.SetTasksToCompleteForPhase(totalTasks);
             
             statusHandle.SetPhasePrefix($"Updating Grid(s) (%completedTasks%/%totalTasks%)");
-            foreach (VoxelMesh.VoxelMesh mesh in meshes) {
+            foreach (VoxelMesh mesh in meshes.Values) {
                 mesh.UpdateFullGrids();
                 statusHandle.IncrementTasksComplete();
                 await Task.Yield();
@@ -241,7 +256,7 @@ namespace AbyssEditor.Scripts.VoxelTech {
 
             statusHandle.SetPhasePrefix($"Regenerating Meshes (%completedTasks%/%totalTasks%)");
             List<Task> tasks = new List<Task>();
-            foreach (VoxelMesh.VoxelMesh mesh in meshes) {
+            foreach (VoxelMesh mesh in meshes.Values) {
                 tasks.AddRange(await mesh.ScheduleMeshRegenAsync(statusHandle));
                 await Task.Yield();
             }
@@ -257,16 +272,16 @@ namespace AbyssEditor.Scripts.VoxelTech {
         }
         
         public bool BatchLoaded(Vector3Int batchIndex) {
-            if(meshes.FirstOrDefault(mesh => mesh.batchIndex == batchIndex))
+            if(meshes.TryGetValue(batchIndex, out VoxelMesh _))
             {
                 return true;
             }
             return false;
         }
 
-        public void ReloadBoundaries()
+        private void ReloadBoundaries()
         {
-            foreach (VoxelMesh.VoxelMesh mesh in meshes)
+            foreach (VoxelMesh mesh in meshes.Values)
             {
                 mesh.RedrawBoundaryPlanes();
             }
@@ -278,7 +293,7 @@ namespace AbyssEditor.Scripts.VoxelTech {
         void OnApplicationQuit()
         {
             Debug.Log("Disposing Native Arrays");
-            foreach (VoxelMesh.VoxelMesh mesh in meshes)
+            foreach (VoxelMesh mesh in meshes.Values)
             {
                 mesh.Dispose();
             }
@@ -288,21 +303,15 @@ namespace AbyssEditor.Scripts.VoxelTech {
             FaceGPUBuilder.builder.DisposeNativeArrays();
         }
         
-        public VoxelMesh.VoxelMesh TryGetVoxelMesh(Vector3Int batchIndex)
-        {
-            return meshes.FirstOrDefault(mesh => mesh.batchIndex == batchIndex);
-        }
-        
         //TODO migrate above code to use this, conforms to standards better
-        public bool TryGetVoxelMesh(Vector3Int batchIndex, out VoxelMesh.VoxelMesh mesh)
+        public bool TryGetVoxelMesh(Vector3Int batchIndex, out VoxelMesh mesh)
         {
-            VoxelMesh.VoxelMesh voxelMesh = TryGetVoxelMesh(batchIndex);
-            if (voxelMesh == null)
+            if (!meshes.TryGetValue(batchIndex, out VoxelMesh mesResult))
             {
                 mesh = null;
                 return false;
             }
-            mesh = voxelMesh;
+            mesh = mesResult;
             return true;
         }
         

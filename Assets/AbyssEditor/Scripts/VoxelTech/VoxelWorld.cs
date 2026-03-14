@@ -4,6 +4,7 @@ using AbyssEditor.Scripts.BatchOutline;
 using AbyssEditor.Scripts.CursorTools;
 using AbyssEditor.Scripts.TaskSystem;
 using AbyssEditor.Scripts.UI;
+using AbyssEditor.Scripts.VoxelTech.VoxelMeshing;
 using UnityEngine;
 using Vector3 = UnityEngine.Vector3;
 
@@ -24,11 +25,13 @@ namespace AbyssEditor.Scripts.VoxelTech {
         public const int GRID_RESOLUTION = 32;
         
         public static VoxelWorld world;
-        
-        
-        void Awake() {
+
+
+        private void Awake() {
             world = this;
         }
+        
+        
         public async Task LoadOctreePatchAsync(byte[] patchBytes, List<Vector3Int> batchesInPatch, List<int> batchOffsets)
         {
             CursorToolManager.main.RegisterInputBlock(this);
@@ -64,7 +67,7 @@ namespace AbyssEditor.Scripts.VoxelTech {
                     EditorProcessHandle statusHandle = TaskManager.main.GetEditorProcessHandle(1);
                     int meshCount = VoxelMetaspace.metaspace.meshes.Count;
                     int meshIndex = 0;
-                    foreach (VoxelMesh.VoxelMesh batch in VoxelMetaspace.metaspace.meshes) {
+                    foreach (VoxelMesh batch in VoxelMetaspace.metaspace.meshes.Values) {
                         statusHandle.SetProgress((float)meshIndex/meshCount);
                         statusHandle.SetStatus($"Writing {batch}");
                         batch.Write();
@@ -84,6 +87,17 @@ namespace AbyssEditor.Scripts.VoxelTech {
                     break;
             }
         }
+
+        public static Vector3Int BatchSpacePosToBatchId(Vector3 spacePos)
+        { 
+            //must floor to int as c# ints will round towards 0 in the negatives when cast flooring
+            return new Vector3Int( Mathf.FloorToInt(spacePos.x / BATCH_WIDTH), Mathf.FloorToInt(spacePos.y / BATCH_WIDTH), Mathf.FloorToInt(spacePos.z / BATCH_WIDTH) );
+        }
+        
+        public static Vector3Int BatchSpacePosToBatchId(Vector3Int spacePos)
+        {
+            return new Vector3Int( Mathf.FloorToInt((float)spacePos.x / BATCH_WIDTH), Mathf.FloorToInt((float)spacePos.y / BATCH_WIDTH), Mathf.FloorToInt((float)spacePos.z / BATCH_WIDTH) );
+        }
         
         public byte SampleBlocktype(Vector3 hitPoint, Ray cameraRay, int retryCount= 0) {
             // batch -> octree -> voxel
@@ -97,7 +111,10 @@ namespace AbyssEditor.Scripts.VoxelTech {
                 return SampleBlocktype(newPoint, cameraRay, retryCount + 1);
             }
 
-            VoxelMesh.VoxelMesh batch = VoxelMetaspace.metaspace.TryGetVoxelMesh(batchIndex);
+            if (!VoxelMetaspace.metaspace.TryGetVoxelMesh(batchIndex, out VoxelMesh batch))
+            {
+                return 0;
+            }
 
             Vector3 _local = hitPoint - batchIndex * (OCTREE_WIDTH * CONTAINERS_PER_SIDE); 
             int x = (int)_local.x / OCTREE_WIDTH;

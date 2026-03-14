@@ -8,7 +8,7 @@ using AbyssEditor.Scripts.Octrees;
 using AbyssEditor.Scripts.TaskSystem;
 using AbyssEditor.Scripts.UI;
 using AbyssEditor.Scripts.VoxelTech;
-using AbyssEditor.Scripts.VoxelTech.VoxelMesh;
+using AbyssEditor.Scripts.VoxelTech.VoxelMeshing;
 using Unity.Collections;
 using UnityEngine;
 
@@ -165,7 +165,7 @@ namespace AbyssEditor.Scripts {
             NativeArray<byte> tempDensities = new NativeArray<byte>(res * res * res, Allocator.Persistent);
 
             meshIndex = 0;
-            foreach (VoxelMesh batch in metaspace.meshes)
+            foreach (VoxelMesh batch in metaspace.meshes.Values)
             {
                 statusHandle.SetProgress((float)meshIndex / meshCount);
                 statusHandle.SetStatus($"Generating octrees for {batch.batchIndex}");
@@ -270,7 +270,7 @@ namespace AbyssEditor.Scripts {
 
         public bool Callback(Octree[,,] originalNodes) {
             if (originalNodes is null) return false;
-            this.nodes = originalNodes;
+            nodes = originalNodes;
             return true;
         }
     }

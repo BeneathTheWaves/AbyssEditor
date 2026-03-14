@@ -55,8 +55,8 @@ namespace AbyssEditor.Scripts.Essentials
 
         public event Action OnLanguageChanged
         {
-            add => Language.main.OnLanguageChanged += value;
-            remove => Language.main.OnLanguageChanged -= value;
+            add => main.OnLanguageChanged += value;
+            remove => main.OnLanguageChanged -= value;
         }
     }
 }

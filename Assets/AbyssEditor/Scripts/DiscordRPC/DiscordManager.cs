@@ -17,7 +17,7 @@ namespace AbyssEditor.Scripts.DiscordRPC
         private void Awake()
         {
             if(!Preferences.data.discordRPC){
-                Destroy(this.gameObject);//Just delete the component off of this
+                Destroy(gameObject);//Just delete the component off of this
             }
 
             client = new DiscordRpcClient(DISCORD_APP_ID);

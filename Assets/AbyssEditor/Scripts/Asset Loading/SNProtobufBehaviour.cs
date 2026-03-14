@@ -40,13 +40,13 @@ namespace AbyssEditor.Scripts.Asset_Loading {
 
 		public void Reset()
 		{
-			this.Signature = 0;
-			this.Version = 0;
+			Signature = 0;
+			Version = 0;
 		}
 
 		public override string ToString()
 		{
-			return string.Format("(UniqueIdentifier={0}, Version={1})", this.Signature, this.Version);
+			return string.Format("(UniqueIdentifier={0}, Version={1})", Signature, Version);
 		}
     }
 }

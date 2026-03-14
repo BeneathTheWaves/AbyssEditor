@@ -360,22 +360,22 @@ namespace AbyssEditor.Scripts.Octrees {
         public ushort childPosition;
 
         public OctNodeData() {
-            this.type = 0;
-            this.signedDist = 0;
-            this.childPosition = 0;
+            type = 0;
+            signedDist = 0;
+            childPosition = 0;
         }
         public OctNodeData(byte type, byte signedDistance, ushort childPos) {
             this.type = type;
-            this.signedDist = signedDistance;
-            this.childPosition = childPos;
+            signedDist = signedDistance;
+            childPosition = childPos;
         }
         public OctNodeData(OctNodeData other) {
-            this.type = other.type;
-            this.signedDist = other.signedDist;
-            this.childPosition = other.childPosition;
+            type = other.type;
+            signedDist = other.signedDist;
+            childPosition = other.childPosition;
         }
         public void RewriteChild(ushort newIndex) {
-            this.childPosition = newIndex;
+            childPosition = newIndex;
         }
 
         public bool IsBelowSurface() {

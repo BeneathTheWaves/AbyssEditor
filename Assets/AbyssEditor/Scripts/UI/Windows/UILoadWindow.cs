@@ -5,6 +5,7 @@ using AbyssEditor.Scripts.BatchOutline;
 using AbyssEditor.Scripts.BinaryReading;
 using AbyssEditor.Scripts.Essentials;
 using AbyssEditor.Scripts.VoxelTech;
+using AbyssEditor.Scripts.VoxelTech.VoxelMeshing;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -124,7 +125,7 @@ namespace AbyssEditor.Scripts.UI.Windows {
             int overrideCount = 0;
             foreach (Vector3Int batchIndex in batchesInPatch)
             {
-                if (VoxelMetaspace.metaspace.TryGetVoxelMesh(batchIndex))
+                if (VoxelMetaspace.metaspace.TryGetVoxelMesh(batchIndex, out VoxelMesh _))
                 {
                     overrideCount++;
                 }
@@ -207,7 +208,7 @@ namespace AbyssEditor.Scripts.UI.Windows {
             int overrideCount = 0;
             foreach (Vector3Int batchIndex in startBatch.IterateTo(endBatch))
             {
-                if (VoxelMetaspace.metaspace.TryGetVoxelMesh(batchIndex))
+                if (VoxelMetaspace.metaspace.TryGetVoxelMesh(batchIndex, out VoxelMesh _))
                 {
                     overrideCount++;
                 }
