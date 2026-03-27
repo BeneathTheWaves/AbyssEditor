@@ -36,7 +36,7 @@ namespace AbyssEditor.Scripts.VoxelTech {
         {
             CursorToolManager.main.RegisterInputBlock(this);
             
-            await VoxelMetaspace.metaspace.OctreePatchReadAsync(patchBytes, batchesInPatch, batchOffsets);
+            await VoxelMetaspace.metaspace.PatchReadAsync(patchBytes, batchesInPatch, batchOffsets);
             
             BatchOutlineManager.main.ResetOutlines();
             
@@ -49,8 +49,6 @@ namespace AbyssEditor.Scripts.VoxelTech {
             DebugOverlay.LogMessage($"Loading {startBatch} to {endBatch}");
             
             CursorToolManager.main.RegisterInputBlock(this);
-            
-            VoxelMetaspace.metaspace.AddRegion(startBatch, endBatch);
 
             await VoxelMetaspace.metaspace.RegionReadAsync(allowModded, startBatch, endBatch);
             

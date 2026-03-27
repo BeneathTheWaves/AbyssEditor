@@ -87,26 +87,21 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelMeshing
         
         public async Task LoadGridsFromBatchesAsync(bool allowModded, EditorProcessHandle statusHandle)
         {
-            await WorkerThreadScheduler.main.ScheduleParallel(() => LoadGridsFromBatchesThreadable(allowModded));
+            await WorkerThreadScheduler.main.ScheduleParallel(() =>
+            {
+                Octree[,,] octrees = ThreadedBinaryReadWriter.ReadBatchThreadable(batchIndex, allowModded, true);
+                CreateGridsFromOctrees(octrees);
+            });
             statusHandle.IncrementTasksComplete();
         }
-        
-        private void LoadGridsFromBatchesThreadable(bool allowModded)
-        {
-            Octree[,,] octrees = ThreadedBinaryReadWriter.ReadBatchThreadable(batchIndex, allowModded, true);
-            CreateGridsFromOctrees(octrees);
-        }
-
         public async Task LoadGridsFromPatchAsync(byte[] patchByteArray, int batchIndexOffset, EditorProcessHandle statusHandle)
         {
-            await WorkerThreadScheduler.main.ScheduleParallel(() => LoadGridsFromPatchThreadable(patchByteArray, batchIndexOffset));
+            await WorkerThreadScheduler.main.ScheduleParallel(() =>
+            {
+                Octree[,,] octrees = ThreadedBinaryReadWriter.GetPatchOctreesThreadable(patchByteArray, batchIndexOffset);
+                CreateGridsFromOctrees(octrees);
+            });
             statusHandle.IncrementTasksComplete();
-        }
-        
-        private void LoadGridsFromPatchThreadable(byte[] patchByteArray, int batchIndexOffset)
-        {
-            Octree[,,] octrees = ThreadedBinaryReadWriter.GetPatchOctreesThreadable(patchByteArray, batchIndexOffset);
-            CreateGridsFromOctrees(octrees);
         }
 
         public VoxelGrid GetVoxelGrid(Vector3Int containerIndex)

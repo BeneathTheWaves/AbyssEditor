@@ -17,8 +17,6 @@ namespace AbyssEditor.Scripts {
     {
         public delegate bool ReadFinishedCall(Octree[,,] nodes);
         
-        public delegate bool PatchReadFinishedCall( Dictionary<Vector3Int, Octree[,,]> patchedBatches );
-        
         public static async Task ReadBatchCoroutine(ReadFinishedCall readFinishedCall, Vector3Int batchIndex, bool allowModded, bool generateEmpty)
         {
             Vector3Int octreeDimensions = Vector3Int.one * VoxelWorld.CONTAINERS_PER_SIDE;

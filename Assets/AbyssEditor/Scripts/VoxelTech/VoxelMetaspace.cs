@@ -28,33 +28,38 @@ namespace AbyssEditor.Scripts.VoxelTech {
             VoxelGrid.PrecomputeNeighborOffsets();
             VoxelGrid.PrecomputePaddingVoxels();
 
-            new WorkerThreadScheduler();//This is kinda scuffed, change it
+            new WorkerThreadScheduler();//This is scuffed, change it
             new AsyncMeshBuilder();
         }
 
-        private VoxelMesh AddGetMesh(Vector3Int batchIndex) {
-            if(!TryGetVoxelMesh(batchIndex, out VoxelMesh voxelMesh))
+        private VoxelMesh EnsureMesh(Vector3Int batchIndex) {
+            if(TryGetVoxelMesh(batchIndex, out VoxelMesh voxelMesh))
             {
-                return null;
+                return voxelMesh;
             }
-            voxelMesh = new GameObject($"batch-{batchIndex.x}-{batchIndex.y}-{batchIndex.z}").AddComponent<VoxelMesh>();
+            return CreateMesh(batchIndex);
+        }
+        
+        public List<VoxelMesh> EnsureRegion(Vector3Int startBatch, Vector3Int endBatch) {
+            List<VoxelMesh> returnMeshes = new List<VoxelMesh>();
+            foreach (Vector3Int batchIndex in startBatch.IterateTo(endBatch))
+            {
+                if(TryGetVoxelMesh(batchIndex, out VoxelMesh voxelMesh))
+                {
+                    returnMeshes.Add(voxelMesh);
+                    continue;
+                }
+                returnMeshes.Add(CreateMesh(batchIndex));
+            }
+            return returnMeshes;
+        }
+        
+        private VoxelMesh CreateMesh(Vector3Int batchIndex)
+        {
+            VoxelMesh voxelMesh = new GameObject($"batch-{batchIndex.x}-{batchIndex.y}-{batchIndex.z}").AddComponent<VoxelMesh>();
             voxelMesh.Create(batchIndex);
             meshes.Add(batchIndex, voxelMesh);
             return voxelMesh;
-        }
-
-        public void AddRegion(Vector3Int startBatch, Vector3Int endBatch) {
-            foreach (Vector3Int batchIndex in startBatch.IterateTo(endBatch))
-            {
-                
-                if(TryGetVoxelMesh(batchIndex, out VoxelMesh voxelMesh))
-                {
-                    continue;
-                }
-                voxelMesh = new GameObject($"batch-{batchIndex.x}-{batchIndex.y}-{batchIndex.z}").AddComponent<VoxelMesh>();
-                voxelMesh.Create(batchIndex);
-                meshes.Add(batchIndex, voxelMesh);
-            }
         }
 
         public IEnumerator RemoveBatch(Vector3Int batchIndex)
@@ -177,19 +182,10 @@ namespace AbyssEditor.Scripts.VoxelTech {
             
             statusHandle.SetTasksToCompleteForPhase(batchCount);
             statusHandle.SetPhasePrefix("Batch Load Tasks (%completedTasks%/%totalTasks%)");
+            
+            List<VoxelMesh> meshes = metaspace.EnsureRegion(startBatch, endBatch);
             List<Task> tasks = new();
-            foreach (Vector3Int batchIndex in startBatch.IterateTo(endBatch))
-            {
-                if (!TryGetVoxelMesh(batchIndex, out VoxelMesh mesh))
-                {
-                    Debug.LogError("Failed to get batch in region read!");
-                    continue;
-                }
-                
-                BatchReadWriter.GetPath(mesh.batchIndex, allowModded, out bool isModded);
-                
-                tasks.Add(mesh.LoadGridsFromBatchesAsync(allowModded, statusHandle));
-            }
+            meshes.ForEach(mesh => tasks.Add(mesh.LoadGridsFromBatchesAsync(allowModded, statusHandle)));
             await Task.WhenAll(tasks);
             
             statusHandle.CompletePhase();
@@ -199,7 +195,7 @@ namespace AbyssEditor.Scripts.VoxelTech {
             await RegenerateMeshesAsync(statusHandle, true);
         }
         
-        public async Task OctreePatchReadAsync(byte[] patchBytes, List<Vector3Int> batchesInPatch, List<int> offsetsIntPatch, EditorProcessHandle statusHandle = null)
+        public async Task PatchReadAsync(byte[] patchBytes, List<Vector3Int> batchesInPatch, List<int> offsetsIntPatch, EditorProcessHandle statusHandle = null)
         {
             if (statusHandle == null) { statusHandle = TaskManager.main.GetEditorProcessHandle(3); }    
             
@@ -210,7 +206,7 @@ namespace AbyssEditor.Scripts.VoxelTech {
             {
                 Vector3Int batchIndex = batchesInPatch[i];
                 int offset = offsetsIntPatch[i];
-                VoxelMesh mesh = AddGetMesh(batchIndex);
+                VoxelMesh mesh = EnsureMesh(batchIndex);
                 
                 tasks.Add(mesh.LoadGridsFromPatchAsync(patchBytes, offset, statusHandle));
             }

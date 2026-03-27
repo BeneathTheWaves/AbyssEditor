@@ -31,26 +31,23 @@ namespace AbyssEditor.Scripts.BinaryReading
             }
         }
 
-        public static Octree[,,] GenerateEmptyTreesForBatch(Vector3Int batchIndex)
+        private static Octree[,,] GenerateEmptyTreesForBatch(Vector3Int batchIndex)
         {
             Octree[,,] nodes = new Octree[VoxelWorld.CONTAINERS_PER_SIDE, VoxelWorld.CONTAINERS_PER_SIDE, VoxelWorld.CONTAINERS_PER_SIDE];
 
             for (int z = 0; z < 5; z++)
+            for (int y = 0; y < 5; y++)
+            for (int x = 0; x < 5; x++)
             {
-                for (int y = 0; y < 5; y++)
-                {
-                    for (int x = 0; x < 5; x++)
-                    {
-                        ref Octree tree = ref nodes[z, y, x];
-                        tree = new Octree(x, y, z, VoxelWorld.OCTREE_WIDTH, batchIndex * VoxelWorld.BATCH_WIDTH);
+                ref Octree tree = ref nodes[z, y, x];
+                tree = new Octree(x, y, z, VoxelWorld.OCTREE_WIDTH, batchIndex * VoxelWorld.BATCH_WIDTH);
 
-                        OctNodeData[] nodeData = new OctNodeData[1];
-                        nodeData[0] = new OctNodeData();
+                OctNodeData[] nodeData = new OctNodeData[1];
+                nodeData[0] = new OctNodeData();
 
-                        tree.Write(nodeData);
-                    }
-                }
+                tree.Write(nodeData);
             }
+            
             return nodes;
         }
 
@@ -67,12 +64,6 @@ namespace AbyssEditor.Scripts.BinaryReading
 
             uint version = reader.ReadUInt32();
             
-            /*if (version == uint.MaxValue)
-            {
-                Debug.LogError("Invalid patch file");
-                reader.Close();
-                yield break;
-            }*/
             int curr_pos = 0;
             long payloadLength = reader.BaseStream.Length - 4; // exclude version
             byte[] patchByteArray = new byte[payloadLength];
