@@ -105,7 +105,7 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelMeshing
             int[] blocktypes = meshRequest.blockTypes;
             
             // update materials
-            if (mesh.triangles.Length > 0)
+            if (mesh.vertexCount > 2 && mesh.triangles.Length > 0)
             {
                 //This is the only way to force the collider to update. We just re-set the reference to update itself
                 meshCollider.enabled = true;

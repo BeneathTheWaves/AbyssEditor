@@ -57,9 +57,9 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelMeshing
             coll.size = octreeCounts * octreeSide;
             coll.isTrigger = true;
         }
-        
 
-        public bool CreateGridsFromOctrees(Octree[,,] _nodes)
+
+        private bool CreateGridsFromOctrees(Octree[,,] _nodes)
         {
             for (int z = 0; z < octreeCounts.z; z++) {
                 for (int y = 0; y < octreeCounts.y; y++) {
