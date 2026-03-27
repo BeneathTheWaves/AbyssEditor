@@ -130,7 +130,7 @@ namespace AbyssEditor.Scripts.VoxelTech {
             JobHandle mainHandle = brushJobs.First().jobHandle;
             for (int i = 1; i < brushJobs.Count; i++)
             {
-                JobHandle.CombineDependencies(mainHandle, brushJobs[i].jobHandle);
+                mainHandle = JobHandle.CombineDependencies(mainHandle, brushJobs[i].jobHandle);
             }
             await AsyncUtils.WaitForJob(mainHandle);
             
