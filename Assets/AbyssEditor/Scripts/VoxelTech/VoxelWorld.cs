@@ -25,12 +25,10 @@ namespace AbyssEditor.Scripts.VoxelTech {
         public const int GRID_RESOLUTION = 32;
         
         public static VoxelWorld world;
-
-
+        
         private void Awake() {
             world = this;
         }
-        
         
         public async Task LoadOctreePatchAsync(byte[] patchBytes, List<Vector3Int> batchesInPatch, List<int> batchOffsets)
         {

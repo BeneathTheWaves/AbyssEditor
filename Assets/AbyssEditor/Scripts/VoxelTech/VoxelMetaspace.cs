@@ -14,6 +14,7 @@ using AbyssEditor.Scripts.UI;
 using AbyssEditor.Scripts.VoxelTech.VoxelGrids;
 using AbyssEditor.Scripts.VoxelTech.VoxelGrids.Brushes;
 using AbyssEditor.Scripts.VoxelTech.VoxelMeshing;
+using Unity.Jobs;
 using UnityEngine;
 
 namespace AbyssEditor.Scripts.VoxelTech {
@@ -125,16 +126,18 @@ namespace AbyssEditor.Scripts.VoxelTech {
                 }
             }
 
-            //ensure they are ALL complete
-            foreach (BrushJob brushJob in brushJobs)
+            //Merge Unity handles into one and them poll check every frame
+            JobHandle mainHandle = brushJobs.First().jobHandle;
+            for (int i = 1; i < brushJobs.Count; i++)
             {
-                brushJob.jobHandle.Complete();
+                JobHandle.CombineDependencies(mainHandle, brushJobs[i].jobHandle);
             }
+            await AsyncUtils.WaitForJob(mainHandle);
             
-            //cleanup job arrays (if any)
+            //Some brushes need to clean up disposable arrays after they are done
             foreach (BrushJob brushJob in brushJobs)
             {
-                brushJob.OnJobCompleteCleanup();
+                brushJob.Cleanup();
             }
 
             if (sw != null)

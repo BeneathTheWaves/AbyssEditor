@@ -36,7 +36,7 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelGrids.Brushes
 
         public abstract void StartJob();
 
-        public virtual void OnJobCompleteCleanup()
+        public virtual void Cleanup()
         {
 
         }

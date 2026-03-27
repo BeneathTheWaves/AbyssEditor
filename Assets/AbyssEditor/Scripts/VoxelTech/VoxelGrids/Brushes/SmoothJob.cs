@@ -37,7 +37,7 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelGrids.Brushes
             jobHandle = job.ScheduleParallel(voxelsToUpdateCount, voxelsToUpdateCount/64, new JobHandle());
         }
         
-        public override void OnJobCompleteCleanup()
+        public override void Cleanup()
         {
             ProcessCopyJob(grid.densityGrid, grid.typeGrid, job.resultingDensities, job.resultingTypes);
 
