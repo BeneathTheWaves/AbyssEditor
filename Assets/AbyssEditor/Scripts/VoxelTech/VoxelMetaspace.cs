@@ -113,8 +113,6 @@ namespace AbyssEditor.Scripts.VoxelTech {
             
             Vector3Int minCheck = brushBatch - (Vector3Int.one * brushBatchRadius);
             Vector3Int maxCheck = brushBatch + (Vector3Int.one * brushBatchRadius);
-
-            Debug.Log(minCheck  + " " + maxCheck);
             
             List<VoxelMesh> modifiedContainers = new List<VoxelMesh>(8);
             List<BrushJob> brushJobs = new List<BrushJob>(8);
