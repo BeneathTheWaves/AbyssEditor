@@ -1,8 +1,9 @@
 ﻿using System.IO;
+using AbyssEditor.Scripts.Asset_Loading;
 using ProtoBuf;
 using UnityEngine;
 
-namespace AbyssEditor.Scripts.Asset_Loading {
+namespace AbyssEditor.Scripts.Legacy.Asset_Loading {
     public class SNProtobufBehaviour : MonoBehaviour {
         SNTypeModel typeModel;
 

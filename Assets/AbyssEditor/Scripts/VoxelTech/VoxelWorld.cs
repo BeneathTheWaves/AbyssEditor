@@ -63,7 +63,7 @@ namespace AbyssEditor.Scripts.VoxelTech {
                     EditorProcessHandle statusHandle = TaskManager.main.GetEditorProcessHandle(1);
                     int meshCount = VoxelMetaspace.metaspace.meshes.Count;
                     int meshIndex = 0;
-                    foreach (VoxelMesh batch in VoxelMetaspace.metaspace.meshes.Values) {
+                    foreach (VoxelBatch batch in VoxelMetaspace.metaspace.meshes.Values) {
                         statusHandle.SetProgress((float)meshIndex/meshCount);
                         statusHandle.SetStatus($"Writing {batch}");
                         batch.Write();
@@ -107,7 +107,7 @@ namespace AbyssEditor.Scripts.VoxelTech {
                 return SampleBlocktype(newPoint, cameraRay, retryCount + 1);
             }
 
-            if (!VoxelMetaspace.metaspace.TryGetVoxelMesh(batchIndex, out VoxelMesh batch))
+            if (!VoxelMetaspace.metaspace.TryGetVoxelMesh(batchIndex, out VoxelBatch batch))
             {
                 return 0;
             }

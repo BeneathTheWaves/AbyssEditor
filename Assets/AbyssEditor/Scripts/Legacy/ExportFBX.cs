@@ -4,7 +4,8 @@ using AbyssEditor.Scripts.UI;
 using AbyssEditor.Scripts.VoxelTech;
 using Autodesk.Fbx;
 using UnityEngine;
-namespace AbyssEditor.Scripts {
+
+namespace AbyssEditor.Scripts.Legacy {
     public static class ExportFBX {
         public static IEnumerator ExportMetaspaceAsync(VoxelMetaspace metaspace, string fbxFilePath) {
             /*

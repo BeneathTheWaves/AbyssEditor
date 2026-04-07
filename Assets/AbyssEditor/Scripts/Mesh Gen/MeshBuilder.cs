@@ -4,6 +4,7 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using AbyssEditor.Scripts.Mesh_Gen.Datas;
 using AbyssEditor.Scripts.VoxelTech.VoxelGrids;
+using AbyssEditor.Scripts.VoxelTech.VoxelMeshing.VoxelGrids;
 using UnityEngine;
 
 

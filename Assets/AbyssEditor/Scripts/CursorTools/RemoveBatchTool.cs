@@ -29,7 +29,7 @@ namespace AbyssEditor.Scripts.CursorTools
         {
             input.Enable();
             List<Vector3Int> loadedBatches = new List<Vector3Int>();
-            foreach (VoxelMesh voxelMesh in VoxelMetaspace.metaspace.meshes.Values)
+            foreach (VoxelBatch voxelMesh in VoxelMetaspace.metaspace.meshes.Values)
             {
                 loadedBatches.Add(voxelMesh.batchIndex);
             }
@@ -59,7 +59,7 @@ namespace AbyssEditor.Scripts.CursorTools
 
         private BatchOutline.BatchOutline GetHoveredBatchOutline()
         {
-            Ray ray = Camera.main.ScreenPointToRay(input.MousePositon.ReadValue<Vector2>());
+            Ray ray = CameraControls.main.cam.ScreenPointToRay(input.MousePositon.ReadValue<Vector2>());
             
             Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, 1);
 

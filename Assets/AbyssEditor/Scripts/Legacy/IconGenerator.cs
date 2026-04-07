@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using UnityEngine;
 
-namespace AbyssEditor.Scripts
+namespace AbyssEditor.Scripts.Legacy
 {
     public class IconGenerator : MonoBehaviour
     {

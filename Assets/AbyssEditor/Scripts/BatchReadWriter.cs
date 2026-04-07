@@ -163,7 +163,7 @@ namespace AbyssEditor.Scripts {
             NativeArray<byte> tempDensities = new NativeArray<byte>(res * res * res, Allocator.Persistent);
 
             meshIndex = 0;
-            foreach (VoxelMesh batch in metaspace.meshes.Values)
+            foreach (VoxelBatch batch in metaspace.meshes.Values)
             {
                 statusHandle.SetProgress((float)meshIndex / meshCount);
                 statusHandle.SetStatus($"Generating octrees for {batch.batchIndex}");

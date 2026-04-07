@@ -10,18 +10,16 @@ namespace AbyssEditor.Scripts
 {
     public class CameraControls : MonoBehaviour
     {
-        public static CameraControls main;
+        public static CameraControls main { get; private set; }
+        public Camera cam { get; private set; }
         
-        private AbyssEditorInput.FreeCamActions input;
-        
-        private bool moveLock = true;
-
-        [SerializeField] private Camera camera;
         [SerializeField] private float acceleration = 50; // how fast you accelerate
         [SerializeField] private float accSprintMultiplier = 4; // how much faster you go when "sprinting"
         [SerializeField] private float lookSensitivity = 1; // mouse look sensitivity
         [SerializeField] private float dampingCoefficient = 5; // how quickly you break to a halt after you stop your input
         
+        private AbyssEditorInput.FreeCamActions input;
+        private bool moveLock = true;
         private Vector3 velocity; // current velocity
 
         private static bool holdingRmb
@@ -36,11 +34,18 @@ namespace AbyssEditor.Scripts
 
         private void Awake()
         {
+            if (main != null)
+            {
+                Debug.LogError("Duplicate CameraControls detected! Deleting copy...");
+                DestroyImmediate(this);
+                return;
+            }
             main = this;
         }
         
         private void Start()
         {
+            cam = GetComponent<Camera>();
             input = InputManager.main.input.FreeCam;
             input.Enable();
             SetFieldOfView(Preferences.data.fieldOfView);
@@ -125,7 +130,7 @@ namespace AbyssEditor.Scripts
 
         public void SetFieldOfView(float fov)
         {
-            camera.fieldOfView = fov;
+            cam.fieldOfView = fov;
         }
     }
 }

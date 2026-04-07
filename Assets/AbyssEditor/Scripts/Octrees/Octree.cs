@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using AbyssEditor.Scripts.VoxelTech;
-using AbyssEditor.Scripts.VoxelTech.VoxelGrids;
+using AbyssEditor.Scripts.VoxelTech.VoxelMeshing.VoxelGrids;
 using Unity.Collections;
 using UnityEngine;
 namespace AbyssEditor.Scripts.Octrees {

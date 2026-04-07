@@ -1,5 +1,6 @@
 using System;
 using AbyssEditor.Scripts.VoxelTech.VoxelGrids;
+using AbyssEditor.Scripts.VoxelTech.VoxelMeshing.VoxelGrids;
 using UnityEngine;
 
 namespace AbyssEditor.Scripts.Mesh_Gen.Datas

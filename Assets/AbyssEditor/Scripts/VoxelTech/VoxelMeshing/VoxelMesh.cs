@@ -1,252 +1,154 @@
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using AbyssEditor.Scripts.BinaryReading;
-using AbyssEditor.Scripts.CursorTools.Brush;
+﻿using AbyssEditor.Scripts.CursorTools.Brush;
+using AbyssEditor.Scripts.Mesh_Gen;
 using AbyssEditor.Scripts.Octrees;
 using AbyssEditor.Scripts.TaskSystem;
-using AbyssEditor.Scripts.ThreadingManager;
-using AbyssEditor.Scripts.VoxelTech.VoxelGrids;
+using AbyssEditor.Scripts.TerrainMaterials;
 using AbyssEditor.Scripts.VoxelTech.VoxelGrids.Brushes;
+using AbyssEditor.Scripts.VoxelTech.VoxelMeshing.VoxelGrids;
+using Unity.Collections;
 using UnityEngine;
-using Vector3 = UnityEngine.Vector3;
+using Task = System.Threading.Tasks.Task;
 
 namespace AbyssEditor.Scripts.VoxelTech.VoxelMeshing
 {
-    public class VoxelMesh : MonoBehaviour
+    public class VoxelMesh
     {
-        internal PointContainer[] pointContainers;
-        public Vector3Int batchIndex;
-        public Vector3Int octreeCounts;
+        private readonly Vector3Int batchIndex;
+        private readonly Vector3Int octreeIndex;
 
-        private readonly int queuesPerFrame = WorkerThreadScheduler.main.workersCount;
-        
-        GameObject[] boundaryPlanes;
-        
-        public void Create(Vector3Int _batchIndex)
+        // density data
+        public VoxelGrid grid;
+
+        // other objects
+        public Bounds bounds;
+        private GameObject meshObj;
+
+        private Mesh mesh;
+        private MeshFilter meshFilter;
+        private MeshRenderer meshRenderer;
+        private MeshCollider meshCollider;
+
+        public VoxelMesh(Transform batchTransform, Vector3Int octreeIndex, Vector3Int batchIndex)
         {
-            batchIndex = _batchIndex;
-            SetupGameObject();
-
-            octreeCounts = Vector3Int.one * VoxelWorld.CONTAINERS_PER_SIDE;
-
-            pointContainers = new PointContainer[octreeCounts.x * octreeCounts.y * octreeCounts.z];
-
-            for (int z = 0; z < octreeCounts.z; z++)
-            {
-                for (int y = 0; y < octreeCounts.y; y++)
-                {
-                    for (int x = 0; x < octreeCounts.x; x++)
-                    {
-                        pointContainers[Globals.LinearIndex(x, y, z, octreeCounts)] =
-                            new PointContainer(transform, new Vector3Int(x, y, z), batchIndex);
-                    }
-                }
-            }
-        }
-
-        private void SetupGameObject()
-        {
-            const int octreeSide = VoxelWorld.OCTREE_WIDTH;
-
-            transform.position = batchIndex * (Vector3Int.one * VoxelWorld.BATCH_WIDTH);
-
-            BoxCollider coll = gameObject.AddComponent<BoxCollider>();
-            gameObject.layer = 1;
-
-            coll.center = (Vector3)octreeCounts * octreeSide / 2f;
-            coll.size = octreeCounts * octreeSide;
-            coll.isTrigger = true;
-        }
-
-
-        private bool CreateGridsFromOctrees(Octree[,,] _nodes)
-        {
-            for (int z = 0; z < octreeCounts.z; z++) {
-                for (int y = 0; y < octreeCounts.y; y++) {
-                    for (int x = 0; x < octreeCounts.x; x++) {
-                        pointContainers[Globals.LinearIndex(x, y, z, octreeCounts)].SetOctree(_nodes[z, y, x]);
-                    }
-                }
-            }
-            return true;
-        }
-
-        public async Task<List<Task>> ScheduleMeshRegenAsync(EditorProcessHandle statusHandle)
-        {
-            var tasks = new List<Task>();
-            for (int i = 0; i < pointContainers.Length; i++)
-            {
-                tasks.Add(pointContainers[i].UpdateMeshAsync(statusHandle));
-                if (i % queuesPerFrame == 0)
-                {
-                    await Task.Yield();
-                }
-            }
-            return tasks;
-        }
-        
-        public async Task LoadGridsFromBatchesAsync(bool allowModded, EditorProcessHandle statusHandle)
-        {
-            await WorkerThreadScheduler.main.ScheduleParallel(() =>
-            {
-                Octree[,,] octrees = ThreadedBinaryReadWriter.ReadBatchThreadable(batchIndex, allowModded, true);
-                CreateGridsFromOctrees(octrees);
-            });
-            statusHandle.IncrementTasksComplete();
-        }
-        public async Task LoadGridsFromPatchAsync(byte[] patchByteArray, int batchIndexOffset, EditorProcessHandle statusHandle)
-        {
-            await WorkerThreadScheduler.main.ScheduleParallel(() =>
-            {
-                Octree[,,] octrees = ThreadedBinaryReadWriter.GetPatchOctreesThreadable(patchByteArray, batchIndexOffset);
-                CreateGridsFromOctrees(octrees);
-            });
-            statusHandle.IncrementTasksComplete();
-        }
-
-        public VoxelGrid GetVoxelGrid(Vector3Int containerIndex)
-        {
-            return pointContainers[
-                Globals.LinearIndex(containerIndex.x, containerIndex.y, containerIndex.z, octreeCounts)].grid;
-        }
-
-        public void UpdateFullGrids()
-        {
-            foreach (PointContainer container in pointContainers)
-            {
-                container.UpdateNeighborData();
-            }
-        }
-
-        public void CacheNeighboringVoxelGrids()
-        {
-            foreach (PointContainer container in pointContainers)
-            {
-                container.CacheNeighborGrids();
-            }
-        }
-
-        public void Write() => BatchReadWriter.WriteOptoctrees(batchIndex, ConvertGridsToOctree());//TODO: Check if this works, not tested atm :/
-
-        public void ApplyJobBasedDensityFunction(BrushStroke stroke, List<BrushJob> brushActions, List<PointContainer> modifiedContainers)
-        {
-            foreach (PointContainer container in pointContainers)
-            {
-                Bounds bounds = container.bounds;
-                if (OctreeRaycasting.SquaredDistanceToBox(stroke.brushLocation, bounds.min, bounds.max) <= stroke.squaredRadius )
-                {
-                    brushActions.Add(container.ApplyJobBasedDensityAction(stroke));
-                    modifiedContainers.Add(container);
-                }
-            }
-        }
-
-        public Octree[,,] ConvertGridsToOctree()
-        {
-            Octree[,,] nodes = new Octree[VoxelWorld.CONTAINERS_PER_SIDE, VoxelWorld.CONTAINERS_PER_SIDE, VoxelWorld.CONTAINERS_PER_SIDE];
+            this.octreeIndex = octreeIndex;
+            this.batchIndex = batchIndex;
+            int fullGridSide = VoxelWorld.GRID_RESOLUTION + 2;
+            // assume bounds has a center relative to game object origin
             
-            for (int z = 0; z < 5; z++) {
-                for (int y = 0; y < 5; y++) {
-                    for (int x = 0; x < 5; x++) {
-                        ref Octree tree = ref nodes[z, y, x];
-                        tree = new Octree(x, y, z, VoxelWorld.OCTREE_WIDTH, batchIndex * VoxelWorld.BATCH_WIDTH);
-                        
-                        OctNodeData[] nodeData = new OctNodeData[1];
-                        nodeData[0] = new OctNodeData();
-                        
-                        tree.Write(nodeData);
-                        
-                        PointContainer _container = pointContainers[Globals.LinearIndex(x, y, z, octreeCounts)];
-                        tree.DeRasterizeGrid(_container.grid.densityGrid, _container.grid.typeGrid, VoxelGrid.GRID_PADDING, VoxelWorld.MAX_OCTREE_DEPTH);
-                    }
-                }
-            }
-            return nodes;
+            bounds = new Bounds(
+                VoxelWorld.GetBatchOrigin(batchIndex) + this.octreeIndex * VoxelWorld.GRID_RESOLUTION + Vector3.one * fullGridSide / 2,
+                Vector3.one * fullGridSide);
+
+            CreateMeshObject(batchTransform);
         }
 
-        /// <summary>
-        /// This should be called when closing the player to free the memory
-        /// </summary>
-        public void Dispose()
+        public void DisposeMesh()
         {
-            foreach (PointContainer pointContainer in pointContainers)
+            Object.Destroy(mesh);
+        } 
+
+        void CreateMeshObject(Transform batchTransform)
+        {
+            meshObj = new GameObject($"OctreeMesh-");
+            meshFilter = meshObj.AddComponent<MeshFilter>();
+            meshRenderer = meshObj.AddComponent<MeshRenderer>();
+            meshCollider = meshObj.AddComponent<MeshCollider>();
+            meshObj.transform.SetParent(batchTransform);
+            meshObj.transform.localPosition = Vector3.zero;
+            mesh = new Mesh();
+            mesh.MarkDynamic();
+            meshFilter.sharedMesh = mesh;
+            meshCollider.sharedMesh = mesh;
+        }
+
+        public void SetOctree(Octree octree)
+        {
+            RasterizeOctree(octree);
+        }
+
+        private void RasterizeOctree(Octree octree)
+        {
+            int _res = VoxelWorld.GRID_RESOLUTION;
+            NativeArray<byte> tempTypes = new NativeArray<byte>(_res * _res * _res, Allocator.Persistent);
+            NativeArray<byte> tempDensities = new NativeArray<byte>(_res * _res * _res, Allocator.Persistent);
+
+            octree.Rasterize(tempDensities, tempTypes, _res, VoxelWorld.MAX_OCTREE_DEPTH);
+
+            //if this is an overwrite, we need to free the old native arrays before overwriting.
+            if (grid != null)
             {
-                pointContainer.grid.DisposeGrids();
-                pointContainer.DisposeMesh();
+                grid.DisposeGrids();
+                grid = null;
             }
-        }
-
-        public Vector3Int GetBatchMinBound()
-        {
-            Vector3Int min = VoxelWorld.GetBatchOrigin(batchIndex);
-            return min;
-        }
-
-        public Vector3Int GetBatchMaxBound()
-        {
-            Vector3Int max = VoxelWorld.GetBatchOrigin(batchIndex) + (Vector3Int.one * VoxelWorld.BATCH_WIDTH);
-            return max;
+            
+            grid = new VoxelGrid(tempDensities, tempTypes, octreeIndex, batchIndex);
+            //Note: we free the temporary arrays within the voxel grid once we initialize the grid to its padding
+            //WE MAY want to change this so we don't have to do that tho :)
         }
         
-        
-        public void RedrawBoundaryPlanes()
+        public BrushJob ApplyJobBasedDensityAction(BrushStroke stroke)
         {
-            if (boundaryPlanes == null) {
-                boundaryPlanes = new GameObject[6];
-                for(int c = 0; c < 6; c++) {
-                    boundaryPlanes[c] = GameObject.CreatePrimitive(PrimitiveType.Plane);
-                    boundaryPlanes[c].transform.SetParent(transform);
-                    boundaryPlanes[c].GetComponent<MeshRenderer>().material = Globals.instance.boundaryGizmoMat;
-                }
+            if (grid != null)
+                return grid.ApplyJobBasedDensityFunction(stroke, octreeIndex * VoxelWorld.OCTREE_WIDTH + meshObj.transform.position);
+            return null;
+        }
+        
+        public async Task UpdateMeshAsync(EditorProcessHandle statusHandle = null)//Handle can be null, increments on complete
+        {
+            grid.GetFullGrids(out NativeArray<byte> gridDensity, out NativeArray<byte> gridType);
+            
+            Vector3 offset = octreeIndex * VoxelWorld.GRID_RESOLUTION;
+            
+            //Note, this will overwrite the old mesh so "mesh" becomes the new one inherently
+            AsyncMeshBuilder.MeshResult meshRequest = await AsyncMeshBuilder.main.RequestMesh(grid, offset, mesh);
+            
+            int[] blocktypes = meshRequest.blockTypes;
+            
+            // update materials
+            if (mesh.vertexCount > 2 && mesh.triangles.Length > 0)
+            {
+                //This is the only way to force the collider to update. We just re-set the reference to update itself
+                meshCollider.enabled = true;
+                meshCollider.sharedMesh = mesh;
                 
-                // bottom
-                boundaryPlanes[0].transform.eulerAngles = Vector3.zero;
-                // top
-                boundaryPlanes[1].transform.eulerAngles = Vector3.right * 180;
-                // left
-                boundaryPlanes[2].transform.eulerAngles = Vector3.forward * -90;
-                // right
-                boundaryPlanes[3].transform.eulerAngles = Vector3.forward * 90;
-                // back
-                boundaryPlanes[4].transform.eulerAngles = Vector3.right * 90;
-                // forward
-                boundaryPlanes[5].transform.eulerAngles = Vector3.right * -90;
+                Material[] materials = new Material[blocktypes.Length];
+                for (int b = 0; b < blocktypes.Length; b++)
+                {
+                    materials[b] = SnMaterialLoader.GetMaterialForType(blocktypes[b]);
+                }
+
+                meshRenderer.materials = materials;
             }
-            bool[] neighbors = GetActiveNeighboringMeshes();
-            for (int i = 0; i < neighbors.Length; i++)
+            else
             {
-                boundaryPlanes[i].SetActive(!neighbors[i]);
+                meshCollider.enabled = false;
             }
-            
-            float halfPos = VoxelWorld.BATCH_WIDTH / 2f;
-            
-            boundaryPlanes[0].transform.localPosition = new Vector3(halfPos, 0, halfPos);
-            boundaryPlanes[1].transform.localPosition = new Vector3(halfPos, VoxelWorld.BATCH_WIDTH, halfPos);
-            boundaryPlanes[2].transform.localPosition = new Vector3(0, halfPos, halfPos);
-            boundaryPlanes[3].transform.localPosition = new Vector3(VoxelWorld.BATCH_WIDTH, halfPos, halfPos);
-            boundaryPlanes[4].transform.localPosition = new Vector3(halfPos, halfPos, 0);
-            boundaryPlanes[5].transform.localPosition = new Vector3(halfPos, halfPos, VoxelWorld.BATCH_WIDTH);
-            
-            foreach (GameObject plane in boundaryPlanes)
-            {
-                //planes have a width of 10 just from their mesh
-                plane.transform.localScale = new Vector3(VoxelWorld.BATCH_WIDTH * 0.1f, 1, VoxelWorld.BATCH_WIDTH * 0.1f);
-            }
+
+            statusHandle?.IncrementTasksComplete();
         }
 
-
-        private bool[] GetActiveNeighboringMeshes()
+        public void UpdateNeighborData()
         {
-            bool[] neighboringMeshes = new bool[6];
-            
-            neighboringMeshes[0] = VoxelMetaspace.metaspace.BatchLoaded(batchIndex + Vector3Int.down);
-            neighboringMeshes[1] = VoxelMetaspace.metaspace.BatchLoaded(batchIndex + Vector3Int.up);
-            neighboringMeshes[2] = VoxelMetaspace.metaspace.BatchLoaded(batchIndex + Vector3Int.left);
-            neighboringMeshes[3] = VoxelMetaspace.metaspace.BatchLoaded(batchIndex + Vector3Int.right);
-            neighboringMeshes[4] = VoxelMetaspace.metaspace.BatchLoaded(batchIndex + Vector3Int.back);
-            neighboringMeshes[5] = VoxelMetaspace.metaspace.BatchLoaded(batchIndex + Vector3Int.forward);
-            
-            return neighboringMeshes;
+            grid.NeighborDataUpdate();
         }
+        
+        public void CacheNeighborGrids()
+        {
+            grid.CacheNeighboringVoxelGrids();
+        }
+
+        public byte SampleBlocktype(Vector3 worldPoint)
+        {
+            Vector3 localPoint = worldPoint - octreeIndex * VoxelWorld.GRID_RESOLUTION - meshObj.transform.parent.position;
+            int x = (int)localPoint.x;
+            int y = (int)localPoint.y;
+            int z = (int)localPoint.z;
+
+            return VoxelGrid.GetVoxel(grid.typeGrid, x + 1, y + 1, z + 1, VoxelGrid.GRID_PADDING);
+        }
+    }
+    public class MeshUpdateHandle
+    {
+        public bool isComplete;
     }
 }

@@ -124,7 +124,7 @@ namespace AbyssEditor.Scripts.UI.Windows {
             int overrideCount = 0;
             foreach (Vector3Int batchIndex in batchesInPatch)
             {
-                if (VoxelMetaspace.metaspace.TryGetVoxelMesh(batchIndex, out VoxelMesh _))
+                if (VoxelMetaspace.metaspace.TryGetVoxelMesh(batchIndex, out VoxelBatch _))
                 {
                     overrideCount++;
                 }
@@ -207,7 +207,7 @@ namespace AbyssEditor.Scripts.UI.Windows {
             int overrideCount = 0;
             foreach (Vector3Int batchIndex in startBatch.IterateTo(endBatch))
             {
-                if (VoxelMetaspace.metaspace.TryGetVoxelMesh(batchIndex, out VoxelMesh _))
+                if (VoxelMetaspace.metaspace.TryGetVoxelMesh(batchIndex, out VoxelBatch _))
                 {
                     overrideCount++;
                 }

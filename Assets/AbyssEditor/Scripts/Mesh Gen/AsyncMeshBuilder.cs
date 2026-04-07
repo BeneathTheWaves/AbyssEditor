@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using AbyssEditor.Scripts.Mesh_Gen.Datas;
 using AbyssEditor.Scripts.Mesh_Gen.VoxelDownsampling;
 using AbyssEditor.Scripts.ThreadingManager;
-using AbyssEditor.Scripts.VoxelTech.VoxelGrids;
+using AbyssEditor.Scripts.VoxelTech.VoxelMeshing.VoxelGrids;
 using UnityEngine;
 using UnityEngine.Rendering;
 
@@ -22,7 +22,7 @@ namespace AbyssEditor.Scripts.Mesh_Gen
             main = this;
             
             meshBuilders = new ConcurrentStack<MeshBuilder>();
-            for (int i = 0; i < WorkerThreadScheduler.main.workersCount; i++)
+            for (int i = 0; i < WorkerThreadManager.main.workersCount; i++)
             {
                 meshBuilders.Push(new MeshBuilder());
             }
@@ -51,7 +51,7 @@ namespace AbyssEditor.Scripts.Mesh_Gen
             //Build mesh from faces
             TaskCompletionSource<MeshData> meshBuildTcs = new();
             
-            WorkerThreadScheduler.main.ScheduleParallelManualLocking(() => 
+            WorkerThreadManager.main.ScheduleParallelManualLocking(() => 
                 MeshBuildThreaded(new MeshRequest {
                 faces = faces,
                 resolution = lodResolution,

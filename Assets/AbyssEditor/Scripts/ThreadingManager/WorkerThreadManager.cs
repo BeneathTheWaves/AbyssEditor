@@ -2,23 +2,21 @@ using System;
 using System.Collections.Concurrent;
 using System.Threading;
 using System.Threading.Tasks;
-using AbyssEditor.Scripts.Octrees;
 using UnityEngine;
 using UnityEngine.Profiling;
-using Object = UnityEngine.Object;
 
 namespace AbyssEditor.Scripts.ThreadingManager
 {
-    public class WorkerThreadScheduler : IDisposable
+    public class WorkerThreadManager : IDisposable
     {
-        public static WorkerThreadScheduler main;
+        public static WorkerThreadManager main;
         
         private readonly BlockingCollection<Action> taskQueue = new();
         private readonly Thread[] workers;
         public int workersCount => workers.Length;
         private bool threadsShouldRun = true;
 
-        public WorkerThreadScheduler()
+        public WorkerThreadManager()
         {
             main = this;
 

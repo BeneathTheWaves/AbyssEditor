@@ -117,7 +117,7 @@ namespace AbyssEditor.Scripts.CursorTools.Brush {
 
 
         private void BrushAction(bool doAction) {
-            Ray ray = Camera.main.ScreenPointToRay(input.MousePositon.ReadValue<Vector2>());
+            Ray ray = CameraControls.main.cam.ScreenPointToRay(input.MousePositon.ReadValue<Vector2>());
             
             Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, 1);
 

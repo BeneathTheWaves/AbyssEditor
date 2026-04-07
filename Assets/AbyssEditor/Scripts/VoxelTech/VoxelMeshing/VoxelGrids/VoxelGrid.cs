@@ -9,7 +9,7 @@ using Unity.Mathematics;
 using UnityEngine;
 using Vector3 = UnityEngine.Vector3;
 
-namespace AbyssEditor.Scripts.VoxelTech.VoxelGrids {
+namespace AbyssEditor.Scripts.VoxelTech.VoxelMeshing.VoxelGrids {
     public class VoxelGrid
     {
         public const int GRID_PADDING = 1;

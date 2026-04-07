@@ -108,7 +108,7 @@ namespace AbyssEditor.Scripts.CursorTools
 
         private bool TryGetPlacementHit(out RaycastHit hit)
         {
-            var ray = Camera.main.ScreenPointToRay(input.MousePosition.ReadValue<Vector2>());
+            var ray = CameraControls.main.cam.ScreenPointToRay(input.MousePosition.ReadValue<Vector2>());
             return Physics.Raycast(ray, out hit, Mathf.Infinity, 1);
         }
     }
