@@ -28,8 +28,7 @@ namespace AbyssEditor.Scripts.UI.Windows {
         private List<Vector3Int> batchesInPatch;
         private List<int> batchOffsetsInPatch;
 
-        private string lastMethod;
-        
+        private string lastLoadMethod;
 
         private void Start()
         {
@@ -43,7 +42,7 @@ namespace AbyssEditor.Scripts.UI.Windows {
         public override void EnableWindow()
         {
             base.EnableWindow();
-            ChangeLoadMethod(lastMethod);
+            ChangeLoadMethod(lastLoadMethod);
         }
         
         public override void DisableWindow()
@@ -52,10 +51,10 @@ namespace AbyssEditor.Scripts.UI.Windows {
             BatchOutlineManager.main.ResetOutlines();
         }
         
-        private void ChangeLoadMethod(string method)
+        private void ChangeLoadMethod(string newLoadMethod)
         {
             BatchOutlineManager.main.ResetOutlines();
-            switch (method)
+            switch (newLoadMethod)
             {
                 case "BaseGame":
                     OnEndEditInputField();
@@ -68,7 +67,7 @@ namespace AbyssEditor.Scripts.UI.Windows {
                     optoctreePatchGroup.SetActive(true);
                     break;
             }
-            lastMethod = method;
+            lastLoadMethod = newLoadMethod;
         }
 
         public void OnSelectFileButton()

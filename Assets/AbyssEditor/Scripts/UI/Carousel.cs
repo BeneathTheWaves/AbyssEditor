@@ -9,15 +9,20 @@ namespace AbyssEditor.Scripts.UI
 {
     public class Carousel : MonoBehaviour
     {
-        public List<String> optionsLanguageKeys;
-        public int selectedElement = 0;
+        [SerializeField] private List<String> optionsLanguageKeys;
+        private int selectedElement = 0;
 
         private Button leftButton;
         private Button rightButton;
         private TextMeshProUGUI optionsText;
 
         public Action<string> onOptionSelected;
-    
+
+        public string GetSelectedElementLanguageKey()
+        {
+            return optionsLanguageKeys[selectedElement];
+        }
+        
         private void Start()
         {
             if (optionsLanguageKeys == null || optionsLanguageKeys.Count <= 0)
@@ -63,6 +68,5 @@ namespace AbyssEditor.Scripts.UI
             onOptionSelected.Invoke(optionsLanguageKeys[selectedElement]);
             optionsText.text = Language.main.Get(optionsLanguageKeys[selectedElement]);
         }
-    
     }
 }

@@ -56,9 +56,9 @@ namespace AbyssEditor.Scripts.VoxelTech {
             StatsTextUI.main.UpdateStats();
         }
         
-        public static async Task ExportRegionAsync(int mode) {
-            switch (mode) {
-                case 0:
+        public static async Task ExportRegionAsync(ExportMode exportMode) {
+            switch (exportMode) {
+                case  ExportMode.Optoctree:
                     //TODO: THIS SHOULD BE IN ITS OWN FUNCTION PROBABLY
                     EditorProcessHandle statusHandle = TaskManager.main.GetEditorProcessHandle(1);
                     int meshCount = VoxelMetaspace.metaspace.meshes.Count;
@@ -72,10 +72,10 @@ namespace AbyssEditor.Scripts.VoxelTech {
                     }
                     statusHandle.CompletePhase();
                     break;
-                case 1:
+                case ExportMode.OptoctreePatch:
                     await BatchReadWriter.WriteOctreePatchCoroutine(VoxelMetaspace.metaspace);
                     break;
-                case 2:
+                case ExportMode.Fbx:
                     //StartCoroutine(ExportFBX.ExportMetaspaceAsync(VoxelMetaspace.metaspace, Globals.instance.batchOutputPath));
                     break;
                 default:
@@ -137,5 +137,13 @@ namespace AbyssEditor.Scripts.VoxelTech {
             const int batchSide = OCTREE_WIDTH * CONTAINERS_PER_SIDE;
             return new Vector3Int(Mathf.FloorToInt(p.x / batchSide), Mathf.FloorToInt(p.y / batchSide), Mathf.FloorToInt(p.z / batchSide));
         }
+    }
+
+    public enum ExportMode
+    {
+        None,
+        OptoctreePatch,
+        Optoctree,
+        Fbx,
     }
 }
