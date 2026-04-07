@@ -14,6 +14,7 @@ namespace AbyssEditor.Scripts.UI.Windows {
         [SerializeField] private Toggle enableStatsToggleButton;
         [SerializeField] private Toggle discordRPCToggleButton;
         [SerializeField] private UIHybridInput fieldOfViewSlider;
+        [SerializeField] private UIHybridInput threadCountSlider;
 
 
         private void Start()
@@ -27,6 +28,13 @@ namespace AbyssEditor.Scripts.UI.Windows {
             fieldOfViewSlider.OnEndDragging += SavePreferences;
             fieldOfViewSlider.formatFunction = value => value.ToString("0");
             fieldOfViewSlider.SetValue(Preferences.data.fieldOfView);
+            
+            threadCountSlider.OnValueUpdated += OnThreadCountChanged;
+            threadCountSlider.OnEndDragging += SavePreferences;
+            threadCountSlider.formatFunction = value => $"{value:0} {Language.main.Get("ThreadCountFormat")}";
+            threadCountSlider.maxValue = SystemInfo.processorCount;
+            threadCountSlider.minValue = 1;
+            threadCountSlider.SetValue(Preferences.data.threadCount);
         }
 
         public void BrowseGamePath()
@@ -93,9 +101,15 @@ namespace AbyssEditor.Scripts.UI.Windows {
         
         private void OnFieldOfViewChanged()
         {
-            var value = fieldOfViewSlider.lerpedValue;
+            float value = fieldOfViewSlider.lerpedValue;
             Preferences.data.fieldOfView = value;
             CameraControls.main.SetFieldOfView(value);
+        }
+        
+        private void OnThreadCountChanged()
+        {
+            int value = (int) threadCountSlider.lerpedValue;
+            Preferences.data.threadCount = value;
         }
 
         private static void SavePreferences()

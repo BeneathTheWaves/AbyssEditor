@@ -78,7 +78,10 @@
   "EnableStats": "Enable Stats",
   "DiscordRPC": "Discord RPC (Requires Restart)",
   "FieldOfView": "Field of View",
-  
+  "ThreadCount": "Thread Count",
+  "ThreadCountFormat": "workers",
+  "ThreadCount_ToolTip": "Determines the amount of threads to use when processing mesh changes.\nSetting this number too high or too low will result in slowdowns.",
+
   //Materials
   "MaterialsTitle": "Materials",
   "OnlyShowFavorites": "Only Show Favorites",

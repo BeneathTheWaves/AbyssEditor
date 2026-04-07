@@ -2,6 +2,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Threading;
 using System.Threading.Tasks;
+using AbyssEditor.Scripts.SaveSystem;
 using UnityEngine;
 using UnityEngine.Profiling;
 
@@ -20,10 +21,10 @@ namespace AbyssEditor.Scripts.ThreadingManager
         {
             main = this;
 
-            int worker_count = 6;/*SystemInfo.processorCount - 1*/;
-            workers = new Thread[worker_count];
+            int workerCount = Preferences.data.threadCount;
+            workers = new Thread[workerCount];
             
-            for (int i = 0; i < worker_count; i++)
+            for (int i = 0; i < workerCount; i++)
             {
                 workers[i] = new Thread(WorkerLoop);
                 workers[i].Start();

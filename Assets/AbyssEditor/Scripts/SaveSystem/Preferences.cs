@@ -39,13 +39,14 @@ namespace AbyssEditor.Scripts.SaveSystem
         public bool enableStats = true; // camera position, batch, etc.
         public bool discordRPC = true;
         public float fieldOfView = 75;
+        public int threadCount = SystemInfo.processorCount / 2;
     }
     
     public class Preferences : MonoBehaviour
     {
         public const string PREFERENCES_FILE_NAME = "preferences.json";
         
-        private static readonly IPreferencesLoader[] loaders = new IPreferencesLoader[]
+        private static readonly IPreferencesLoader[] loaders =
         {
             new V1Loader()//,
             //new V2Loader()

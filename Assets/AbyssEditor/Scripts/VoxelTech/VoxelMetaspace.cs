@@ -24,12 +24,15 @@ namespace AbyssEditor.Scripts.VoxelTech {
         
         public readonly Dictionary<Vector3Int,VoxelBatch> meshes = new();
 
-        void Awake() {
+        private void Awake() {
             metaspace = this;
             VoxelGrid.PrecomputeNeighborOffsets();
             VoxelGrid.PrecomputePaddingVoxels();
+        }
 
-            new WorkerThreadManager();//This is scuffed, change it
+        private void Start()
+        {
+            new WorkerThreadManager();
             new AsyncMeshBuilder();
         }
 
