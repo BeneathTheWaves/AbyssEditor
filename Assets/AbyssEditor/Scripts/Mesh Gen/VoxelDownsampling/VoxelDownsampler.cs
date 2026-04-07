@@ -1,6 +1,4 @@
 using System.Collections.Generic;
-using AbyssEditor.Scripts.VoxelTech;
-using AbyssEditor.Scripts.VoxelTech.VoxelGrids;
 using AbyssEditor.Scripts.VoxelTech.VoxelMeshing.VoxelGrids;
 using Unity.Collections;
 using UnityEngine;
@@ -15,10 +13,9 @@ namespace AbyssEditor.Scripts.Mesh_Gen.VoxelDownsampling
         {
             for (int i = 1; i <= 5; i++)
             {
-
                 LODGridGroup gridGroup = new();
                 gridGroup.blockWidth = 1 << i;
-                gridGroup.gridInnerWidth = (int) Mathf.Pow(2, 5 - i);
+                gridGroup.gridInnerWidth = 1 << (5 - i);
                 int gridFullWidth = gridGroup.gridInnerWidth + VoxelGrid.GRID_PADDING*2;
                 gridGroup.lodFullResolution = new Vector3Int(gridFullWidth, gridFullWidth, gridFullWidth);
                 
