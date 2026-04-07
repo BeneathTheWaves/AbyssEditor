@@ -29,8 +29,7 @@ namespace AbyssEditor.Scripts.UI
                 yield break;
             }
             
-            yield return SceneManager.LoadSceneAsync("MainMenu");
-            yield return SceneManager.UnloadSceneAsync("AbyssEditor");
+            Application.Quit();
         }
     }
 }
