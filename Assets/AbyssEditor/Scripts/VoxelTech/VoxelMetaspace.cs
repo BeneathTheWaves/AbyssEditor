@@ -11,9 +11,9 @@ using AbyssEditor.Scripts.TaskSystem;
 using AbyssEditor.Scripts.ThreadingManager;
 using AbyssEditor.Scripts.UI;
 using AbyssEditor.Scripts.Utils;
-using AbyssEditor.Scripts.VoxelTech.VoxelGrids.Brushes;
 using AbyssEditor.Scripts.VoxelTech.VoxelMeshing;
 using AbyssEditor.Scripts.VoxelTech.VoxelMeshing.VoxelGrids;
+using AbyssEditor.Scripts.VoxelTech.VoxelMeshing.VoxelGrids.Brushes;
 using Unity.Jobs;
 using UnityEngine;
 

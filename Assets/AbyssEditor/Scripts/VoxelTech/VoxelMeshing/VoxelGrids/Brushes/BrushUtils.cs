@@ -1,10 +1,9 @@
-using System;
 using System.Runtime.CompilerServices;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Mathematics;
-using UnityEngine;
-namespace AbyssEditor.Scripts.VoxelTech.VoxelGrids.Brushes
+
+namespace AbyssEditor.Scripts.VoxelTech.VoxelMeshing.VoxelGrids.Brushes
 {
     
     /// <summary>

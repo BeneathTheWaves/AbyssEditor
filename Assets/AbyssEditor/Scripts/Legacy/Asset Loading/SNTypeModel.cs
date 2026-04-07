@@ -1,6 +1,6 @@
 ﻿using ProtoBuf.Meta;
 
-namespace AbyssEditor.Scripts.Asset_Loading {
+namespace AbyssEditor.Scripts.Legacy.Asset_Loading {
     public class SNTypeModel : TypeModel {
         /*
         protected override int GetKeyImpl(Type type)

@@ -1,13 +1,11 @@
 using System.Collections.Generic;
-using AbyssEditor.Scripts.VoxelTech.VoxelMeshing.VoxelGrids;
 using Unity.Burst;
 using Unity.Collections;
-using Unity.Collections.LowLevel.Unsafe;
 using Unity.Jobs;
 using Unity.Mathematics;
 using UnityEngine;
 
-namespace AbyssEditor.Scripts.VoxelTech.VoxelGrids.Brushes
+namespace AbyssEditor.Scripts.VoxelTech.VoxelMeshing.VoxelGrids.Brushes
 {
     public abstract class BrushJob
     {

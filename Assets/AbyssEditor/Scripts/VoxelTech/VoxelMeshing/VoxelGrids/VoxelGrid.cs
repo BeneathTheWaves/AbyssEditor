@@ -3,7 +3,7 @@ using AbyssEditor.Scripts.CursorTools;
 using AbyssEditor.Scripts.CursorTools.Brush;
 using AbyssEditor.Scripts.Mesh_Gen;
 using AbyssEditor.Scripts.Mesh_Gen.VoxelDownsampling;
-using AbyssEditor.Scripts.VoxelTech.VoxelGrids.Brushes;
+using AbyssEditor.Scripts.VoxelTech.VoxelMeshing.VoxelGrids.Brushes;
 using Unity.Collections;
 using Unity.Mathematics;
 using UnityEngine;

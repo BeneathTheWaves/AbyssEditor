@@ -1,6 +1,4 @@
-using System.Numerics;
 using System.Runtime.CompilerServices;
-using AbyssEditor.Scripts.VoxelTech.VoxelMeshing.VoxelGrids;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
@@ -9,7 +7,7 @@ using Unity.Mathematics;
 using UnityEngine;
 using Vector3 = UnityEngine.Vector3;
 
-namespace AbyssEditor.Scripts.VoxelTech.VoxelGrids.Brushes
+namespace AbyssEditor.Scripts.VoxelTech.VoxelMeshing.VoxelGrids.Brushes
 {
     public class SmoothJob : BrushJob
     {
