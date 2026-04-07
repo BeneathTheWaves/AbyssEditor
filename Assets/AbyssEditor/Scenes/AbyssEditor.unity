@@ -5094,6 +5094,7 @@ GameObject:
   - component: {fileID: 537947980}
   - component: {fileID: 537947982}
   - component: {fileID: 537947981}
+  - component: {fileID: 537947983}
   m_Layer: 5
   m_Name: Text
   m_TagString: Untagged
@@ -5162,6 +5163,20 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 537947979}
   m_CullTransparentMesh: 0
+--- !u!114 &537947983
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 537947979}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 787027bd7b44466280faf8945192671b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: AbyssEditor::AbyssEditor.Scripts.UI.TooltipSystem.TooltipOnHover
+  text: FBXExportDisabled
+  translateText: 1
 --- !u!1 &542326308
 GameObject:
   m_ObjectHideFlags: 0
@@ -6346,7 +6361,7 @@ MonoBehaviour:
     m_PressedTrigger: Pressed
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
-  m_Interactable: 1
+  m_Interactable: 0
   m_TargetGraphic: {fileID: 668467445}
   m_OnClick:
     m_PersistentCalls:
@@ -12892,8 +12907,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 461.99683, y: -15}
-  m_SizeDelta: {x: 156.00623, y: 30}
+  m_AnchoredPosition: {x: 461.90475, y: -15}
+  m_SizeDelta: {x: 156.19048, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1228208246
 MonoBehaviour:
@@ -15326,8 +15341,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 83.99375, y: -15}
-  m_SizeDelta: {x: 167.9875, y: 30}
+  m_AnchoredPosition: {x: 83.809525, y: -15}
+  m_SizeDelta: {x: 167.61905, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1485077239
 MonoBehaviour:
@@ -20130,8 +20145,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 275.9906, y: -15}
-  m_SizeDelta: {x: 156.00623, y: 30}
+  m_AnchoredPosition: {x: 275.7143, y: -15}
+  m_SizeDelta: {x: 156.19048, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1913188473
 MonoBehaviour:

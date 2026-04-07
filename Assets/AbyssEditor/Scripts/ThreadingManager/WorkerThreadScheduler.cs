@@ -21,8 +21,8 @@ namespace AbyssEditor.Scripts.ThreadingManager
         public WorkerThreadScheduler()
         {
             main = this;
-            
-            int worker_count = SystemInfo.processorCount - 1;
+
+            int worker_count = 6;/*SystemInfo.processorCount - 1*/;
             workers = new Thread[worker_count];
             
             for (int i = 0; i < worker_count; i++)
