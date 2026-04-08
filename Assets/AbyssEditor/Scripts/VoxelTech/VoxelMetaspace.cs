@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using AbyssEditor.Scripts.CursorTools;
 using AbyssEditor.Scripts.CursorTools.Brush;
 using AbyssEditor.Scripts.Mesh_Gen;
-using AbyssEditor.Scripts.Octrees;
 using AbyssEditor.Scripts.SaveSystem;
 using AbyssEditor.Scripts.TaskSystem;
 using AbyssEditor.Scripts.ThreadingManager;
@@ -122,7 +121,7 @@ namespace AbyssEditor.Scripts.VoxelTech {
                 {
                     continue;
                 }
-                if (OctreeRaycasting.SquaredDistanceToBox(stroke.brushLocation, mesh.GetBatchMinBound(), mesh.GetBatchMaxBound()) <= stroke.squaredRadius) {
+                if (GenericUtils.SquaredDistanceToBox(stroke.brushLocation, mesh.GetBatchMinBound(), mesh.GetBatchMaxBound()) <= stroke.squaredRadius) {
                     mesh.ApplyJobBasedDensityFunction(stroke, brushJobs, modifiedContainers);
                 }
             }

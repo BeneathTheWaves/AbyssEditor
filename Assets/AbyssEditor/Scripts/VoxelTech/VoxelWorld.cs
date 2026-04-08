@@ -13,16 +13,20 @@ namespace AbyssEditor.Scripts.VoxelTech {
     public class VoxelWorld : MonoBehaviour {
         // constants
         // LOD. 0-5 lod => 32-1 resolution
-        //public const int LEVEL_OF_DETAIL = 0;
+        // public const int LEVEL_OF_DETAIL = 0;
         public const int MAX_OCTREE_DEPTH = 5;
         // this defines the in-game size of the meshes
         public const int OCTREE_WIDTH = 32;
         // this is the 'resolution' but for batches
         public const int CONTAINERS_PER_SIDE = 5;
-        //the length/width/height of a batch in meters
+        // the length/width/height of a batch in meters
         public const int BATCH_WIDTH = 160;
         // This defines the count of voxels (count = resolution^3) in a grid
         public const int GRID_RESOLUTION = 32;
+        // Octrees Per batch
+        public const int OCTREES_PER_BATCH = 125;
+        // Voxels Per Unpadded Grid
+        public const int VOXELS_FLAT_UNPADDED_GRID = 32768; // 32 * 32 * 32
         
         public static VoxelWorld world;
         

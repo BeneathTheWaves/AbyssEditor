@@ -5,6 +5,7 @@ using AbyssEditor.Scripts.CursorTools.Brush;
 using AbyssEditor.Scripts.Octrees;
 using AbyssEditor.Scripts.TaskSystem;
 using AbyssEditor.Scripts.ThreadingManager;
+using AbyssEditor.Scripts.Utils;
 using AbyssEditor.Scripts.VoxelTech.VoxelMeshing.VoxelGrids;
 using AbyssEditor.Scripts.VoxelTech.VoxelMeshing.VoxelGrids.Brushes;
 using UnityEngine;
@@ -89,8 +90,19 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelMeshing
         {
             await WorkerThreadManager.main.ScheduleParallel(() =>
             {
-                Octree[,,] octrees = ThreadedBinaryReadWriter.ReadBatchThreadable(batchIndex, allowModded, true);
-                CreateGridsFromOctrees(octrees);
+                ThreadedBinaryReadWriter.NewReadBatchThreadable(batchIndex, out byte[][] densityGrids, out byte[][] typeGrids);
+                
+                for (int z = 0; z < octreeCounts.z; z++) {
+                    for (int y = 0; y < octreeCounts.y; y++) {
+                        for (int x = 0; x < octreeCounts.x; x++)
+                        {
+                            int linearIndexContainer = Globals.LinearIndex(x, y, z, octreeCounts);
+                            int linearIndexOctree = Globals.LinearIndex(z, y, x, octreeCounts);
+                            pointContainers[linearIndexContainer].SetGrid(densityGrids[linearIndexOctree], typeGrids[linearIndexOctree]);
+                        }
+                    }
+                }
+                
             });
             statusHandle.IncrementTasksComplete();
         }
@@ -133,7 +145,7 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelMeshing
             foreach (VoxelMesh container in pointContainers)
             {
                 Bounds bounds = container.bounds;
-                if (OctreeRaycasting.SquaredDistanceToBox(stroke.brushLocation, bounds.min, bounds.max) <= stroke.squaredRadius )
+                if (GenericUtils.SquaredDistanceToBox(stroke.brushLocation, bounds.min, bounds.max) <= stroke.squaredRadius )
                 {
                     brushActions.Add(container.ApplyJobBasedDensityAction(stroke));
                     modifiedContainers.Add(container);

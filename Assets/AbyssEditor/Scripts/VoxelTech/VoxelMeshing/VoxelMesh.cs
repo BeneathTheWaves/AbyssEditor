@@ -66,6 +66,18 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelMeshing
             RasterizeOctree(octree);
         }
 
+        public void SetGrid(byte[] density, byte[] type)
+        {
+            NativeArray<byte> tempTypes = new NativeArray<byte>(density.Length, Allocator.Persistent);
+            NativeArray<byte> tempDensities = new NativeArray<byte>(density.Length, Allocator.Persistent);
+
+            // Copy the managed arrays into the NativeArrays
+            NativeArray<byte>.Copy(type, tempTypes, density.Length);
+            NativeArray<byte>.Copy(density, tempDensities, density.Length);
+            
+            grid = new VoxelGrid(tempDensities, tempTypes, octreeIndex, batchIndex);
+        }
+
         private void RasterizeOctree(Octree octree)
         {
             int _res = VoxelWorld.GRID_RESOLUTION;

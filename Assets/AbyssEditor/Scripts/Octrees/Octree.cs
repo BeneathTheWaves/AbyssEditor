@@ -177,8 +177,9 @@ namespace AbyssEditor.Scripts.Octrees {
                 return null;
             }
 
-            public bool ContainsPoint(Vector3 p) {
-                return OctreeRaycasting.BoxContainsPoint(position, position + Vector3.one * size, p);
+            public bool ContainsPoint(Vector3 p)
+            {
+                return true; //OctreeRaycasting.BoxContainsPoint(position, position + Vector3.one * size, p);
             } 
 
             public OctNode[] GetLeafs() {
