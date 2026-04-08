@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using AbyssEditor.Scripts.BinaryReading;
+using AbyssEditor.Scripts.BinaryReadingWriting;
 using AbyssEditor.Scripts.CursorTools.Brush;
 using AbyssEditor.Scripts.Octrees;
 using AbyssEditor.Scripts.TaskSystem;
@@ -8,6 +8,7 @@ using AbyssEditor.Scripts.ThreadingManager;
 using AbyssEditor.Scripts.Utils;
 using AbyssEditor.Scripts.VoxelTech.VoxelMeshing.VoxelGrids;
 using AbyssEditor.Scripts.VoxelTech.VoxelMeshing.VoxelGrids.Brushes;
+using Unity.Collections;
 using UnityEngine;
 using Vector3 = UnityEngine.Vector3;
 
@@ -90,17 +91,15 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelMeshing
         {
             await WorkerThreadManager.main.ScheduleParallel(() =>
             {
-                ThreadedBinaryReadWriter.NewReadBatchThreadable(batchIndex, out byte[][] densityGrids, out byte[][] typeGrids);
+                ThreadedBinaryReadWriter.ReadBatchThreadable(batchIndex, out NativeArray<byte>[] densityGrids, out NativeArray<byte>[] typeGrids, usePaddedSize: true);
                 
-                for (int z = 0; z < octreeCounts.z; z++) {
-                    for (int y = 0; y < octreeCounts.y; y++) {
-                        for (int x = 0; x < octreeCounts.x; x++)
-                        {
-                            int linearIndexContainer = Globals.LinearIndex(x, y, z, octreeCounts);
-                            int linearIndexOctree = Globals.LinearIndex(z, y, x, octreeCounts);
-                            pointContainers[linearIndexContainer].SetGrid(densityGrids[linearIndexOctree], typeGrids[linearIndexOctree]);
-                        }
-                    }
+                for (int z = 0; z < octreeCounts.z; z++)
+                for (int y = 0; y < octreeCounts.y; y++)
+                for (int x = 0; x < octreeCounts.x; x++)
+                {
+                    int linearIndexContainer = Globals.LinearIndex(x, y, z, octreeCounts);
+                    int linearIndexOctree = Globals.LinearIndex(z, y, x, octreeCounts);//they operate in z y x for some reason, couldn't tell you why, but it works :)
+                    pointContainers[linearIndexContainer].CreateVoxelGrid(densityGrids[linearIndexOctree], typeGrids[linearIndexOctree]);
                 }
                 
             });
@@ -110,8 +109,16 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelMeshing
         {
             await WorkerThreadManager.main.ScheduleParallel(() =>
             {
-                Octree[,,] octrees = ThreadedBinaryReadWriter.GetPatchOctreesThreadable(patchByteArray, batchIndexOffset);
-                CreateGridsFromOctrees(octrees);
+                ThreadedBinaryReadWriter.GetPatchOctreesThreadable(patchByteArray, batchIndexOffset, out NativeArray<byte>[] densityGrids, out NativeArray<byte>[] typeGrids);
+
+                for (int z = 0; z < octreeCounts.z; z++)
+                for (int y = 0; y < octreeCounts.y; y++)
+                for (int x = 0; x < octreeCounts.x; x++)
+                {
+                    int linearIndexContainer = Globals.LinearIndex(x, y, z, octreeCounts);
+                    int linearIndexOctree = Globals.LinearIndex(z, y, x, octreeCounts);//they operate in z y x for some reason, couldn't tell you why, but it works :)
+                    pointContainers[linearIndexContainer].CreateVoxelGrid(densityGrids[linearIndexOctree], typeGrids[linearIndexOctree]);
+                }
             });
             statusHandle.IncrementTasksComplete();
         }

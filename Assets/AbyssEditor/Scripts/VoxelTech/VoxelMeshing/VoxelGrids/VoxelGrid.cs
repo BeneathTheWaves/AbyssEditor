@@ -14,39 +14,24 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelMeshing.VoxelGrids {
     {
         public const int GRID_PADDING = 1;
         public static int GRID_FULL_SIDE = VoxelWorld.GRID_RESOLUTION + 2;
-        
-        public NativeArray<byte> densityGrid;
-        public NativeArray<byte> typeGrid;
+
+        public readonly NativeArray<byte> densityGrid;
+        public readonly NativeArray<byte> typeGrid;
         public static Vector3Int fullResolution;
         private readonly Vector3Int octreeIndex;
         private readonly Vector3Int batchIndex;
         private readonly VoxelGrid[] neighboringGrids = new VoxelGrid[27];//the center is a reference to self, references can be null
         
-        public static NativeArray<int3> neighboursToCheckInSmooth;
+        public static NativeArray<int3> neighboursToCheckInSmooth { get; private set; }
         private static Vector3Int[] paddingVoxels;
 
-        public VoxelGrid(NativeArray<byte> _coreDensity, NativeArray<byte> _coreTypes, Vector3Int _octreeIndex, Vector3Int _batchIndex)
+        public VoxelGrid(NativeArray<byte> densityGrid, NativeArray<byte> typeGrid, Vector3Int octreeIndex, Vector3Int batchIndex)
         {
-            int gridSize = GetFullGridSize();
-            densityGrid = new NativeArray<byte>(gridSize, Allocator.Persistent);
-            typeGrid = new NativeArray<byte>(gridSize, Allocator.Persistent);
-            
-            for (int z = 0; z < VoxelWorld.GRID_RESOLUTION; z++) {
-                for (int y = 0; y < VoxelWorld.GRID_RESOLUTION; y++) {
-                    for (int x = 0; x < VoxelWorld.GRID_RESOLUTION; x++) {
-                        SetVoxel(densityGrid, x + GRID_PADDING, y + GRID_PADDING, z + GRID_PADDING, GetVoxel(_coreDensity, x, y, z, 0));
-                        SetVoxel(typeGrid, x + GRID_PADDING, y + GRID_PADDING, z + GRID_PADDING, GetVoxel(_coreTypes, x, y, z, 0));
-                    }
-                }
-            }
-
             fullResolution = Vector3Int.one * GRID_FULL_SIDE;
-
-            octreeIndex = _octreeIndex;
-            batchIndex = _batchIndex;
-            
-            _coreDensity.Dispose();
-            _coreTypes.Dispose();
+            this.densityGrid = densityGrid;
+            this.typeGrid = typeGrid;
+            this.octreeIndex = octreeIndex;
+            this.batchIndex = batchIndex;
         }
 
         public static byte GetVoxel(NativeArray<byte> array, int x, int y, int z, int padding) {

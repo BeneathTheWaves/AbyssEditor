@@ -5,11 +5,13 @@ using AbyssEditor.Scripts.VoxelTech;
 using Unity.Collections;
 using UnityEngine;
 
-
-namespace AbyssEditor.Scripts.BinaryReading
+namespace AbyssEditor.Scripts.BinaryReadingWriting
 {
     public static partial class ThreadedBinaryReadWriter
     {
+        private const int OCTREE_NODE_BYTE_SIZE = 4;
+
+        
         /// <summary>
         /// The octrees loaded from a game batch contain a different shape octree than the one that DeRasterizeGrid generates when converting from the density grid back to octrees.
         /// This function is so that when comparing the octree form from the original batches to the one generated from the grid, they both start from the same base.

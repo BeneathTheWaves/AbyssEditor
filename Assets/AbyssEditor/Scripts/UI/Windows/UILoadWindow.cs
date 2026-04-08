@@ -1,8 +1,7 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using AbyssEditor.Scripts.BatchOutline;
-using AbyssEditor.Scripts.BinaryReading;
+using AbyssEditor.Scripts.BinaryReadingWriting;
 using AbyssEditor.Scripts.Essentials;
 using AbyssEditor.Scripts.Utils;
 using AbyssEditor.Scripts.VoxelTech;
