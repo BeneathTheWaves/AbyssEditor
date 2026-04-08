@@ -11,7 +11,7 @@ namespace AbyssEditor.Scripts.BinaryReading
 {
     public static partial class ThreadedBinaryReadWriter
     {
-        public static Octree[,,] ReadBatchThreadable(Vector3Int batchIndex, bool allowModded, bool generateEmpty)
+        private static Octree[,,] ReadBatchThreadable(Vector3Int batchIndex, bool allowModded, bool generateEmpty)
         {
             Vector3Int octreeDimensions = Vector3Int.one * VoxelWorld.CONTAINERS_PER_SIDE;
             if (batchIndex.x == 25) octreeDimensions.x = 3;
@@ -75,11 +75,24 @@ namespace AbyssEditor.Scripts.BinaryReading
             return null;
         }
 
-        public static void NewReadBatchThreadable(Vector3Int batchIndex, out byte[][] densityGrids, out byte[][] typeGrids)
+        public static void NewReadBatchThreadable(Vector3Int batchIndex, out byte[][] densityGrids, out byte[][] typeGrids, bool generateEmpty = true, bool usePaddedSize = false)
         {
             const int OCTREE_NODE_BYTE_SIZE = 4;
             
+            int gridSize = usePaddedSize ? VoxelWorld.VOXELS_FLAT_PADDED_GRID : VoxelWorld.VOXELS_FLAT_UNPADDED_GRID;
+            
             string filePath = BatchReadWriter.GetPath(batchIndex, false, out _);
+            
+            if (!File.Exists(filePath))
+            {
+                if (generateEmpty) GenerateEmptyGrids(gridSize, out densityGrids, out typeGrids);
+                else
+                {
+                    densityGrids = null;
+                    typeGrids = null;
+                }
+                return;
+            }
 
             BinaryReader reader = new(File.Open(filePath, FileMode.Open));
             reader.ReadInt32(); // skip version field
@@ -93,10 +106,8 @@ namespace AbyssEditor.Scripts.BinaryReading
                 int treeByteSize = treeNodeCount * OCTREE_NODE_BYTE_SIZE;
                 byte[] octree = reader.ReadBytes(treeByteSize);
                 
-                
-                
-                byte[] density = new byte[VoxelWorld.VOXELS_FLAT_UNPADDED_GRID];
-                byte[] type = new byte[VoxelWorld.VOXELS_FLAT_UNPADDED_GRID];
+                byte[] density = new byte[gridSize];
+                byte[] type = new byte[gridSize];
 
                 ConvertOctreeToGrid(octree, density, type);
                 densityGrids[i] = density;
@@ -147,6 +158,17 @@ namespace AbyssEditor.Scripts.BinaryReading
                 int oz = (i & 1) != 0 ? half : 0;
 
                 ConvertOctreeToGrid(data, densityGrid, typeGrid, childIndex, half, x + ox, y + oy, z + oz);
+            }
+        }
+
+        private static void GenerateEmptyGrids(int gridSize, out byte[][] densityGrids, out byte[][] typeGrids)
+        {
+            densityGrids = new byte[VoxelWorld.OCTREES_PER_BATCH][];
+            typeGrids = new byte[VoxelWorld.OCTREES_PER_BATCH][];
+            for (int i = 0; i < VoxelWorld.OCTREES_PER_BATCH; i++)
+            {
+                densityGrids[i] = new byte[gridSize];
+                typeGrids[i] = new byte[gridSize];
             }
         }
     }

@@ -23,10 +23,12 @@ namespace AbyssEditor.Scripts.VoxelTech {
         public const int BATCH_WIDTH = 160;
         // This defines the count of voxels (count = resolution^3) in a grid
         public const int GRID_RESOLUTION = 32;
-        // Octrees Per batch
+        // Octrees per batch
         public const int OCTREES_PER_BATCH = 125;
-        // Voxels Per Unpadded Grid
+        // Voxels per Unpadded Grid
         public const int VOXELS_FLAT_UNPADDED_GRID = 32768; // 32 * 32 * 32
+        // Voxels per padded Grid
+        public const int VOXELS_FLAT_PADDED_GRID = 39204; // 34 * 34 * 34 for 1 voxel of padding on each side
         
         public static VoxelWorld world;
         
