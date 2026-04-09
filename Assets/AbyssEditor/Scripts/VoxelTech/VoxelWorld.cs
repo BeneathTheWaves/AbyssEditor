@@ -71,24 +71,24 @@ namespace AbyssEditor.Scripts.VoxelTech {
             StatsTextUI.main.UpdateStats();
         }
         
-        public static async Task ExportRegionAsync(ExportMode exportMode) {
+        public static async Task ExportRegionAsync(ExportMode exportMode, string exportFileLocation) {
             switch (exportMode) {
                 case  ExportMode.Optoctree:
                     //TODO: THIS SHOULD BE IN ITS OWN FUNCTION PROBABLY
                     EditorProcessHandle statusHandle = TaskManager.main.GetEditorProcessHandle(1);
-                    int meshCount = VoxelMetaspace.metaspace.meshes.Count;
+                    int meshCount = VoxelMetaspace.metaspace.batches.Count;
                     int meshIndex = 0;
-                    foreach (VoxelBatch batch in VoxelMetaspace.metaspace.meshes.Values) {
+                    foreach (VoxelBatch batch in VoxelMetaspace.metaspace.batches.Values) {
                         statusHandle.SetProgress((float)meshIndex/meshCount);
                         statusHandle.SetStatus($"Writing {batch}");
-                        batch.Write();
+                        batch.Write(exportFileLocation);
                         await Task.Yield();
                         meshIndex++;
                     }
                     statusHandle.CompletePhase();
                     break;
                 case ExportMode.OptoctreePatch:
-                    await BatchReadWriter.WriteOctreePatchCoroutine(VoxelMetaspace.metaspace);
+                    await BatchReadWriter.WriteOctreePatchCoroutine(VoxelMetaspace.metaspace, exportFileLocation);
                     break;
                 case ExportMode.Fbx:
                     //StartCoroutine(ExportFBX.ExportMetaspaceAsync(VoxelMetaspace.metaspace, Globals.instance.batchOutputPath));

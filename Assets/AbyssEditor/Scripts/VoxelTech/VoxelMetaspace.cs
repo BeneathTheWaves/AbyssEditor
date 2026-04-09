@@ -21,7 +21,7 @@ namespace AbyssEditor.Scripts.VoxelTech {
     {
         public static VoxelMetaspace metaspace;
         
-        public readonly Dictionary<Vector3Int,VoxelBatch> meshes = new();
+        public readonly Dictionary<Vector3Int,VoxelBatch> batches = new();
 
         private void Awake() {
             metaspace = this;
@@ -61,7 +61,7 @@ namespace AbyssEditor.Scripts.VoxelTech {
         {
             VoxelBatch voxelBatch = new GameObject($"batch-{batchIndex.x}-{batchIndex.y}-{batchIndex.z}").AddComponent<VoxelBatch>();
             voxelBatch.Create(batchIndex);
-            meshes.Add(batchIndex, voxelBatch);
+            batches.Add(batchIndex, voxelBatch);
             return voxelBatch;
         }
 
@@ -70,7 +70,7 @@ namespace AbyssEditor.Scripts.VoxelTech {
             CursorToolManager.main.RegisterInputBlock(this);
             if (TryGetVoxelMesh(batchIndex, out VoxelBatch voxelMesh))
             {
-                meshes.Remove(batchIndex);
+                batches.Remove(batchIndex);
                 voxelMesh.Dispose();
 
                 Debug.Log("REMOVED: " + voxelMesh.name);
@@ -225,10 +225,10 @@ namespace AbyssEditor.Scripts.VoxelTech {
         {
             if (statusHandle == null) { statusHandle = TaskManager.main.GetEditorProcessHandle(1); }
             
-            statusHandle.SetTasksToCompleteForPhase(meshes.Count);
+            statusHandle.SetTasksToCompleteForPhase(batches.Count);
             statusHandle.SetPhasePrefix("Setting tree neighbor caches (%completedTasks%/%totalTasks%)");
             
-            foreach (VoxelBatch mesh in meshes.Values)
+            foreach (VoxelBatch mesh in batches.Values)
             { 
                 mesh.CacheNeighboringVoxelGrids();
                 
@@ -243,11 +243,11 @@ namespace AbyssEditor.Scripts.VoxelTech {
             if (statusHandle == null) { statusHandle = TaskManager.main.GetEditorProcessHandle(1); }
 
             const int meshesToUpdatePerBatch = VoxelWorld.CONTAINERS_PER_SIDE * VoxelWorld.CONTAINERS_PER_SIDE * VoxelWorld.CONTAINERS_PER_SIDE;
-            int totalTasks = meshes.Count + (meshes.Count * meshesToUpdatePerBatch);
+            int totalTasks = batches.Count + (batches.Count * meshesToUpdatePerBatch);
             statusHandle.SetTasksToCompleteForPhase(totalTasks);
             
             statusHandle.SetPhasePrefix($"Updating Grid(s) (%completedTasks%/%totalTasks%)");
-            foreach (VoxelBatch mesh in meshes.Values) {
+            foreach (VoxelBatch mesh in batches.Values) {
                 mesh.UpdateFullGrids();
                 statusHandle.IncrementTasksComplete();
                 await Task.Yield();
@@ -255,7 +255,7 @@ namespace AbyssEditor.Scripts.VoxelTech {
 
             statusHandle.SetPhasePrefix($"Regenerating Meshes (%completedTasks%/%totalTasks%)");
             List<Task> tasks = new List<Task>();
-            foreach (VoxelBatch mesh in meshes.Values) {
+            foreach (VoxelBatch mesh in batches.Values) {
                 tasks.AddRange(await mesh.ScheduleMeshRegenAsync(statusHandle));
                 await Task.Yield();
             }
@@ -271,7 +271,7 @@ namespace AbyssEditor.Scripts.VoxelTech {
         }
         
         public bool BatchLoaded(Vector3Int batchIndex) {
-            if(meshes.TryGetValue(batchIndex, out VoxelBatch _))
+            if(batches.TryGetValue(batchIndex, out VoxelBatch _))
             {
                 return true;
             }
@@ -280,7 +280,7 @@ namespace AbyssEditor.Scripts.VoxelTech {
 
         private void ReloadBoundaries()
         {
-            foreach (VoxelBatch mesh in meshes.Values)
+            foreach (VoxelBatch mesh in batches.Values)
             {
                 mesh.RedrawBoundaryPlanes();
             }
@@ -292,7 +292,7 @@ namespace AbyssEditor.Scripts.VoxelTech {
         void OnApplicationQuit()
         {
             Debug.Log("Disposing Native Arrays");
-            foreach (VoxelBatch mesh in meshes.Values)
+            foreach (VoxelBatch mesh in batches.Values)
             {
                 mesh.Dispose();
             }
@@ -305,7 +305,7 @@ namespace AbyssEditor.Scripts.VoxelTech {
         //TODO migrate above code to use this, conforms to standards better
         public bool TryGetVoxelMesh(Vector3Int batchIndex, out VoxelBatch batch)
         {
-            if (!meshes.TryGetValue(batchIndex, out VoxelBatch mesResult))
+            if (!batches.TryGetValue(batchIndex, out VoxelBatch mesResult))
             {
                 batch = null;
                 return false;

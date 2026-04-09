@@ -39,23 +39,26 @@ namespace AbyssEditor.Scripts.UI.Windows {
 
         public void BrowseGamePath()
         {
-            string[] paths = StandaloneFileBrowser.StandaloneFileBrowser.OpenFolderPanel(Language.main.Get("FileBrowserTip"), Application.persistentDataPath, false);
+            string sfbOpenLocation = !string.IsNullOrWhiteSpace(Preferences.data.gamePath) ? Preferences.data.gamePath : Application.persistentDataPath;
+            
+            string[] paths = StandaloneFileBrowser.StandaloneFileBrowser.OpenFolderPanel(Language.main.Get("FileBrowserTip"), sfbOpenLocation, false);
 
             if (paths.Length != 0)
             {
                 Preferences.data.gamePath = paths[0];
                 SavePreferences();
                 UpdatePathDisplay(Preferences.data.gamePath);
-                if (!SnPaths.CheckIsGamePathValid())
+                if (!SnPaths.IsGamePathValid())
                 {
                     DebugOverlay.LogError(Language.main.Get("GamePathNotValid"));
                 }
+                
             }
         }
         
         public override void EnableWindow()
         {
-            if (SnPaths.CheckIsGamePathValid())
+            if (SnPaths.IsGamePathValid())
             {
                 UpdatePathDisplay(Preferences.data.gamePath);
             }

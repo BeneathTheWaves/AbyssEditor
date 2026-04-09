@@ -96,37 +96,32 @@ namespace AbyssEditor.Scripts {
 
         public static string GetPath(Vector3Int batchIndex, bool allowModded, out bool isModded)
         {
-            var fileName = string.Format("compiled-batch-{0}-{1}-{2}.optoctrees", batchIndex.x, batchIndex.y, batchIndex.z);
+            string fileName = $"compiled-batch-{batchIndex.x}-{batchIndex.y}-{batchIndex.z}.optoctrees";
 
-            var vanillaFile = Path.Combine(SnPaths.instance.batchSourcePath, fileName);
+            string vanillaFile = Path.Combine(SnPaths.instance.BatchSourcePath(), fileName);
             isModded = false;
             if (!allowModded)
             {
-                if (File.Exists(vanillaFile))
-                    return vanillaFile;
-                return fileName;
+                return File.Exists(vanillaFile) ? vanillaFile : fileName;
             }
 
-            if (Directory.Exists(Path.Combine(SnPaths.instance.batchSourcePath, "patches")) &&
-                File.Exists(Path.Combine(SnPaths.instance.batchSourcePath, "patches", fileName)))
+            if (Directory.Exists(SnPaths.instance.CompiledPatchesFolder()) && File.Exists(Path.Combine(SnPaths.instance.CompiledPatchesFolder(), fileName)))
             {
                 isModded = true;
-                return Path.Combine(SnPaths.instance.batchSourcePath, "patches", fileName);
+                return Path.Combine(SnPaths.instance.CompiledPatchesFolder(), fileName);
             }
-            if (File.Exists(vanillaFile))
-                return vanillaFile;
-
-            return fileName;
+            
+            return File.Exists(vanillaFile) ? vanillaFile : fileName;
         }
 
         //TODO: ensure this works still :/. After updating octrees being generated from scratch
-        public static bool WriteOptoctrees(Vector3 batchIndex, Octree[,,] octrees)
+        public static bool WriteOptoctrees(Vector3 batchIndex, Octree[,,] octrees, string exportFileLocation)
         {
             string batchname = string.Format(Path.DirectorySeparatorChar + "compiled-batch-{0}-{1}-{2}.optoctrees", batchIndex.x, batchIndex.y, batchIndex.z);
 
-            DebugOverlay.LogMessage($"Writing {batchname} to {SnPaths.instance.batchOutputPath}");
+            DebugOverlay.LogMessage($"Writing {batchname} to {exportFileLocation}");
 
-            BinaryWriter writer = new BinaryWriter(File.Open(SnPaths.instance.batchOutputPath + batchname, FileMode.OpenOrCreate));
+            BinaryWriter writer = new BinaryWriter(File.Open(exportFileLocation + batchname, FileMode.OpenOrCreate));
             writer.Write(4);
 
             for (int z = 0; z < 5; z++)
@@ -144,17 +139,17 @@ namespace AbyssEditor.Scripts {
             return true;
         }
 
-        public static async Task WriteOctreePatchCoroutine(VoxelMetaspace metaspace, EditorProcessHandle statusHandle = null)
+        public static async Task WriteOctreePatchCoroutine(VoxelMetaspace metaspace, string exportFileLocation, EditorProcessHandle statusHandle = null)
         {
             if (statusHandle == null) statusHandle = TaskManager.main.GetEditorProcessHandle(1);
             
-            DebugOverlay.LogMessage($"Writing {metaspace.meshes.Count} batch patches as {SnPaths.instance.batchOutputPath}");
+            DebugOverlay.LogMessage($"Writing {metaspace.batches.Count} batches for a patches to {exportFileLocation}");
 
-            BinaryWriter writer = new BinaryWriter(File.Open(SnPaths.instance.batchOutputPath, FileMode.Create));
+            BinaryWriter writer = new BinaryWriter(File.Open(exportFileLocation, FileMode.Create));
             // write version
             writer.Write(0u);
 
-            int meshCount = metaspace.meshes.Count;
+            int meshCount = metaspace.batches.Count;
             int meshIndex = 0;
 
             //we will reuse this array for each grid over and over since they are the same size.
@@ -163,7 +158,7 @@ namespace AbyssEditor.Scripts {
             NativeArray<byte> tempDensities = new NativeArray<byte>(res * res * res, Allocator.Persistent);
 
             meshIndex = 0;
-            foreach (VoxelBatch batch in metaspace.meshes.Values)
+            foreach (VoxelBatch batch in metaspace.batches.Values)
             {
                 statusHandle.SetProgress((float)meshIndex / meshCount);
                 statusHandle.SetStatus($"Generating octrees for {batch.batchIndex}");

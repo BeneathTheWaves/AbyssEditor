@@ -95,7 +95,7 @@ namespace AbyssEditor.Scripts.TerrainMaterials
             assetManager.Clear();
         }
         private IEnumerator LoadMaterialNamesAsync() {
-            ResourceRequest materialNameRequest = Resources.LoadAsync<TextAsset>(SnPaths.instance.blocktypeStringsFilename);
+            ResourceRequest materialNameRequest = Resources.LoadAsync<TextAsset>(SnPaths.instance.BlockTypeStringsFilename());
             yield return materialNameRequest;
 
             string combinedString = (materialNameRequest.asset as TextAsset).text;

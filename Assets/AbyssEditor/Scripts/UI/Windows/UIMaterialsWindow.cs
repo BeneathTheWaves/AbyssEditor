@@ -28,7 +28,14 @@ namespace AbyssEditor.Scripts.UI.Windows
         public override void EnableWindow()
         {
             base.EnableWindow();
-            loadMatsButton.transform.Find("Text (TMP)").GetComponent<TextMeshProUGUI>().text = SnPaths.instance.belowzero ? Language.main.Get("LoadmatsBZ") : Language.main.Get("LoadmatsSN");
+            string loadText = SnPaths.instance.currentGameType switch
+            {
+                SnPaths.GameType.Subnautica => Language.main.Get("LoadmatsSN"),
+                SnPaths.GameType.SubnauticaBelowZero => Language.main.Get("LoadmatsBZ"),
+                _ => "error"
+            };
+
+            loadMatsButton.transform.Find("Text (TMP)").GetComponent<TextMeshProUGUI>().text = loadText;
 
             if (MaterialIconGenerator.main.materialIconsLoaded)
             {

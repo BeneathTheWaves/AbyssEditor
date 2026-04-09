@@ -184,7 +184,7 @@ namespace AbyssEditor.Scripts.UI.Windows {
 
         private IEnumerator LoadBatch() {
 
-            if (!SnPaths.CheckIsGamePathValid()) {
+            if (!SnPaths.IsGamePathValid()) {
                 EditorUI.DisplayErrorMessage("Please select a valid game path");
                 yield break;
             }

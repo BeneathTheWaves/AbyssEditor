@@ -29,7 +29,7 @@ namespace AbyssEditor.Scripts.TerrainMaterials
 
         public void GenerateMaterialIcons(Action onCompleteCallback = null)
         {
-            if (!SnPaths.CheckIsGamePathValid())
+            if (!SnPaths.IsGamePathValid())
             {
                 EditorUI.DisplayErrorMessage("Please select a valid game path");
                 return;
@@ -51,7 +51,7 @@ namespace AbyssEditor.Scripts.TerrainMaterials
         
         private IEnumerator GenerateMaterialIconsAsync(Action onCompleteCallback = null)
         {
-            bool updateMeshesOnLoad = VoxelMetaspace.metaspace.meshes.Count != 0;
+            bool updateMeshesOnLoad = VoxelMetaspace.metaspace.batches.Count != 0;
 
             int extraReloadMeshPhase = 0;
             if(updateMeshesOnLoad)

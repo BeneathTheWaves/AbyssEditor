@@ -29,7 +29,7 @@ namespace AbyssEditor.Scripts.CursorTools
         {
             input.Enable();
             List<Vector3Int> loadedBatches = new List<Vector3Int>();
-            foreach (VoxelBatch voxelMesh in VoxelMetaspace.metaspace.meshes.Values)
+            foreach (VoxelBatch voxelMesh in VoxelMetaspace.metaspace.batches.Values)
             {
                 loadedBatches.Add(voxelMesh.batchIndex);
             }

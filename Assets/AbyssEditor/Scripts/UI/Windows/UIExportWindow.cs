@@ -10,12 +10,16 @@ namespace AbyssEditor.Scripts.UI.Windows {
         [SerializeField] private GameObject checkboxGroup;
         
         private ExportMode selectedExportMode;
+        private bool exportIntoGame;
 
         public void Export() {
-            if (VoxelMetaspace.metaspace.meshes.Count == 0) {
+            if (VoxelMetaspace.metaspace.batches.Count == 0) {
                 EditorUI.DisplayErrorMessage("Nothing to export!");
                 return;
             }
+
+            string exportPath = null;
+            
             switch (selectedExportMode)
             {
                 case ExportMode.OptoctreePatch:
@@ -25,7 +29,7 @@ namespace AbyssEditor.Scripts.UI.Windows {
                     if (string.IsNullOrEmpty(path)) {
                         return;
                     }
-                    SnPaths.instance.userBatchOutputPath = path;
+                    exportPath = path;
                     break;
                 }
                 case ExportMode.Optoctree:
@@ -35,16 +39,17 @@ namespace AbyssEditor.Scripts.UI.Windows {
                     if (paths.Length == 0) {
                         return;
                     }
-                    SnPaths.instance.userBatchOutputPath = paths[0];
+                    exportPath = exportIntoGame ? SnPaths.instance.CompiledPatchesFolder() : paths[0];
+                    
                     break;
                 }
             }
 
-            _ = VoxelWorld.ExportRegionAsync(selectedExportMode);
+            _ = VoxelWorld.ExportRegionAsync(selectedExportMode, exportPath);
         }
 
         private void OnCheckboxInteract() {
-            SnPaths.instance.exportIntoGame = checkbox.check;
+            exportIntoGame = checkbox.check;
         }
 
         private void ToggleCheckboxVisibility(bool value)
@@ -52,11 +57,11 @@ namespace AbyssEditor.Scripts.UI.Windows {
             checkboxGroup.SetActive(value);
             if (!value)
             {
-                SnPaths.instance.exportIntoGame = false;
+                exportIntoGame = false;
             }
             else
             {
-                SnPaths.instance.exportIntoGame = checkbox.check;//TODO: why do we have a static variable determining the export type. Just make another export type god dammit
+                exportIntoGame = checkbox.check;
             }
         }
 

@@ -54,8 +54,8 @@ namespace AbyssEditor.Scripts.UI
             statsText.text = Language.main.Get("StatsText")
                 .Replace("%CamBatch%", $"{cameraBatch}")
                 .Replace("%CamPos%", $"({cameraPos.x:F0}, {cameraPos.y:F0}, {cameraPos.z:F0})")
-                .Replace("%BatchCount%", $"{VoxelMetaspace.metaspace.meshes.Count}")
-                .Replace("%MeshCount%", $"{VoxelMetaspace.metaspace.meshes.Count * 125}");
+                .Replace("%BatchCount%", $"{VoxelMetaspace.metaspace.batches.Count}")
+                .Replace("%MeshCount%", $"{VoxelMetaspace.metaspace.batches.Count * 125}");
         }
     }
 }
