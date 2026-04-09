@@ -5,7 +5,7 @@ using AbyssEditor.Scripts.CursorTools.Brush;
 using AbyssEditor.Scripts.Octrees;
 using AbyssEditor.Scripts.TaskSystem;
 using AbyssEditor.Scripts.ThreadingManager;
-using AbyssEditor.Scripts.Utils;
+using AbyssEditor.Scripts.Util;
 using AbyssEditor.Scripts.VoxelTech.VoxelMeshing.VoxelGrids;
 using AbyssEditor.Scripts.VoxelTech.VoxelMeshing.VoxelGrids.Brushes;
 using Unity.Collections;
@@ -39,7 +39,7 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelMeshing
                 {
                     for (int x = 0; x < octreeCounts.x; x++)
                     {
-                        pointContainers[Globals.LinearIndex(x, y, z, octreeCounts)] =
+                        pointContainers[Utils.LinearIndex(x, y, z, octreeCounts)] =
                             new VoxelMesh(transform, new Vector3Int(x, y, z), batchIndex);
                     }
                 }
@@ -66,7 +66,7 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelMeshing
             for (int z = 0; z < octreeCounts.z; z++) {
                 for (int y = 0; y < octreeCounts.y; y++) {
                     for (int x = 0; x < octreeCounts.x; x++) {
-                        pointContainers[Globals.LinearIndex(x, y, z, octreeCounts)].SetOctree(_nodes[z, y, x]);
+                        pointContainers[Utils.LinearIndex(x, y, z, octreeCounts)].SetOctree(_nodes[z, y, x]);
                     }
                 }
             }
@@ -97,8 +97,8 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelMeshing
                 for (int y = 0; y < octreeCounts.y; y++)
                 for (int x = 0; x < octreeCounts.x; x++)
                 {
-                    int linearIndexContainer = Globals.LinearIndex(x, y, z, octreeCounts);
-                    int linearIndexOctree = Globals.LinearIndex(z, y, x, octreeCounts);//they operate in z y x for some reason, couldn't tell you why, but it works :)
+                    int linearIndexContainer = Utils.LinearIndex(x, y, z, octreeCounts);
+                    int linearIndexOctree = Utils.LinearIndex(z, y, x, octreeCounts);//they operate in z y x for some reason, couldn't tell you why, but it works :)
                     pointContainers[linearIndexContainer].CreateVoxelGrid(densityGrids[linearIndexOctree], typeGrids[linearIndexOctree]);
                 }
                 
@@ -115,8 +115,8 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelMeshing
                 for (int y = 0; y < octreeCounts.y; y++)
                 for (int x = 0; x < octreeCounts.x; x++)
                 {
-                    int linearIndexContainer = Globals.LinearIndex(x, y, z, octreeCounts);
-                    int linearIndexOctree = Globals.LinearIndex(z, y, x, octreeCounts);//they operate in z y x for some reason, couldn't tell you why, but it works :)
+                    int linearIndexContainer = Utils.LinearIndex(x, y, z, octreeCounts);
+                    int linearIndexOctree = Utils.LinearIndex(z, y, x, octreeCounts);//they operate in z y x for some reason, couldn't tell you why, but it works :)
                     pointContainers[linearIndexContainer].CreateVoxelGrid(densityGrids[linearIndexOctree], typeGrids[linearIndexOctree]);
                 }
             });
@@ -125,8 +125,7 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelMeshing
 
         public VoxelGrid GetVoxelGrid(Vector3Int containerIndex)
         {
-            return pointContainers[
-                Globals.LinearIndex(containerIndex.x, containerIndex.y, containerIndex.z, octreeCounts)].grid;
+            return pointContainers[Utils.LinearIndex(containerIndex.x, containerIndex.y, containerIndex.z, octreeCounts)].grid;
         }
 
         public void UpdateFullGrids()
@@ -152,7 +151,7 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelMeshing
             foreach (VoxelMesh container in pointContainers)
             {
                 Bounds bounds = container.bounds;
-                if (GenericUtils.SquaredDistanceToBox(stroke.brushLocation, bounds.min, bounds.max) <= stroke.squaredRadius )
+                if (Utils.SquaredDistanceToBox(stroke.brushLocation, bounds.min, bounds.max) <= stroke.squaredRadius )
                 {
                     brushActions.Add(container.ApplyJobBasedDensityAction(stroke));
                     modifiedContainers.Add(container);
@@ -175,7 +174,7 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelMeshing
                         
                         tree.Write(nodeData);
                         
-                        VoxelMesh _container = pointContainers[Globals.LinearIndex(x, y, z, octreeCounts)];
+                        VoxelMesh _container = pointContainers[Utils.LinearIndex(x, y, z, octreeCounts)];
                         tree.DeRasterizeGrid(_container.grid.densityGrid, _container.grid.typeGrid, VoxelGrid.GRID_PADDING, VoxelWorld.MAX_OCTREE_DEPTH);
                     }
                 }
@@ -215,7 +214,7 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelMeshing
                 for(int c = 0; c < 6; c++) {
                     boundaryPlanes[c] = GameObject.CreatePrimitive(PrimitiveType.Plane);
                     boundaryPlanes[c].transform.SetParent(transform);
-                    boundaryPlanes[c].GetComponent<MeshRenderer>().material = Globals.instance.boundaryGizmoMat;
+                    boundaryPlanes[c].GetComponent<MeshRenderer>().material = VoxelWorld.world.boundaryGizmoMat;
                 }
                 
                 // bottom

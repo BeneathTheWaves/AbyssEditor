@@ -2,7 +2,7 @@
 using AbyssEditor.Scripts.CursorTools;
 using AbyssEditor.Scripts.CursorTools.Brush;
 using AbyssEditor.Scripts.Mesh_Gen;
-using AbyssEditor.Scripts.Mesh_Gen.VoxelDownsampling;
+using AbyssEditor.Scripts.Util;
 using AbyssEditor.Scripts.VoxelTech.VoxelMeshing.VoxelGrids.Brushes;
 using Unity.Collections;
 using Unity.Mathematics;
@@ -35,18 +35,18 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelMeshing.VoxelGrids {
         }
 
         public static byte GetVoxel(NativeArray<byte> array, int x, int y, int z, int padding) {
-            return array[Globals.LinearIndex(x, y, z, VoxelWorld.GRID_RESOLUTION + padding*2)];
+            return array[Utils.LinearIndex(x, y, z, VoxelWorld.GRID_RESOLUTION + padding*2)];
         }
         private static byte GetVoxel(NativeArray<byte> array, Vector3Int voxel) {
-            return array[Globals.LinearIndex(voxel.x, voxel.y, voxel.z, VoxelWorld.GRID_RESOLUTION + GRID_PADDING * 2)];
+            return array[Utils.LinearIndex(voxel.x, voxel.y, voxel.z, VoxelWorld.GRID_RESOLUTION + GRID_PADDING * 2)];
         }
 
         private static void SetVoxel(NativeArray<byte> array, int x, int y, int z, byte val) {
-            array[Globals.LinearIndex(x, y, z, VoxelWorld.GRID_RESOLUTION + GRID_PADDING*2)] = val;
+            array[Utils.LinearIndex(x, y, z, VoxelWorld.GRID_RESOLUTION + GRID_PADDING*2)] = val;
         }
 
         private static void SetVoxel(NativeArray<byte> array, ref Vector3Int voxel, byte val) {
-            array[Globals.LinearIndex(voxel.x, voxel.y, voxel.z, VoxelWorld.GRID_RESOLUTION + GRID_PADDING*2)] = val;
+            array[Utils.LinearIndex(voxel.x, voxel.y, voxel.z, VoxelWorld.GRID_RESOLUTION + GRID_PADDING*2)] = val;
         }
 
         public void CacheNeighboringVoxelGrids()
@@ -310,8 +310,8 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelMeshing.VoxelGrids {
             {
                 voxelDownsampler.DownSampleInnerVoxel(densityGrid, typeGrid, fullResolution, lodGridGroup.blockWidth, x, y, z, out byte sampledDensity, out byte sampledType);
                         
-                lodTypeGrid[Globals.LinearIndex(GRID_PADDING + x, GRID_PADDING + y, GRID_PADDING + z, lodGridGroup.lodFullResolution)] = sampledType;
-                lodDensityGrid[Globals.LinearIndex(GRID_PADDING + x, GRID_PADDING + y, GRID_PADDING + z, lodGridGroup.lodFullResolution)] = sampledDensity;
+                lodTypeGrid[Utils.LinearIndex(GRID_PADDING + x, GRID_PADDING + y, GRID_PADDING + z, lodGridGroup.lodFullResolution)] = sampledType;
+                lodDensityGrid[Utils.LinearIndex(GRID_PADDING + x, GRID_PADDING + y, GRID_PADDING + z, lodGridGroup.lodFullResolution)] = sampledDensity;
             }
             foreach (Vector3Int paddingVoxel in lodGridGroup.paddingVoxels)
             {
@@ -322,8 +322,8 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelMeshing.VoxelGrids {
 
                 if (neighborGrid == null)
                 {
-                    lodTypeGrid[Globals.LinearIndex(paddingVoxel.x, paddingVoxel.y, paddingVoxel.z, lodGridGroup.lodFullResolution)] = 0;
-                    lodDensityGrid[Globals.LinearIndex(paddingVoxel.x, paddingVoxel.y, paddingVoxel.z, lodGridGroup.lodFullResolution)] = 0;
+                    lodTypeGrid[Utils.LinearIndex(paddingVoxel.x, paddingVoxel.y, paddingVoxel.z, lodGridGroup.lodFullResolution)] = 0;
+                    lodDensityGrid[Utils.LinearIndex(paddingVoxel.x, paddingVoxel.y, paddingVoxel.z, lodGridGroup.lodFullResolution)] = 0;
                     continue;
                 }
                 
@@ -347,8 +347,8 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelMeshing.VoxelGrids {
                 
                 voxelDownsampler.DownSampleInnerVoxel(neighborGrid.densityGrid, neighborGrid.typeGrid, fullResolution, lodGridGroup.blockWidth, sampleVoxel.x, sampleVoxel.y, sampleVoxel.z, out byte sampledDensity, out byte sampledType);
 
-                lodTypeGrid[Globals.LinearIndex(paddingVoxel.x, paddingVoxel.y, paddingVoxel.z, lodGridGroup.lodFullResolution)] = sampledType;
-                lodDensityGrid[Globals.LinearIndex(paddingVoxel.x, paddingVoxel.y, paddingVoxel.z, lodGridGroup.lodFullResolution)] = sampledDensity;
+                lodTypeGrid[Utils.LinearIndex(paddingVoxel.x, paddingVoxel.y, paddingVoxel.z, lodGridGroup.lodFullResolution)] = sampledType;
+                lodDensityGrid[Utils.LinearIndex(paddingVoxel.x, paddingVoxel.y, paddingVoxel.z, lodGridGroup.lodFullResolution)] = sampledDensity;
             }
             
             return lodGridGroup;

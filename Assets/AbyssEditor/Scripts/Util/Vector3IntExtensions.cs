@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace AbyssEditor.Scripts.Utils
+namespace AbyssEditor.Scripts.Util
 {
     public static class Vector3IntExtensions
     {

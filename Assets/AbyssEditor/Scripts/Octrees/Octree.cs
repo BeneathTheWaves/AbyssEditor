@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using AbyssEditor.Scripts.Util;
 using AbyssEditor.Scripts.VoxelTech;
 using AbyssEditor.Scripts.VoxelTech.VoxelMeshing.VoxelGrids;
 using Unity.Collections;
@@ -229,8 +230,8 @@ namespace AbyssEditor.Scripts.Octrees {
                     for (int k = start.z; k < start.z + thisCubeSize; ++k) {
                         for (int j = start.y; j < start.y + thisCubeSize; ++j) {
                             for (int i = start.x; i < start.x + thisCubeSize; ++i) {
-                                typeGrid[Globals.LinearIndex(i, j, k, VoxelWorld.GRID_RESOLUTION)] = data.type;
-                                densityGrid[Globals.LinearIndex(i, j, k, VoxelWorld.GRID_RESOLUTION)] = data.signedDist;
+                                typeGrid[Utils.LinearIndex(i, j, k, VoxelWorld.GRID_RESOLUTION)] = data.type;
+                                densityGrid[Utils.LinearIndex(i, j, k, VoxelWorld.GRID_RESOLUTION)] = data.signedDist;
                             }
                         }
                     }

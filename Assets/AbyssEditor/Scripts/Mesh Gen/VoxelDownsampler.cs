@@ -1,9 +1,10 @@
 using System.Collections.Generic;
+using AbyssEditor.Scripts.Util;
 using AbyssEditor.Scripts.VoxelTech.VoxelMeshing.VoxelGrids;
 using Unity.Collections;
 using UnityEngine;
 
-namespace AbyssEditor.Scripts.Mesh_Gen.VoxelDownsampling
+namespace AbyssEditor.Scripts.Mesh_Gen
 {
     public class VoxelDownsampler
     {
@@ -49,7 +50,7 @@ namespace AbyssEditor.Scripts.Mesh_Gen.VoxelDownsampling
             for (int y = startY; y < startY + sampleBlockWidth; y++)
             for (int z = startZ; z < startZ + sampleBlockWidth; z++)
             {
-                int index = Globals.LinearIndex(x, y, z, originalRes);
+                int index = Utils.LinearIndex(x, y, z, originalRes);
 
                 byte density = originalDensityGrid[index];
                 byte type = originalTypeGrid[index];

@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using AbyssEditor.Scripts.Util;
 using AbyssEditor.Scripts.VoxelTech;
 using Unity.Collections;
 using UnityEngine;
@@ -72,7 +73,7 @@ namespace AbyssEditor.Scripts.BinaryReadingWriting
                 for (int iy = y; iy < y + currentNodeRegionWidth; iy++)
                 for (int iz = z; iz < z + currentNodeRegionWidth; iz++)
                 {
-                    int pos = Globals.LinearIndex(gridPadding + ix, gridPadding + iy, gridPadding + iz, VoxelWorld.GRID_RESOLUTION + (2 * gridPadding));
+                    int pos = Util.Utils.LinearIndex(gridPadding + ix, gridPadding + iy, gridPadding + iz, VoxelWorld.GRID_RESOLUTION + (2 * gridPadding));
                     densityGrid[pos] = density;
                     typeGrid[pos] = type;
                 }

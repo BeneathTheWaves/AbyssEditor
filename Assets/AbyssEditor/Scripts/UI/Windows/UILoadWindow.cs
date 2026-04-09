@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using AbyssEditor.Scripts.BatchOutline;
 using AbyssEditor.Scripts.BinaryReadingWriting;
 using AbyssEditor.Scripts.Essentials;
-using AbyssEditor.Scripts.Utils;
+using AbyssEditor.Scripts.Util;
 using AbyssEditor.Scripts.VoxelTech;
 using AbyssEditor.Scripts.VoxelTech.VoxelMeshing;
 using TMPro;
@@ -184,7 +184,7 @@ namespace AbyssEditor.Scripts.UI.Windows {
 
         private IEnumerator LoadBatch() {
 
-            if (!Globals.CheckIsGamePathValid()) {
+            if (!SnPaths.CheckIsGamePathValid()) {
                 EditorUI.DisplayErrorMessage("Please select a valid game path");
                 yield break;
             }

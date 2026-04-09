@@ -46,7 +46,7 @@ namespace AbyssEditor.Scripts.UI.Windows {
                 Preferences.data.gamePath = paths[0];
                 SavePreferences();
                 UpdatePathDisplay(Preferences.data.gamePath);
-                if (!Globals.CheckIsGamePathValid())
+                if (!SnPaths.CheckIsGamePathValid())
                 {
                     DebugOverlay.LogError(Language.main.Get("GamePathNotValid"));
                 }
@@ -55,7 +55,7 @@ namespace AbyssEditor.Scripts.UI.Windows {
         
         public override void EnableWindow()
         {
-            if (Globals.CheckIsGamePathValid())
+            if (SnPaths.CheckIsGamePathValid())
             {
                 UpdatePathDisplay(Preferences.data.gamePath);
             }

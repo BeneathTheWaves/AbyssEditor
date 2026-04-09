@@ -1,7 +1,7 @@
 using System.Threading.Tasks;
 using Unity.Jobs;
 
-namespace AbyssEditor.Scripts.Utils
+namespace AbyssEditor.Scripts.Util
 {
     public static class AsyncUtils
     {

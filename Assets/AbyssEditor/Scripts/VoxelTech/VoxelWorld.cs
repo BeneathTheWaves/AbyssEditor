@@ -4,6 +4,7 @@ using AbyssEditor.Scripts.BatchOutline;
 using AbyssEditor.Scripts.CursorTools;
 using AbyssEditor.Scripts.TaskSystem;
 using AbyssEditor.Scripts.UI;
+using AbyssEditor.Scripts.Util;
 using AbyssEditor.Scripts.VoxelTech.VoxelMeshing;
 using UnityEngine;
 using Vector3 = UnityEngine.Vector3;
@@ -32,7 +33,13 @@ namespace AbyssEditor.Scripts.VoxelTech {
         // Voxels per padded Grid
         public const int VOXELS_FLAT_PADDED_GRID = 39304; // 34 * 34 * 34 for 1 voxel of padding on each side
         
-        public static VoxelWorld world;
+        //Base unity materials for the world. Textures are supplied to these when imported from the game
+        [field: SerializeField] public Material batchMat { get; private set; }
+        [field: SerializeField] public Material batchCappedMat { get; private set; }
+        [field: SerializeField] public Material brushGizmoMat { get; private set; }
+        [field: SerializeField] public Material boundaryGizmoMat { get; private set; } 
+
+        public static VoxelWorld world { get; private set; }
         
         private void Awake() {
             world = this;
@@ -125,7 +132,7 @@ namespace AbyssEditor.Scripts.VoxelTech {
             int y = (int)_local.y / OCTREE_WIDTH;
             int z = (int)_local.z / OCTREE_WIDTH;
 
-            byte type = batch.pointContainers[Globals.LinearIndex(x, y, z, 5)].SampleBlocktype(hitPoint);
+            byte type = batch.pointContainers[Utils.LinearIndex(x, y, z, 5)].SampleBlocktype(hitPoint);
 
             if (type == 0) {
                 float newDistance = Vector3.Distance(hitPoint, cameraRay.origin) + .5f;

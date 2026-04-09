@@ -25,7 +25,7 @@ namespace AbyssEditor.Scripts.UI.Windows {
                     if (string.IsNullOrEmpty(path)) {
                         return;
                     }
-                    Globals.instance.userBatchOutputPath = path;
+                    SnPaths.instance.userBatchOutputPath = path;
                     break;
                 }
                 case ExportMode.Optoctree:
@@ -35,7 +35,7 @@ namespace AbyssEditor.Scripts.UI.Windows {
                     if (paths.Length == 0) {
                         return;
                     }
-                    Globals.instance.userBatchOutputPath = paths[0];
+                    SnPaths.instance.userBatchOutputPath = paths[0];
                     break;
                 }
             }
@@ -44,7 +44,7 @@ namespace AbyssEditor.Scripts.UI.Windows {
         }
 
         private void OnCheckboxInteract() {
-            Globals.instance.exportIntoGame = checkbox.check;
+            SnPaths.instance.exportIntoGame = checkbox.check;
         }
 
         private void ToggleCheckboxVisibility(bool value)
@@ -52,11 +52,11 @@ namespace AbyssEditor.Scripts.UI.Windows {
             checkboxGroup.SetActive(value);
             if (!value)
             {
-                Globals.instance.exportIntoGame = false;
+                SnPaths.instance.exportIntoGame = false;
             }
             else
             {
-                Globals.instance.exportIntoGame = checkbox.check;//TODO: why do we have a static variable determining the export type. Just make another export type god dammit
+                SnPaths.instance.exportIntoGame = checkbox.check;//TODO: why do we have a static variable determining the export type. Just make another export type god dammit
             }
         }
 

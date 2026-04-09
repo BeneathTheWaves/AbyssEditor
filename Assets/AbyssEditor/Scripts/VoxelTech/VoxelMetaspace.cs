@@ -9,7 +9,7 @@ using AbyssEditor.Scripts.SaveSystem;
 using AbyssEditor.Scripts.TaskSystem;
 using AbyssEditor.Scripts.ThreadingManager;
 using AbyssEditor.Scripts.UI;
-using AbyssEditor.Scripts.Utils;
+using AbyssEditor.Scripts.Util;
 using AbyssEditor.Scripts.VoxelTech.VoxelMeshing;
 using AbyssEditor.Scripts.VoxelTech.VoxelMeshing.VoxelGrids;
 using AbyssEditor.Scripts.VoxelTech.VoxelMeshing.VoxelGrids.Brushes;
@@ -121,7 +121,7 @@ namespace AbyssEditor.Scripts.VoxelTech {
                 {
                     continue;
                 }
-                if (GenericUtils.SquaredDistanceToBox(stroke.brushLocation, mesh.GetBatchMinBound(), mesh.GetBatchMaxBound()) <= stroke.squaredRadius) {
+                if (Utils.SquaredDistanceToBox(stroke.brushLocation, mesh.GetBatchMinBound(), mesh.GetBatchMaxBound()) <= stroke.squaredRadius) {
                     mesh.ApplyJobBasedDensityFunction(stroke, brushJobs, modifiedContainers);
                 }
             }

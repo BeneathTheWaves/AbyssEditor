@@ -29,7 +29,7 @@ namespace AbyssEditor.Scripts.TerrainMaterials
 
         public void GenerateMaterialIcons(Action onCompleteCallback = null)
         {
-            if (!Globals.CheckIsGamePathValid())
+            if (!SnPaths.CheckIsGamePathValid())
             {
                 EditorUI.DisplayErrorMessage("Please select a valid game path");
                 return;

@@ -3,6 +3,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using AbyssEditor.Scripts.Mesh_Gen.Datas;
+using AbyssEditor.Scripts.Util;
 using AbyssEditor.Scripts.VoxelTech.VoxelMeshing.VoxelGrids;
 using UnityEngine;
 
@@ -112,7 +113,7 @@ namespace AbyssEditor.Scripts.Mesh_Gen {
                     void CheckVert(ref QuadFace meshFace, ref Vector3 dcCube)
                     {
                         if (dcCube.x >= 0 && dcCube.x < resolution.x && dcCube.y >= 0 && dcCube.y < resolution.y && dcCube.z >= 0 && dcCube.z < resolution.z) {
-                            int voxelIndex = Globals.LinearIndex((int)dcCube.x, (int)dcCube.y, (int)dcCube.z, resolution);
+                            int voxelIndex = Utils.LinearIndex((int)dcCube.x, (int)dcCube.y, (int)dcCube.z, resolution);
                             ref VoxelVertex voxelVert = ref vertexGroup.verticesOfNodes[voxelIndex];
                             voxelVert.AddNeighborFace(ref meshFace);
                             voxelVert.isSet = true;

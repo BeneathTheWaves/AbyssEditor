@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using AbyssEditor.Scripts.Mesh_Gen.Datas;
-using AbyssEditor.Scripts.Mesh_Gen.VoxelDownsampling;
 using Unity.Collections;
 using UnityEngine;
 
@@ -10,6 +9,8 @@ namespace AbyssEditor.Scripts.Mesh_Gen
     public class FaceGPUBuilder : MonoBehaviour
     {
         public static FaceGPUBuilder builder;
+        
+        public const int THREAD_GROUP_SIZE = 8;
         
         public VoxelDownsampler voxelDownsampler;
         
@@ -33,7 +34,7 @@ namespace AbyssEditor.Scripts.Mesh_Gen
             
             CreateBuffers(resolution);
 
-            int numFullThreads = Mathf.CeilToInt ((resolution.x) / (float) Globals.THREAD_GROUP_SIZE);
+            int numFullThreads = Mathf.CeilToInt (resolution.x / (float) THREAD_GROUP_SIZE);
             
             int numFullPoints = densityGrid.Length;
             

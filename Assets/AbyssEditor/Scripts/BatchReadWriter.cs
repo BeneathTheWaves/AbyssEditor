@@ -98,7 +98,7 @@ namespace AbyssEditor.Scripts {
         {
             var fileName = string.Format("compiled-batch-{0}-{1}-{2}.optoctrees", batchIndex.x, batchIndex.y, batchIndex.z);
 
-            var vanillaFile = Path.Combine(Globals.instance.batchSourcePath, fileName);
+            var vanillaFile = Path.Combine(SnPaths.instance.batchSourcePath, fileName);
             isModded = false;
             if (!allowModded)
             {
@@ -107,11 +107,11 @@ namespace AbyssEditor.Scripts {
                 return fileName;
             }
 
-            if (Directory.Exists(Path.Combine(Globals.instance.batchSourcePath, "patches")) &&
-                File.Exists(Path.Combine(Globals.instance.batchSourcePath, "patches", fileName)))
+            if (Directory.Exists(Path.Combine(SnPaths.instance.batchSourcePath, "patches")) &&
+                File.Exists(Path.Combine(SnPaths.instance.batchSourcePath, "patches", fileName)))
             {
                 isModded = true;
-                return Path.Combine(Globals.instance.batchSourcePath, "patches", fileName);
+                return Path.Combine(SnPaths.instance.batchSourcePath, "patches", fileName);
             }
             if (File.Exists(vanillaFile))
                 return vanillaFile;
@@ -124,9 +124,9 @@ namespace AbyssEditor.Scripts {
         {
             string batchname = string.Format(Path.DirectorySeparatorChar + "compiled-batch-{0}-{1}-{2}.optoctrees", batchIndex.x, batchIndex.y, batchIndex.z);
 
-            DebugOverlay.LogMessage($"Writing {batchname} to {Globals.instance.batchOutputPath}");
+            DebugOverlay.LogMessage($"Writing {batchname} to {SnPaths.instance.batchOutputPath}");
 
-            BinaryWriter writer = new BinaryWriter(File.Open(Globals.instance.batchOutputPath + batchname, FileMode.OpenOrCreate));
+            BinaryWriter writer = new BinaryWriter(File.Open(SnPaths.instance.batchOutputPath + batchname, FileMode.OpenOrCreate));
             writer.Write(4);
 
             for (int z = 0; z < 5; z++)
@@ -148,9 +148,9 @@ namespace AbyssEditor.Scripts {
         {
             if (statusHandle == null) statusHandle = TaskManager.main.GetEditorProcessHandle(1);
             
-            DebugOverlay.LogMessage($"Writing {metaspace.meshes.Count} batch patches as {Globals.instance.batchOutputPath}");
+            DebugOverlay.LogMessage($"Writing {metaspace.meshes.Count} batch patches as {SnPaths.instance.batchOutputPath}");
 
-            BinaryWriter writer = new BinaryWriter(File.Open(Globals.instance.batchOutputPath, FileMode.Create));
+            BinaryWriter writer = new BinaryWriter(File.Open(SnPaths.instance.batchOutputPath, FileMode.Create));
             // write version
             writer.Write(0u);
 

@@ -178,7 +178,7 @@ namespace AbyssEditor.Scripts.CursorTools.Brush {
             var renderer = brushAreaObject.GetComponent<MeshRenderer>();
             renderer.materials = new[]
             {
-                Globals.instance.brushGizmoMat,
+                VoxelWorld.world.brushGizmoMat,
             };
             
             brushAreaObject.GetComponent<SphereCollider>().enabled = false;
@@ -200,8 +200,8 @@ namespace AbyssEditor.Scripts.CursorTools.Brush {
         }
         
         private void UpdateBoundaries(Vector3 newPos, float radius) {
-            Globals.instance.boundaryGizmoMat.SetVector(cursorWorldPos, newPos);
-            Globals.instance.boundaryGizmoMat.SetFloat(blendRadius, radius);
+            VoxelWorld.world.boundaryGizmoMat.SetVector(cursorWorldPos, newPos);
+            VoxelWorld.world.boundaryGizmoMat.SetFloat(blendRadius, radius);
         }
         
         private void SetBrushMode(BrushMode brushMode)
@@ -210,7 +210,7 @@ namespace AbyssEditor.Scripts.CursorTools.Brush {
             
             Color brushColor = activeMode.GetColor();
             brushColor.a = 0.3f;
-            Globals.instance.brushGizmoMat.color = brushColor;
+            VoxelWorld.world.brushGizmoMat.color = brushColor;
             
             OnParametersChanged?.Invoke();
         }

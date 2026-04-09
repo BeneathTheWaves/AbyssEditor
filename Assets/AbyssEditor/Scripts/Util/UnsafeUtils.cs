@@ -1,6 +1,4 @@
-using Unity.Collections.LowLevel.Unsafe;
-
-namespace AbyssEditor.Scripts.Utils
+namespace AbyssEditor.Scripts.Util
 {
     public static class UnsafeUtils
     {

@@ -28,7 +28,7 @@ namespace AbyssEditor.Scripts.UI.Windows
         public override void EnableWindow()
         {
             base.EnableWindow();
-            loadMatsButton.transform.Find("Text (TMP)").GetComponent<TextMeshProUGUI>().text = Globals.instance.belowzero ? Language.main.Get("LoadmatsBZ") : Language.main.Get("LoadmatsSN");
+            loadMatsButton.transform.Find("Text (TMP)").GetComponent<TextMeshProUGUI>().text = SnPaths.instance.belowzero ? Language.main.Get("LoadmatsBZ") : Language.main.Get("LoadmatsSN");
 
             if (MaterialIconGenerator.main.materialIconsLoaded)
             {

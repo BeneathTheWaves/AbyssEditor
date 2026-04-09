@@ -11,6 +11,7 @@ using UnityEngine;
 using Material = UnityEngine.Material;
 using MonoBehaviour = UnityEngine.MonoBehaviour;
 using Object = AssetStudio.Classes.Object;
+using Random = UnityEngine.Random;
 using Shader = UnityEngine.Shader;
 using TextAsset = UnityEngine.TextAsset;
 using Texture2D = UnityEngine.Texture2D;
@@ -70,7 +71,7 @@ namespace AbyssEditor.Scripts.TerrainMaterials
         private IEnumerator GetMaterialAssetsAsync(List<AssetStudio.Classes.Texture2D> textureAssets, List<AssetStudio.Classes.Material> materialAssets) {
 
             string bundleName = Path.DirectorySeparatorChar + "resources.assets";
-            string resourcesPath = Globals.instance.resourcesSourcePath + bundleName;
+            string resourcesPath = SnPaths.instance.resourcesSourcePath + bundleName;
             string[] files = { resourcesPath };
 
             AssetsManager assetManager = new AssetsManager();
@@ -94,7 +95,7 @@ namespace AbyssEditor.Scripts.TerrainMaterials
             assetManager.Clear();
         }
         private IEnumerator LoadMaterialNamesAsync() {
-            ResourceRequest materialNameRequest = Resources.LoadAsync<TextAsset>(Globals.instance.blocktypeStringsFilename);
+            ResourceRequest materialNameRequest = Resources.LoadAsync<TextAsset>(SnPaths.instance.blocktypeStringsFilename);
             yield return materialNameRequest;
 
             string combinedString = (materialNameRequest.asset as TextAsset).text;
@@ -169,10 +170,10 @@ namespace AbyssEditor.Scripts.TerrainMaterials
                 return instance.blocktypesData[b].GetUnityMaterial();
             }
 
-            Material colorMat = new Material(Globals.GetBatchMat());
+            Material colorMat = new Material(VoxelWorld.world.batchMat);
             colorMat.enableInstancing = true;
             colorMat.name = $"Material of type {b}";
-            colorMat.SetColor(color, Globals.ColorFromType(b));
+            colorMat.SetColor(color, ColorFromType(b));
             return colorMat;
         }
         
@@ -190,6 +191,11 @@ namespace AbyssEditor.Scripts.TerrainMaterials
             }
 
             return blocktypes.Count > 0;
+        }
+        
+        public static Color ColorFromType(int type) {
+            Random.InitState(type);
+            return new Color(Random.value, Random.value, Random.value);
         }
         
         private static readonly int color = Shader.PropertyToID("_Color");

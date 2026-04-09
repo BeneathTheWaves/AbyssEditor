@@ -32,7 +32,7 @@ namespace AbyssEditor.Scripts.BinaryReadingWriting
                 Debug.Log(octreeIndex);
                 ushort nodeCount = BitConverter.ToUInt16(patchByteArray, currPos);
                 currPos += 2;
-
+                
                 byte[] octree = new byte[nodeCount * OCTREE_NODE_BYTE_SIZE];
                 Array.Copy(patchByteArray, currPos, octree, 0, octree.Length);
                 currPos+=octree.Length;

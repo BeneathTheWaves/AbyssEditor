@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using AbyssEditor.Scripts.VoxelTech;
 using UnityEngine;
 namespace AbyssEditor.Scripts.TerrainMaterials
 {
@@ -70,7 +71,7 @@ namespace AbyssEditor.Scripts.TerrainMaterials
             
             Material mat;
             if (useCap) {
-                mat = new Material(Globals.instance.batchCappedMat);
+                mat = new Material(VoxelWorld.world.batchCappedMat);
                 mat.enableInstancing = true;
 
                 mat.SetTexture(mainTex, textures[0]);
@@ -78,7 +79,7 @@ namespace AbyssEditor.Scripts.TerrainMaterials
                 mat.SetTexture(sideTex, textures[2]);
                 mat.SetTexture(sideNormalMap, textures[3]);
             } else {
-                mat = new Material(Globals.instance.batchMat);
+                mat = new Material(VoxelWorld.world.batchMat);
                 mat.enableInstancing = true;
                 
                 mat.SetTexture(mainTex, textures[0]);
