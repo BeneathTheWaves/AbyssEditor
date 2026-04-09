@@ -52,7 +52,6 @@ namespace AbyssEditor.Scripts.UI.Windows {
                 {
                     DebugOverlay.LogError(Language.main.Get("GamePathNotValid"));
                 }
-                
             }
         }
         
