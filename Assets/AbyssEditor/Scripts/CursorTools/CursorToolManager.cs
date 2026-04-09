@@ -1,7 +1,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using AbyssEditor.Scripts.CursorTools.Brush;
+using AbyssEditor.Scripts.UI.HotBar;
 using AbyssEditor.Scripts.UI.HotBar.HotBarButtons;
+using NUnit.Framework.Constraints;
+using ProtoBuf.WellKnownTypes;
 using UnityEngine;
 using UnityEngine.EventSystems;
 namespace AbyssEditor.Scripts.CursorTools
@@ -13,14 +16,13 @@ namespace AbyssEditor.Scripts.CursorTools
         public BrushTool brushTool { get; private set; }
         private RemoveBatchTool batchRemoveTool { get; set; }
         private SizeRefTool sizeRefTool { get; set; }
-
         private readonly HashSet<ICursorTool> tools = new();
-
         private readonly HashSet<MonoBehaviour> inputBlockingScripts = new();
-
         private ICursorTool activeTool;
 
-        private bool activeToolHidden;
+        /* In the event a tool is requested to be enabled but blocking scripts are active,
+           the request is cached here and enabled when all blocking scripts are removed*/ 
+        private ToolEnableRequest blockedToolToEnable;
 
         private void Awake()
         {
@@ -53,13 +55,18 @@ namespace AbyssEditor.Scripts.CursorTools
             activeTool = tools.First(t => t.ToolType == tool);
         }
 
-        public bool EnableTool(CursorTool tool, HotBarButton hotBarButton = null)
+        public void EnableTool(CursorTool tool, HotBarButton hotBarButton = null)
         {
-            if (HasBlockingScripts()) return false;
+            if (tool == CursorTool.None) return;
+            
+            if (HasBlockingScripts())
+            {
+                blockedToolToEnable = new ToolEnableRequest(tool, hotBarButton);
+                return;
+            }
             
             SafeChangeActiveTool(tool);
             activeTool?.EnableTool(hotBarButton);
-            return true;
         }
 
         public void DisableActiveTool()
@@ -76,6 +83,11 @@ namespace AbyssEditor.Scripts.CursorTools
         public void UnregisterInputBlock(MonoBehaviour script)
         {
             inputBlockingScripts.Remove(script);
+            if (!HasBlockingScripts())
+            {
+                EnableTool(blockedToolToEnable.toolType, blockedToolToEnable.hotBarButton);
+                blockedToolToEnable = ToolEnableRequest.empty;
+            }
         }
 
         private bool IsInputBlocked() => IsMouseOverUI() || HasBlockingScripts();
@@ -83,6 +95,21 @@ namespace AbyssEditor.Scripts.CursorTools
         private bool IsMouseOverUI() => EventSystem.current.IsPointerOverGameObject();
         
         private bool HasBlockingScripts() => inputBlockingScripts.Count > 0;
+
+        
+        private struct ToolEnableRequest
+        {
+            public readonly CursorTool toolType;
+            public readonly HotBarButton hotBarButton;
+
+            public ToolEnableRequest(CursorTool toolType, HotBarButton hotBarButton)
+            {
+                this.toolType = toolType;
+                this.hotBarButton = hotBarButton;
+            }
+            
+            public static ToolEnableRequest empty => new ToolEnableRequest(CursorTool.None, null);
+        }
     }
 
     public enum CursorTool
