@@ -9,10 +9,10 @@ namespace AbyssEditor.Scripts.CursorTools
     public class CursorToolManager : MonoBehaviour
     {
         public static CursorToolManager main;
-
-        public BrushTool BrushTool { get; private set; }
-        public RemoveBatchTool BatchRemoveTool { get; private set; }
-        public SizeRefTool SizeRefTool { get; private set; }
+        
+        public BrushTool brushTool { get; private set; }
+        private RemoveBatchTool batchRemoveTool { get; set; }
+        private SizeRefTool sizeRefTool { get; set; }
 
         private readonly HashSet<ICursorTool> tools = new();
 
@@ -25,12 +25,12 @@ namespace AbyssEditor.Scripts.CursorTools
         private void Awake()
         {
             main = this;
-            BrushTool = new BrushTool();
-            BatchRemoveTool = new RemoveBatchTool();
-            SizeRefTool = new SizeRefTool();
-            tools.Add(BrushTool);
-            tools.Add(BatchRemoveTool);
-            tools.Add(SizeRefTool);
+            brushTool = new BrushTool();
+            batchRemoveTool = new RemoveBatchTool();
+            sizeRefTool = new SizeRefTool();
+            tools.Add(brushTool);
+            tools.Add(batchRemoveTool);
+            tools.Add(sizeRefTool);
         }
 
         private void Start()
@@ -46,25 +46,20 @@ namespace AbyssEditor.Scripts.CursorTools
             activeTool?.HandleToolUpdate(IsInputBlocked());
         }
 
-        private void DisableOldToolSafe<T>() where T : ICursorTool
+        private void SafeChangeActiveTool(CursorTool tool)
         {
-            if (activeTool == null || activeTool.GetType() != typeof(T))
-            {
-                activeTool?.DisableTool();
-                activeTool = tools.OfType<T>().First();
-            }
+            if (activeTool != null && activeTool.ToolType == tool) return;
+            activeTool?.DisableTool();
+            activeTool = tools.First(t => t.ToolType == tool);
         }
 
-        public void Enable<T>() where T : ICursorTool
+        public bool EnableTool(CursorTool tool, HotBarButton hotBarButton = null)
         {
-            DisableOldToolSafe<T>();
-            activeTool?.EnableTool();
-        }
-
-        public void Enable<T>(HotBarButton hotBarButton) where T : ICursorTool
-        {
-            DisableOldToolSafe<T>();
+            if (HasBlockingScripts()) return false;
+            
+            SafeChangeActiveTool(tool);
             activeTool?.EnableTool(hotBarButton);
+            return true;
         }
 
         public void DisableActiveTool()
@@ -88,5 +83,13 @@ namespace AbyssEditor.Scripts.CursorTools
         private bool IsMouseOverUI() => EventSystem.current.IsPointerOverGameObject();
         
         private bool HasBlockingScripts() => inputBlockingScripts.Count > 0;
+    }
+
+    public enum CursorTool
+    {
+        None,
+        Brush,
+        RemoveBatch,
+        SizeRef
     }
 }

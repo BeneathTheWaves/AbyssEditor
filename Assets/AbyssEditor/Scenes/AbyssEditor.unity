@@ -2196,6 +2196,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 002cbc43a12a49589bb37dbbc87eab92, type: 3}
   m_Name: 
   m_EditorClassIdentifier: AbyssEditor::AbyssEditor.Scripts.UI.HotBar.BrushHotBarButton
+  <cursorToolType>k__BackingField: 1
   brushMode: 0
 --- !u!1 &240044826
 GameObject:
@@ -11139,7 +11140,7 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 8719787554850151309, guid: 03e603faeae769fc8bc73ee73360d5a1,
         type: 3}
       insertIndex: -1
-      addedObject: {fileID: 1186773972}
+      addedObject: {fileID: 1186773977}
   m_SourcePrefab: {fileID: 100100000, guid: 03e603faeae769fc8bc73ee73360d5a1, type: 3}
 --- !u!1 &1113907205
 GameObject:
@@ -12324,7 +12325,7 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 1103599625}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &1186773972
+--- !u!114 &1186773977
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -12333,9 +12334,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 1186773970}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7c56d021f8024bcf9217dfc05553379c, type: 3}
+  m_Script: {fileID: 11500000, guid: 37731622d70f4c259fd63d4d982817b0, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: AbyssEditor::AbyssEditor.Scripts.UI.HotBar.HotBarButtons.RemoveBatchButton
+  m_EditorClassIdentifier: AbyssEditor::AbyssEditor.Scripts.UI.HotBar.HotBarButtons.HotBarButton
+  <cursorToolType>k__BackingField: 2
 --- !u!1 &1190405978
 GameObject:
   m_ObjectHideFlags: 0
@@ -13576,7 +13578,7 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 8719787554850151309, guid: 03e603faeae769fc8bc73ee73360d5a1,
         type: 3}
       insertIndex: -1
-      addedObject: {fileID: 1305095382}
+      addedObject: {fileID: 1305095387}
   m_SourcePrefab: {fileID: 100100000, guid: 03e603faeae769fc8bc73ee73360d5a1, type: 3}
 --- !u!224 &1305095380 stripped
 RectTransform:
@@ -13590,7 +13592,7 @@ GameObject:
     type: 3}
   m_PrefabInstance: {fileID: 1305095379}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &1305095382
+--- !u!114 &1305095387
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -13599,9 +13601,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 1305095381}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 372b5f91e4c820845885151711b6504e, type: 3}
+  m_Script: {fileID: 11500000, guid: 37731622d70f4c259fd63d4d982817b0, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: AbyssEditor::AbyssEditor.Scripts.UI.HotBar.HotBarButtons.SizeRefHotBarButton
+  m_EditorClassIdentifier: AbyssEditor::AbyssEditor.Scripts.UI.HotBar.HotBarButtons.HotBarButton
+  <cursorToolType>k__BackingField: 3
 --- !u!1 &1307678996
 GameObject:
   m_ObjectHideFlags: 0
@@ -15647,6 +15650,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 002cbc43a12a49589bb37dbbc87eab92, type: 3}
   m_Name: 
   m_EditorClassIdentifier: AbyssEditor::AbyssEditor.Scripts.UI.HotBar.BrushHotBarButton
+  <cursorToolType>k__BackingField: 1
   brushMode: 5
 --- !u!1 &1527494060
 GameObject:
@@ -16374,6 +16378,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 002cbc43a12a49589bb37dbbc87eab92, type: 3}
   m_Name: 
   m_EditorClassIdentifier: AbyssEditor::AbyssEditor.Scripts.UI.HotBar.BrushHotBarButton
+  <cursorToolType>k__BackingField: 1
   brushMode: 2
 --- !u!1 &1618965542
 GameObject:
@@ -20134,6 +20139,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 002cbc43a12a49589bb37dbbc87eab92, type: 3}
   m_Name: 
   m_EditorClassIdentifier: AbyssEditor::AbyssEditor.Scripts.UI.HotBar.BrushHotBarButton
+  <cursorToolType>k__BackingField: 1
   brushMode: 1
 --- !u!1 &1959460716
 GameObject:
@@ -21314,6 +21320,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 002cbc43a12a49589bb37dbbc87eab92, type: 3}
   m_Name: 
   m_EditorClassIdentifier: AbyssEditor::AbyssEditor.Scripts.UI.HotBar.BrushHotBarButton
+  <cursorToolType>k__BackingField: 1
   brushMode: 3
 --- !u!1001 &2085196862
 PrefabInstance:

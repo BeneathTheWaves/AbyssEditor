@@ -171,12 +171,12 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelMeshing.VoxelGrids {
             else if (stroke.brushMode == BrushMode.Add || stroke.brushMode == BrushMode.Remove )
             {
                 bool shouldRemoveDensity = stroke.brushMode == BrushMode.Remove;
-                brushJob = new AddSubJob(this, stroke.brushLocation, stroke.brushRadius, stroke.strength, CursorToolManager.main.BrushTool.currentSelectedType, gridOrigin, shouldRemoveDensity);
+                brushJob = new AddSubJob(this, stroke.brushLocation, stroke.brushRadius, stroke.strength, CursorToolManager.main.brushTool.currentSelectedType, gridOrigin, shouldRemoveDensity);
             }
 
             else if (stroke.brushMode == BrushMode.Paint)
             {
-                brushJob = new PaintJob(this, stroke.brushLocation, stroke.brushRadius, CursorToolManager.main.BrushTool.currentSelectedType, gridOrigin);
+                brushJob = new PaintJob(this, stroke.brushLocation, stroke.brushRadius, CursorToolManager.main.brushTool.currentSelectedType, gridOrigin);
             }
 
             brushJob?.StartJob();

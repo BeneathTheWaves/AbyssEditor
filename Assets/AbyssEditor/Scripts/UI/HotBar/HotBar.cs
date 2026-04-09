@@ -67,29 +67,6 @@ namespace AbyssEditor.Scripts.UI.HotBar
             OnAnyButtonPress(buttons[index]);
         }
 
-        public void Update()
-        {
-            /*BrushMode _newActiveMode = userSelectedMode;
-            if (Input.GetKey(KeyCode.LeftShift)) {
-                // Always smooth
-                _newActiveMode = BrushMode.Smooth;
-            } else if (Input.GetKey(KeyCode.LeftControl)) {
-                // Complementary op
-                if (userSelectedMode == BrushMode.Add)
-                    _newActiveMode = BrushMode.Remove;
-                if (userSelectedMode == BrushMode.Paint)
-                    _newActiveMode = BrushMode.Eyedropper;
-                if (userSelectedMode == BrushMode.Remove)
-                    _newActiveMode = BrushMode.Add;
-                if (userSelectedMode == BrushMode.Eyedropper)
-                    _newActiveMode = BrushMode.Paint;
-            }
-            if (_newActiveMode != activeMode) {
-                activeMode = _newActiveMode;
-                OnParametersChanged?.Invoke();
-            }*/
-        }
-
         private void OnAnyButtonPress(HotBarButton newButton)
         {
             if (currentButton == newButton)
@@ -109,19 +86,7 @@ namespace AbyssEditor.Scripts.UI.HotBar
             
             currentButton = newButton;
             currentButton.SetToggle(true);
-
-            if (newButton is BrushHotBarButton)
-            {
-                CursorToolManager.main.Enable<BrushTool>(currentButton);
-            }
-            else if (newButton is RemoveBatchHotBarButton)
-            {
-                CursorToolManager.main.Enable<RemoveBatchTool>();
-            }
-            else if (newButton is SizeRefHotBarButton)
-            {
-                CursorToolManager.main.Enable<SizeRefTool>();
-            }
+            CursorToolManager.main.EnableTool(currentButton.cursorToolType, currentButton);
         }
     }
 }

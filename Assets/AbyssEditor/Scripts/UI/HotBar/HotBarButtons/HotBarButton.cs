@@ -1,13 +1,16 @@
 using System;
+using AbyssEditor.Scripts.CursorTools;
 using AbyssEditor.Scripts.CursorTools.Brush;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 namespace AbyssEditor.Scripts.UI.HotBar.HotBarButtons
 {
-    public abstract class HotBarButton: MonoBehaviour
+    public class HotBarButton: MonoBehaviour
     {
         private Toggle toggle;
         private Action<HotBarButton> hotBarOnPress;
+        [field: SerializeField] public CursorTool cursorToolType { get; private set; } = CursorTool.None; 
 
         public void Awake()
         {

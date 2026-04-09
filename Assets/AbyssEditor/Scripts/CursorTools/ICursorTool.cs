@@ -1,5 +1,7 @@
 using AbyssEditor.Scripts.UI.HotBar;
 using AbyssEditor.Scripts.UI.HotBar.HotBarButtons;
+using JetBrains.Annotations;
+
 namespace AbyssEditor.Scripts.CursorTools
 {
     /// <summary>
@@ -11,17 +13,12 @@ namespace AbyssEditor.Scripts.CursorTools
         /// Called once within the Start unity event. Use to initialize variables/input
         /// </summary>
         public void Start() {}
-        
+
         /// <summary>
-        /// Enable the tool
-        /// </summary>
-        public void EnableTool();
-        
-        /// <summary>
-        /// Enable the tool. Not required to be implemented
+        /// Enable the tool.
         /// </summary>
         /// <param name="hotBarButton">The HotBarButton that was used to call this. You can extract data from that button if multiple slots point to 1 tool</param>
-        public void EnableTool(HotBarButton hotBarButton) { }
+        public void EnableTool([CanBeNull] HotBarButton hotBarButton);
         
         /// <summary>
         /// Disable the tool
@@ -34,5 +31,7 @@ namespace AbyssEditor.Scripts.CursorTools
         /// <param name="blockInput">If the input should be blocked, like being over ui or some script is blocking, but an update is still needed to keep the tool working</param>
         /// <param name="hideTool">If the tool should be hidden. Is only true if the cursor is over UI, in which case block input is true but this will also be. This does not trip for blocking scripts</param>
         public void HandleToolUpdate(bool blockInput) { }
+
+        public CursorTool ToolType { get; }
     }
 }

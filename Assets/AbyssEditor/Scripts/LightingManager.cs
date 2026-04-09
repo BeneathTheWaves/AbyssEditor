@@ -24,7 +24,7 @@ namespace AbyssEditor.Scripts
     
         void Start()
         {
-            brushLight = CursorToolManager.main.BrushTool.GetBrushLight();
+            brushLight = CursorToolManager.main.brushTool.GetBrushLight();
             LoadFromSettings();
         }
 

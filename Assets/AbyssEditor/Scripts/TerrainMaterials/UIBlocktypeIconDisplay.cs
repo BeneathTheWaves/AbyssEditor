@@ -79,7 +79,7 @@ namespace AbyssEditor.Scripts.TerrainMaterials
 
             public void OnMaterialSelected()
             {
-                CursorToolManager.main.BrushTool.SetBrushMaterial((byte)mat.blockType);
+                CursorToolManager.main.brushTool.SetBrushMaterial((byte)mat.blockType);
             }
 
             public void OnFavoriteButtonPressed()

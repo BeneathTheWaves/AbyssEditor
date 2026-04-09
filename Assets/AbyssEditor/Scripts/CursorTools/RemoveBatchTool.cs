@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using AbyssEditor.Scripts.BatchOutline;
 using AbyssEditor.Scripts.Essentials;
 using AbyssEditor.Scripts.InputMaps;
+using AbyssEditor.Scripts.UI.HotBar.HotBarButtons;
 using AbyssEditor.Scripts.UI.Windows;
 using AbyssEditor.Scripts.VoxelTech;
 using AbyssEditor.Scripts.VoxelTech.VoxelMeshing;
+using JetBrains.Annotations;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -19,13 +21,15 @@ namespace AbyssEditor.Scripts.CursorTools
 
         private bool dialogOpen = false;
         
+        public CursorTool ToolType => CursorTool.RemoveBatch;
+        
         public void Start()
         {
             input = InputManager.main.input.RemoveBatch;
             input.SelectBatch.performed += OnSelectBatchKeybind;
         }
 
-        public void EnableTool()
+        public void EnableTool([CanBeNull] HotBarButton hotBarButton)
         {
             input.Enable();
             List<Vector3Int> loadedBatches = new List<Vector3Int>();
@@ -105,7 +109,7 @@ namespace AbyssEditor.Scripts.CursorTools
             yield return VoxelMetaspace.metaspace.RemoveBatch(batchIndex);
             
             BatchOutlineManager.main.ResetOutlines();
-            EnableTool();
+            EnableTool(null);
             dialogOpen = false;
         }
     }

@@ -37,19 +37,19 @@ namespace AbyssEditor.Scripts.CursorTools.Brush {
             input = InputManager.main.input.Brush;
             input.ScrollWheelScale.performed += OnScrollWheel;
         }
-
-        public void EnableTool() {
+        
+        public void EnableTool(HotBarButton hotBarButton) {
+            if (hotBarButton == null)
+            {
+                Debug.LogError("Cannot enable brush tool when the supplied button is null");
+                return;
+            }
+            SetBrushMode((hotBarButton as BrushHotBarButton).GetBrushMode());
             input.Enable();
             if (brushAreaObject == null) {
                 CreateBrushObject();
                 DisableBrushGizmo();
             }
-        }
-        
-        public void EnableTool(HotBarButton hotBarButton) {
-            BrushHotBarButton brushbutton = hotBarButton as BrushHotBarButton;
-            SetBrushMode(brushbutton.GetBrushMode());
-            EnableTool();
         }
         
         public void DisableTool() {
@@ -98,6 +98,8 @@ namespace AbyssEditor.Scripts.CursorTools.Brush {
             
             BrushAction(input.ActivateBrush.IsInProgress());
         }
+
+        public CursorTool ToolType => CursorTool.Brush;
 
         private void OnScrollWheel(InputAction.CallbackContext ctx)
         {

@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using AbyssEditor.Scripts.InputMaps;
+using AbyssEditor.Scripts.UI.HotBar.HotBarButtons;
+using JetBrains.Annotations;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -21,6 +23,8 @@ namespace AbyssEditor.Scripts.CursorTools
 
         private const float ROTATE_SPEED = 10;
         
+        public CursorTool ToolType => CursorTool.SizeRef;
+        
         public void Start()
         {
             sizeRefGhostPrefab = Resources.Load<GameObject>("SizeRefGhostPrefab");
@@ -30,7 +34,7 @@ namespace AbyssEditor.Scripts.CursorTools
             input.Rotation.performed += OnRotate;
         }
 
-        public void EnableTool()
+        public void EnableTool([CanBeNull] HotBarButton hotBarButton)
         {
             input.Enable();
             sizeRefGhostInstance = Object.Instantiate(sizeRefGhostPrefab);
