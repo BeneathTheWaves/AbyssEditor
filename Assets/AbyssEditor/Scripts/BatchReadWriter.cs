@@ -191,7 +191,7 @@ namespace AbyssEditor.Scripts {
                     {
                         if (change.Index > 125) DebugOverlay.LogMessage("found an octree index > 125");
                         writer.Write(change.Index);
-                        WriteOctree(writer, change);
+                        ThreadedBinaryReadWriter.WriteBatchThreadable(writer, batch.pointContainers[change.Index].grid.densityGrid, batch.pointContainers[change.Index].grid.typeGrid);
                     }
                 }
                 meshIndex++;

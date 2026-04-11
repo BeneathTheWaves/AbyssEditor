@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using AbyssEditor.Scripts.Util;
 using AbyssEditor.Scripts.VoxelTech;
@@ -121,6 +122,154 @@ namespace AbyssEditor.Scripts.BinaryReadingWriting
             {
                 densityGrids[i] = new NativeArray<byte>(gridSize, Allocator.Persistent);
                 typeGrids[i] = new NativeArray<byte>(gridSize, Allocator.Persistent);
+            }
+        }
+        
+        public static void WriteBatchThreadable(
+            BinaryWriter writer,
+            NativeArray<byte> densityGrid,
+            NativeArray<byte> typeGrid)
+        {
+            byte[] octreeBytes = ConvertGridToOctree(densityGrid, typeGrid);
+                
+            // Node count as ushort
+            int nodeCount = octreeBytes.Length / OCTREE_NODE_BYTE_SIZE;
+            writer.Write((ushort)nodeCount);
+            writer.Write(octreeBytes);
+        }
+        
+        private static byte[] ConvertGridToOctree(
+            NativeArray<byte> densityGrid,
+            NativeArray<byte> typeGrid,
+            int gridPadding = 1)//
+        {
+            // Each node is 4 bytes: [type, density, childLo, childHi]
+            // We use a list so we can patch child indices after the fact.
+            List<byte[]> nodes = new();
+
+            // BFS queue: (nodeListIndex, regionX, regionY, regionZ, regionWidth)
+            Queue<(int nodeIdx, int x, int y, int z, int width)> queue = new();
+
+            // --- Root node (placeholder, will be patched) ---
+            nodes.Add(new byte[4]);
+            queue.Enqueue((0, 0, 0, 0, VoxelWorld.GRID_RESOLUTION)); // 32
+
+            while (queue.Count > 0)
+            {
+                var (nodeIdx, x, y, z, width) = queue.Dequeue();
+
+                // Sample the region to determine dominant type, average density, uniformity
+                SampleRegion(densityGrid, typeGrid,
+                    x, y, z, width, gridPadding,
+                    out byte dominantType,
+                    out byte avgDensity,
+                    out bool isUniform);
+
+                if (isUniform || width == 1)
+                {
+                    // Leaf node — child index stays 0
+                    nodes[nodeIdx][0] = dominantType;
+                    nodes[nodeIdx][1] = avgDensity;
+                    nodes[nodeIdx][2] = 0;
+                    nodes[nodeIdx][3] = 0;
+                }
+                else
+                {
+                    // Internal node — reserve 8 consecutive child slots
+                    int firstChildIdx = nodes.Count;
+                    for (int c = 0; c < 8; c++)
+                        nodes.Add(new byte[4]);
+
+                    // Patch current node
+                    nodes[nodeIdx][0] = dominantType;
+                    nodes[nodeIdx][1] = avgDensity;
+                    nodes[nodeIdx][2] = (byte)(firstChildIdx & 0xFF);
+                    nodes[nodeIdx][3] = (byte)((firstChildIdx >> 8) & 0xFF);
+
+                    // Enqueue 8 children using the same xyz bit-mapping as the reader
+                    int half = width / 2;
+                    for (byte c = 0; c < 8; c++)
+                    {
+                        int ox = (c & 4) != 0 ? half : 0;
+                        int oy = (c & 2) != 0 ? half : 0;
+                        int oz = (c & 1) != 0 ? half : 0;
+                        queue.Enqueue((firstChildIdx + c, x + oz, y + oy, z + ox, half));
+                    }
+                }
+            }
+
+            // Flatten node list into a byte array
+            byte[] result = new byte[nodes.Count * OCTREE_NODE_BYTE_SIZE];
+            for (int i = 0; i < nodes.Count; i++)
+                Buffer.BlockCopy(nodes[i], 0, result, i * OCTREE_NODE_BYTE_SIZE, OCTREE_NODE_BYTE_SIZE);
+
+            return result;
+        }
+        
+        private static void SampleRegion(
+            NativeArray<byte> densityGrid,
+            NativeArray<byte> typeGrid,
+            int x, int y, int z, int width,
+            int gridPadding,
+            out byte dominantType,
+            out byte avgDensity,
+            out bool isUniform)
+        {
+            int typeCount = 0;
+            long densitySum = 0;
+            int sampleCount = 0;
+
+            // Tally type frequencies
+            // Small fixed array is cheaper than a Dictionary for 254 materials
+            Span<int> typeCounts = stackalloc int[256];
+
+            byte firstType = 0;
+            byte firstDensity = 0;
+            bool first = true;
+            bool uniform = true;
+
+            for (int ix = x; ix < x + width; ix++)
+            for (int iy = y; iy < y + width; iy++)
+            for (int iz = z; iz < z + width; iz++)
+            {
+                int pos = Utils.LinearIndex(
+                    gridPadding + ix,
+                    gridPadding + iy,
+                    gridPadding + iz,
+                    VoxelWorld.PADDED_GRID_RESOLUTION);
+
+                byte d = densityGrid[pos];
+                byte t = typeGrid[pos];
+
+                typeCounts[t]++;
+                densitySum += d;
+                sampleCount++;
+
+                if (first)
+                {
+                    firstType = t;
+                    firstDensity = d;
+                    first = false;
+                }
+                else if (uniform && (t != firstType || d != firstDensity))
+                {
+                    uniform = false;
+                }
+            }
+
+            isUniform = uniform;
+            avgDensity = sampleCount > 0 ? (byte)(densitySum / sampleCount) : (byte)0;
+
+            // Find most frequent type
+            dominantType = 0;
+            int maxCount = 0;
+            for (int t = 0; t < 256; t++)
+            {
+                if (typeCounts[t] > maxCount)
+                {
+                    maxCount = typeCounts[t];
+                    dominantType = (byte)t;
+                }
             }
         }
     }
