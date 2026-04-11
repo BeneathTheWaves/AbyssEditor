@@ -7,6 +7,7 @@ using AbyssEditor.Scripts.BinaryReadingWriting;
 using AbyssEditor.Scripts.Octrees;
 using AbyssEditor.Scripts.TaskSystem;
 using AbyssEditor.Scripts.UI;
+using AbyssEditor.Scripts.Util;
 using AbyssEditor.Scripts.VoxelTech;
 using AbyssEditor.Scripts.VoxelTech.VoxelMeshing;
 using Unity.Collections;
@@ -47,7 +48,6 @@ namespace AbyssEditor.Scripts {
                 curr_pos = 0;
                 while (curr_pos < data.Length && countOctrees < expectedOctrees)
                 {
-
                     int x = countOctrees / (octreeDimensions.z * octreeDimensions.y);
                     int y = countOctrees % (octreeDimensions.z * octreeDimensions.y) / octreeDimensions.z;
                     int z = countOctrees % octreeDimensions.z;
@@ -189,9 +189,9 @@ namespace AbyssEditor.Scripts {
 
                     foreach (Octree change in batchChanges)
                     {
-                        if (change.Index > 125) DebugOverlay.LogMessage("found an octree index > 125");
                         writer.Write(change.Index);
-                        ThreadedBinaryReadWriter.WriteBatchThreadable(writer, batch.pointContainers[change.Index].grid.densityGrid, batch.pointContainers[change.Index].grid.typeGrid);
+                        int index = Utils.LinearIndex(change.index.x, change.index.y, change.index.z, VoxelWorld.CONTAINERS_PER_SIDE);
+                        ThreadedBinaryReadWriter.WriteBatchThreadable(writer, batch.pointContainers[index].grid.densityGrid, batch.pointContainers[index].grid.typeGrid);
                     }
                 }
                 meshIndex++;

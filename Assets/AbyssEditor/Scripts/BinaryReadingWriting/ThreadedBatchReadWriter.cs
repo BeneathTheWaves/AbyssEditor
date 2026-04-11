@@ -188,12 +188,10 @@ namespace AbyssEditor.Scripts.BinaryReadingWriting
 
                     // Enqueue 8 children using the same xyz bit-mapping as the reader
                     int half = width / 2;
-                    for (byte c = 0; c < 8; c++)
+                    for (int i = 0; i < 8; i++)
                     {
-                        int ox = (c & 4) != 0 ? half : 0;
-                        int oy = (c & 2) != 0 ? half : 0;
-                        int oz = (c & 1) != 0 ? half : 0;
-                        queue.Enqueue((firstChildIdx + c, x + oz, y + oy, z + ox, half));
+                        Vector3Int offset = cornerOffsets[i] * half;
+                        queue.Enqueue((firstChildIdx + i, x + offset.x, y + offset.y, z + offset.z, half));
                     }
                 }
             }
@@ -206,6 +204,17 @@ namespace AbyssEditor.Scripts.BinaryReadingWriting
             return result;
         }
         
+        private static readonly Vector3Int[] cornerOffsets = {
+            new Vector3Int(0, 0, 0),
+            new Vector3Int(0, 0, 1),
+            new Vector3Int(0, 1, 0),
+            new Vector3Int(0, 1, 1),
+            new Vector3Int(1, 0, 0),
+            new Vector3Int(1, 0, 1),
+            new Vector3Int(1, 1, 0),
+            new Vector3Int(1, 1, 1)
+        };
+        
         private static void SampleRegion(
             NativeArray<byte> densityGrid,
             NativeArray<byte> typeGrid,
@@ -215,7 +224,6 @@ namespace AbyssEditor.Scripts.BinaryReadingWriting
             out byte avgDensity,
             out bool isUniform)
         {
-            int typeCount = 0;
             long densitySum = 0;
             int sampleCount = 0;
 
