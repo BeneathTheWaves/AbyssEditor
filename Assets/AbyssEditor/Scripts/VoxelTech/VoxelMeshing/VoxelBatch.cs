@@ -1,8 +1,8 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using AbyssEditor.Scripts.BinaryReadingWriting;
 using AbyssEditor.Scripts.CursorTools.Brush;
-using AbyssEditor.Scripts.Octrees;
 using AbyssEditor.Scripts.TaskSystem;
 using AbyssEditor.Scripts.ThreadingManager;
 using AbyssEditor.Scripts.Util;
@@ -31,7 +31,7 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelMeshing
 
             octreeCounts = Vector3Int.one * VoxelWorld.CONTAINERS_PER_SIDE;
 
-            pointContainers = new VoxelMesh[octreeCounts.x * octreeCounts.y * octreeCounts.z];
+            pointContainers = new VoxelMesh[VoxelWorld.CONTAINERS_PER_SIDE * VoxelWorld.CONTAINERS_PER_SIDE * VoxelWorld.CONTAINERS_PER_SIDE];
 
             for (int z = 0; z < octreeCounts.z; z++)
             {
@@ -39,8 +39,7 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelMeshing
                 {
                     for (int x = 0; x < octreeCounts.x; x++)
                     {
-                        pointContainers[Utils.LinearIndex(x, y, z, octreeCounts)] =
-                            new VoxelMesh(transform, new Vector3Int(x, y, z), batchIndex);
+                        pointContainers[Utils.LinearIndex(x, y, z, octreeCounts)] = new VoxelMesh(transform, new Vector3Int(x, y, z), batchIndex);
                     }
                 }
             }
@@ -58,19 +57,6 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelMeshing
             coll.center = (Vector3)octreeCounts * octreeSide / 2f;
             coll.size = octreeCounts * octreeSide;
             coll.isTrigger = true;
-        }
-
-
-        private bool CreateGridsFromOctrees(Octree[,,] _nodes)
-        {
-            for (int z = 0; z < octreeCounts.z; z++) {
-                for (int y = 0; y < octreeCounts.y; y++) {
-                    for (int x = 0; x < octreeCounts.x; x++) {
-                        pointContainers[Utils.LinearIndex(x, y, z, octreeCounts)].SetOctree(_nodes[z, y, x]);
-                    }
-                }
-            }
-            return true;
         }
 
         public async Task<List<Task>> ScheduleMeshRegenAsync(EditorProcessHandle statusHandle)
@@ -144,8 +130,39 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelMeshing
             }
         }
 
-        public void Write(string exportFileLocation) => BatchReadWriter.WriteOptoctrees(batchIndex, ConvertGridsToOctree(), exportFileLocation);//TODO: Check if this works, not tested atm :/
+        public void Write(string exportFileLocation) {} // BatchReadWriter.WriteOptoctrees(batchIndex, ConvertGridsToOctree(), exportFileLocation);//TODO: Check if this works, not tested atm :/
+        
+        public List<Vector3Int> GetDifferentGrids(NativeArray<byte>[] originalDensityGrids, NativeArray<byte>[] originalTypeGrids)
+        {
+            List<Vector3Int> changedGridIndexes = new();
+            //Return all 
+            if (originalDensityGrids == null || originalTypeGrids == null)
+            {
+                for (int x = 0; x < VoxelWorld.CONTAINERS_PER_SIDE; x++)
+                for (int y = 0; y < VoxelWorld.CONTAINERS_PER_SIDE; y++)
+                for (int z = 0; z < VoxelWorld.CONTAINERS_PER_SIDE; z++)
+                {
+                    changedGridIndexes.Add(new Vector3Int(x, y, z));
+                }
+                return changedGridIndexes;
+            }
+            
+            for (int x = 0; x < VoxelWorld.CONTAINERS_PER_SIDE; x++)
+            for (int y = 0; y < VoxelWorld.CONTAINERS_PER_SIDE; y++)
+            for (int z = 0; z < VoxelWorld.CONTAINERS_PER_SIDE; z++)
+            {
+                int index = Utils.LinearIndex(x, y, z, VoxelWorld.CONTAINERS_PER_SIDE);
+                if (originalDensityGrids[index].IsIdenticalTo(pointContainers[index].grid.densityGrid) && originalTypeGrids[index].IsIdenticalTo(pointContainers[index].grid.typeGrid))
+                {
+                    continue;   
+                }
+                
+                changedGridIndexes.Add(new Vector3Int(x, y, z));
+            }
 
+            return changedGridIndexes;
+        }
+        
         public void ApplyJobBasedDensityFunction(BrushStroke stroke, List<BrushJob> brushActions, List<VoxelMesh> modifiedContainers)
         {
             foreach (VoxelMesh container in pointContainers)
@@ -157,29 +174,6 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelMeshing
                     modifiedContainers.Add(container);
                 }
             }
-        }
-
-        public Octree[,,] ConvertGridsToOctree()
-        {
-            Octree[,,] nodes = new Octree[VoxelWorld.CONTAINERS_PER_SIDE, VoxelWorld.CONTAINERS_PER_SIDE, VoxelWorld.CONTAINERS_PER_SIDE];
-            
-            for (int z = 0; z < 5; z++) {
-                for (int y = 0; y < 5; y++) {
-                    for (int x = 0; x < 5; x++) {
-                        ref Octree tree = ref nodes[z, y, x];
-                        tree = new Octree(x, y, z, VoxelWorld.OCTREE_WIDTH, batchIndex * VoxelWorld.BATCH_WIDTH);
-                        
-                        OctNodeData[] nodeData = new OctNodeData[1];
-                        nodeData[0] = new OctNodeData();
-                        
-                        tree.Write(nodeData);
-                        
-                        VoxelMesh _container = pointContainers[Utils.LinearIndex(x, y, z, octreeCounts)];
-                        tree.DeRasterizeGrid(_container.grid.densityGrid, _container.grid.typeGrid, VoxelGrid.GRID_PADDING, VoxelWorld.MAX_OCTREE_DEPTH);
-                    }
-                }
-            }
-            return nodes;
         }
 
         /// <summary>

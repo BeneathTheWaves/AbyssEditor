@@ -1,6 +1,5 @@
 ﻿using AbyssEditor.Scripts.CursorTools.Brush;
 using AbyssEditor.Scripts.Mesh_Gen;
-using AbyssEditor.Scripts.Octrees;
 using AbyssEditor.Scripts.TaskSystem;
 using AbyssEditor.Scripts.TerrainMaterials;
 using AbyssEditor.Scripts.VoxelTech.VoxelMeshing.VoxelGrids;
@@ -61,34 +60,9 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelMeshing
             meshCollider.sharedMesh = mesh;
         }
 
-        public void SetOctree(Octree octree)
-        {
-            RasterizeOctree(octree);
-        }
-
         public void CreateVoxelGrid(NativeArray<byte> densityGrid, NativeArray<byte> typeGrid)
         {
             grid = new VoxelGrid(densityGrid, typeGrid, octreeIndex, batchIndex);
-        }
-
-        private void RasterizeOctree(Octree octree)
-        {
-            int _res = VoxelWorld.GRID_RESOLUTION;
-            NativeArray<byte> tempTypes = new NativeArray<byte>(_res * _res * _res, Allocator.Persistent);
-            NativeArray<byte> tempDensities = new NativeArray<byte>(_res * _res * _res, Allocator.Persistent);
-
-            octree.Rasterize(tempDensities, tempTypes, _res, VoxelWorld.MAX_OCTREE_DEPTH);
-
-            //if this is an overwrite, we need to free the old native arrays before overwriting.
-            if (grid != null)
-            {
-                grid.DisposeGrids();
-                grid = null;
-            }
-            
-            grid = new VoxelGrid(tempDensities, tempTypes, octreeIndex, batchIndex);
-            //Note: we free the temporary arrays within the voxel grid once we initialize the grid to its padding
-            //WE MAY want to change this so we don't have to do that tho :)
         }
         
         public BrushJob ApplyJobBasedDensityAction(BrushStroke stroke)

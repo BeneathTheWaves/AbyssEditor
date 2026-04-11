@@ -1,11 +1,9 @@
-﻿using AbyssEditor.Scripts.CursorTools;
-using AbyssEditor.Scripts.CursorTools.Brush;
-using AbyssEditor.Scripts.InputMaps;
+﻿using AbyssEditor.Scripts.InputMaps;
 using AbyssEditor.Scripts.SaveSystem;
 using AbyssEditor.Scripts.UI;
 using AbyssEditor.Scripts.VoxelTech;
 using UnityEngine;
-using UnityEngine.EventSystems;
+
 namespace AbyssEditor.Scripts
 {
     public class CameraControls : MonoBehaviour

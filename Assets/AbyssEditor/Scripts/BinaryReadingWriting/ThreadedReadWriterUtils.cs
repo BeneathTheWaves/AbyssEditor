@@ -1,8 +1,5 @@
 using System.Collections.Generic;
 using System.IO;
-using AbyssEditor.Scripts.Octrees;
-using AbyssEditor.Scripts.VoxelTech;
-using Unity.Collections;
 using UnityEngine;
 
 namespace AbyssEditor.Scripts.BinaryReadingWriting
@@ -11,49 +8,26 @@ namespace AbyssEditor.Scripts.BinaryReadingWriting
     {
         private const int OCTREE_NODE_BYTE_SIZE = 4;
 
-        
-        /// <summary>
-        /// The octrees loaded from a game batch contain a different shape octree than the one that DeRasterizeGrid generates when converting from the density grid back to octrees.
-        /// This function is so that when comparing the octree form from the original batches to the one generated from the grid, they both start from the same base.
-        /// We are trying to make the data we are comparing match essentially.
-        /// </summary>
-        /// <param name="tempDensities">Temporary Densities to use, mainly so that new arrays don't need to be allocated for this operation</param>
-        /// <param name="tempTypes">Temporary Types to use, mainly so that new arrays don't need to be allocated for this operation</param>
-        /// <param name="originalNodes">Original nodes that are directly from a loaded batch, otherwise this isn't going to do much</param>
-        /*PUBLIC FOR NOW*/public static void RasterDeRasterizeBatch(NativeArray<byte> tempDensities, NativeArray<byte> tempTypes, Octree[,,] originalNodes)
+        public static string GetPath(Vector3Int batchIndex, bool allowModded, out bool isModded)
         {
-            //if this becomes a performance issue there is nothing stopping it from becoming a unity job operation, each octree only looks at itself and its grid
-            if (originalNodes != null)
+            string fileName = $"compiled-batch-{batchIndex.x}-{batchIndex.y}-{batchIndex.z}.optoctrees";
+
+            string vanillaFile = Path.Combine(SnPaths.instance.BatchSourcePath(), fileName);
+            isModded = false;
+            if (!allowModded)
             {
-                foreach (Octree node in originalNodes)
-                {
-                    node.Rasterize(tempDensities, tempTypes, VoxelWorld.GRID_RESOLUTION, VoxelWorld.MAX_OCTREE_DEPTH);
-                    node.DeRasterizeGrid(tempDensities, tempTypes, 0, VoxelWorld.MAX_OCTREE_DEPTH);
-                }
+                return File.Exists(vanillaFile) ? vanillaFile : fileName;
             }
-        }
 
-        private static Octree[,,] GenerateEmptyTreesForBatch(Vector3Int batchIndex)
-        {
-            Octree[,,] nodes = new Octree[VoxelWorld.CONTAINERS_PER_SIDE, VoxelWorld.CONTAINERS_PER_SIDE, VoxelWorld.CONTAINERS_PER_SIDE];
-
-            for (int z = 0; z < 5; z++)
-            for (int y = 0; y < 5; y++)
-            for (int x = 0; x < 5; x++)
+            if (Directory.Exists(SnPaths.instance.CompiledPatchesFolder()) && File.Exists(Path.Combine(SnPaths.instance.CompiledPatchesFolder(), fileName)))
             {
-                ref Octree tree = ref nodes[z, y, x];
-                tree = new Octree(x, y, z, VoxelWorld.OCTREE_WIDTH, batchIndex * VoxelWorld.BATCH_WIDTH);
-
-                OctNodeData[] nodeData = new OctNodeData[1];
-                nodeData[0] = new OctNodeData();
-
-                tree.Write(nodeData);
+                isModded = true;
+                return Path.Combine(SnPaths.instance.CompiledPatchesFolder(), fileName);
             }
             
-            return nodes;
+            return File.Exists(vanillaFile) ? vanillaFile : fileName;
         }
-
-
+        
         public static byte[] GetPatchBytes(string patchFilePath)
         {
             if (!File.Exists(patchFilePath))

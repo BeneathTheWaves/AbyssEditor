@@ -88,7 +88,7 @@ namespace AbyssEditor.Scripts.VoxelTech {
                     statusHandle.CompletePhase();
                     break;
                 case ExportMode.OptoctreePatch:
-                    await BatchReadWriter.WriteOctreePatchCoroutine(VoxelMetaspace.metaspace, exportFileLocation);
+                    BatchReadWriter.WriteOctreePatchCoroutine(VoxelMetaspace.metaspace, exportFileLocation);
                     break;
                 case ExportMode.Fbx:
                     //StartCoroutine(ExportFBX.ExportMetaspaceAsync(VoxelMetaspace.metaspace, Globals.instance.batchOutputPath));

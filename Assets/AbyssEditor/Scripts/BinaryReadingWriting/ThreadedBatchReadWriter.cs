@@ -13,8 +13,10 @@ namespace AbyssEditor.Scripts.BinaryReadingWriting
         public static void ReadBatchThreadable(Vector3Int batchIndex, out NativeArray<byte>[] densityGrids, out NativeArray<byte>[] typeGrids, bool generateEmpty = true, bool usePaddedSize = false)
         {
             int gridSize = usePaddedSize ? VoxelWorld.VOXELS_FLAT_PADDED_GRID : VoxelWorld.VOXELS_FLAT_UNPADDED_GRID;
+
+            int gridPadding = usePaddedSize ? 1 : 0;
             
-            string filePath = BatchReadWriter.GetPath(batchIndex, false, out _);
+            string filePath = ThreadedBinaryReadWriter.GetPath(batchIndex, false, out _);
             
             if (!File.Exists(filePath))
             {
@@ -42,7 +44,7 @@ namespace AbyssEditor.Scripts.BinaryReadingWriting
                 NativeArray<byte> densityGrid = new(gridSize, Allocator.Persistent);
                 NativeArray<byte> typeGrid = new(gridSize, Allocator.Persistent);
 
-                ConvertOctreeToGrid(octree, densityGrid, typeGrid);
+                ConvertOctreeToGrid(octree, densityGrid, typeGrid, gridPadding: gridPadding);
                 densityGrids[i] = densityGrid;
                 typeGrids[i] = typeGrid;
             }
@@ -205,14 +207,14 @@ namespace AbyssEditor.Scripts.BinaryReadingWriting
         }
         
         private static readonly Vector3Int[] cornerOffsets = {
-            new Vector3Int(0, 0, 0),
-            new Vector3Int(0, 0, 1),
-            new Vector3Int(0, 1, 0),
-            new Vector3Int(0, 1, 1),
-            new Vector3Int(1, 0, 0),
-            new Vector3Int(1, 0, 1),
-            new Vector3Int(1, 1, 0),
-            new Vector3Int(1, 1, 1)
+            new (0, 0, 0),
+            new (0, 0, 1),
+            new (0, 1, 0),
+            new (0, 1, 1),
+            new (1, 0, 0),
+            new (1, 0, 1),
+            new (1, 1, 0),
+            new (1, 1, 1)
         };
         
         private static void SampleRegion(
