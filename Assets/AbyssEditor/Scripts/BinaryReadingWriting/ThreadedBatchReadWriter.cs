@@ -240,8 +240,7 @@ namespace AbyssEditor.Scripts.BinaryReadingWriting
             int sampleCount = 0;
             
             // Allocate it to the stack for efficiently reasons. A dictionary is too slow but 256 bytes fits easily on the stack
-            //Span<int> typeDictionary = stackalloc int[256];
-            byte nearestValidType = 0;
+            Span<int> typeDictionary = stackalloc int[254];//255 is reserved and won't ever show up so we can ignore it
 
             byte firstType = 0;
             byte firstDensity = 0;
@@ -263,11 +262,8 @@ namespace AbyssEditor.Scripts.BinaryReadingWriting
                 
                 if (density == 0 && type != 0)
                     density = 252;//special case, when the type not 0 but the density is 0 treat it as 252
-
-                if (nearestValidType == 0 && type != 0)
-                    nearestValidType = type;
                 
-                //typeDictionary[type]++;
+                typeDictionary[type]++;
                 densitySum += density;
                 sampleCount++;
 
@@ -290,7 +286,17 @@ namespace AbyssEditor.Scripts.BinaryReadingWriting
             }
             else
             {
-                dominantType = nearestValidType;
+                dominantType = 0;//0 should be impossible if this region is solid but compiler needs this anyway
+                int maxCount = 0;
+                //start iterating at 1 as the terrain is solid
+                for (int t = 1; t < 254; t++)
+                {
+                    if (typeDictionary[t] <= maxCount) continue;
+                
+                    maxCount = typeDictionary[t];
+                    dominantType = (byte)t;
+
+                }
             }
         }
         
