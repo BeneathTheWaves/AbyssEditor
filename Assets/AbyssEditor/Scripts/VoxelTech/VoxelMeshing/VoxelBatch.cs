@@ -116,7 +116,7 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelMeshing
             }
         }
 
-        public void Write(string exportFileLocation) {} // BatchReadWriter.WriteOptoctrees(batchIndex, ConvertGridsToOctree(), exportFileLocation);//TODO: Check if this works, not tested atm :/
+        public void Write(string exportFileLocation) => ThreadedBinaryReadWriter.WriteOptoctreeThreadable(this, exportFileLocation);
         
         public List<Vector3Int> GetDifferentGrids(NativeArray<byte>[] originalDensityGrids, NativeArray<byte>[] originalTypeGrids)
         {
@@ -186,7 +186,7 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelMeshing
             return max;
         }
         
-        
+        //TODO: move this code out of VoxelBatch, it could be its own helper location maybe
         public void RedrawBoundaryPlanes()
         {
             if (boundaryPlanes == null) {

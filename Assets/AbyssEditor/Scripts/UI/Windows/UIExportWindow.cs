@@ -24,28 +24,38 @@ namespace AbyssEditor.Scripts.UI.Windows {
             {
                 case ExportMode.OptoctreePatch:
                 {
-                    // Save .optoctreepatch file
                     string path = StandaloneFileBrowser.StandaloneFileBrowser.SaveFilePanel("Save patch as...", Application.dataPath, "TerrainPatch", "optoctreepatch");
                     if (string.IsNullOrEmpty(path)) {
                         return;
                     }
                     exportPath = path;
+                    _ = VoxelWorld.ExportPatch(exportPath);
+                    
                     break;
                 }
                 case ExportMode.Optoctree:
                 {
-                    // Export some .optoctrees files
-                    string[] paths = StandaloneFileBrowser.StandaloneFileBrowser.OpenFolderPanel("Select export folder...", Application.dataPath, false);
-                    if (paths.Length == 0) {
-                        return;
+                    if (exportIntoGame)
+                    {
+                        exportPath = SnPaths.instance.CompiledPatchesFolder();
                     }
-                    exportPath = exportIntoGame ? SnPaths.instance.CompiledPatchesFolder() : paths[0];
-                    
+                    else
+                    {
+                        string[] paths = StandaloneFileBrowser.StandaloneFileBrowser.OpenFolderPanel("Select export folder...", Application.dataPath, false);
+                        if (paths.Length == 0) {
+                            return;
+                        }
+                        exportPath = paths[0];
+                    }
+                    _ = VoxelWorld.ExportOptoctrees(exportPath);
+                    break;
+                }
+                default:
+                {
+                    DebugOverlay.LogError("Unexpected export mode! (this shouldn't be possible)");
                     break;
                 }
             }
-
-            _ = VoxelWorld.ExportRegionAsync(selectedExportMode, exportPath);
         }
 
         private void OnCheckboxInteract() {
@@ -87,6 +97,14 @@ namespace AbyssEditor.Scripts.UI.Windows {
             OnCheckboxInteract();
             OnModeChanged(exportFileTypeCarousel.GetSelectedElementLanguageKey());
             exportFileTypeCarousel.onOptionSelected += OnModeChanged;
+        }
+        
+        private enum ExportMode
+        {
+            None,
+            OptoctreePatch, //.optoctreepatch file
+            Optoctree, //.optoctrees files
+            Fbx, //.fbx file
         }
     }
 }

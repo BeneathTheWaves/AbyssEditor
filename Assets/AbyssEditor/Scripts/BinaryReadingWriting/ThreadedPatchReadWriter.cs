@@ -32,10 +32,7 @@ namespace AbyssEditor.Scripts.BinaryReadingWriting
             {
                 byte octreeIndex = patchByteArray[currPos++];
                 
-                int iz = octreeIndex % VoxelWorld.OCTREES_PER_SIDE;
-                int iy = (octreeIndex / VoxelWorld.OCTREES_PER_SIDE) % VoxelWorld.OCTREES_PER_SIDE;
-                int ix = octreeIndex / (VoxelWorld.OCTREES_PER_SIDE * VoxelWorld.OCTREES_PER_SIDE);
-                int containerIndex = Utils.LinearIndex(ix, iy, iz, VoxelWorld.OCTREES_PER_SIDE);
+                int containerIndex = Utils.OctreeIndexToContainerIndex(octreeIndex);
                 
                 ushort nodeCount = BitConverter.ToUInt16(patchByteArray, currPos);
                 currPos += 2;

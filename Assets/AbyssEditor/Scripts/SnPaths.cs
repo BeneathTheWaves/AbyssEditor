@@ -12,7 +12,7 @@ namespace AbyssEditor.Scripts {
         public GameType currentGameType { get; private set; }
         
         public string BatchSourcePath() => Path.Combine(Preferences.data.gamePath, GameDataFolder(), dataToUnmanaged, GameExportWindow(), "CompiledOctreesCache");
-        public string CompiledPatchesFolder() => Path.Combine(BatchSourcePath(), "Patches");
+        public string CompiledPatchesFolder() => Path.Combine(BatchSourcePath(), "patches");
         private string GameDataFolder() 
         {
             return currentGameType switch

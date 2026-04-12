@@ -1,3 +1,4 @@
+using AbyssEditor.Scripts.VoxelTech;
 using UnityEngine;
 
 namespace AbyssEditor.Scripts.Util
@@ -17,6 +18,18 @@ namespace AbyssEditor.Scripts.Util
         public static int LinearIndex(int x, int y, int z, Vector3Int dim) {
             return x + y * dim.x + z * dim.x * dim.y;
         }
+        public static Vector3Int LinearToOctreePos(int i)
+        {
+            int iz = i % VoxelWorld.OCTREES_PER_SIDE;
+            int iy = (i / VoxelWorld.OCTREES_PER_SIDE) % VoxelWorld.OCTREES_PER_SIDE;
+            int ix = i / (VoxelWorld.OCTREES_PER_SIDE * VoxelWorld.OCTREES_PER_SIDE);
+            return new Vector3Int(ix, iy, iz);
+        }
 
+        public static int OctreeIndexToContainerIndex(int i)
+        {
+            Vector3Int octreePosition = LinearToOctreePos(i);
+            return LinearIndex(octreePosition.x, octreePosition.y, octreePosition.z, VoxelWorld.OCTREES_PER_SIDE);
+        }
     }
 }

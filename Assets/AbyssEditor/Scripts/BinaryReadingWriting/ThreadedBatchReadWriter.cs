@@ -2,8 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
+using AbyssEditor.Scripts.UI;
 using AbyssEditor.Scripts.Util;
 using AbyssEditor.Scripts.VoxelTech;
+using AbyssEditor.Scripts.VoxelTech.VoxelMeshing;
 using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
 using UnityEngine;
@@ -131,8 +133,32 @@ namespace AbyssEditor.Scripts.BinaryReadingWriting
                 typeGrids[i] = new NativeArray<byte>(gridSize, Allocator.Persistent);
             }
         }
+
+        /// <summary>
+        /// Writes a "Base Game" compiled .optoctree file.
+        /// </summary>
+        public static void WriteOptoctreeThreadable(VoxelBatch batch, string exportLocation)
+        {
+            Vector3Int batchIndex = batch.batchIndex;
+            
+            string batchname = $"compiled-batch-{batchIndex.x}-{batchIndex.y}-{batchIndex.z}.optoctrees";
+
+            DebugOverlay.LogMessage($"Writing {batchname}");
+
+            BinaryWriter writer = new BinaryWriter(File.Open(Path.Combine(exportLocation, batchname), FileMode.OpenOrCreate));
+            writer.Write(4);//Version number
+            
+            for (int i = 0; i < VoxelWorld.OCTREES_PER_BATCH; i++)
+            {
+                int containerIndex = Utils.OctreeIndexToContainerIndex(i);
+
+                WriteBatch(writer, batch.pointContainers[containerIndex].grid.densityGrid, batch.pointContainers[containerIndex].grid.typeGrid);
+            }
+
+            writer.Close();
+        }
         
-        public static void WriteBatchThreadable(BinaryWriter writer, NativeArray<byte> densityGrid, NativeArray<byte> typeGrid)
+        public static void WriteBatch(BinaryWriter writer, NativeArray<byte> densityGrid, NativeArray<byte> typeGrid)
         {
             NativeList<OctNode> octreeNodes = ConvertGridToOctree(densityGrid, typeGrid);
             
@@ -143,6 +169,7 @@ namespace AbyssEditor.Scripts.BinaryReadingWriting
             writer.Write(octreeBytes.AsReadOnlySpan());
             
             octreeNodes.Dispose();
+            octreeBytes.Dispose();
         }
         
         /// <summary>
