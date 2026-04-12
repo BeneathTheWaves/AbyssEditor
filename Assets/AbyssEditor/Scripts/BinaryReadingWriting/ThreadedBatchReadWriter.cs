@@ -184,13 +184,12 @@ namespace AbyssEditor.Scripts.BinaryReadingWriting
                     // leaf Node, child index must be set to 0
                     octNode.type = dominantType;
                     octNode.density = avgDensity;
-                    octNode.childIndexLo = 0;
-                    octNode.childIndexHi = 0;
+                    octNode.childIndex = 0;
                 }
                 else
                 {
                     // Internal node — reserve 8 consecutive child slots
-                    int firstChildIdx = nodes.Length;
+                    ushort firstChildIdx = (ushort)nodes.Length;
                     for (int c = 0; c < 8; c++)
                         nodes.Add(new OctNode());
 
@@ -201,8 +200,7 @@ namespace AbyssEditor.Scripts.BinaryReadingWriting
                     // Modify parent node to point to children.
                     octNode.type = dominantType;
                     octNode.density = avgDensity;
-                    octNode.childIndexLo = (byte)(firstChildIdx & 255);//255 in binary is 11111111, with a bitwise-and we get only the lower bits
-                    octNode.childIndexHi = (byte)((firstChildIdx >> 8) & 255);
+                    octNode.childIndex = firstChildIdx;
 
                     // Enqueue 8 children 
                     int half = width / 2;
@@ -300,14 +298,13 @@ namespace AbyssEditor.Scripts.BinaryReadingWriting
             }
         }
         
-        
+        //ensure this struct is stored in memory like an array of bytes
         [StructLayout(LayoutKind.Sequential, Pack = 1)]
         public struct OctNode
         {
             public byte type;
             public byte density;
-            public byte childIndexLo;
-            public byte childIndexHi;
+            public ushort childIndex;
         }
     }
 }
