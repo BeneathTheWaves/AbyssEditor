@@ -81,16 +81,11 @@ namespace AbyssEditor.Scripts.UI.Windows {
 
         private void Start()
         {
-            if (selectedExportMode == ExportMode.Optoctree)
-            {
-                ToggleCheckboxVisibility(true);
-            }
-            else
-            {
-                ToggleCheckboxVisibility(false);
-            }
+
+            ToggleCheckboxVisibility(selectedExportMode == ExportMode.Optoctree);
             checkbox.transform.GetComponent<Button>().onClick.AddListener(OnCheckboxInteract);
             OnCheckboxInteract();
+            OnModeChanged(exportFileTypeCarousel.GetSelectedElementLanguageKey());
             exportFileTypeCarousel.onOptionSelected += OnModeChanged;
         }
     }
