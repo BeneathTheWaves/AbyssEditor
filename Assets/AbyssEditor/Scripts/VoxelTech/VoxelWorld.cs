@@ -19,7 +19,7 @@ namespace AbyssEditor.Scripts.VoxelTech {
         // this defines the in-game size of the meshes
         public const int OCTREE_WIDTH = 32;
         // this is the 'resolution' but for batches
-        public const int CONTAINERS_PER_SIDE = 5;
+        public const int OCTREES_PER_SIDE = 5;
         // the length/width/height of a batch in meters
         public const int BATCH_WIDTH = 160;
         // This defines the count of voxels (count = resolution^3) in a grid
@@ -127,7 +127,7 @@ namespace AbyssEditor.Scripts.VoxelTech {
                 return 0;
             }
 
-            Vector3 _local = hitPoint - batchIndex * (OCTREE_WIDTH * CONTAINERS_PER_SIDE); 
+            Vector3 _local = hitPoint - batchIndex * (OCTREE_WIDTH * OCTREES_PER_SIDE); 
             int x = (int)_local.x / OCTREE_WIDTH;
             int y = (int)_local.y / OCTREE_WIDTH;
             int z = (int)_local.z / OCTREE_WIDTH;
@@ -145,11 +145,11 @@ namespace AbyssEditor.Scripts.VoxelTech {
 
         public static Vector3Int GetBatchOrigin(Vector3Int batchIndex)
         {
-            return batchIndex * (OCTREE_WIDTH * CONTAINERS_PER_SIDE);
+            return batchIndex * (OCTREE_WIDTH * OCTREES_PER_SIDE);
         }
 
         public static Vector3Int GetBatchIndexFromPoint(Vector3 p) {
-            const int batchSide = OCTREE_WIDTH * CONTAINERS_PER_SIDE;
+            const int batchSide = OCTREE_WIDTH * OCTREES_PER_SIDE;
             return new Vector3Int(Mathf.FloorToInt(p.x / batchSide), Mathf.FloorToInt(p.y / batchSide), Mathf.FloorToInt(p.z / batchSide));
         }
     }

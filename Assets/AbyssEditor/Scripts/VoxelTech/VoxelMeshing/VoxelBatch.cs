@@ -29,19 +29,15 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelMeshing
             batchIndex = _batchIndex;
             SetupGameObject();
 
-            octreeCounts = Vector3Int.one * VoxelWorld.CONTAINERS_PER_SIDE;
+            octreeCounts = Vector3Int.one * VoxelWorld.OCTREES_PER_SIDE;
 
-            pointContainers = new VoxelMesh[VoxelWorld.CONTAINERS_PER_SIDE * VoxelWorld.CONTAINERS_PER_SIDE * VoxelWorld.CONTAINERS_PER_SIDE];
+            pointContainers = new VoxelMesh[VoxelWorld.OCTREES_PER_SIDE * VoxelWorld.OCTREES_PER_SIDE * VoxelWorld.OCTREES_PER_SIDE];
 
             for (int z = 0; z < octreeCounts.z; z++)
-            {
-                for (int y = 0; y < octreeCounts.y; y++)
-                {
-                    for (int x = 0; x < octreeCounts.x; x++)
-                    {
-                        pointContainers[Utils.LinearIndex(x, y, z, octreeCounts)] = new VoxelMesh(transform, new Vector3Int(x, y, z), batchIndex);
-                    }
-                }
+            for (int y = 0; y < octreeCounts.y; y++)
+            for (int x = 0; x < octreeCounts.x; x++)
+            { 
+                pointContainers[Utils.LinearIndex(x, y, z, octreeCounts)] = new VoxelMesh(transform, new Vector3Int(x, y, z), batchIndex);
             }
         }
 
@@ -79,13 +75,8 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelMeshing
             {
                 ThreadedBinaryReadWriter.ReadBatchThreadable(batchIndex, out NativeArray<byte>[] densityGrids, out NativeArray<byte>[] typeGrids, usePaddedSize: true);
                 
-                for (int z = 0; z < octreeCounts.z; z++)
-                for (int y = 0; y < octreeCounts.y; y++)
-                for (int x = 0; x < octreeCounts.x; x++)
-                {
-                    int linearIndexContainer = Utils.LinearIndex(x, y, z, octreeCounts);
-                    int linearIndexOctree = Utils.LinearIndex(z, y, x, octreeCounts);//they operate in z y x for some reason, couldn't tell you why, but it works :)
-                    pointContainers[linearIndexContainer].CreateVoxelGrid(densityGrids[linearIndexOctree], typeGrids[linearIndexOctree]);
+                for (int i = 0; i < VoxelWorld.OCTREES_PER_BATCH; i++) {
+                    pointContainers[i].CreateVoxelGrid(densityGrids[i], typeGrids[i]);
                 }
                 
             });
@@ -97,13 +88,8 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelMeshing
             {
                 ThreadedBinaryReadWriter.GetPatchOctreesThreadable(patchByteArray, batchIndexOffset, out NativeArray<byte>[] densityGrids, out NativeArray<byte>[] typeGrids);
 
-                for (int z = 0; z < octreeCounts.z; z++)
-                for (int y = 0; y < octreeCounts.y; y++)
-                for (int x = 0; x < octreeCounts.x; x++)
-                {
-                    int linearIndexContainer = Utils.LinearIndex(x, y, z, octreeCounts);
-                    int linearIndexOctree = Utils.LinearIndex(z, y, x, octreeCounts);//they operate in z y x for some reason, couldn't tell you why, but it works :)
-                    pointContainers[linearIndexContainer].CreateVoxelGrid(densityGrids[linearIndexOctree], typeGrids[linearIndexOctree]);
+                for (int i = 0; i < VoxelWorld.OCTREES_PER_BATCH; i++) {
+                    pointContainers[i].CreateVoxelGrid(densityGrids[i], typeGrids[i]);
                 }
             });
             statusHandle.IncrementTasksComplete();
@@ -138,22 +124,21 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelMeshing
             //Return all 
             if (originalDensityGrids == null || originalTypeGrids == null)
             {
-                for (int x = 0; x < VoxelWorld.CONTAINERS_PER_SIDE; x++)
-                for (int y = 0; y < VoxelWorld.CONTAINERS_PER_SIDE; y++)
-                for (int z = 0; z < VoxelWorld.CONTAINERS_PER_SIDE; z++)
+                for (int x = 0; x < VoxelWorld.OCTREES_PER_SIDE; x++)
+                for (int y = 0; y < VoxelWorld.OCTREES_PER_SIDE; y++)
+                for (int z = 0; z < VoxelWorld.OCTREES_PER_SIDE; z++)
                 {
                     changedGridIndexes.Add(new Vector3Int(x, y, z));
                 }
                 return changedGridIndexes;
             }
             
-            for (int x = 0; x < VoxelWorld.CONTAINERS_PER_SIDE; x++)
-            for (int y = 0; y < VoxelWorld.CONTAINERS_PER_SIDE; y++)
-            for (int z = 0; z < VoxelWorld.CONTAINERS_PER_SIDE; z++)
+            for (int x = 0; x < VoxelWorld.OCTREES_PER_SIDE; x++)
+            for (int y = 0; y < VoxelWorld.OCTREES_PER_SIDE; y++)
+            for (int z = 0; z < VoxelWorld.OCTREES_PER_SIDE; z++)
             {
-                int containerIndex = Utils.LinearIndex(x, y, z, VoxelWorld.CONTAINERS_PER_SIDE);
-                int octreeDataIndex = Utils.LinearIndex(z, y, x, VoxelWorld.CONTAINERS_PER_SIDE);
-                if (originalDensityGrids[containerIndex].IsIdenticalTo(pointContainers[octreeDataIndex].grid.densityGrid) && originalTypeGrids[containerIndex].IsIdenticalTo(pointContainers[octreeDataIndex].grid.typeGrid))
+                int containerIndex = Utils.LinearIndex(x, y, z, VoxelWorld.OCTREES_PER_SIDE);
+                if (originalDensityGrids[containerIndex].IsIdenticalTo(pointContainers[containerIndex].grid.densityGrid) && originalTypeGrids[containerIndex].IsIdenticalTo(pointContainers[containerIndex].grid.typeGrid))
                 {
                     continue;   
                 }

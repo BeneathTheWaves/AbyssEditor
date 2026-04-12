@@ -242,7 +242,7 @@ namespace AbyssEditor.Scripts.VoxelTech {
         {
             if (statusHandle == null) { statusHandle = TaskManager.main.GetEditorProcessHandle(1); }
 
-            const int meshesToUpdatePerBatch = VoxelWorld.CONTAINERS_PER_SIDE * VoxelWorld.CONTAINERS_PER_SIDE * VoxelWorld.CONTAINERS_PER_SIDE;
+            const int meshesToUpdatePerBatch = VoxelWorld.OCTREES_PER_SIDE * VoxelWorld.OCTREES_PER_SIDE * VoxelWorld.OCTREES_PER_SIDE;
             int totalTasks = batches.Count + (batches.Count * meshesToUpdatePerBatch);
             statusHandle.SetTasksToCompleteForPhase(totalTasks);
             

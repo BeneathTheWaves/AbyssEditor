@@ -69,7 +69,7 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelMeshing.VoxelGrids {
                 Vector3Int neighborBatchIndex = batchIndex;
             
                 if (neighborContainerIndex.x < 0 || neighborContainerIndex.y < 0 || neighborContainerIndex.z < 0 ||
-                    neighborContainerIndex.x >= VoxelWorld.CONTAINERS_PER_SIDE || neighborContainerIndex.y >= VoxelWorld.CONTAINERS_PER_SIDE || neighborContainerIndex.z >= VoxelWorld.CONTAINERS_PER_SIDE) 
+                    neighborContainerIndex.x >= VoxelWorld.OCTREES_PER_SIDE || neighborContainerIndex.y >= VoxelWorld.OCTREES_PER_SIDE || neighborContainerIndex.z >= VoxelWorld.OCTREES_PER_SIDE) 
                 {
                     //outside the current batch
                     neighborBatchIndex = NeighbourBatchFromSampleVoxel(ref sampleVoxel);

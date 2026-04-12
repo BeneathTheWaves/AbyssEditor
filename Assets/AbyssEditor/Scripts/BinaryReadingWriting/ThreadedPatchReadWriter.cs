@@ -1,4 +1,6 @@
 using System;
+using AbyssEditor.Scripts.Util;
+using AbyssEditor.Scripts.VoxelTech;
 using Unity.Collections;
 using UnityEngine;
 
@@ -29,14 +31,19 @@ namespace AbyssEditor.Scripts.BinaryReadingWriting
             for (int i = 0; i < octreeCount; i++)
             {
                 byte octreeIndex = patchByteArray[currPos++];
-                Debug.Log(octreeIndex);
+                
+                int iz = octreeIndex % VoxelWorld.OCTREES_PER_SIDE;
+                int iy = (octreeIndex / VoxelWorld.OCTREES_PER_SIDE) % VoxelWorld.OCTREES_PER_SIDE;
+                int ix = octreeIndex / (VoxelWorld.OCTREES_PER_SIDE * VoxelWorld.OCTREES_PER_SIDE);
+                int containerIndex = Utils.LinearIndex(ix, iy, iz, VoxelWorld.OCTREES_PER_SIDE);
+                
                 ushort nodeCount = BitConverter.ToUInt16(patchByteArray, currPos);
                 currPos += 2;
                 
                 byte[] octree = new byte[nodeCount * OCTREE_NODE_BYTE_SIZE];
                 Array.Copy(patchByteArray, currPos, octree, 0, octree.Length);
                 currPos+=octree.Length;
-                ConvertOctreeToGrid(octree, densityGrids[octreeIndex], typeGrids[octreeIndex]);
+                ConvertOctreeToGrid(octree, densityGrids[containerIndex], typeGrids[containerIndex]);
             }
         }
     }

@@ -36,19 +36,22 @@ namespace AbyssEditor.Scripts.BinaryReadingWriting
             
             densityGrids = new NativeArray<byte>[VoxelWorld.OCTREES_PER_BATCH];
             typeGrids = new NativeArray<byte>[VoxelWorld.OCTREES_PER_BATCH];
-            
             for (int i = 0; i < VoxelWorld.OCTREES_PER_BATCH; i++)
             {
                 int treeNodeCount = reader.ReadUInt16();
                 int treeByteSize = treeNodeCount * OCTREE_NODE_BYTE_SIZE;
                 byte[] octree = reader.ReadBytes(treeByteSize);
                 
+                int iz = i % VoxelWorld.OCTREES_PER_SIDE;
+                int iy = (i / VoxelWorld.OCTREES_PER_SIDE) % VoxelWorld.OCTREES_PER_SIDE;
+                int ix = i / (VoxelWorld.OCTREES_PER_SIDE * VoxelWorld.OCTREES_PER_SIDE);
+                int containerIndex = Utils.LinearIndex(ix, iy, iz, VoxelWorld.OCTREES_PER_SIDE);
+
                 NativeArray<byte> densityGrid = new(gridSize, Allocator.Persistent);
                 NativeArray<byte> typeGrid = new(gridSize, Allocator.Persistent);
-
                 ConvertOctreeToGrid(octree, densityGrid, typeGrid, gridPadding: gridPadding);
-                densityGrids[i] = densityGrid;
-                typeGrids[i] = typeGrid;
+                densityGrids[containerIndex] = densityGrid;
+                typeGrids[containerIndex] = typeGrid;
             }
         }
 

@@ -79,16 +79,16 @@ namespace AbyssEditor.Scripts {
                     foreach (Vector3Int gridFlatIndex in changedGridFlatIndexs)
                     {
                         //is this cursed as FUCK, yes. but does it work? also yes. so is it bad? yes. it's stupid.
-                        int octIndex = Utils.LinearIndex(gridFlatIndex.z, gridFlatIndex.y, gridFlatIndex.x, VoxelWorld.CONTAINERS_PER_SIDE);
+                        int octIndex = Utils.LinearIndex(gridFlatIndex.z, gridFlatIndex.y, gridFlatIndex.x, VoxelWorld.OCTREES_PER_SIDE);
                         writer.Write((byte)octIndex);
-                        int pointContainerIndex = Utils.LinearIndex(gridFlatIndex.x, gridFlatIndex.y, gridFlatIndex.z, VoxelWorld.CONTAINERS_PER_SIDE);
+                        int pointContainerIndex = Utils.LinearIndex(gridFlatIndex.x, gridFlatIndex.y, gridFlatIndex.z, VoxelWorld.OCTREES_PER_SIDE);
                         ThreadedBinaryReadWriter.WriteBatchThreadable(writer, batch.pointContainers[pointContainerIndex].grid.densityGrid, batch.pointContainers[pointContainerIndex].grid.typeGrid);
                     }
                 }
 
                 if (originalDensityGrids == null || originalTypeGrids == null) continue;
                 
-                for (int i = 0; i < VoxelWorld.CONTAINERS_PER_SIDE; i++)
+                for (int i = 0; i < VoxelWorld.OCTREES_PER_SIDE; i++)
                 {
                     originalDensityGrids[i].Dispose();
                     originalTypeGrids[i].Dispose();
