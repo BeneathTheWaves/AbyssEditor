@@ -93,44 +93,6 @@ namespace AbyssEditor.Scripts.VoxelTech {
             //must floor to int as c# ints will round towards 0 in the negatives when cast flooring
             return new Vector3Int( Mathf.FloorToInt(spacePos.x / BATCH_WIDTH), Mathf.FloorToInt(spacePos.y / BATCH_WIDTH), Mathf.FloorToInt(spacePos.z / BATCH_WIDTH) );
         }
-        
-        public static Vector3Int BatchSpacePosToBatchId(Vector3Int spacePos)
-        {
-            return new Vector3Int( Mathf.FloorToInt((float)spacePos.x / BATCH_WIDTH), Mathf.FloorToInt((float)spacePos.y / BATCH_WIDTH), Mathf.FloorToInt((float)spacePos.z / BATCH_WIDTH) );
-        }
-        
-        public byte SampleBlocktype(Vector3 hitPoint, Ray cameraRay, int retryCount= 0) {
-            // batch -> octree -> voxel
-            if (retryCount == 32) return 0;
-
-            // batch
-            Vector3Int batchIndex = GetBatchIndexFromPoint(hitPoint);
-            if (!VoxelMetaspace.metaspace.BatchLoaded(batchIndex)) {
-                float newDistance = Vector3.Distance(hitPoint, cameraRay.origin) + .5f;
-                Vector3 newPoint = cameraRay.GetPoint(newDistance);
-                return SampleBlocktype(newPoint, cameraRay, retryCount + 1);
-            }
-
-            if (!VoxelMetaspace.metaspace.TryGetVoxelMesh(batchIndex, out VoxelBatch batch))
-            {
-                return 0;
-            }
-
-            Vector3 _local = hitPoint - batchIndex * (OCTREE_WIDTH * OCTREES_PER_SIDE); 
-            int x = (int)_local.x / OCTREE_WIDTH;
-            int y = (int)_local.y / OCTREE_WIDTH;
-            int z = (int)_local.z / OCTREE_WIDTH;
-
-            byte type = batch.pointContainers[Utils.LinearIndex(x, y, z, 5)].SampleBlocktype(hitPoint);
-
-            if (type == 0) {
-                float newDistance = Vector3.Distance(hitPoint, cameraRay.origin) + .5f;
-                Vector3 newPoint = cameraRay.GetPoint(newDistance);
-                return SampleBlocktype(newPoint, cameraRay, retryCount + 1);
-            }
-
-            return type;
-        }
 
         public static Vector3Int GetBatchOrigin(Vector3Int batchIndex)
         {

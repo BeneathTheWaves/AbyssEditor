@@ -138,7 +138,7 @@ namespace AbyssEditor.Scripts.CursorTools.Brush {
             }
 
             if (activeMode == BrushMode.Eyedropper) {
-                SetBrushMaterial(VoxelWorld.world.SampleBlocktype(hit.point, ray));
+                SetBrushMaterial(VoxelMetaspace.metaspace.SampleBlocktype(hit.point, ray));
                 return;
             } 
             

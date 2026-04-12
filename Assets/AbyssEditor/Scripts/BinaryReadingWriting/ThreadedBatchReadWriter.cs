@@ -305,23 +305,19 @@ namespace AbyssEditor.Scripts.BinaryReadingWriting
             }
             
             avgDensity = sampleCount > 0 ? (byte)(densitySum / sampleCount) : (byte)0;
-            if (avgDensity < 126)
+            dominantType = 0;
+            
+            if (avgDensity < 126) return;
+            //determine the best possible material that is non air
+            int maxCount = 0;
+            //start iterating at 1 as the terrain is solid
+            for (int t = 1; t < 254; t++)
             {
-                dominantType = 0;
-            }
-            else
-            {
-                dominantType = 0;//0 should be impossible if this region is solid but compiler needs this anyway
-                int maxCount = 0;
-                //start iterating at 1 as the terrain is solid
-                for (int t = 1; t < 254; t++)
-                {
-                    if (typeDictionary[t] <= maxCount) continue;
+                if (typeDictionary[t] <= maxCount) continue;
                 
-                    maxCount = typeDictionary[t];
-                    dominantType = (byte)t;
+                maxCount = typeDictionary[t];
+                dominantType = (byte)t;
 
-                }
             }
         }
         

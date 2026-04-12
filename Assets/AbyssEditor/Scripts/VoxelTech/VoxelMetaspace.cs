@@ -270,6 +270,40 @@ namespace AbyssEditor.Scripts.VoxelTech {
             }
         }
         
+        public byte SampleBlocktype(Vector3 hitPoint, Ray cameraRay, int retryCount= 0) {
+            // batch -> octree -> voxel
+            if (retryCount == 32) return 0;
+
+            // batch
+            Vector3Int batchIndex = VoxelWorld.GetBatchIndexFromPoint(hitPoint);
+            if (!metaspace.BatchLoaded(batchIndex)) {
+                float newDistance = Vector3.Distance(hitPoint, cameraRay.origin) + .5f;
+                Vector3 newPoint = cameraRay.GetPoint(newDistance);
+                return SampleBlocktype(newPoint, cameraRay, retryCount + 1);
+            }
+
+            if (!metaspace.TryGetVoxelMesh(batchIndex, out VoxelBatch batch))
+            {
+                return 0;
+            }
+
+            Vector3 local = hitPoint - batchIndex * (VoxelWorld.BATCH_WIDTH); 
+            int x = (int)local.x / VoxelWorld.OCTREE_WIDTH;
+            int y = (int)local.y / VoxelWorld.OCTREE_WIDTH;
+            int z = (int)local.z / VoxelWorld.OCTREE_WIDTH;
+
+            byte type = batch.pointContainers[Utils.LinearIndex(x, y, z, VoxelWorld.OCTREES_PER_SIDE)].SampleBlocktype(hitPoint);
+
+            if (type == 0) {
+                float newDistance = Vector3.Distance(hitPoint, cameraRay.origin) + .5f;
+                Vector3 newPoint = cameraRay.GetPoint(newDistance);
+                return SampleBlocktype(newPoint, cameraRay, retryCount + 1);
+            }
+
+            return type;
+        }
+        
+        
         public bool BatchLoaded(Vector3Int batchIndex) {
             if(batches.TryGetValue(batchIndex, out VoxelBatch _))
             {
