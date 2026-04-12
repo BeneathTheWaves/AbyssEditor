@@ -18,7 +18,7 @@ namespace AbyssEditor.Scripts.BinaryReadingWriting
 
             int gridPadding = usePaddedSize ? 1 : 0;
             
-            string filePath = ThreadedBinaryReadWriter.GetPath(batchIndex, false, out _);
+            string filePath = GetPath(batchIndex, false, out _);
             
             if (!File.Exists(filePath))
             {
@@ -78,7 +78,7 @@ namespace AbyssEditor.Scripts.BinaryReadingWriting
                 for (int iy = y; iy < y + currentNodeRegionWidth; iy++)
                 for (int iz = z; iz < z + currentNodeRegionWidth; iz++)
                 {
-                    int pos = Util.Utils.LinearIndex(gridPadding + ix, gridPadding + iy, gridPadding + iz, VoxelWorld.GRID_RESOLUTION + (2 * gridPadding));
+                    int pos = Utils.LinearIndex(gridPadding + ix, gridPadding + iy, gridPadding + iz, VoxelWorld.GRID_RESOLUTION + (2 * gridPadding));
                     densityGrid[pos] = density;
                     typeGrid[pos] = type;
                 }
@@ -191,14 +191,14 @@ namespace AbyssEditor.Scripts.BinaryReadingWriting
                     for (int c = 0; c < 8; c++)
                         nodes.Add(new OctNode());
 
-                    //We can only get a reference to the node AFTER we add the other elements.
+                    //We can only get a reference to the parent node AFTER we add the children.
                     //When nativeList reallocates its memory to expand, the ref to the struct can become invalid and cause undefined behavior
                     ref OctNode octNode = ref nodes.ElementAt(nodeIdx);
                     
                     // Modify parent node to point to children.
                     octNode.type = dominantType;
                     octNode.density = avgDensity;
-                    octNode.childIndexLo = (byte)(firstChildIdx & 255);//255 in binary is 11111111, with a binary-and we get only the lower bits
+                    octNode.childIndexLo = (byte)(firstChildIdx & 255);//255 in binary is 11111111, with a bitwise-and we get only the lower bits
                     octNode.childIndexHi = (byte)((firstChildIdx >> 8) & 255);
 
                     // Enqueue 8 children 
@@ -237,7 +237,8 @@ namespace AbyssEditor.Scripts.BinaryReadingWriting
             int sampleCount = 0;
             
             // Allocate it to the stack for efficiently reasons. A dictionary is too slow but 256 bytes fits easily on the stack
-            Span<int> typeDictionary = stackalloc int[256];
+            //Span<int> typeDictionary = stackalloc int[256];
+            byte nearestValidType = 0;
 
             byte firstType = 0;
             byte firstDensity = 0;
@@ -257,10 +258,13 @@ namespace AbyssEditor.Scripts.BinaryReadingWriting
                 byte density = densityGrid[pos];
                 byte type = typeGrid[pos];
                 
-                /*if (density == 0 && type != 0)
-                    density = 252;//special case, when the type not 0 but the density is 0 treat it as 252*///
+                if (density == 0 && type != 0)
+                    density = 252;//special case, when the type not 0 but the density is 0 treat it as 252
 
-                typeDictionary[type]++;
+                if (nearestValidType == 0 && type != 0)
+                    nearestValidType = type;
+                
+                //typeDictionary[type]++;
                 densitySum += density;
                 sampleCount++;
 
@@ -277,16 +281,13 @@ namespace AbyssEditor.Scripts.BinaryReadingWriting
             }
             
             avgDensity = sampleCount > 0 ? (byte)(densitySum / sampleCount) : (byte)0;
-
-            // Find most frequent type
-            dominantType = 0;
-            int maxCount = 0;
-            for (int t = 0; t < 256; t++)
+            if (avgDensity < 126)
             {
-                if (typeDictionary[t] <= maxCount) continue;
-                
-                maxCount = typeDictionary[t];
-                dominantType = (byte)t;
+                dominantType = 0;
+            }
+            else
+            {
+                dominantType = nearestValidType;
             }
         }
         

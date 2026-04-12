@@ -54,7 +54,7 @@ namespace AbyssEditor.Scripts {
             {
                 // load original nodes from file
                 statusHandle.SetStatus($"Loading base octrees {batch.batchIndex}");
-                ThreadedBinaryReadWriter.ReadBatchThreadable(batch.batchIndex, out NativeArray<byte>[] originalDensityGrids, out NativeArray<byte>[] originalTypeGrids, generateEmpty: false, usePaddedSize: false);//TODO: make equality check work with unpadded grid to save memory (slightly)
+                ThreadedBinaryReadWriter.ReadBatchThreadable(batch.batchIndex, out NativeArray<byte>[] originalDensityGrids, out NativeArray<byte>[] originalTypeGrids, generateEmpty: false, usePaddedSize: true);
                 await Task.Yield();
                 
                 // Diff trees

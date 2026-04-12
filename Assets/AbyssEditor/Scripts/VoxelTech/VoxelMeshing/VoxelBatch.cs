@@ -151,8 +151,9 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelMeshing
             for (int y = 0; y < VoxelWorld.CONTAINERS_PER_SIDE; y++)
             for (int z = 0; z < VoxelWorld.CONTAINERS_PER_SIDE; z++)
             {
-                int index = Utils.LinearIndex(x, y, z, VoxelWorld.CONTAINERS_PER_SIDE);
-                if (originalDensityGrids[index].IsIdenticalTo(pointContainers[index].grid.densityGrid) && originalTypeGrids[index].IsIdenticalTo(pointContainers[index].grid.typeGrid))
+                int containerIndex = Utils.LinearIndex(x, y, z, VoxelWorld.CONTAINERS_PER_SIDE);
+                int octreeDataIndex = Utils.LinearIndex(z, y, x, VoxelWorld.CONTAINERS_PER_SIDE);
+                if (originalDensityGrids[containerIndex].IsIdenticalTo(pointContainers[octreeDataIndex].grid.densityGrid) && originalTypeGrids[containerIndex].IsIdenticalTo(pointContainers[octreeDataIndex].grid.typeGrid))
                 {
                     continue;   
                 }
