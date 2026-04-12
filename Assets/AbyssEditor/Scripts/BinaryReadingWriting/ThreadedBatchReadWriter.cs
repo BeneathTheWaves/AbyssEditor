@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Runtime.InteropServices;
 using AbyssEditor.Scripts.Util;
 using AbyssEditor.Scripts.VoxelTech;
 using Unity.Collections;
+using Unity.Collections.LowLevel.Unsafe;
 using UnityEngine;
 
 namespace AbyssEditor.Scripts.BinaryReadingWriting
@@ -127,38 +129,43 @@ namespace AbyssEditor.Scripts.BinaryReadingWriting
             }
         }
         
-        public static void WriteBatchThreadable(
-            BinaryWriter writer,
-            NativeArray<byte> densityGrid,
-            NativeArray<byte> typeGrid)
+        public static void WriteBatchThreadable(BinaryWriter writer, NativeArray<byte> densityGrid, NativeArray<byte> typeGrid)
         {
-            byte[] octreeBytes = ConvertGridToOctree(densityGrid, typeGrid);
-                
+            NativeList<OctNode> octreeNodes = ConvertGridToOctree(densityGrid, typeGrid);
+            
+            NativeArray<byte> octreeBytes = octreeNodes.AsArray().Reinterpret<byte>(UnsafeUtility.SizeOf<OctNode>());
+            
             // Node count as ushort
-            int nodeCount = octreeBytes.Length / OCTREE_NODE_BYTE_SIZE;
-            writer.Write((ushort)nodeCount);
-            writer.Write(octreeBytes);
+            writer.Write((ushort)(octreeNodes.Length));
+            writer.Write(octreeBytes.AsReadOnlySpan());
+            
+            octreeNodes.Dispose();
         }
         
-        private static byte[] ConvertGridToOctree(
+        /// <summary>
+        /// Converts a full 34x34x34 grid into an octree byte sequence
+        /// </summary>
+        private static NativeList<OctNode> ConvertGridToOctree(
             NativeArray<byte> densityGrid,
             NativeArray<byte> typeGrid,
-            int gridPadding = 1)//
+            int gridPadding = 1)
         {
-            // Each node is 4 bytes: [type, density, childLo, childHi]
-            // We use a list so we can patch child indices after the fact.
-            List<byte[]> nodes = new();
+            // Each node is 4 bytes as a struct.
+            // We can modify the nodes afterward.
+            NativeList<OctNode> nodes = new NativeList<OctNode>(Allocator.Persistent);
 
-            // BFS queue: (nodeListIndex, regionX, regionY, regionZ, regionWidth)
+            // Queue allow checking parent nodes before adding child nodes
+            // Breath First in a sense as nodes must be listed top down from the tree
             Queue<(int nodeIdx, int x, int y, int z, int width)> queue = new();
 
-            // --- Root node (placeholder, will be patched) ---
-            nodes.Add(new byte[4]);
-            queue.Enqueue((0, 0, 0, 0, VoxelWorld.GRID_RESOLUTION)); // 32
+            //Add root node
+            nodes.Add(new OctNode());
+            //Enqueue it to start off the "recursive" sequence
+            queue.Enqueue((0, 0, 0, 0, VoxelWorld.GRID_RESOLUTION));//start at 32 res
 
             while (queue.Count > 0)
             {
-                var (nodeIdx, x, y, z, width) = queue.Dequeue();
+                (int nodeIdx, int x, int y, int z, int width) = queue.Dequeue();
 
                 // Sample the region to determine dominant type, average density, uniformity
                 SampleRegion(densityGrid, typeGrid,
@@ -167,28 +174,34 @@ namespace AbyssEditor.Scripts.BinaryReadingWriting
                     out byte avgDensity,
                     out bool isUniform);
 
+                
                 if (isUniform || width == 1)
                 {
-                    // Leaf node — child index stays 0
-                    nodes[nodeIdx][0] = dominantType;
-                    nodes[nodeIdx][1] = avgDensity;
-                    nodes[nodeIdx][2] = 0;
-                    nodes[nodeIdx][3] = 0;
+                    ref OctNode octNode = ref nodes.ElementAt(nodeIdx);
+                    // leaf Node, child index must be set to 0
+                    octNode.type = dominantType;
+                    octNode.density = avgDensity;
+                    octNode.childIndexLo = 0;
+                    octNode.childIndexHi = 0;
                 }
                 else
                 {
                     // Internal node — reserve 8 consecutive child slots
-                    int firstChildIdx = nodes.Count;
+                    int firstChildIdx = nodes.Length;
                     for (int c = 0; c < 8; c++)
-                        nodes.Add(new byte[4]);
+                        nodes.Add(new OctNode());
 
-                    // Patch current node
-                    nodes[nodeIdx][0] = dominantType;
-                    nodes[nodeIdx][1] = avgDensity;
-                    nodes[nodeIdx][2] = (byte)(firstChildIdx & 0xFF);
-                    nodes[nodeIdx][3] = (byte)((firstChildIdx >> 8) & 0xFF);
+                    //We can only get a reference to the node AFTER we add the other elements.
+                    //When nativeList reallocates its memory to expand, the ref to the struct can become invalid and cause undefined behavior
+                    ref OctNode octNode = ref nodes.ElementAt(nodeIdx);
+                    
+                    // Modify parent node to point to children.
+                    octNode.type = dominantType;
+                    octNode.density = avgDensity;
+                    octNode.childIndexLo = (byte)(firstChildIdx & 255);//255 in binary is 11111111, with a binary-and we get only the lower bits
+                    octNode.childIndexHi = (byte)((firstChildIdx >> 8) & 255);
 
-                    // Enqueue 8 children using the same xyz bit-mapping as the reader
+                    // Enqueue 8 children 
                     int half = width / 2;
                     for (int i = 0; i < 8; i++)
                     {
@@ -197,13 +210,7 @@ namespace AbyssEditor.Scripts.BinaryReadingWriting
                     }
                 }
             }
-
-            // Flatten node list into a byte array
-            byte[] result = new byte[nodes.Count * OCTREE_NODE_BYTE_SIZE];
-            for (int i = 0; i < nodes.Count; i++)
-                Buffer.BlockCopy(nodes[i], 0, result, i * OCTREE_NODE_BYTE_SIZE, OCTREE_NODE_BYTE_SIZE);
-
-            return result;
+            return nodes;
         }
         
         private static readonly Vector3Int[] cornerOffsets = {
@@ -220,7 +227,7 @@ namespace AbyssEditor.Scripts.BinaryReadingWriting
         private static void SampleRegion(
             NativeArray<byte> densityGrid,
             NativeArray<byte> typeGrid,
-            int x, int y, int z, int width,
+            int x, int y, int z, int regionWidth,
             int gridPadding,
             out byte dominantType,
             out byte avgDensity,
@@ -228,19 +235,18 @@ namespace AbyssEditor.Scripts.BinaryReadingWriting
         {
             long densitySum = 0;
             int sampleCount = 0;
-
-            // Tally type frequencies
-            // Small fixed array is cheaper than a Dictionary for 254 materials
-            Span<int> typeCounts = stackalloc int[256];
+            
+            // Allocate it to the stack for efficiently reasons. A dictionary is too slow but 256 bytes fits easily on the stack
+            Span<int> typeDictionary = stackalloc int[256];
 
             byte firstType = 0;
             byte firstDensity = 0;
             bool first = true;
-            bool uniform = true;
+            isUniform = true;
 
-            for (int ix = x; ix < x + width; ix++)
-            for (int iy = y; iy < y + width; iy++)
-            for (int iz = z; iz < z + width; iz++)
+            for (int ix = x; ix < x + regionWidth; ix++)
+            for (int iy = y; iy < y + regionWidth; iy++)
+            for (int iz = z; iz < z + regionWidth; iz++)
             {
                 int pos = Utils.LinearIndex(
                     gridPadding + ix,
@@ -248,26 +254,28 @@ namespace AbyssEditor.Scripts.BinaryReadingWriting
                     gridPadding + iz,
                     VoxelWorld.PADDED_GRID_RESOLUTION);
 
-                byte d = densityGrid[pos];
-                byte t = typeGrid[pos];
+                byte density = densityGrid[pos];
+                byte type = typeGrid[pos];
+                
+                /*if (density == 0 && type != 0)
+                    density = 252;//special case, when the type not 0 but the density is 0 treat it as 252*///
 
-                typeCounts[t]++;
-                densitySum += d;
+                typeDictionary[type]++;
+                densitySum += density;
                 sampleCount++;
 
                 if (first)
                 {
-                    firstType = t;
-                    firstDensity = d;
+                    firstType = type;
+                    firstDensity = density;
                     first = false;
                 }
-                else if (uniform && (t != firstType || d != firstDensity))
+                else if (isUniform && (type != firstType || density != firstDensity))
                 {
-                    uniform = false;
+                    isUniform = false;
                 }
             }
-
-            isUniform = uniform;
+            
             avgDensity = sampleCount > 0 ? (byte)(densitySum / sampleCount) : (byte)0;
 
             // Find most frequent type
@@ -275,12 +283,21 @@ namespace AbyssEditor.Scripts.BinaryReadingWriting
             int maxCount = 0;
             for (int t = 0; t < 256; t++)
             {
-                if (typeCounts[t] > maxCount)
-                {
-                    maxCount = typeCounts[t];
-                    dominantType = (byte)t;
-                }
+                if (typeDictionary[t] <= maxCount) continue;
+                
+                maxCount = typeDictionary[t];
+                dominantType = (byte)t;
             }
+        }
+        
+        
+        [StructLayout(LayoutKind.Sequential, Pack = 1)]
+        public struct OctNode
+        {
+            public byte type;
+            public byte density;
+            public byte childIndexLo;
+            public byte childIndexHi;
         }
     }
 }
