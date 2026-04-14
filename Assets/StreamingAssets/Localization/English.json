@@ -103,6 +103,7 @@
   //Discord Game SDK
   "DiscordGameSDK_Details": "Subnautica Terrain Editor",
   "DiscordGameSDK_State": "By the BTW team",
+  "DiscordGameSDK_DownloadURL": "https://github.com/BeneathTheWaves/AbyssEditor",
   
   //Early Access Specific
   "FBXExportDisabled": "Fbx exporting is unavailable for this release"
