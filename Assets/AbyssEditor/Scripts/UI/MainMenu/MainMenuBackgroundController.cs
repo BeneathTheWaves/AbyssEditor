@@ -51,7 +51,7 @@ namespace AbyssEditor.Scripts.UI.MainMenu
 
                 AspectRatioFitter fitter = go.GetComponent<AspectRatioFitter>();
                 fitter.aspectRatio = (float)tex.width / tex.height;
-                fitter.aspectMode = AspectRatioFitter.AspectMode.WidthControlsHeight;
+                fitter.aspectMode = AspectRatioFitter.AspectMode.EnvelopeParent;
 
                 CanvasGroup cs = go.GetComponent<CanvasGroup>();
                 cs.alpha = (i == currentIndex) ? 1f : 0f;
