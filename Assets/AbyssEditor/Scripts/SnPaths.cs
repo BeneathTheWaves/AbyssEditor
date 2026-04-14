@@ -21,6 +21,7 @@ namespace AbyssEditor.Scripts {
                 GameInstallType.SubnauticaWindows => "Subnautica_Data",
                 GameInstallType.SubnauticaMac => Path.Combine("Subnautica.app", "Contents", "Resources", "Data"),
                 GameInstallType.BelowZeroWindows => "SubnauticaZero_Data",
+                GameInstallType.BelowZeroMac => Path.Combine("SubnauticaZero.app", "Contents", "Resources", "Data"),
                 //TODO: below zero directory structure
                 _ => "error"
             };
@@ -88,6 +89,9 @@ namespace AbyssEditor.Scripts {
                         return true;
                     case "SubnauticaZero_Data":
                         instance.currentGameInstallType = GameInstallType.BelowZeroWindows;
+                        return true;
+                    case "SubnauticaZero.app":
+                        instance.currentGameInstallType = GameInstallType.SubnauticaMac;
                         return true;
                 }
             }
