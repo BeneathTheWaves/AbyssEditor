@@ -13,47 +13,38 @@ Abyss Editor is a Terrain (Optoctreepatch) Editor based on Reef Editor and Void 
 
 <hr>
 
-**Major improvements and features:**
-
-- **HUGE** performance increases over past editors
-- Loading and removing batches (Which does not wipe previous progress unless overriding)
-- Better tools (Smoothing, flattening, etc.)
-- Discord Rich Presence
-- Correct exporting (No more corrupted or cubed batches!)
-- Ability to create terrain *anywhere* in the Subnautica World (No batch restrictions!)
-  
-and more
-
----
-
-  **Notable QOL Features:**
- 
-- Faster saving and loading
-- Autoloading Materials on startup
-- Scene light customization
-- Brush toggling
-- Batch grids
-- Water level indicator
-
-  and more
-  
---- 
-
-**This project would not be possible without the following people (Make sure to thank them!):**
-
-- Jbeast291 - Lead Programmer
-- Kallie23 - Assistant Programmer
-
-Past Contributors:
-- Metious
-- Lyonic
-- Eterna
+> [!NOTE]
+> Major improvements and features:
+> - Significant performance increases
+> - Batch loading/removing without wiping progress
+> - Improved tools (smoothing, flattening, etc.)
+> - Discord RPC & scene light customization
+> - Fixed exporting (no more corrupted or cubed batches)
+> - Terrain works anywhere in the Subnautica world
+> - Faster saving, loading, and exporting
+> - Auto-loading materials, brush toggling, batch grids, and more
 
 <hr>
 
-**Development Setup:**
-1. Download the repo and open it in Unity (6000.3.9f1; We try to use the latest version). It may take some time to import the project fully.
+> [!IMPORTANT] 
+> **Development Setup:**
+> 1. Download the repo and open it in Unity (6000.3.9f1; We try to use the latest version). It may take some time to import the project fully.
+> 2. Open the Essentials scene in additive mode to run the Abyss Editor scene.
+> 3. You can now use Abyss Editor through Unity, or build the exe.
+> **Contributing:**
+> Fill this out Jbeast
 
-2. That is all that's needed to get the project running! Now just load the main menu from the scenes folder!
+<hr> 
 
-3. Profit!
+> [!TIP]
+> **How to use Abyss Editor:**
+> 1. Click Play to enter the editor. 
+> 2. Head to the gear icon to set your Subnautica installation path and adjust any settings. 
+> 3. From there, load batches via an optoctreepatch file or batch numbers (findable in-game via F3 — they define a diagonal box of terrain). 
+> 4. Once loaded, modify the terrain freely. Use tooltips or the help menu if you're unsure about a tool.
+>
+> **Loading your edits:**
+> 1. Install [Terrain Patcher](https://github.com/Esper89/Subnautica-TerrainPatcher) and unzip into your Subnautica\BepInEx\plugins folder.
+> 2. You can leave patches anywhere inside your plugins folder, check in-game to see your edits.
+
+Thanks to: Jbeast291 (Lead Dev), Kallie23 (Assistant Dev) — Past contributors: Metious, Lyonic, Eterna
