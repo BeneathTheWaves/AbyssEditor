@@ -18,6 +18,18 @@ namespace AbyssEditor.Scripts.UI
 
         public Action<string> onOptionSelected;
 
+        public void SetInitialValue(string languageKey)
+        {
+            for (int i = 0; i < optionsLanguageKeys.Count; i++)
+            {
+                if (languageKey != optionsLanguageKeys[i]) continue;
+                
+                selectedElement = i;
+                //Will get set in start() if this hasn't been initialized yet
+                return;
+            }
+        }
+        
         public string GetSelectedElementLanguageKey()
         {
             return optionsLanguageKeys[selectedElement];

@@ -33,7 +33,7 @@ namespace AbyssEditor.Scripts.SaveSystem
         
         //Settings
         public string gamePath = "";
-        public bool fullscreen = false;
+        public string fullscreenMode = "BorderlessWindowed"; 
         public bool autoLoadMaterials = true;
         public bool enableBrushLogs = false;
         public bool enableStats = true; // camera position, batch, etc.

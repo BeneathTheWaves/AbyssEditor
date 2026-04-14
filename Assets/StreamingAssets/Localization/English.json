@@ -72,7 +72,11 @@
   "GamePathNotValid": "Invalid game path detected! Please use the game root folder",
   "BrowseButton": "Browse...",
   "FileBrowserTip": "Select a Subnautica or Below Zero game folder.",
-  "EnableFullscreen": "Enable Fullscreen",
+  "FullscreenMode": "Fullscreen Mode",
+    //Fullscreen Modes
+    "BorderlessWindowed": "Borderless Windowed",
+    "ExclusiveFullScreen": "Exclusive FullScreen",
+    "Windowed": "Windowed",
   "AutoLoadMats": "Auto Load Materials",
   "EnableBrushLog": "Enable Brush Logging",
   "EnableStats": "Enable Stats",

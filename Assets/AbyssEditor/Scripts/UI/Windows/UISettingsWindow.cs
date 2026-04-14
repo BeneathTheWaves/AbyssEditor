@@ -8,7 +8,7 @@ namespace AbyssEditor.Scripts.UI.Windows {
     public class UISettingsWindow : UIWindow
     {
         [SerializeField] private TextMeshProUGUI gamePathText;
-        [SerializeField] private Toggle fullscreenToggleButton;
+        [SerializeField] private Carousel fullscreenModeCarousel;
         [SerializeField] private Toggle autoLoadMaterialsToggleButton;
         [SerializeField] private Toggle enableBrushLogsToggleButton;
         [SerializeField] private Toggle enableStatsToggleButton;
@@ -19,7 +19,8 @@ namespace AbyssEditor.Scripts.UI.Windows {
 
         private void Start()
         {
-            fullscreenToggleButton.SetIsOnWithoutNotify(Preferences.data.fullscreen);
+            fullscreenModeCarousel.onOptionSelected += OnFullscreenModeChanged;
+            fullscreenModeCarousel.SetInitialValue("BorderlessWindowed");
             autoLoadMaterialsToggleButton.SetIsOnWithoutNotify(Preferences.data.autoLoadMaterials);
             enableBrushLogsToggleButton.SetIsOnWithoutNotify(Preferences.data.enableBrushLogs);
             enableStatsToggleButton.SetIsOnWithoutNotify(Preferences.data.enableStats);
@@ -43,15 +44,14 @@ namespace AbyssEditor.Scripts.UI.Windows {
             
             string[] paths = StandaloneFileBrowser.StandaloneFileBrowser.OpenFolderPanel(Language.main.Get("FileBrowserTip"), sfbOpenLocation, false);
 
-            if (paths.Length != 0)
+            if (paths.Length == 0) return;
+            
+            Preferences.data.gamePath = paths[0];
+            SavePreferences();
+            UpdatePathDisplay(Preferences.data.gamePath);
+            if (!SnPaths.IsGamePathValid())
             {
-                Preferences.data.gamePath = paths[0];
-                SavePreferences();
-                UpdatePathDisplay(Preferences.data.gamePath);
-                if (!SnPaths.IsGamePathValid())
-                {
-                    DebugOverlay.LogError(Language.main.Get("GamePathNotValid"));
-                }
+                DebugOverlay.LogError(Language.main.Get("GamePathNotValid"));
             }
         }
         
@@ -69,33 +69,33 @@ namespace AbyssEditor.Scripts.UI.Windows {
         }
         private void UpdatePathDisplay(string path) => gamePathText.text = path;
 
-        public void OnFullscreenToggle(bool value)
+        private void OnFullscreenModeChanged(string fullscreenLanguageKey)
         {
-            Screen.fullScreenMode = (value ? FullScreenMode.ExclusiveFullScreen : FullScreenMode.Windowed);
-            Preferences.data.fullscreen = value;
+            ScreenModeManager.ChangeScreenMode(fullscreenLanguageKey);
+            Preferences.data.fullscreenMode = fullscreenLanguageKey;
             SavePreferences();
         }
 
-        public void OnAutoLoadMaterialsToggle(bool value)
+        private void OnAutoLoadMaterialsToggle(bool value)
         {
             Preferences.data.autoLoadMaterials = value;
             SavePreferences();
         }
 
-        public void OnEnableBrushLogsToggle(bool value)
+        private void OnEnableBrushLogsToggle(bool value)
         {
             Preferences.data.enableBrushLogs = value;
             SavePreferences();
         }
         
-        public void OnEnableStatsToggle(bool value)
+        private void OnEnableStatsToggle(bool value)
         {
             Preferences.data.enableStats = value;
             StatsTextUI.main.ToggleVisibility(value);
             SavePreferences();
         }
 
-        public void OnDiscordRPCToggle(bool value)
+        private void OnDiscordRPCToggle(bool value)
         {
             Preferences.data.discordRPC = value;
             SavePreferences();
