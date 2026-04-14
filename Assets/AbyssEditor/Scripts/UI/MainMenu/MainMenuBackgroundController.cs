@@ -28,8 +28,12 @@ namespace AbyssEditor.Scripts.UI.MainMenu
         {
             if (images == null || images.Count == 0) { Debug.LogWarning("No textures assigned."); return; }
 
-            foreach (Texture2D tex in images)
+            currentIndex = Random.Range(0, images.Count);
+            
+            for (int i = 0; i < images.Count; i++)
             {
+                Texture2D tex = images[i];
+                
                 if (tex == null) continue;
 
                 GameObject go = new GameObject("BG_Image", typeof(RawImage), typeof(CanvasGroup), typeof(AspectRatioFitter));
@@ -49,10 +53,10 @@ namespace AbyssEditor.Scripts.UI.MainMenu
                 fitter.aspectRatio = (float)tex.width / tex.height;
                 fitter.aspectMode = AspectRatioFitter.AspectMode.WidthControlsHeight;
 
-                CanvasGroup cg = go.GetComponent<CanvasGroup>();
-                cg.alpha = groups.Count == 0 ? 1f : 0f;
-
-                groups.Add(cg);
+                CanvasGroup cs = go.GetComponent<CanvasGroup>();
+                cs.alpha = (i == currentIndex) ? 1f : 0f;
+                
+                groups.Add(cs);
                 rects.Add(rt);
             }
         }
@@ -99,7 +103,11 @@ namespace AbyssEditor.Scripts.UI.MainMenu
 
         private IEnumerator CycleRoutine()
         {
-            while (true) { yield return new WaitForSeconds(cycleInterval); NextImage(); }
+            while (true)
+            {
+                yield return new WaitForSeconds(cycleInterval);
+                NextImage();
+            }
         }
     }
 }
