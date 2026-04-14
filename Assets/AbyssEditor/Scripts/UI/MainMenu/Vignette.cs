@@ -12,20 +12,15 @@ namespace AbyssEditor.Scripts.UI.MainMenu
 
         private void Awake()
         {
-            var rt = GetComponent<RectTransform>();
-            rt.anchorMin = Vector2.zero;
-            rt.anchorMax = Vector2.one;
-            rt.offsetMin = rt.offsetMax = Vector2.zero;
-
-            var img = GetComponent<RawImage>();
-            img.texture = GenerateVignetteTexture(resolution, resolution, strength, opacity);
+            RawImage img = GetComponent<RawImage>();
+            img.texture = GenerateVignetteTexture(resolution, resolution);
             img.raycastTarget = false;
         }
 
-        private Texture2D GenerateVignetteTexture(int w, int h, float strength, float opacity)
+        private Texture2D GenerateVignetteTexture(int w, int h)
         {
-            var tex = new Texture2D(w, h, TextureFormat.RGBA32, false);
-            var pixels = new Color[w * h];
+            Texture2D tex = new Texture2D(w, h, TextureFormat.RGBA32, false);
+            Color[] pixels = new Color[w * h];
 
             for (int y = 0; y < h; y++)
             for (int x = 0; x < w; x++)

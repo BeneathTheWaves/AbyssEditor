@@ -449,7 +449,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: AbyssEditor::AbyssEditor.Scripts.UI.MainMenu.Vignette
   resolution: 512
-  strength: 500
+  strength: 6
+  opacity: 0.35
 --- !u!114 &548557081
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -542,7 +543,7 @@ MonoBehaviour:
   fadeDuration: 3
   autoCycle: 1
   driftAmount: {x: 30, y: 20}
-  driftSpeed: 0.2
+  driftSpeed: 0.1
   zoomAmount: 0.05
   baseCoverScale: 1.1
 --- !u!222 &647615286
