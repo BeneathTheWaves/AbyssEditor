@@ -5,14 +5,6 @@ namespace AbyssEditor.Scripts.UI
 {
     public class Menu : MonoBehaviour
     {
-        private void Awake()
-        {
-            if (!SceneManager.GetSceneByName("Essentials").isLoaded)
-            {
-                SceneManager.LoadScene("Essentials", LoadSceneMode.Additive);
-            }
-        }
-    
         private void Start()
         {
             Screen.fullScreenMode = FullScreenMode.FullScreenWindow;
