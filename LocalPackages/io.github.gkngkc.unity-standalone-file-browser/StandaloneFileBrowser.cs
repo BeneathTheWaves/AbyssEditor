@@ -14,14 +14,14 @@ namespace StandaloneFileBrowser {
         private static IStandaloneFileBrowser _platformWrapper = null;
 
         static StandaloneFileBrowser() {
-#if UNITY_STANDALONE_OSX
+#if UNITY_EDITOR || UNITY_EDITOR_LINUX
+            _platformWrapper = new StandaloneFileBrowserEditor();
+#elif UNITY_STANDALONE_OSX
             _platformWrapper = new StandaloneFileBrowserMac();
 #elif UNITY_STANDALONE_WIN
             _platformWrapper = new StandaloneFileBrowserWindows();
 #elif UNITY_STANDALONE_LINUX
             _platformWrapper = new StandaloneFileBrowserLinux();
-#elif UNITY_EDITOR
-            _platformWrapper = new StandaloneFileBrowserEditor();
 #endif
         }
 

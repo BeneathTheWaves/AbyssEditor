@@ -28,12 +28,13 @@ namespace AbyssEditor.Scripts.UI.Windows
         public override void EnableWindow()
         {
             base.EnableWindow();
-            string loadText = SnPaths.instance.currentGameType switch
+            string loadText = SnPaths.instance.currentGameInstallType switch
             {
-                SnPaths.GameType.Subnautica => Language.main.Get("LoadmatsSN"),
-                SnPaths.GameType.SubnauticaBelowZero => Language.main.Get("LoadmatsBZ"),
+                SnPaths.GameInstallType.SubnauticaWindows or SnPaths.GameInstallType.SubnauticaMac => Language.main.Get("LoadmatsSN"),
+                SnPaths.GameInstallType.BelowZeroWindows or SnPaths.GameInstallType.BelowZeroMac => Language.main.Get("LoadmatsBZ"),
                 _ => "error"
             };
+            ;
 
             loadMatsButton.transform.Find("Text (TMP)").GetComponent<TextMeshProUGUI>().text = loadText;
 

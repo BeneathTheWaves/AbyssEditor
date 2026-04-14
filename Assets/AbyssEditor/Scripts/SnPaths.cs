@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -9,37 +10,42 @@ namespace AbyssEditor.Scripts {
 
         public static SnPaths instance { get; private set; }
         
-        public GameType currentGameType { get; private set; }
+        public GameInstallType currentGameInstallType { get; private set; }
         
         public string BatchSourcePath() => Path.Combine(Preferences.data.gamePath, GameDataFolder(), dataToUnmanaged, GameExportWindow(), "CompiledOctreesCache");
         public string CompiledPatchesFolder() => Path.Combine(BatchSourcePath(), "patches");
         private string GameDataFolder() 
         {
-            return currentGameType switch
+            return currentGameInstallType switch
             {
-                GameType.Subnautica => "Subnautica_Data",
-                GameType.SubnauticaBelowZero => "SubnauticaZero_Data",
+                GameInstallType.SubnauticaWindows => "Subnautica_Data",
+                GameInstallType.SubnauticaMac => Path.Combine("Subnautica.app", "Contents", "Resources", "Data"),
+                GameInstallType.BelowZeroWindows => "SubnauticaZero_Data",
+                //TODO: below zero directory structure
                 _ => "error"
             };
         }
         private string GameExportWindow()
         {
-            return currentGameType switch
+            return currentGameInstallType switch
             {
-                GameType.Subnautica => "Build18",
-                GameType.SubnauticaBelowZero =>  "Expansion",
+                GameInstallType.SubnauticaWindows or GameInstallType.SubnauticaMac => "Build18",
+                GameInstallType.BelowZeroWindows or GameInstallType.BelowZeroMac => "Expansion",
                 _ => "error"
             };
+            ;
         }
         public string resourcesSourcePath => Path.Combine(Preferences.data.gamePath, GameDataFolder());
         public string BlockTypeStringsFilename()
         {
-            return currentGameType switch
+
+            return currentGameInstallType switch
             {
-                GameType.Subnautica => "blocktypeStrings",
-                GameType.SubnauticaBelowZero =>  "blocktypeStringsBZ",
+                GameInstallType.SubnauticaWindows or GameInstallType.SubnauticaMac => "blocktypeStrings",
+                GameInstallType.BelowZeroWindows or GameInstallType.BelowZeroMac => "blocktypeStringsBZ",
                 _ => "error"
             };
+            ;
         }
         
         private static readonly string dataToUnmanaged = Path.Combine("StreamingAssets", "SNUnmanagedData");
@@ -70,21 +76,26 @@ namespace AbyssEditor.Scripts {
                 switch (directoryName)
                 {
                     case "Subnautica_Data":
-                        instance.currentGameType = GameType.Subnautica;
+                        instance.currentGameInstallType = GameInstallType.SubnauticaWindows;
+                        return true;
+                    case "Subnautica.app":
+                        instance.currentGameInstallType = GameInstallType.SubnauticaMac;
                         return true;
                     case "SubnauticaZero_Data":
-                        instance.currentGameType = GameType.SubnauticaBelowZero;
+                        instance.currentGameInstallType = GameInstallType.BelowZeroWindows;
                         return true;
                 }
             }
 
             return false;
         }
-
-        public enum GameType
+        
+        public enum GameInstallType
         {
-            Subnautica,
-            SubnauticaBelowZero,
+            SubnauticaWindows,
+            BelowZeroWindows,
+            SubnauticaMac,
+            BelowZeroMac,
         }
     }
 }
