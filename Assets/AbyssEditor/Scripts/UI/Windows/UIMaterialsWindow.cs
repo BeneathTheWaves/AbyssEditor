@@ -44,10 +44,7 @@ namespace AbyssEditor.Scripts.UI.Windows
             }
         }
 
-        public void LoadMaterialsIntoGrid()
-        {
-            MaterialIconGenerator.main.GenerateMaterialIcons(LoadIconsIntoGrid);
-        }
+        public void LoadMaterialsIntoGrid() => MaterialIconGenerator.main.GenerateMaterialIcons(LoadIconsIntoGrid);
 
         private void LoadIconsIntoGrid()
         {

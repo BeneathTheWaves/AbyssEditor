@@ -34,6 +34,13 @@ namespace AbyssEditor.Scripts.TerrainMaterials
                 EditorUI.DisplayErrorMessage("Please select a valid game path");
                 return;
             }
+
+            if (SnPaths.instance.currentGameInstallType == SnPaths.GameInstallType.BelowZeroWindows ||
+                SnPaths.instance.currentGameInstallType == SnPaths.GameInstallType.BelowZeroMac)
+            {
+                EditorUI.DisplayErrorMessage("Material loading for below zero is currently unsupported!");
+                return;
+            }
             if (materialIconsLoaded)
             {
                 Debug.LogWarning("Materials Already Loaded!");
