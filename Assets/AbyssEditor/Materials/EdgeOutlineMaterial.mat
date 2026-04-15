@@ -130,7 +130,7 @@ Material:
     - _SrcBlendAlpha: 1
     - _Surface: 0
     - _Thickness: 0.08
-    - _WireframeScale: 0.38
+    - _WireframeScale: 0.5
     - _WorkflowMode: 1
     - _XRMotionVectorsPass: 1
     - _ZWrite: 1
@@ -140,7 +140,7 @@ Material:
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _OutlineColor: {r: 0.0625, g: 1, b: 0, a: 1}
     - _SpecColor: {r: 0.2, g: 0.2, b: 0.2, a: 1}
-    - _WireframeColor: {r: 0.26452097, g: 0, b: 0.6132076, a: 1}
+    - _WireframeColor: {r: 0.6022401, g: 0, b: 1, a: 0}
     - _WireframeColour: {r: 0.020617366, g: 1, b: 0, a: 1}
   m_BuildTextureStacks: []
   m_AllowLocking: 1

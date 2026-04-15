@@ -127,6 +127,9 @@ Face MakeFace(int3 p1, int3 p2, int d1, int d2, int dir, int type) {
             cube3Index = int3(pMinWithGhost.x,     pMinWithGhost.y,     pMinWithGhost.z);
             cube4Index = int3(pMinWithGhost.x,     pMinWithGhost.y - 1, pMinWithGhost.z);
             break;
+        default://This is just to make the compiler happy, shouldn't ever be possible to go down this code path
+            cube1Index = cube2Index = cube3Index = cube4Index = int3(0,0,0);
+            break;
     }
 
     // **CLAMP THE CUBE INDICES**

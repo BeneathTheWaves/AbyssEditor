@@ -1,140 +1,130 @@
-//THIS SHADER IS FROM https://www.youtube.com/watch?v=FQFk2hR89XA
-//https://github.com/Firnox/URP_Wireframe_Shader/tree/main/Assets
+// Wireframe Shader
+// Based on https://github.com/Firnox/URP_Wireframe_Shader
+//
+// Bake barycentric UVs at import time (recommended):
+//   Attach the BarycentricBaker.cs script (included below) to any mesh import
+//   post-processor. It writes (1,0,0), (0,1,0), (0,0,1) into uv2 per triangle.
+//   For quads: the diagonal vertex gets its barycentric component set to 2.0
+//   so the fragment shader can suppress that internal edge.
 
-Shader "Unlit/WireframeShader" {
-  Properties {
-    _MainTex ("Texture", 2D) = "white" {}
-    _WireframeColor ("Wireframe color", color) = (1.0, 1.0, 1.0, 1.0)
-    _WireframeScale ("Wireframe scale", float) = 1.5
-    
-    // Toggles for our wireframe variants
-    [KeywordEnum(BASIC, FIXEDWIDTH, ANTIALIASING)] _WIREFRAME ("Wireframe rendering type", Integer) = 0
-    [Toggle] _QUADS("Show only quads", Integer) = 1
-  }
-  SubShader {
-    Tags { "RenderType" = "Opaque" "Queue" = "Transparent" }
-    LOD 100
-    Blend SrcAlpha OneMinusSrcAlpha
+Shader "Unlit/WireframeShader"
+{
+    Properties
+    {
+        _MainTex        ("Texture",          2D)     = "white" {}
+        _WireframeColor ("Wireframe color",  Color)  = (1, 1, 1, 1)
+        _WireframeScale ("Wireframe scale",  Float)  = 1.5
 
-    Pass {
-      // Don't depth test or cull so we can draw every wireframe line.
-      Cull Off
-      ZWrite Off
+        [KeywordEnum(BASIC, FIXEDWIDTH, ANTIALIASING)]
+        _WIREFRAME      ("Wireframe rendering type", Integer) = 1
 
-      CGPROGRAM
-      #pragma vertex vert
-      #pragma geometry geom
-      #pragma fragment frag
-      // make fog work
-      #pragma multi_compile_fog
-      // Features to edit shader functionality without branching.
-      #pragma shader_feature _WIREFRAME_BASIC _WIREFRAME_FIXEDWIDTH _WIREFRAME_ANTIALIASING
-      #pragma shader_feature _QUADS_ON
-
-      #include "UnityCG.cginc"
-
-      struct appdata {
-          float4 vertex : POSITION;
-          float2 uv : TEXCOORD0;
-      };
-
-      struct v2f {
-          float2 uv : TEXCOORD0;
-          UNITY_FOG_COORDS(1)
-          float4 vertex : SV_POSITION;
-      };
-      
-      // We add our barycentric variables to the geometry struct.
-      struct g2f {
-        float4 pos : SV_POSITION;
-        float3 barycentric : TEXCOORD0;
-      };
-
-      sampler2D _MainTex;
-      float4 _MainTex_ST;
-
-      v2f vert (appdata v) {
-          v2f o;
-          // Push the UnityObjectToClipPos into the geometry shader as for the
-          // quad rendering we'll need the original mesh vertex positions to cull
-          // the edges we do not want to show.
-          //o.vertex = UnityObjectToClipPos(v.vertex);
-          o.vertex = v.vertex;
-
-          o.uv = TRANSFORM_TEX(v.uv, _MainTex);
-          UNITY_TRANSFER_FOG(o,o.vertex);
-          return o;
-      }
-
-      // This applies the barycentric coordinates to each vertex in a triangle.
-      [maxvertexcount(3)]
-      void geom(triangle v2f IN[3], inout TriangleStream<g2f> triStream) {
-        float3 modifier = float3(0.0, 0.0, 0.0);
-
-        #if _QUADS_ON
-          // Note: length of the edge opposite the vertex.
-          float edgeLength0 = distance(IN[1].vertex, IN[2].vertex);
-          float edgeLength1 = distance(IN[0].vertex, IN[2].vertex);
-          float edgeLength2 = distance(IN[0].vertex, IN[1].vertex);
-          // We're fine using if statments it's a trivial function.
-          if ((edgeLength0 > edgeLength1) && (edgeLength0 > edgeLength2)) {
-            modifier = float3(1.0, 0.0, 0.0);
-          }
-          else if ((edgeLength1 > edgeLength0) && (edgeLength1 > edgeLength2)) {
-            modifier = float3(0.0, 1.0, 0.0);
-          }
-          else if ((edgeLength2 > edgeLength0) && (edgeLength2 > edgeLength1)) {
-            modifier = float3(0.0, 0.0, 1.0);
-          }
-        #endif
-
-        g2f o;
-
-        o.pos = UnityObjectToClipPos(IN[0].vertex);
-        o.barycentric = float3(1.0, 0.0, 0.0) + modifier;
-        triStream.Append(o);
-
-        o.pos = UnityObjectToClipPos(IN[1].vertex);
-        o.barycentric = float3(0.0, 1.0, 0.0) + modifier;
-        triStream.Append(o);
-
-        o.pos = UnityObjectToClipPos(IN[2].vertex);
-        o.barycentric = float3(0.0, 0.0, 1.0) + modifier;
-        triStream.Append(o);
-      }
-
-      fixed4 _WireframeColor;
-      float _WireframeScale;
-
-      // frag now takes g2f rather than v2f
-      fixed4 frag (g2f i) : SV_Target {
-        #if _WIREFRAME_BASIC
-          // Find the barycentric coordinate closest to the edge.
-          float closest = min(i.barycentric.x, min(i.barycentric.y, i.barycentric.z));
-          // Set alpha to 1 if within the threshold, else 0.
-          float alpha = step(closest, _WireframeScale / 20.0);
-
-        #elif _WIREFRAME_FIXEDWIDTH
-          // Calculate the unit width based on triangle size.
-          float3 unitWidth = fwidth(i.barycentric);
-          // It is an edge if the barycentric is less than our normalised width.
-          float3 edge = step(i.barycentric, unitWidth * _WireframeScale);
-          // Set alpha to 1 if any coordinate says it's an edge.
-          float alpha = max(edge.x, max(edge.y, edge.z));
-        
-        #elif _WIREFRAME_ANTIALIASING
-          // Calculate the unit width based on triangle size.
-          float3 unitWidth = fwidth(i.barycentric);
-          // Alias the line a bit.
-          float3 aliased = smoothstep(float3(0.0, 0.0, 0.0), unitWidth * _WireframeScale, i.barycentric);
-          // Use the coordinate closest to the edge.
-          float alpha = 1 - min(aliased.x, min(aliased.y, aliased.z));
-        #endif
-
-        // Set our wireframe color.
-        return fixed4(_WireframeColor.r, _WireframeColor.g, _WireframeColor.b, alpha);
-      }
-      ENDCG
+        [Toggle]
+        _QUADS          ("Show only quads",          Integer) = 1
     }
-  }
+
+    SubShader
+    {
+        Tags { "RenderType" = "Opaque" "Queue" = "Transparent" }
+        LOD 100
+        Blend SrcAlpha OneMinusSrcAlpha
+        Cull Off
+        ZWrite Off
+
+        Pass
+        {
+            HLSLPROGRAM
+            #pragma vertex   vert
+            #pragma fragment frag
+
+            #pragma multi_compile_fog
+            #pragma shader_feature _WIREFRAME_BASIC _WIREFRAME_FIXEDWIDTH _WIREFRAME_ANTIALIASING
+            #pragma shader_feature _QUADS_ON
+
+            // Metal / Apple Silicon safe — no geometry shader
+            //#pragma exclude_renderers d3d11 vulkan   // optional: restrict to Metal only
+
+            #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
+
+            TEXTURE2D(_MainTex);
+            SAMPLER(sampler_MainTex);
+
+            CBUFFER_START(UnityPerMaterial)
+                float4 _MainTex_ST;
+                half4  _WireframeColor;
+                float  _WireframeScale;
+            CBUFFER_END
+
+            struct Attributes
+            {
+                float4 positionOS : POSITION;
+                float2 uv         : TEXCOORD0;
+                // Barycentric coords baked into UV2 by BarycentricBaker.cs
+                // x,y,z = barycentric; w = diagonal flag (1 = suppress edge)
+                float4 barycentric : TEXCOORD1;
+            };
+
+            struct Varyings
+            {
+                float4 positionCS  : SV_POSITION;
+                float2 uv          : TEXCOORD0;
+                float4 barycentric : TEXCOORD1;   // xyz = bary, w = diagonal flag
+                float  fogFactor   : TEXCOORD2;
+            };
+
+            Varyings vert(Attributes IN)
+            {
+                Varyings OUT;
+                OUT.positionCS  = TransformObjectToHClip(IN.positionOS.xyz);
+                OUT.uv          = TRANSFORM_TEX(IN.uv, _MainTex);
+                OUT.barycentric = IN.barycentric;
+                OUT.fogFactor   = ComputeFogFactor(OUT.positionCS.z);
+                return OUT;
+            }
+
+            
+            half4 frag(Varyings IN) : SV_Target
+            {
+                float3 bary = IN.barycentric.xyz;
+
+                // _QUADS_ON: suppress the longest (diagonal) edge of each quad.
+                // BarycentricBaker sets the w channel to 1.0 on the diagonal vertex,
+                // which bumps its barycentric component above 1 so it never triggers.
+                #if _QUADS_ON
+                    if (IN.barycentric.w > 0.5)
+                    {
+                        int diagIdx = (int)(IN.barycentric.w + 0.5) - 1; // 0,1,2 — which component to suppress
+                        if      (diagIdx == 0) bary.x = 1.0;
+                        else if (diagIdx == 1) bary.y = 1.0;
+                        else                   bary.z = 1.0;
+                    }
+                #endif
+
+                float alpha = 0.0;
+
+                #if _WIREFRAME_BASIC
+                {
+                    float closest = min(bary.x, min(bary.y, bary.z));
+                    alpha = step(closest, _WireframeScale / 20.0);
+                }
+                #elif _WIREFRAME_FIXEDWIDTH
+                {
+                    float3 unitWidth = fwidth(bary);
+                    float3 edge      = step(bary, unitWidth * _WireframeScale);
+                    alpha = max(edge.x, max(edge.y, edge.z));
+                }
+                #elif _WIREFRAME_ANTIALIASING
+                {
+                    float3 unitWidth = fwidth(bary);
+                    float3 aliased   = smoothstep(float3(0, 0, 0), unitWidth * _WireframeScale, bary);
+                    alpha = 1.0 - min(aliased.x, min(aliased.y, aliased.z));
+                }
+                #endif
+
+                half4 col = half4(_WireframeColor.rgb, alpha);  // remove the * _WireframeColor.a
+                col.rgb = MixFog(col.rgb, IN.fogFactor);
+                return col;
+            }
+            ENDHLSL
+        }
+    }
 }
