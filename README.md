@@ -1,7 +1,7 @@
 # Abyss Editor
 
 ## What is Abyss Editor? ##
-Abyss Editor is a Terrain (Optoctreepatch) Editor based on Reef Editor and Void Editor, which comes with tons of features, fixes, and performance improvements!
+Abyss Editor is a Terrain (Optoctreepatch) Editor for Subnautica & Subnautica Below Zero. Built on top of [Reef Editor](https://github.com/eternaight/sn-terrain-edit) and Void Editor, there are tons of features, fixes, and performance improvements for you to enjoy!
 
 **Current OS Support:**
 
@@ -9,30 +9,22 @@ Abyss Editor is a Terrain (Optoctreepatch) Editor based on Reef Editor and Void 
 |-----------------------|-----------------|
 | Windows               | ✅              |
 | Linux                 | ✅              |
-| MacOS                 | ❌              |
+| MacOS                 | ✅              |
+
+Downloads are available on nexus [here](https://www.youtube.com/watch?v=dQw4w9WgXcQ) ;)
 
 <hr>
 
 > [!NOTE]
-> Major improvements and features:
+> Major improvements and features over [Reef Editor](https://github.com/eternaight/sn-terrain-edit):
 > - Significant performance increases
 > - Batch loading/removing without wiping progress
 > - Improved tools (smoothing, flattening, etc.)
 > - Discord RPC & scene light customization
 > - Fixed exporting (no more corrupted or cubed batches)
-> - Terrain works anywhere in the Subnautica world
+> - Terrain works anywhere in the Subnautica world, including the void/negative batches
 > - Faster saving, loading, and exporting
 > - Auto-loading materials, brush toggling, batch grids, and more
-
-<hr>
-
-> [!IMPORTANT] 
-> **Development Setup:**
-> 1. Download the repo and open it in Unity (6000.3.9f1; We try to use the latest version). It may take some time to import the project fully.
-> 2. Open the Essentials scene in additive mode to run the Abyss Editor scene.
-> 3. You can now use Abyss Editor through Unity, or build the exe.
-> **Contributing:**
-> Fill this out Jbeast
 
 <hr> 
 
@@ -47,4 +39,15 @@ Abyss Editor is a Terrain (Optoctreepatch) Editor based on Reef Editor and Void 
 > 1. Install [Terrain Patcher](https://github.com/Esper89/Subnautica-TerrainPatcher) and unzip into your Subnautica\BepInEx\plugins folder.
 > 2. You can leave patches anywhere inside your plugins folder, check in-game to see your edits.
 
-Thanks to: Jbeast291 (Lead Dev), Kallie23 (Assistant Dev) — Past contributors: Metious, Lyonic, Eterna
+Thanks to: Jbeast291 (Lead Dev), Kallie23 (Assistant Dev) — Past contributors: Metious, Lyonic, Eterna)
+
+<hr>
+
+> [!IMPORTANT] 
+> **Development Setup:**
+> 1. Download the repo and open it in Unity (6000.3.9f1). It may take some time to import the project fully.
+> 2. Open the MainMenu scene or the AbyssEditor scene within Assets/AbyssEditor/Scenes
+> 3. You can now use Abyss Editor through the Unity Editor or build an executable, its that easy!
+> **Contributing:**
+> Fill this out Jbeast
+> "Will fill this out as the last thing i do before release" - jbeast
