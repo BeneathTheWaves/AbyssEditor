@@ -8,9 +8,10 @@ using UnityEngine.UI;
 
 namespace AbyssEditor.Scripts.UI {
     public class EditorUI : MonoBehaviour {
-        public static EditorUI inst;
-        public GameObject errorPrefab;
-        public Color[] uiColors;
+        public static EditorUI inst { get; private set; }
+        [SerializeField] private GameObject errorPrefab;
+        [SerializeField] private GameObject statusArea;
+        [SerializeField] private Color[] uiColors;
 
         [SerializeField] private GameObject inputBlocker;
         [SerializeField] private UIConfirmationWindow confirmationWindow;
@@ -39,7 +40,7 @@ namespace AbyssEditor.Scripts.UI {
             }
         }
 
-        public void EnableWindow<T>() where T : UIWindow
+        private void EnableWindow<T>() where T : UIWindow
         {
             foreach (var window in uiWindows)
             {
@@ -60,40 +61,12 @@ namespace AbyssEditor.Scripts.UI {
             inputBlocker.SetActive(false);
         }
 
-        public static void DisplayErrorMessage(string message, NotificationType type = NotificationType.Error)
+        public void DisplayErrorMessage(string message)
         {
-            switch (type)
-            {
-                case NotificationType.Success:
-                    DebugOverlay.LogMessage(message);
-                    break;
-                case NotificationType.Warning:
-                    DebugOverlay.LogWarning(message);
-                    break;
-                case NotificationType.Error:
-                    DebugOverlay.LogError(message);
-                    break;
-            }
-
-            // clear previous error if it exists
-            /*
-            if (inst.statusBar.parent.childCount > 1)
-            {
-                Destroy(inst.statusBar.parent.GetChild(1).gameObject);
-            }
-
-            GameObject go = Instantiate(inst.errorPrefab, inst.statusBar.parent);
-            go.transform.GetComponentInChildren<Text>().text = message;
-            go.transform.GetChild(1).GetComponent<Image>().color = inst.uiColors[(int) type];
-            go.transform.SetAsLastSibling();
-            */
-        }
-
-        public enum NotificationType
-        {
-            Error,
-            Warning,
-            Success
+            DebugOverlay.LogError(message);
+            GameObject go = Instantiate(errorPrefab, statusArea.transform);
+            EditorErrorDisplay errorDisplay = go.GetComponent<EditorErrorDisplay>();
+            errorDisplay.SetErrorText(message);
         }
     }
 }

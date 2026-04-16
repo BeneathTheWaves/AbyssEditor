@@ -14,7 +14,7 @@ namespace AbyssEditor.Scripts.UI.Windows {
 
         public void Export() {
             if (VoxelMetaspace.metaspace.batches.Count == 0) {
-                EditorUI.DisplayErrorMessage("Nothing to export!");
+                EditorUI.inst.DisplayErrorMessage("Nothing to export!");
                 return;
             }
 

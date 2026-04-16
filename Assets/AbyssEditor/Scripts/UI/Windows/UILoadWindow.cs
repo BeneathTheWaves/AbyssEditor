@@ -76,7 +76,7 @@ namespace AbyssEditor.Scripts.UI.Windows {
 
             if (paths.Length == 0 || !paths[0].ToLower().EndsWith(".optoctreepatch"))
             {
-                EditorUI.DisplayErrorMessage("Please select a valid file!");
+                EditorUI.inst.DisplayErrorMessage("Please select a valid file!");
                 return;
             }
 
@@ -185,7 +185,7 @@ namespace AbyssEditor.Scripts.UI.Windows {
         private IEnumerator LoadBatch() {
 
             if (!SnPaths.IsGamePathValid()) {
-                EditorUI.DisplayErrorMessage("Please select a valid game path");
+                EditorUI.inst.DisplayErrorMessage("Please select a valid game path");
                 yield break;
             }
             
@@ -193,7 +193,7 @@ namespace AbyssEditor.Scripts.UI.Windows {
             bool endEntered = TryParseBatchString(rangeEndInput.text, out Vector3Int endBatchIndex);
 
             if (!startEntered && !endEntered) {
-                EditorUI.DisplayErrorMessage("Please enter at least one batch index: \n\"x(space)y(space)z\"");
+                EditorUI.inst.DisplayErrorMessage("Please enter at least one batch index: \n\"x(space)y(space)z\"");
                 yield break;
             }
             
