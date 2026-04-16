@@ -19,17 +19,9 @@ namespace Editor
     using UnityEngine;
     using UnityEditor;
 
-    public class BarycentricBaker : AssetPostprocessor
+    public static class BarycentricBaker
     {
-        private bool ShouldProcess() => assetPath.Contains("_Wire");
-
-        private void OnPostprocessMesh(Mesh mesh)
-        {
-            if (!ShouldProcess()) return;
-            BakeBarycentrics(mesh);
-        }
-        
-        public static void BakeBarycentrics(Mesh mesh)
+        private static void BakeBarycentrics(Mesh mesh)
         {
             int[] tris     = mesh.triangles;
             Vector3[] verts = mesh.vertices;
@@ -96,18 +88,18 @@ namespace Editor
             Debug.Log($"[BarycentricBaker] Baked {triCount} triangles on '{mesh.name}'");
         }
         
-        [MenuItem("Tools/Bake Wire Mesh/From Selected MeshFilter")]
+        [MenuItem("Tools/Bake WireFrame Mesh/From Selected MeshFilter")]
         static void BakeSelected()
         {
             var mf = Selection.activeGameObject?.GetComponent<MeshFilter>();
             if (mf == null)
             {
-                EditorUtility.DisplayDialog("Wire Mesh", "Select a GameObject with a MeshFilter first.", "OK");
+                EditorUtility.DisplayDialog("WireFrame Mesh", "Select a GameObject with a MeshFilter first.", "OK");
                 return;
             }
 
             string path = EditorUtility.SaveFilePanelInProject(
-                "Save Wire Mesh", mf.sharedMesh.name + "_Wire", "asset", "Save baked mesh as...");
+                "Save WireFrame Mesh", mf.sharedMesh.name + "_WireFrame", "asset", "Save baked mesh as...");
             if (string.IsNullOrEmpty(path)) return;
 
             var mesh = Object.Instantiate(mf.sharedMesh);
@@ -116,7 +108,7 @@ namespace Editor
             AssetDatabase.SaveAssets();
 
             mf.sharedMesh = AssetDatabase.LoadAssetAtPath<Mesh>(path);
-            Debug.Log($"Wire mesh saved to {path} and assigned to {mf.gameObject.name}");
+            Debug.Log($"WireFrame mesh saved to {path} and assigned to {mf.gameObject.name}");
         }
     }
     
