@@ -39,7 +39,10 @@ namespace AbyssEditor.Scripts.UI
         public void SetInitialColor(Color initialColor)
         {
             color = initialColor;
-            pickerImage.color = initialColor;
+            if (pickerImage != null)
+            {
+                pickerImage.color = initialColor;
+            }
         }
 
         private void OnButtonClick()
