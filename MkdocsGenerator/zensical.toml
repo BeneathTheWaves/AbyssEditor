@@ -17,12 +17,12 @@ site_name = "Abyss Editor Manual"
 # meaningful description of the site content for use by search engines.
 #
 # Read more: https://zensical.org/docs/setup/basics/#site_description
-site_description = "A new project generated from the default template project."
+site_description = "Abyss Editor User Manual"
 
 # The site_author attribute. This is used in the HTML head element.
 #
 # Read more: https://zensical.org/docs/setup/basics/#site_author
-site_author = "<your name here>"
+site_author = "Beneath The Waves & Contributors"
 
 # The site_url is the canonical URL for your site. When building online
 # documentation you should set this.
@@ -34,7 +34,7 @@ site_author = "<your name here>"
 #
 # Read more: https://zensical.org/docs/setup/basics/#copyright
 copyright = """
-Copyright &copy; 2026 The authors
+Copyright &copy; 2026 Beneath The Waves & Contributors
 """
 
 # Zensical supports both implicit navigation and explicitly defined navigation.
@@ -71,7 +71,6 @@ Copyright &copy; 2026 The authors
 # Section for configuring theme options
 # ----------------------------------------------------------------------------
 [project.theme]
-
 # change this to "classic" to use the traditional Material for MkDocs look.
 #variant = "classic"
 
@@ -288,14 +287,22 @@ features = [
 # - https://zensical.org/docs/setup/colors/
 # ----------------------------------------------------------------------------
 [[project.theme.palette]]
+media = "(prefers-color-scheme)"
+toggle.icon = "lucide/laptop"
+toggle.name = "Switch to light mode"
+
+[[project.theme.palette]]
+media = "(prefers-color-scheme: light)"
 scheme = "default"
 toggle.icon = "lucide/sun"
 toggle.name = "Switch to dark mode"
 
 [[project.theme.palette]]
+media = "(prefers-color-scheme: dark)"
 scheme = "slate"
 toggle.icon = "lucide/moon"
-toggle.name = "Switch to light mode"
+toggle.name = "Switch to system preference"
+palette.primary = "red"
 
 # ----------------------------------------------------------------------------
 # The "extra" section contains miscellaneous settings.
