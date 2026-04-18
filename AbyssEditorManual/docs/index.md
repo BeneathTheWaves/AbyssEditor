@@ -6,9 +6,11 @@ icon: lucide/house
 
 Welcome to Abyss Editor! This manual will get you started from knowing nothing to loading a patch in game. Useful tips and tricks can also be found here for more advanced topics.
 
-!!! info
+!!! failure "Use the latest build!!"
 
-    Ensure you are on the [latest build](https://github.com/BeneathTheWaves/AbyssEditor) before continuing. This manual is an **offline copy**, and is only updated as you update the editor.
+    Ensure you are on the [latest build](https://github.com/BeneathTheWaves/AbyssEditor) before using the information here. This manual is an **offline copy**[^1] , and is only updated as you update the editor.
+    
+    [^1]: An offline copy means that this "website" is stored on your local computer. All .html files and images are stored so that you can read this manual without internet, forever into the future.
 
 ## Beginners Tutorial
 
