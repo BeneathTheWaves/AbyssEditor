@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using AbyssEditor.Scripts.SaveSystem;
 using UnityEngine;
 
@@ -13,7 +14,9 @@ namespace AbyssEditor.Scripts
         
         public static void ChangeScreenMode(string languageKey)
         {
-            Screen.fullScreenMode = ConvertFullScreenModeLanguageKey(Preferences.data.fullscreenMode);
+            Screen.fullScreenMode = ConvertFullScreenModeLanguageKey(languageKey);
+            Preferences.data.fullscreenMode = languageKey;
+            Preferences.SavePreferences();
         }
 
         private static FullScreenMode ConvertFullScreenModeLanguageKey(string languageKey)

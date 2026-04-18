@@ -20,7 +20,7 @@ namespace AbyssEditor.Scripts.UI.Windows {
         private void Start()
         {
             fullscreenModeCarousel.onOptionSelected += OnFullscreenModeChanged;
-            fullscreenModeCarousel.SetInitialValue("BorderlessWindowed");
+            fullscreenModeCarousel.SetInitialValue(Preferences.data.fullscreenMode);
             autoLoadMaterialsToggleButton.SetIsOnWithoutNotify(Preferences.data.autoLoadMaterials);
             enableBrushLogsToggleButton.SetIsOnWithoutNotify(Preferences.data.enableBrushLogs);
             enableStatsToggleButton.SetIsOnWithoutNotify(Preferences.data.enableStats);
@@ -72,8 +72,6 @@ namespace AbyssEditor.Scripts.UI.Windows {
         private void OnFullscreenModeChanged(string fullscreenLanguageKey)
         {
             ScreenModeManager.ChangeScreenMode(fullscreenLanguageKey);
-            Preferences.data.fullscreenMode = fullscreenLanguageKey;
-            SavePreferences();
         }
 
         private void OnAutoLoadMaterialsToggle(bool value)
