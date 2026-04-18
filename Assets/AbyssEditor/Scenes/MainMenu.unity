@@ -536,6 +536,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: AbyssEditor::AbyssEditor.Scripts.UI.MainMenu.UIBackgroundCover
   images:
+  - {fileID: 2800000, guid: b406bcfe5da74d7999298ece93eea96e, type: 3}
+  - {fileID: 2800000, guid: 99307e252c9d1d66b95f30ec4c129dff, type: 3}
+  - {fileID: 2800000, guid: d6e08459fcacfbd7e8345cca310842a9, type: 3}
+  - {fileID: 2800000, guid: c5ecacf48dc90acc1b969fa456c5364f, type: 3}
+  - {fileID: 2800000, guid: b94d2cde7a3dc452e968d74a046631a4, type: 3}
+  - {fileID: 2800000, guid: 5950e81b8e92c12f38a0f1ab66a5feb6, type: 3}
+  - {fileID: 2800000, guid: 3285c8aa3f77cc9bb9d31cbffa47ceae, type: 3}
   - {fileID: 2800000, guid: b137918b5c3f3b0b4983b2de7c139b8f, type: 3}
   - {fileID: 2800000, guid: 0640b4b8713e944a29082101e5cb4112, type: 3}
   - {fileID: 2800000, guid: 814dfa2f100c51911a5c78d930c65f91, type: 3}
