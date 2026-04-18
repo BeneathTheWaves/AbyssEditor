@@ -39,8 +39,6 @@ Downloads are available on nexus [here](https://www.youtube.com/watch?v=dQw4w9Wg
 > 1. Install [Terrain Patcher](https://github.com/Esper89/Subnautica-TerrainPatcher) and unzip into your Subnautica\BepInEx\plugins folder.
 > 2. You can leave patches anywhere inside your plugins folder, check in-game to see your edits.
 
-Thanks to: Jbeast291 (Lead Dev), Kallie23 (Assistant Dev) — Past contributors: Metious, Lyonic, Eterna)
-
 <hr>
 
 > [!IMPORTANT] 
@@ -51,3 +49,11 @@ Thanks to: Jbeast291 (Lead Dev), Kallie23 (Assistant Dev) — Past contributors:
 > **Contributing:**
 > Fill this out Jbeast
 > "Will fill this out as the last thing i do before release" - jbeast
+
+# Contributors
+Active Contributors: Jbeast291 (Lead Dev), Kallie23 (Assistant Dev)
+
+Past Contributors: Metious, Lyonic, Eterna
+
+### Credits:
+  - Main Menu Images: OliveGarden
