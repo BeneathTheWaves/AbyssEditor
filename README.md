@@ -51,9 +51,9 @@ Downloads are available on nexus [here](https://www.youtube.com/watch?v=dQw4w9Wg
 > "Will fill this out as the last thing i do before release" - jbeast
 
 # Contributors
-Active Contributors: Jbeast291 (Lead Dev), Kallie23 (Assistant Dev)
+Active Developers: Jbeast291 (Lead Dev), Kallie23 (Assistant Dev)
 
-Past Contributors: Metious, Lyonic, Eterna
+Past Developers: Metious, Lyonic, Eterna (original creator of [Reef Editor](https://github.com/eternaight/sn-terrain-edit))
 
 ### Credits:
   - Main Menu Images: OliveGarden
