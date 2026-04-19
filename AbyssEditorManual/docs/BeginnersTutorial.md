@@ -11,7 +11,7 @@ This tutorial is intended for people new to modding terrain in Subnautica and us
 1.  This tutorial assumes hat you have a working BepInEx setup installed and working within your Subnautica directory. 
     If you need help with that, ask within the [Subnautica Modding Discord Server](https://discord.gg/UpWuWwq)
 
-2.  This tutorial expects you already have setup your game path [here](GamePathSetup.md) within the editor
+2.  A setup game path [here](GamePathSetup.md) within the editor
 
 3.  If you have not already installed it, [TerrainPatcher](https://github.com/Esper89/Subnautica-TerrainPatcher) is required to load your patches.
     Download the latest TerrainPatcher zip [here](https://github.com/Esper89/Subnautica-TerrainPatcher/releases) from GitHub and extract to it to your BepInEx/Plugins folder within Subnautica.
@@ -73,9 +73,6 @@ Brushes are the main tools for editing terrain within the editor. They are locat
 1.  Select a brush, 1-5 are used for manipulating terrain directly.
 2.  Use your cursor and click with **LMB** :material-mouse-left-click-outline:
 
-*[RMB]: Left Mouse Button/Left Click
-*[LMB]: Right Mouse Button/Right Click
-
 ## Getting your changes into Subnautica
 
 Once you have made your changes to the terrain you have loaded, its time to export them into a format that Terrain Patcher can understand and load into the game
@@ -105,6 +102,6 @@ Once you have made your changes to the terrain you have loaded, its time to expo
 
 ![In Game](BeginnersTutorialImages/InGame.png)
 
-### TroubleShooting
+### Troubleshooting
 
-If you run into any
+If you run into any issues, the people at the [Subnautica Modding Discord Server](https://discord.gg/UpWuWwq) will likely be able to assist you.

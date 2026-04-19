@@ -44,10 +44,12 @@ Copyright &copy; 2026 Beneath The Waves & Contributors
 # can be defined using TOML syntax.
 #
 # Read more: https://zensical.org/docs/setup/navigation/
-# nav = [
-#   { "Get started" = "index.md" },
-#   { "Markdown in 5min" = "markdown.md" },
-# ]
+nav = [
+   { "Get started" = "index.md" },
+   { "Game Path Setup" = "GamePathSetup.md" },
+   { "Beginners Tutorial" = "BeginnersTutorial.md" },
+   { "Keybinds" = "Keybinds.md" },
+]
 
 # With the "extra_css" option you can add your own CSS styling to customize
 # your Zensical project according to your needs. You can add any number of
@@ -290,19 +292,24 @@ features = [
 media = "(prefers-color-scheme)"
 toggle.icon = "lucide/laptop"
 toggle.name = "Switch to light mode"
+primary = "green"
+accent = "green"
 
 [[project.theme.palette]]
 media = "(prefers-color-scheme: light)"
 scheme = "default"
 toggle.icon = "lucide/sun"
 toggle.name = "Switch to dark mode"
+primary = "green"
+accent = "green"
 
 [[project.theme.palette]]
 media = "(prefers-color-scheme: dark)"
 scheme = "slate"
 toggle.icon = "lucide/moon"
 toggle.name = "Switch to system preference"
-palette.primary = "red"
+primary = "green"
+accent = "green"
 
 # ----------------------------------------------------------------------------
 # The "extra" section contains miscellaneous settings.
@@ -357,3 +364,13 @@ custom_checkbox = true
 [project.markdown_extensions.pymdownx.tilde]
 [project.plugins.offline]
 enabled = true
+[project.markdown_extensions.pymdownx.snippets]
+auto_append = ["abbreviations.md"]
+[[project.extra.social]]
+icon = "fontawesome/brands/github"
+link = "https://github.com/BeneathTheWaves/AbyssEditor"
+name = "Abyss Editor GitHub repo"
+[[project.extra.social]]
+icon = "fontawesome/brands/discord"
+link = "https://discord.gg/jKdBdPD46h"
+name = "Beneath The Waves Discord Server"
