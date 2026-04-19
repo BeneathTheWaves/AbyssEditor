@@ -12,15 +12,13 @@ namespace AbyssEditor.Scripts.UI {
         [SerializeField] private GameObject errorPrefab;
         [SerializeField] private GameObject statusArea;
         [SerializeField] private Color[] uiColors;
-
-        [SerializeField] private GameObject inputBlocker;
+        
         [SerializeField] private UIConfirmationWindow confirmationWindow;
         
         [SerializeField] private List<UIWindow> uiWindows;
 
         private void Awake() {
             inst = this;
-            confirmationWindow.Initialize();
         }
 
         private void Start()
@@ -50,17 +48,7 @@ namespace AbyssEditor.Scripts.UI {
                 }
             }
         }
-
-        public void BlockUIInput()
-        {
-            inputBlocker.SetActive(true);
-        }
         
-        public void UnBlockUIInput()
-        {
-            inputBlocker.SetActive(false);
-        }
-
         public void DisplayErrorMessage(string message)
         {
             DebugOverlay.LogError(message);

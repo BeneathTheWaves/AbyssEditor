@@ -72,8 +72,6 @@ namespace AbyssEditor.Scripts.VoxelTech {
             {
                 batches.Remove(batchIndex);
                 voxelMesh.Dispose();
-
-                Debug.Log("REMOVED: " + voxelMesh.name);
                 
                 DestroyImmediate(voxelMesh.gameObject);
             }
@@ -224,6 +222,12 @@ namespace AbyssEditor.Scripts.VoxelTech {
         private void RegenerateNeighboringVoxelGridsCache(EditorProcessHandle statusHandle = null)
         {
             if (statusHandle == null) { statusHandle = TaskManager.main.GetEditorProcessHandle(1); }
+
+            if (batches.Count == 0)
+            {
+                statusHandle.CompletePhase();
+                return;
+            }
             
             statusHandle.SetTasksToCompleteForPhase(batches.Count);
             statusHandle.SetPhasePrefix("Setting tree neighbor caches (%completedTasks%/%totalTasks%)");
@@ -246,14 +250,14 @@ namespace AbyssEditor.Scripts.VoxelTech {
             int totalTasks = batches.Count + (batches.Count * meshesToUpdatePerBatch);
             statusHandle.SetTasksToCompleteForPhase(totalTasks);
             
-            statusHandle.SetPhasePrefix($"Updating Grid(s) (%completedTasks%/%totalTasks%)");
+            if(batches.Values.Count != 0) statusHandle.SetPhasePrefix($"Updating Grid(s) (%completedTasks%/%totalTasks%)");
             foreach (VoxelBatch mesh in batches.Values) {
                 mesh.UpdateFullGrids();
                 statusHandle.IncrementTasksComplete();
                 await Task.Yield();
             }
 
-            statusHandle.SetPhasePrefix($"Regenerating Meshes (%completedTasks%/%totalTasks%)");
+            if(batches.Values.Count != 0) statusHandle.SetPhasePrefix($"Regenerating Meshes (%completedTasks%/%totalTasks%)");
             List<Task> tasks = new List<Task>();
             foreach (VoxelBatch mesh in batches.Values) {
                 tasks.AddRange(await mesh.ScheduleMeshRegenAsync(statusHandle));

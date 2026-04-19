@@ -6,6 +6,9 @@
   "Quit": "Quit",
   "CreatorCredit": "Original Creator: Eterna",
   "Maintainers": "Active Maintainers: Jbeast291, Kallie23\nPast Contributors: Esper, Lyonic, Metious",
+  "Version": "Version",
+  "ConfirmUpdate": "Update",
+  "RejectUpdate": "Ignore",
   
   // Top bar buttons
   "TopBarButton_ImportBatches": "Import",

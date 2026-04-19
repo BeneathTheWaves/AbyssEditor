@@ -6,6 +6,7 @@ namespace AbyssEditor.Scripts.UI.Windows
 {
     public class UIConfirmationWindow : MonoBehaviour
     {
+        [SerializeField] private GameObject holder;
         [SerializeField] private Button closeWindowButton;
         [SerializeField] private TextMeshProUGUI descriptionText;
         [SerializeField] private Button confirmButton;
@@ -15,14 +16,24 @@ namespace AbyssEditor.Scripts.UI.Windows
     
         private Response responseContainer;
 
-        internal void Initialize()
+        private void Awake()
         {
+            if (main != null)
+            {
+                Destroy(this);
+                Debug.LogError("Duplicate UI ConfirmationWindow");
+            }
             main = this;
             confirmButton.onClick.AddListener(OnConfirm);
             cancelButton.onClick.AddListener(OnCancel);
             closeWindowButton.onClick.AddListener(OnCancel);
         }
 
+        private void OnDestroy()
+        {
+            main = null;
+        }
+        
         /// <summary>
         /// Opens a confirmation dialog. You must handle language keys before putting into this function
         /// </summary>
@@ -34,8 +45,7 @@ namespace AbyssEditor.Scripts.UI.Windows
                 responseContainer.response = false;
             }
             
-            
-            gameObject.SetActive(true);
+            holder.SetActive(true);
             responseContainer = new Response();
             response = responseContainer;
             
@@ -43,14 +53,14 @@ namespace AbyssEditor.Scripts.UI.Windows
             confirmButton.GetComponentInChildren<TextMeshProUGUI>().text = confirmButtonText;
             cancelButton.GetComponentInChildren<TextMeshProUGUI>().text = cancelButtonText;
             
-            EditorUI.inst.BlockUIInput();
+            InputBlocker.inst.BlockUIInput();
         }
 
         private void CloseWindow()
         {
-            gameObject.SetActive(false);
+            holder.SetActive(false);
             responseContainer = null;
-            EditorUI.inst.UnBlockUIInput();
+            InputBlocker.inst.UnBlockUIInput();
         }
 
         private void OnCancel()

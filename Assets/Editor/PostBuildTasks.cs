@@ -14,29 +14,26 @@ namespace Editor
         {
             foreach (string fileName in filesToCopyIntoBuild)
             {
-                string gitRoot = Directory.GetParent(Application.dataPath).FullName;
-                string source = Path.Combine(gitRoot, fileName);
-                string destination = Path.Combine(Path.GetDirectoryName(pathToBuiltProject), fileName);
+                string source = Path.Combine(EditorUtils.gitRootPath, fileName);
+                string destination = Path.Combine(Path.GetDirectoryName(pathToBuiltProject)!, fileName);
 
                 File.Copy(source, destination, true);
             }
             
-            Debug.Log($"License info copied to: {pathToBuiltProject}");
+            Debug.Log($"Licenses copied to build");
         }
         
         [PostProcessBuild]
         private static void OnPostBuildDocumentationCopy(BuildTarget target, string pathToBuiltProject)
         {
-            string gitRoot = Directory.GetParent(Application.dataPath).FullName;
-            
-            string docsSourceFolderPath = Path.Combine(gitRoot, "AbyssEditorManual", "site");
+            string docsSourceFolderPath = Path.Combine(EditorUtils.gitRootPath, "AbyssEditorManual", "site");
             
             const string docsDestinationFolderName = "AbyssEditorDocumentation";
-            string destinationDirectory = Path.Combine(Path.GetDirectoryName(pathToBuiltProject), docsDestinationFolderName);
+            string destinationDirectory = Path.Combine(Path.GetDirectoryName(pathToBuiltProject)!, docsDestinationFolderName);
 
             CopyDirectoryRecursive(docsSourceFolderPath, destinationDirectory);
             
-            Debug.Log($"Offline Docs {pathToBuiltProject}");
+            Debug.Log($"Offline Docs copied to build");
         }
         
         private static void CopyDirectoryRecursive(string sourceDir, string destinationDir)
