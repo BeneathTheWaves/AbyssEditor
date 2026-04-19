@@ -17,11 +17,17 @@ namespace AbyssEditor.Scripts.UI.MainMenu
 #if UNITY_EDITOR || UNITY_EDITOR_LINUX
             string gitRoot = Directory.GetParent(Application.dataPath).FullName;
             string docsFolderPath = Path.Combine(gitRoot, "AbyssEditorManual", "site");
-#else 
+#elif UNITY_STANDALONE_OSX
+            string resourcesFolder = Path.Combine(Application.dataPath, "Resources");
+            string docsFolderPath = Path.Combine(resourcesFolder, "AbyssEditorDocumentation");
+            Debug.LogError($"Opening {Application.dataPath} {resourcesFolder} {docsFolderPath}");
+#else
             string gameRoot = Directory.GetParent(Application.dataPath).FullName;
             string docsFolderPath = Path.Combine(gameRoot, "AbyssEditorDocumentation");
+            Debug.LogError($"Opening {Application.dataPath} {gameRoot} {docsFolderPath}");
 #endif
             string docsIndex = Path.Combine(docsFolderPath, "index.html");
+
             Application.OpenURL("file://" + docsIndex);
         }
         

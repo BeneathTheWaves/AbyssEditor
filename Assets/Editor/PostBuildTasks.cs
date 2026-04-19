@@ -29,7 +29,12 @@ namespace Editor
             string docsSourceFolderPath = Path.Combine(EditorUtils.gitRootPath, "AbyssEditorManual", "site");
             
             const string docsDestinationFolderName = "AbyssEditorDocumentation";
+#if UNITY_STANDALONE_OSX
+            // shitty macos opens our .app in a quarantined zone on the os. So we can only use file INSIDE the .app, which we put the docs in Resources
+            string destinationDirectory = Path.Combine(pathToBuiltProject, "Contents", "Resources", docsDestinationFolderName);
+#else
             string destinationDirectory = Path.Combine(Path.GetDirectoryName(pathToBuiltProject)!, docsDestinationFolderName);
+#endif
 
             CopyDirectoryRecursive(docsSourceFolderPath, destinationDirectory);
             
