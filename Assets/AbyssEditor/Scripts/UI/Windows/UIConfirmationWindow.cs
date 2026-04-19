@@ -16,7 +16,7 @@ namespace AbyssEditor.Scripts.UI.Windows
     
         private Response responseContainer;
 
-        private void Awake()
+        private void Start()
         {
             if (main != null)
             {
