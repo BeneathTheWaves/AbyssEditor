@@ -9,7 +9,7 @@ namespace AbyssEditor.Scripts.UI.MainMenu
 {
     public class VersionChecker : MonoBehaviour
     {
-        private const string PUBLIC_VERSION_URL = "https://privatedepot.jbeast.cloud/versionChecking.json";
+        private const string PUBLIC_VERSION_URL = "https://raw.githubusercontent.com/BeneathTheWaves/AbyssEditor/refs/heads/master/versionChecking.json";
         
         [SerializeField] private TextMeshProUGUI versionText;
 
@@ -23,20 +23,21 @@ namespace AbyssEditor.Scripts.UI.MainMenu
         {
             UIConfirmationWindow.main.OpenWindow(
                 versionJson.notificationMessage,
-                Language.main.Get("ConfirmUpdate"),
                 Language.main.Get("RejectUpdate"),
+                Language.main.Get("ConfirmUpdate"),//
                 out UIConfirmationWindow.Response response
             );
             
             yield return new WaitUntil(() => response.receivedResponse);
 
-            if (response.response)
+            if (!response.response)
             {
                 yield break;
             }
             
             Debug.Log($"Opening: {versionJson.downloadURL}");
             Application.OpenURL(versionJson.downloadURL);
+            Application.Quit();
         }
         
         private IEnumerator FetchLatestVersion() {
