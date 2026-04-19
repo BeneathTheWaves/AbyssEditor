@@ -11,7 +11,7 @@ Abyss Editor is a Terrain (Optoctreepatch) Editor for Subnautica & Subnautica Be
 | Linux                 | ✅              |
 | MacOS                 | ✅              |
 
-Downloads are available on nexus [here](https://www.youtube.com/watch?v=dQw4w9WgXcQ) ;)
+Downloads are available on nexus [here](https://www.nexusmods.com/subnautica/mods/3298)
 
 <hr>
 
