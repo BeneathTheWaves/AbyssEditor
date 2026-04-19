@@ -47,8 +47,7 @@ Downloads are available on nexus [here](https://www.nexusmods.com/subnautica/mod
 > 2. Open the MainMenu scene or the AbyssEditor scene within Assets/AbyssEditor/Scenes
 > 3. You can now use Abyss Editor through the Unity Editor or build an executable, its that easy!
 > **Contributing:**
-> Fill this out Jbeast
-> "Will fill this out as the last thing i do before release" - jbeast
+> Right now, we are open to pull requests. But I would recomend contacting me on discord (@jbeast291) or creating a draft pull request first with what you plan to change.
 
 # Contributors
 Active Developers: Jbeast291 (Lead Dev), Kallie23 (Assistant Dev)
