@@ -73,6 +73,7 @@ namespace AbyssEditor.Scripts.TerrainMaterials
             //      In Subnautica 1, all the assets for terrain is stored in resources.
             //      In below zero they are not in that bundle. They are individually within their own bundles in StandaloneWindows64
             string resourcesPath = Path.Combine(SnPaths.instance.resourcesSourcePath, "resources.assets");
+            
             string[] files = { resourcesPath };
 
             AssetsManager assetManager = new AssetsManager();

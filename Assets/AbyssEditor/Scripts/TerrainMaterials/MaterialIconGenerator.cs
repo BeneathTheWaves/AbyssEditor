@@ -78,24 +78,17 @@ namespace AbyssEditor.Scripts.TerrainMaterials
             statusHandle.SetTasksToCompleteForPhase(blockTypes.Length);
             statusHandle.SetPhasePrefix($"Generating Icons (%completedTasks%/%totalTasks%)");
             
-            for (int i = 0; i < blockTypes.Length; i++)
+            foreach (BlocktypeMaterial mat in blockTypes)
             {
-                BlocktypeMaterial mat = blockTypes[i];
-                
                 statusHandle.IncrementTasksComplete();
+                if (mat == null || !mat.ExistsInGame) continue;
                 
-                if (mat != null && mat.ExistsInGame)
-                {
-                    GameObject newIconGameObj = Instantiate(matIconPrefab, transform);
-                    UIBlocktypeIconDisplay newicon = new UIBlocktypeIconDisplay(newIconGameObj, mat);
-                    icons.Add(newicon);
-                }
+                GameObject newIconGameObj = Instantiate(matIconPrefab, transform);
+                UIBlocktypeIconDisplay newicon = new UIBlocktypeIconDisplay(newIconGameObj, mat);
+                icons.Add(newicon);
             }
             
-            if (onCompleteCallback != null)
-            {
-                onCompleteCallback();
-            }
+            onCompleteCallback?.Invoke();
             
             statusHandle.CompletePhase();
         }
