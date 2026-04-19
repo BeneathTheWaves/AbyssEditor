@@ -4,9 +4,9 @@ icon: lucide/keyboard
 
 ### Camera Movement
 
--   **W S A D**: Forward Backward Left Right
+-   **W A S D**: Forward Left Backward Right
 -   **C**: Downwards
--   **Spacebar**: Upwards.
+-   **Spacebar**: Upwards
 -   **RMB** :material-mouse-right-click-outline:: Activate mouse look
     -   While this button is held, moving your mouse around will move the camera
 -   **Shift**: Speed up camera
