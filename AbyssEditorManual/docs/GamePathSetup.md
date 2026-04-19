@@ -4,13 +4,13 @@ icon: material/folder-cog-outline
 
 # Game Path Setup
 
-When you open up the editor for the first time, you will notice an error explaining that you need to **"Please select a valid game path"**.
+When you open up the editor for the first time, it will show an error explaining that you need to **"Please select a valid game path"**.
 
 ![Game Path Missing](GamePathSetupImages/GamePathMissing.png)
 
-1.  First make sure you have the settings window open. It likely opened automatically, but if not, its in the top bar.
-2.  Press the big green "Browse..." and a file manager will open up. Navigate to your game folder and select the root directory (the one with **Subnauitca.exe** or **Subnauitca.app**)
-3.  If all worked correctly, then you will see your game path here and no errors.
+1.  First make sure you have the settings window open. It likely is already open, but if isn't, check the top bar.
+2.  Press the big green "Browse..." and a file manager will open up. Navigate to your game folder and select the root directory (the one with **Subnautica.exe** or **Subnautica.app**)
+3.  If all worked correctly, then you will see your game path here without errors.
 
 ??? question "Cant find your game path?"
     

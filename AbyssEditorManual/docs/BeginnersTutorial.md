@@ -4,7 +4,7 @@ icon: lucide/user-star
 
 # Beginners Tutorial
 
-This tutorial is intended for people new to modding terrain in Subnautica and using Abyss Editor, taking you from no knowledge to creating your first patch and loading it with TerrainPatcher.
+This tutorial is intended for people new to modding terrain into Subnautica and using Abyss Editor, taking you from being unexperienced to creating your first patch and loading it with TerrainPatcher.
 
 ## Prerequisites
 
@@ -29,7 +29,7 @@ World coordinates are used in the position of the player and everything else, th
 With this in mind, the batch (0, 0, 0) starts at (-2048, -3040, -2048) world coordinates. This is 3000m deep into the void and not the safe shallows as one might expect.
 Batch (12, 18, 12) is the centermost batch and covers the region from (-128, -160, -128) to (32, 0, 32).
 
-??? tip "Tools to make this easier "
+??? tip "Quality of life tools"
 
     While this is may be complicated to understand, there are tools to inside and outside the game to make this easier:
 
@@ -37,7 +37,7 @@ Batch (12, 18, 12) is the centermost batch and covers the region from (-128,
     - Opening the in-game console with **Shift+Enter** and using the "batch x y z" command. Typing "batch 12 18 12" will send you to the rough center of batch 12 18 12. This can help you narrow down what you want to load
     - Outside of the game, [this](https://ignis.errorfm.com/subnautica_map/?game=sn) site can show a high level overview of the world, if you check "Toggle batches grid" in the upper right
 
-    For the purposes of this turorial we are going to be using the batches (7, 18, 6) to (8, 19, 5)
+    For the purposes of this tutorial we are going to be using the batches (7, 18, 6) to (8, 19, 5)
 
 ![Batch Importing Image](BeginnersTutorialImages/BatchImporting.png)
 
@@ -52,7 +52,7 @@ Batch (12, 18, 12) is the centermost batch and covers the region from (-128,
 
 Camera movement within the editor is as follows:
 
--   **W S A D**: Forward Backward Left Right
+-   **W A S D**: Forward Left Backward Right
 -   **C**: Downwards
 -   **Spacebar**: Upwards.
 -   **RMB** :material-mouse-right-click-outline:: Activate mouse look
@@ -62,7 +62,7 @@ While this happens, you will see a stats
 
 ### Using Brushes
 
-Brushes are the main tools for editing terrain within the editor. They are located on the left side of the screen in a hotbar.
+Brushes are the main tools for editing terrain within the editor. They are located on the left side of the screen in the hotbar.
 
 ??? tip
 
@@ -82,7 +82,7 @@ Once you have made your changes to the terrain you have loaded, its time to expo
 ![Exporting Patch Image](BeginnersTutorialImages/ExportingPatch.png)
 
 1.  Open the export window in the top menu bar
-2.  Ensure your import mode is on **.optoctreePatch**. By default it should be, but if its not, cycle the left and right arrows.
+2.  Ensure your import mode is on **.optoctreePatch**. By default it should be, but if its not, cycle the left and right arrows until you find it.
 3.  Press the export button
     -   Your file browser will pop up. Give the patch file a name and ensure its extension is *.optoctreepatch*. Remember where this is as we will need to move it into the game in the next steps.
 
@@ -91,7 +91,7 @@ Once you have made your changes to the terrain you have loaded, its time to expo
     If you plan to use this patch in a larger mod with other associated files, Terrain Patcher will search any subdirectory within the BepInEx/Plugins Folder. 
     So for example, if I created a folder within my mod at the path: /BepInEx/Plugins/MyCoolMod/Terrain/ and put my .optoctreePatch in there, Terrain Patcher would find and load it.
     
-    This is better practive over telling users to add it to Terrain Patcher's patches folder when working with larger projects.
+    This is better practice over telling users to add it to Terrain Patcher's patches folder when working with larger projects.
     
 ### Using the .optoctreepatch with Terrain Patcher
 
