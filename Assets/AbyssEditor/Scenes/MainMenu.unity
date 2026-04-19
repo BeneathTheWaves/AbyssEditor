@@ -1393,7 +1393,7 @@ GameObject:
   - component: {fileID: 1410908005}
   - component: {fileID: 1410908004}
   m_Layer: 5
-  m_Name: Help
+  m_Name: UserManual
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1464,8 +1464,8 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 1145670521}
-        m_TargetAssemblyTypeName: 
-        m_MethodName: ShowAbout
+        m_TargetAssemblyTypeName: AbyssEditor.Scripts.UI.MainMenu.Menu, AbyssEditor
+        m_MethodName: OpenUserManual
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -1583,7 +1583,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Help
+  m_text: UserManual
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: ef17ab64297ba2f468306845359d153e, type: 2}
   m_sharedMaterial: {fileID: -5209584113546866634, guid: ef17ab64297ba2f468306845359d153e,

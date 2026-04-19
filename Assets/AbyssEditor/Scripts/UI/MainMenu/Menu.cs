@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.IO;
+using UnityEngine;
 using UnityEngine.SceneManagement;
 
 namespace AbyssEditor.Scripts.UI.MainMenu
@@ -11,6 +12,19 @@ namespace AbyssEditor.Scripts.UI.MainMenu
             SceneManager.UnloadSceneAsync("MainMenu");
         }
 
+        public void OpenUserManual()
+        {
+#if UNITY_EDITOR || UNITY_EDITOR_LINUX
+            string gitRoot = Directory.GetParent(Application.dataPath).FullName;
+            string docsFolderPath = Path.Combine(gitRoot, "AbyssEditorManual", "site");
+#else 
+            string gameRoot = Directory.GetParent(Application.dataPath).FullName;
+            string docsFolderPath = Path.Combine(gameRoot, "AbyssEditorDocumentation");
+#endif
+            string docsIndex = Path.Combine(docsFolderPath, "index.html");
+            Application.OpenURL("file://" + docsIndex);
+        }
+        
         public void Quit()
         {
             Application.Quit(1);
