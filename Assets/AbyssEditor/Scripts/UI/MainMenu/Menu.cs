@@ -24,7 +24,6 @@ namespace AbyssEditor.Scripts.UI.MainMenu
 #else
             string gameRoot = Directory.GetParent(Application.dataPath).FullName;
             string docsFolderPath = Path.Combine(gameRoot, "AbyssEditorDocumentation");
-            Debug.LogError($"Opening {Application.dataPath} {gameRoot} {docsFolderPath}");
 #endif
             string docsIndex = Path.Combine(docsFolderPath, "index.html");
 

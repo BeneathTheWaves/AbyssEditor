@@ -59,7 +59,7 @@ namespace AbyssEditor.Scripts.TerrainMaterials
             
             contentLoaded = true;
             
-            if (updateMeshesOnLoad)
+            if (updateMeshesOnLoad && VoxelMetaspace.metaspace.batches.Count > 0)
             {
                 _ = VoxelMetaspace.metaspace.RegenerateMeshesAsync(statusHandle);
             }
@@ -72,9 +72,7 @@ namespace AbyssEditor.Scripts.TerrainMaterials
             //TODO: BZ material loading is bugged.
             //      In Subnautica 1, all the assets for terrain is stored in resources.
             //      In below zero they are not in that bundle. They are individually within their own bundles in StandaloneWindows64
-
-            string bundleName = Path.DirectorySeparatorChar + "resources.assets";
-            string resourcesPath = SnPaths.instance.resourcesSourcePath + bundleName;
+            string resourcesPath = Path.Combine(SnPaths.instance.resourcesSourcePath, "resources.assets");
             string[] files = { resourcesPath };
 
             AssetsManager assetManager = new AssetsManager();
@@ -82,7 +80,7 @@ namespace AbyssEditor.Scripts.TerrainMaterials
             
             foreach (SerializedFile file in assetManager.assetsFileList)
             {
-                yield return new WaitForEndOfFrame();
+                yield return null;
                 foreach(Object obj in file.Objects) {
                     if (obj is AssetStudio.Classes.Texture2D textureAsset) {
                         textureAssets.Add(textureAsset);
