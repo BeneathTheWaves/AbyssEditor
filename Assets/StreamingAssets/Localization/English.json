@@ -27,44 +27,44 @@
   "HotbarButton_RemoveBatches": "Unload batches",
   "HotbarButton_SizeRefTool": "Size reference",
   
-  //Color Picker
+  // Color Picker
   "HexPlaceholderText": "Hex Value",
   
-  //Warning screen
+  // Warning screen
   "GenericConfirm": "Confirm",
   "GenericCancel": "Cancel",
   
-  //Importing
+  // Importing
   "LoadBatchesWindow": "Import Batches",
   "BaseGame": "Base Game",
   "TerrainPatcher": "Terrain Patcher",
-    //Loading .optoctree
+    // Loading .optoctree
     "batchRange": "Enter a range of batches",
     "BatchRange_Hint": "Starting and ending coordinates are interchangeable. Leave one field empty to load a single batch",
     "LoadModdedBatches": "Load Modded Batches",
     "LoadBatchButton": "Load Batch(es)",
     "BatchOveriteWarning": "Warning, %overiteCount% currently loaded batch(es) will have their changes overriden. This action cannot be undone!",
-    //Loading .optoctreePatch
+    // Loading .optoctreePatch
     "patcherTitle": "Select an .optoctreepatch",
     "patcherTitle_Hint": "These patch files are used with terrain patcher. Loading them again can allow further edits",
     "OpenFileBrowser": "Open File Browser",
     "PatchSelectFileBrowserTip": "Select an .optoctreepatch file!",
     "ApplyPatchButton": "Apply Patch",
   
-  //Exporting
+  // Exporting
   "ExportBatchesWindow": "Export Batches",
   "UseCompiledOctreesCache": "Export into CompiledOctreesCache",
   
-  //Active Tool
-    //Brush
+  // Active Tool
+    // Brush
     "ActiveTool": "Active Tool",
     "BrushSizeSlider": "Brush Size Slider",
     "BrushStrengthSlider": "Brush Strength Slider",
     "BlockType": "Block Type",
-    //Remove Batch
+    // Remove Batch
     "BatchRemoveConfirmationMessage": "This action will delete the selected batch. Any unexported data will be lost!",
   
-  //Lighting
+  // Lighting
   "LightingTitle": "Lighting",
   "SunPitch": "Sun Pitch",
   "SunYaw": "Sun Yaw",
@@ -73,7 +73,7 @@
   "SunIntensity": "Sun Intensity",
   "AmbientIntensity": "Ambient Light Intensity",
   
-  //Settings
+  // Settings
   "SettingsTitle": "Settings",
   "GamePath": "GamePath",
   "GamePath_SubText": "game path should be here...",
@@ -81,7 +81,7 @@
   "BrowseButton": "Browse...",
   "FileBrowserTip": "Select a Subnautica or Below Zero game folder.",
   "FullscreenMode": "Fullscreen Mode",
-    //Fullscreen Modes
+    // Fullscreen Modes
     "BorderlessWindowed": "Borderless Windowed",
     "ExclusiveFullScreen": "Exclusive FullScreen",
     "Windowed": "Windowed",
@@ -94,25 +94,25 @@
   "ThreadCountFormat": "workers",
   "ThreadCount_ToolTip": "(Requires Restart) Determines the amount of threads to use when processing mesh changes.\nSetting this number too high or too low will result in slowdowns.",
 
-  //Materials
+  // Materials
   "MaterialsTitle": "Materials",
   "OnlyShowFavorites": "Only Show Favorites",
   "LoadmatsSN": "Load SN materials",
   "LoadmatsBZ": "Load BZ materials",
   
-  //Quit
+  // Quit
   "QuitConfirmationMessage": "Are you certain you want to close the editor? Any unexported data will be lost!",
   "ConfirmQuit": "Quit",
   "CancelQuit": "No!",
   
-  //Stats
+  // Stats
   "StatsText": "Camera Batch: %CamBatch% \nCamera Pos: %CamPos%\nBatches Loaded: %BatchCount%\nMeshes Loaded: %MeshCount%",
   
-  //Discord Game SDK
+  // Discord Game SDK
   "DiscordGameSDK_Details": "Subnautica Terrain Editor",
   "DiscordGameSDK_State": "By the BTW team & Contributors",
   "DiscordGameSDK_DownloadURL": "https://github.com/BeneathTheWaves/AbyssEditor",
   
-  //Early Access Specific
+  // Early Access Specific
   "FBXExportDisabled": "Fbx exporting is unavailable for this release"
 }
