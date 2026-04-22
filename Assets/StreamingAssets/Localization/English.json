@@ -13,6 +13,7 @@
   // Top bar buttons
   "TopBarButton_ImportBatches": "Import",
   "TopBarButton_Export": "Export",
+  "TopBarButton_Brush": "Tool Settings",
   "TopBarButton_Materials": "Materials",
   "TopBarButton_Lighting": "Lighting",
   "TopBarButton_Settings": "Settings",
@@ -33,7 +34,7 @@
   "GenericConfirm": "Confirm",
   "GenericCancel": "Cancel",
   
-  //Loading
+  //Importing
   "LoadBatchesWindow": "Import Batches",
   "BaseGame": "Base Game",
   "TerrainPatcher": "Terrain Patcher",
@@ -49,6 +50,10 @@
     "OpenFileBrowser": "Open File Browser",
     "PatchSelectFileBrowserTip": "Select an .optoctreepatch file!",
     "ApplyPatchButton": "Apply Patch",
+  
+  //Exporting
+  "ExportBatchesWindow": "Export Batches",
+  "UseCompiledOctreesCache": "Export into CompiledOctreesCache",
   
   //Active Tool
     //Brush
