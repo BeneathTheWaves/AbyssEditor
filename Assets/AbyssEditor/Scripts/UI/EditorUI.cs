@@ -13,8 +13,6 @@ namespace AbyssEditor.Scripts.UI {
         [SerializeField] private GameObject statusArea;
         [SerializeField] private Color[] uiColors;
         
-        [SerializeField] private UIConfirmationWindow confirmationWindow;
-        
         [SerializeField] private List<UIWindow> uiWindows;
 
         private void Awake() {
