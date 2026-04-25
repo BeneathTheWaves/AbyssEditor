@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 namespace AbyssEditor.Scripts.UI.Windows {
-    public class UISettings : MonoBehaviour
+    public class SettingsWindow : MonoBehaviour
     {
         [SerializeField] private TextMeshProUGUI gamePathText;
         [SerializeField] private Carousel fullscreenModeCarousel;
@@ -22,9 +22,13 @@ namespace AbyssEditor.Scripts.UI.Windows {
             fullscreenModeCarousel.onOptionSelected += OnFullscreenModeChanged;
             fullscreenModeCarousel.SetInitialValue(Preferences.data.fullscreenMode);
             autoLoadMaterialsToggleButton.SetIsOnWithoutNotify(Preferences.data.autoLoadMaterials);
+            autoLoadMaterialsToggleButton.onValueChanged.AddListener(OnAutoLoadMaterialsToggle);
             enableBrushLogsToggleButton.SetIsOnWithoutNotify(Preferences.data.enableBrushLogs);
+            enableBrushLogsToggleButton.onValueChanged.AddListener(OnEnableBrushLogsToggle);
             enableStatsToggleButton.SetIsOnWithoutNotify(Preferences.data.enableStats);
+            enableStatsToggleButton.onValueChanged.AddListener(OnEnableStatsToggle);
             discordRPCToggleButton.SetIsOnWithoutNotify(Preferences.data.discordRPC);
+            discordRPCToggleButton.onValueChanged.AddListener(OnDiscordRPCToggle);
             fieldOfViewSlider.OnValueUpdated += OnFieldOfViewChanged;
             fieldOfViewSlider.OnEndDragging += SavePreferences;
             fieldOfViewSlider.formatFunction = value => value.ToString("0");

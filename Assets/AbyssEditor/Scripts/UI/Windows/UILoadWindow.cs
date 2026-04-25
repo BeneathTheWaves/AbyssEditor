@@ -39,9 +39,8 @@ namespace AbyssEditor.Scripts.UI.Windows {
             selectFileButton.onClick.AddListener(OnSelectFileButton);
         }
 
-        protected override void EnableWindow()
+        protected void EnableWindow()
         {
-            base.EnableWindow();
             ChangeLoadMethod(lastLoadMethod);
         }
         

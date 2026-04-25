@@ -86,7 +86,7 @@ namespace AbyssEditor.Scripts.TerrainMaterials
             {
                 Favorited = !Favorited;
                 UpdateFavoriteDisplay();
-                UIMaterialsWindow.main.UpdateFilter();
+                MaterialsWindow.main.UpdateFilter();
             }
 
             private void UpdateFavoriteDisplay()

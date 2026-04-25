@@ -3,18 +3,17 @@ using AbyssEditor.Scripts.SaveSystem;
 using AbyssEditor.Scripts.TerrainMaterials;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 using Toggle = UnityEngine.UI.Toggle;
 
 namespace AbyssEditor.Scripts.UI.Windows
 {
-    public class UIMaterialsWindow : UIWindow
+    public class MaterialsWindow : MonoBehaviour
     {
-        public static UIMaterialsWindow main;
+        public static MaterialsWindow main;
 
         public Transform gridParent;
         public Toggle showFavoritesOnlyToggle;
-        
-        public GameObject scrollView;
         public GameObject loadMatsButton;
         
         private bool showFavoritedOnly;
@@ -23,21 +22,19 @@ namespace AbyssEditor.Scripts.UI.Windows
         {
             showFavoritedOnly = Preferences.data.showFavoritedOnly;
             showFavoritesOnlyToggle.SetIsOnWithoutNotify(Preferences.data.showFavoritedOnly);
-        }
-
-        protected override void EnableWindow()
-        {
-            base.EnableWindow();
+            showFavoritesOnlyToggle.onValueChanged.AddListener(SetShowFavoritedOnly);
+            
             string loadText = SnPaths.instance.currentGameInstallType switch
             {
                 SnPaths.GameInstallType.SubnauticaWindows or SnPaths.GameInstallType.SubnauticaMac => Language.main.Get("LoadmatsSN"),
                 SnPaths.GameInstallType.BelowZeroWindows or SnPaths.GameInstallType.BelowZeroMac => Language.main.Get("LoadmatsBZ"),
                 _ => "error"
             };
-            ;
 
             loadMatsButton.transform.Find("Text (TMP)").GetComponent<TextMeshProUGUI>().text = loadText;
 
+            loadMatsButton.GetComponent<Button>().onClick.AddListener(LoadMaterialsIntoGrid);
+            
             if (MaterialIconGenerator.main.materialIconsLoaded)
             {
                 LoadIconsIntoGrid();
@@ -49,8 +46,6 @@ namespace AbyssEditor.Scripts.UI.Windows
         private void LoadIconsIntoGrid()
         {
             loadMatsButton.SetActive(false);
-            scrollView.SetActive(true);
-            
             foreach (UIBlocktypeIconDisplay icon in MaterialIconGenerator.main.icons)
             {
                 icon.gameObject.transform.SetParent(gridParent, false);

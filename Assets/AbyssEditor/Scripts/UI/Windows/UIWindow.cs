@@ -4,7 +4,8 @@ namespace AbyssEditor.Scripts.UI.Windows {
     [RequireComponent(typeof(RectTransform))]
     public class UIWindow : MonoBehaviour {
         public RectTransform rt { get; private set; }
-        
+
+        [field: SerializeField] public string windowKey { private set; get; }
         [SerializeField] private float minHeight = 300;
         [SerializeField] private float maxHeight = 500;
         [SerializeField] private float minWidth = 450;
@@ -29,7 +30,7 @@ namespace AbyssEditor.Scripts.UI.Windows {
             else EnableWindow();
         }
         
-        protected virtual void EnableWindow() {
+        public void EnableWindow() {
             PushToTop();
             gameObject.SetActive(true);
         }

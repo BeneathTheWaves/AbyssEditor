@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 namespace AbyssEditor.Scripts.UI.Windows {
-    public class UILightWindow : UIWindow {
+    public class LightingWindow : MonoBehaviour {
         [SerializeField] private UIHybridInput sunPitch;
         [SerializeField] private UIHybridInput sunYaw;
         [SerializeField] private UIColorPicker sunColor;
@@ -23,8 +23,8 @@ namespace AbyssEditor.Scripts.UI.Windows {
             sunYaw.formatFunction = FormatAngle;
             sunYaw.SetValue(Preferences.data.sunYaw);
 
-            sunColor.onColorChanged += UpdateSunColor;
-            sunColor.onColorChanged += SavePreferences;
+            sunColor.OnColorChanged += UpdateSunColor;
+            sunColor.OnColorChanged += SavePreferences;
             sunColor.SetInitialColor(new Color(Preferences.data.sunColorR, Preferences.data.sunColorG, Preferences.data.sunColorB));
             
             sunIntensity.OnValueUpdated += UpdateSunIntensity;
@@ -38,6 +38,7 @@ namespace AbyssEditor.Scripts.UI.Windows {
             ambientIntensity.SetValue(Preferences.data.ambientIntensity);
             
             brushLightToggle.SetIsOnWithoutNotify(Preferences.data.enableBrushLight);
+            brushLightToggle.onValueChanged.AddListener(UpdateBrushLight);
         }
 
         private string FormatAngle(float lerpedVal) => $"{Mathf.RoundToInt(lerpedVal)}°";
