@@ -27,7 +27,7 @@ namespace AbyssEditor.Scripts.UI.Windows {
             RedrawValues();
         }
 
-        public override void EnableWindow()
+        protected override void EnableWindow()
         {
             base.EnableWindow();
             brushTool = CursorToolManager.main.brushTool;

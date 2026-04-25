@@ -1,26 +1,62 @@
 ﻿using UnityEngine;
-using UnityEngine.UI;
 
 namespace AbyssEditor.Scripts.UI.Windows {
+    [RequireComponent(typeof(RectTransform))]
     public class UIWindow : MonoBehaviour {
-        bool windowActive = false;
+        public RectTransform rt { get; private set; }
+        
+        [SerializeField] private float minHeight = 300;
+        [SerializeField] private float maxHeight = 500;
+        [SerializeField] private float minWidth = 450;
+        [SerializeField] private float maxWidth = 600;
+
+        public void Awake()
+        {
+            rt = GetComponent<RectTransform>();
+        }
+
         public virtual void DisableWindow() {
-            windowActive = false;
-            gameObject.SetActive(windowActive);
+            gameObject.SetActive(false);
         }
-        public virtual void EnableWindow() {
-            windowActive = true;
-            PushToTop();
-            gameObject.SetActive(windowActive);
-        }
+        
         public virtual void UpdateScale()
         {
             transform.localScale = Vector3.one * 1;
         }
+        
         public void ToggleWindow() {
-            if (windowActive) DisableWindow();
+            if (gameObject.activeInHierarchy) DisableWindow();
             else EnableWindow();
         }
+        
+        protected virtual void EnableWindow() {
+            PushToTop();
+            gameObject.SetActive(true);
+        }
+
+        public void UpdateWindowSize(float left, float top, float bottom, float right)
+        {
+            float newWidth = rt.rect.width - left + right;
+            float newHeight = rt.rect.height - bottom + top;
+            
+            if (newWidth < minWidth || newWidth > maxWidth)
+            {
+                left = 0;
+                right = 0;
+            }
+
+            if (newHeight < minHeight || newHeight > maxHeight)
+            {
+                bottom = 0;
+                top = 0;
+            }
+            
+            rt.offsetMin += new Vector2(left, bottom);
+            rt.offsetMax += new Vector2(right, top);
+        }
+
+        public void Move(Vector3 newPosition) => rt.position = newPosition;
+        public Vector3 GetWindowPos() => rt.position;
 
         public void PushToTop() {
             transform.SetAsLastSibling();

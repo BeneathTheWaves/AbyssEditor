@@ -25,7 +25,7 @@ namespace AbyssEditor.Scripts.UI.Windows
             showFavoritesOnlyToggle.SetIsOnWithoutNotify(Preferences.data.showFavoritedOnly);
         }
 
-        public override void EnableWindow()
+        protected override void EnableWindow()
         {
             base.EnableWindow();
             string loadText = SnPaths.instance.currentGameInstallType switch

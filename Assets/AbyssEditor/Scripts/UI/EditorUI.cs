@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using AbyssEditor.Scripts.SaveSystem;
 using AbyssEditor.Scripts.TerrainMaterials;
 using AbyssEditor.Scripts.UI.Windows;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace AbyssEditor.Scripts.UI {
     public class EditorUI : MonoBehaviour {
@@ -12,18 +10,20 @@ namespace AbyssEditor.Scripts.UI {
         [SerializeField] private GameObject errorPrefab;
         [SerializeField] private GameObject statusArea;
         [SerializeField] private Color[] uiColors;
-        
         [SerializeField] private List<UIWindow> uiWindows;
+        
+        private RectTransform rt;
 
         private void Awake() {
             inst = this;
+            rt = GetComponent<RectTransform>();
         }
 
         private void Start()
         {
             if(string.IsNullOrEmpty(Preferences.data.gamePath))
             {
-                EnableWindow<UISettingsWindow>();
+                //EnableWindow<UISettingsWindow>();
             }
             else
             {
@@ -45,6 +45,11 @@ namespace AbyssEditor.Scripts.UI {
                     window.ToggleWindow();
                 }
             }
+        }
+        
+        public float InverseScaleMousePosToCanvas(float mousePositon)
+        {
+            return mousePositon * (1.0f / rt.localScale.x);
         }
         
         public void DisplayErrorMessage(string message)

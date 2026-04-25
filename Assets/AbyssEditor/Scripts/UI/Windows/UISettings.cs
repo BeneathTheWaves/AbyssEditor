@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 namespace AbyssEditor.Scripts.UI.Windows {
-    public class UISettingsWindow : UIWindow
+    public class UISettings : MonoBehaviour
     {
         [SerializeField] private TextMeshProUGUI gamePathText;
         [SerializeField] private Carousel fullscreenModeCarousel;
@@ -36,6 +36,15 @@ namespace AbyssEditor.Scripts.UI.Windows {
             threadCountSlider.maxValue = SystemInfo.processorCount;
             threadCountSlider.minValue = 1;
             threadCountSlider.SetValue(Preferences.data.threadCount);
+            
+            if (SnPaths.IsGamePathValid())
+            {
+                UpdatePathDisplay(Preferences.data.gamePath);
+            }
+            else
+            {
+                DebugOverlay.LogError(Language.main.Get("GamePathNotValid"));
+            }
         }
 
         public void BrowseGamePath()
@@ -55,18 +64,6 @@ namespace AbyssEditor.Scripts.UI.Windows {
             }
         }
         
-        public override void EnableWindow()
-        {
-            if (SnPaths.IsGamePathValid())
-            {
-                UpdatePathDisplay(Preferences.data.gamePath);
-            }
-            else
-            {
-                DebugOverlay.LogError(Language.main.Get("GamePathNotValid"));
-            }
-            base.EnableWindow();
-        }
         private void UpdatePathDisplay(string path) => gamePathText.text = path;
 
         private void OnFullscreenModeChanged(string fullscreenLanguageKey)
