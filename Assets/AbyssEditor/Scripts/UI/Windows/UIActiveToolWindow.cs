@@ -9,8 +9,8 @@ namespace AbyssEditor.Scripts.UI.Windows {
         [SerializeField] private UIHybridInput brushSizeSelector;
         [SerializeField] private UIHybridInput brushStrengthSelector;
         [SerializeField] private UIBlocktypePreview blocktypePreview;
-        
-        BrushTool brushTool;
+
+        private BrushTool brushTool;
 
         private void Awake() {
             brushSizeSelector.formatFunction = FormatSize;

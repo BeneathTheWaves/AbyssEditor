@@ -4,7 +4,7 @@ using UnityEngine.UI;
 
 namespace AbyssEditor.Scripts.UI.Windows
 {
-    public class UIConfirmationWindow : MonoBehaviour
+    public class ConfirmationWindow : MonoBehaviour
     {
         [SerializeField] private GameObject holder;
         [SerializeField] private Button closeWindowButton;
@@ -12,7 +12,7 @@ namespace AbyssEditor.Scripts.UI.Windows
         [SerializeField] private Button confirmButton;
         [SerializeField] private Button cancelButton;
 
-        public static UIConfirmationWindow main;
+        public static ConfirmationWindow main;
     
         private Response responseContainer;
 

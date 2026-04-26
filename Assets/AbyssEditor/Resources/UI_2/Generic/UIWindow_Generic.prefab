@@ -124,7 +124,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3ecfad9b0dac4f049f59e2f2f4087f22, type: 3}
   m_Name: 
   m_EditorClassIdentifier: AbyssEditor::AbyssEditor.Scripts.UI.Windows.WindowDragComponents.WindowResizeHandle
-  locations: 0200000000000000
+  locations: 9
 --- !u!1 &1359989718160536948
 GameObject:
   m_ObjectHideFlags: 0
@@ -489,7 +489,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3ecfad9b0dac4f049f59e2f2f4087f22, type: 3}
   m_Name: 
   m_EditorClassIdentifier: AbyssEditor::AbyssEditor.Scripts.UI.Windows.WindowDragComponents.WindowResizeHandle
-  locations: 0200000001000000
+  locations: 10
 --- !u!1 &2705122791708554765
 GameObject:
   m_ObjectHideFlags: 0
@@ -1094,7 +1094,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3ecfad9b0dac4f049f59e2f2f4087f22, type: 3}
   m_Name: 
   m_EditorClassIdentifier: AbyssEditor::AbyssEditor.Scripts.UI.Windows.WindowDragComponents.WindowResizeHandle
-  locations: 01000000
+  locations: 2
 --- !u!1 &6973995603812555099
 GameObject:
   m_ObjectHideFlags: 0
@@ -1319,7 +1319,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3ecfad9b0dac4f049f59e2f2f4087f22, type: 3}
   m_Name: 
   m_EditorClassIdentifier: AbyssEditor::AbyssEditor.Scripts.UI.Windows.WindowDragComponents.WindowResizeHandle
-  locations: 02000000
+  locations: 8
 --- !u!1 &8072398672085163080
 GameObject:
   m_ObjectHideFlags: 0
@@ -1408,7 +1408,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3ecfad9b0dac4f049f59e2f2f4087f22, type: 3}
   m_Name: 
   m_EditorClassIdentifier: AbyssEditor::AbyssEditor.Scripts.UI.Windows.WindowDragComponents.WindowResizeHandle
-  locations: 00000000
+  locations: 1
 --- !u!1 &8762822873941886800
 GameObject:
   m_ObjectHideFlags: 0

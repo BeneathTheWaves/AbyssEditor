@@ -15,7 +15,6 @@ namespace AbyssEditor.Scripts.UI.Windows
         [SerializeField] private Transform gridParent;
         [SerializeField] private Toggle showFavoritesOnlyToggle;
         [SerializeField] private GameObject loadMatsButton;
-        [SerializeField] private ScrollRect scrollRect;
         
         private bool showFavoritedOnly;
 
@@ -62,7 +61,6 @@ namespace AbyssEditor.Scripts.UI.Windows
                 icon.gameObject.transform.SetParent(gridParent, false);
             }
             UpdateFilter();
-            scrollRect.GraphicUpdateComplete();
         }
 
         public void SetShowFavoritedOnly(bool value)
@@ -71,7 +69,6 @@ namespace AbyssEditor.Scripts.UI.Windows
             Preferences.data.showFavoritedOnly = value;
             Preferences.SavePreferences();
             UpdateFilter();
-            scrollRect.GraphicUpdateComplete();
         }
 
         /// <summary>

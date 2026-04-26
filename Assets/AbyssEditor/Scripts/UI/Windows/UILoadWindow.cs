@@ -131,11 +131,11 @@ namespace AbyssEditor.Scripts.UI.Windows {
 
             if (overrideCount > 0)
             {
-                UIConfirmationWindow.main.OpenWindow(
+                ConfirmationWindow.main.OpenWindow(
                     Language.main.Get("BatchOveriteWarning").Replace("%overiteCount%", overrideCount.ToString()),
                     Language.main.Get("GenericCancel"), 
                     Language.main.Get("GenericConfirm"), 
-                    out UIConfirmationWindow.Response response
+                    out ConfirmationWindow.Response response
                 );
                 
                 yield return new WaitUntil(() => response.receivedResponse);
@@ -214,11 +214,11 @@ namespace AbyssEditor.Scripts.UI.Windows {
 
             if (overrideCount > 0)
             {
-                UIConfirmationWindow.main.OpenWindow(
+                ConfirmationWindow.main.OpenWindow(
                     Language.main.Get("BatchOveriteWarning").Replace("%overiteCount%", overrideCount.ToString()),
                     Language.main.Get("GenericCancel"), 
                     Language.main.Get("GenericConfirm"), 
-                    out UIConfirmationWindow.Response response
+                    out ConfirmationWindow.Response response
                 );
                 
                 yield return new WaitUntil(() => response.receivedResponse);
