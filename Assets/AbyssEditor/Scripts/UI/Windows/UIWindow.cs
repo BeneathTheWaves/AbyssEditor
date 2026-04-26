@@ -14,6 +14,7 @@ namespace AbyssEditor.Scripts.UI.Windows {
         public void Awake()
         {
             rt = GetComponent<RectTransform>();
+            rt.localPosition = new Vector3(0, 0, 0); // reset to center of screen in case we moved it in the editor
         }
 
         public virtual void DisableWindow() {

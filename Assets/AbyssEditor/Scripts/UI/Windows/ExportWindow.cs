@@ -1,16 +1,27 @@
-﻿using System;
-using AbyssEditor.Scripts.VoxelTech;
+﻿using AbyssEditor.Scripts.VoxelTech;
 using UnityEngine;
 using UnityEngine.UI;
+
 namespace AbyssEditor.Scripts.UI.Windows {
-    public class UIExportWindow : UIWindow {
+    public class ExportWindow : MonoBehaviour {
         [SerializeField] private Carousel exportFileTypeCarousel;
 
-        [SerializeField] private UICheckbox checkbox;
+        [SerializeField] private Toggle checkbox;
         [SerializeField] private GameObject checkboxGroup;
+        [SerializeField] private Button exportButton;
         
         private ExportMode selectedExportMode;
         private bool exportIntoGame;
+        
+        private void Start()
+        {
+            ToggleCheckboxVisibility(selectedExportMode == ExportMode.Optoctree);
+            checkbox.onValueChanged.AddListener(OnCheckboxInteract);
+            OnCheckboxInteract(false);
+            OnModeChanged(exportFileTypeCarousel.GetSelectedElementLanguageKey());
+            exportFileTypeCarousel.onOptionSelected += OnModeChanged;
+            exportButton.onClick.AddListener(Export);
+        }
 
         public void Export() {
             if (VoxelMetaspace.metaspace.batches.Count == 0) {
@@ -58,8 +69,8 @@ namespace AbyssEditor.Scripts.UI.Windows {
             }
         }
 
-        private void OnCheckboxInteract() {
-            exportIntoGame = checkbox.check;
+        private void OnCheckboxInteract(bool value) {
+            exportIntoGame = value;
         }
 
         private void ToggleCheckboxVisibility(bool value)
@@ -71,7 +82,7 @@ namespace AbyssEditor.Scripts.UI.Windows {
             }
             else
             {
-                exportIntoGame = checkbox.check;
+                exportIntoGame = checkbox.isOn;
             }
         }
 
@@ -89,16 +100,7 @@ namespace AbyssEditor.Scripts.UI.Windows {
             }
         }
 
-        private void Start()
-        {
 
-            ToggleCheckboxVisibility(selectedExportMode == ExportMode.Optoctree);
-            checkbox.transform.GetComponent<Button>().onClick.AddListener(OnCheckboxInteract);
-            OnCheckboxInteract();
-            OnModeChanged(exportFileTypeCarousel.GetSelectedElementLanguageKey());
-            exportFileTypeCarousel.onOptionSelected += OnModeChanged;
-        }
-        
         private enum ExportMode
         {
             None,

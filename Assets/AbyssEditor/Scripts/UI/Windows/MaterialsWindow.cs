@@ -10,14 +10,25 @@ namespace AbyssEditor.Scripts.UI.Windows
 {
     public class MaterialsWindow : MonoBehaviour
     {
-        public static MaterialsWindow main;
+        public static MaterialsWindow main { get; private set; }
 
-        public Transform gridParent;
-        public Toggle showFavoritesOnlyToggle;
-        public GameObject loadMatsButton;
+        [SerializeField] private Transform gridParent;
+        [SerializeField] private Toggle showFavoritesOnlyToggle;
+        [SerializeField] private GameObject loadMatsButton;
+        [SerializeField] private ScrollRect scrollRect;
         
         private bool showFavoritedOnly;
 
+        private void Awake()
+        {
+            if (main != null)
+            {
+                Debug.LogError("Duplicate Materials Window Created");
+                DestroyImmediate(gameObject);
+            }
+            main = this;
+        }
+        
         private void Start()
         {
             showFavoritedOnly = Preferences.data.showFavoritedOnly;
@@ -51,6 +62,7 @@ namespace AbyssEditor.Scripts.UI.Windows
                 icon.gameObject.transform.SetParent(gridParent, false);
             }
             UpdateFilter();
+            scrollRect.GraphicUpdateComplete();
         }
 
         public void SetShowFavoritedOnly(bool value)
@@ -59,6 +71,7 @@ namespace AbyssEditor.Scripts.UI.Windows
             Preferences.data.showFavoritedOnly = value;
             Preferences.SavePreferences();
             UpdateFilter();
+            scrollRect.GraphicUpdateComplete();
         }
 
         /// <summary>
