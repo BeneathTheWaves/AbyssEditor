@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 namespace AbyssEditor.Scripts.UI.Windows {
+    [RequireComponent(typeof(UIWindow))]
     public class LightingWindow : MonoBehaviour {
         [SerializeField] private UIHybridInput sunPitch;
         [SerializeField] private UIHybridInput sunYaw;

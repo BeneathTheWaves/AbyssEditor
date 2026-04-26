@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 namespace AbyssEditor.Scripts.UI.Windows {
+    [RequireComponent(typeof(UIWindow))]
     public class ExportWindow : MonoBehaviour {
         [SerializeField] private Carousel exportFileTypeCarousel;
 

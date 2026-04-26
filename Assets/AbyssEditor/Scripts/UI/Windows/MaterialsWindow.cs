@@ -8,6 +8,7 @@ using Toggle = UnityEngine.UI.Toggle;
 
 namespace AbyssEditor.Scripts.UI.Windows
 {
+    [RequireComponent(typeof(UIWindow))]
     public class MaterialsWindow : MonoBehaviour
     {
         public static MaterialsWindow main { get; private set; }

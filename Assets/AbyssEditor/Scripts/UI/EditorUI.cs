@@ -58,20 +58,26 @@ namespace AbyssEditor.Scripts.UI {
         
         public void EnableWindow(string key)
         {
-            if (!uiWindows.TryGetValue(key, out UIWindow window)) {
-                Debug.LogError($"Window Key ({key}) could not be associated with a window!");
-                return;
-            }
-            window.EnableWindow();
+            if (TryGetWindow(key, out UIWindow window)) window.EnableWindow();
+        }
+        
+        public void DisableWindow(string key)
+        {
+            if (TryGetWindow(key, out UIWindow window)) window.DisableWindow();
         }
 
         public void ToggleWindow(string key)
         {
-            if (!uiWindows.TryGetValue(key, out UIWindow window)) {
+            if (TryGetWindow(key, out UIWindow window)) window.ToggleWindow();
+        }
+
+        private bool TryGetWindow(string key, out UIWindow window)
+        {
+            if (!uiWindows.TryGetValue(key, out window)) {
                 Debug.LogError($"Window Key ({key}) could not be associated with a window!");
-                return;
+                return false;
             }
-            window.ToggleWindow();
+            return true;
         }
         
         public float InverseScaleMousePosToCanvas(float mousePositon)

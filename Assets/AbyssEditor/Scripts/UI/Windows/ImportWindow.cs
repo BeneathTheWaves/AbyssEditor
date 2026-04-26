@@ -10,18 +10,21 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 namespace AbyssEditor.Scripts.UI.Windows {
-    public class UILoadWindow : UIWindow
+    [RequireComponent(typeof(UIWindow))]
+    public class ImportWindow : MonoBehaviour
     {
         [SerializeField] private Carousel carouselLoadMethod;
         
         [SerializeField] private GameObject optoctreeGroup;
         [SerializeField] private TMP_InputField rangeStartInput;
-        [SerializeField] TMP_InputField rangeEndInput;
+        [SerializeField] private TMP_InputField rangeEndInput;
         [SerializeField] private Toggle moddedBatchesCheckbox;
+        [SerializeField] private Button loadBatchButton;
         
         [SerializeField] private GameObject optoctreePatchGroup;
         [SerializeField] private Button selectFileButton;
         [SerializeField] private TextMeshProUGUI patchFilePathText;
+        [SerializeField] private Button applyPatchButton;
         
         private string lastPatchPath;
         private byte[] patchBytes;
@@ -29,6 +32,7 @@ namespace AbyssEditor.Scripts.UI.Windows {
         private List<int> batchOffsetsInPatch;
 
         private string lastLoadMethod;
+        private bool disableButDontResetOutlines = false;
 
         private void Start()
         {
@@ -36,18 +40,32 @@ namespace AbyssEditor.Scripts.UI.Windows {
             carouselLoadMethod.onOptionSelected+=ChangeLoadMethod;
             ChangeLoadMethod("BaseGame");
             
+            rangeStartInput.onValueChanged.AddListener(OnEndEditInputField);
+            rangeEndInput.onValueChanged.AddListener(OnEndEditInputField);
             selectFileButton.onClick.AddListener(OnSelectFileButton);
+            loadBatchButton.onClick.AddListener(OnLoadBatchButton);
+            applyPatchButton.onClick.AddListener(OnApplyPatchButton);
         }
 
-        protected void EnableWindow()
+        private void OnEnable()
         {
             ChangeLoadMethod(lastLoadMethod);
         }
         
-        public override void DisableWindow()
+        private void OnDisable()
         {
-            base.DisableWindow();
+            if (disableButDontResetOutlines)
+            {
+                disableButDontResetOutlines = false;
+                return;
+            }
             BatchOutlineManager.main.ResetOutlines();
+        }
+
+        private void DisableWindowWithoutSelfNotify()
+        {
+            disableButDontResetOutlines = true;
+            GetComponent<UIWindow>().DisableWindow();
         }
         
         private void ChangeLoadMethod(string newLoadMethod)
@@ -56,7 +74,7 @@ namespace AbyssEditor.Scripts.UI.Windows {
             switch (newLoadMethod)
             {
                 case "BaseGame":
-                    OnEndEditInputField();
+                    OnEndEditInputField(null);
                     optoctreeGroup.SetActive(true);
                     optoctreePatchGroup.SetActive(false);
                     break;
@@ -69,7 +87,7 @@ namespace AbyssEditor.Scripts.UI.Windows {
             lastLoadMethod = newLoadMethod;
         }
 
-        public void OnSelectFileButton()
+        private void OnSelectFileButton()
         {
             string[] paths = StandaloneFileBrowser.StandaloneFileBrowser.OpenFilePanel(Language.main.Get("PatchSelectFileBrowserTip"), Application.persistentDataPath, "", false);
 
@@ -113,7 +131,7 @@ namespace AbyssEditor.Scripts.UI.Windows {
             CameraControls.main.OnRegionLoad(minBatchIndex, maxBatchIndex);
         }
 
-        public void OnApplyPatchButton()
+        private void OnApplyPatchButton()
         {
             StartCoroutine(ApplyPatch());
         }
@@ -146,13 +164,13 @@ namespace AbyssEditor.Scripts.UI.Windows {
                 }
             }
             _ = VoxelWorld.world.LoadOctreePatchAsync(patchBytes, batchesInPatch, batchOffsetsInPatch);
-            base.DisableWindow();
+            DisableWindowWithoutSelfNotify();
         }
-
-        public void OnEndEditInputField()
+        
+        public void OnEndEditInputField(string valueThatWeIgnore)
         {
-            bool startEntered = TryParseBatchString(rangeStartInput.text, out Vector3Int startBatchIndex);
-            bool endEntered = TryParseBatchString(rangeEndInput.text, out Vector3Int endBatchIndex);
+            bool startEntered = TryParseBatchString(rangeStartInput.text.Trim(), out Vector3Int startBatchIndex);
+            bool endEntered = TryParseBatchString(rangeEndInput.text.Trim(), out Vector3Int endBatchIndex);
 
             if (!startEntered && !endEntered)
             {
@@ -176,7 +194,7 @@ namespace AbyssEditor.Scripts.UI.Windows {
             CameraControls.main.OnRegionLoad(minBatchIndex, maxBatchIndex);
         }
 
-        public void OnLoadBatchButton()
+        private void OnLoadBatchButton()
         {
             StartCoroutine(LoadBatch());
         }
@@ -188,8 +206,8 @@ namespace AbyssEditor.Scripts.UI.Windows {
                 yield break;
             }
             
-            bool startEntered = TryParseBatchString(rangeStartInput.text, out Vector3Int startBatchIndex);
-            bool endEntered = TryParseBatchString(rangeEndInput.text, out Vector3Int endBatchIndex);
+            bool startEntered = TryParseBatchString(rangeStartInput.text.Trim(), out Vector3Int startBatchIndex);
+            bool endEntered = TryParseBatchString(rangeEndInput.text.Trim(), out Vector3Int endBatchIndex);
 
             if (!startEntered && !endEntered) {
                 EditorUI.inst.DisplayErrorMessage("Please enter at least one batch index: \n\"x(space)y(space)z\"");
@@ -230,7 +248,7 @@ namespace AbyssEditor.Scripts.UI.Windows {
             }
             
             _ = VoxelWorld.world.RegionLoadAsync(startBatchIndex, endBatchIndex, moddedBatchesCheckbox.isOn);
-            base.DisableWindow();//we don't want it to remove the outlines until the loading is done so just call base method
+            DisableWindowWithoutSelfNotify();
         }
 
         private bool TryParseBatchString(string s, out Vector3Int index) {

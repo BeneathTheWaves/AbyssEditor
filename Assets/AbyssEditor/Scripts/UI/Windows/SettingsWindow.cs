@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 namespace AbyssEditor.Scripts.UI.Windows {
+    [RequireComponent(typeof(UIWindow))]
     public class SettingsWindow : MonoBehaviour
     {
         [SerializeField] private TextMeshProUGUI gamePathText;

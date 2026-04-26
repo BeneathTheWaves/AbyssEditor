@@ -1,11 +1,13 @@
 ﻿using System;
+using System.Collections;
 using AbyssEditor.Scripts.CursorTools;
 using AbyssEditor.Scripts.CursorTools.Brush;
 using AbyssEditor.Scripts.TerrainMaterials;
 using UnityEngine;
 
 namespace AbyssEditor.Scripts.UI.Windows {
-    public class UIActiveToolWindow : UIWindow {
+    [RequireComponent(typeof(UIWindow))]
+    public class ActiveToolWindow : MonoBehaviour {
         [SerializeField] private UIHybridInput brushSizeSelector;
         [SerializeField] private UIHybridInput brushStrengthSelector;
         [SerializeField] private UIBlocktypePreview blocktypePreview;
@@ -18,19 +20,15 @@ namespace AbyssEditor.Scripts.UI.Windows {
             brushStrengthSelector.formatFunction = FormatStrength;
             brushStrengthSelector.OnValueUpdated += SetNewBrushStrength;
         }
-        private void Start()
+        private IEnumerator Start()
         {
             //Brush tool is initialized in awake so must get vars here
             brushSizeSelector.minValue = BrushTool.MIN_BRUSH_SIZE;
             brushSizeSelector.maxValue = BrushTool.MAX_BRUSH_SIZE;
-            brushTool.OnParametersChanged += RedrawValues;
-            RedrawValues();
-        }
-
-        protected void EnableWindow()
-        {
+            
+            yield return new WaitUntil(() => CursorToolManager.main != null);
             brushTool = CursorToolManager.main.brushTool;
-
+            brushTool.OnParametersChanged += RedrawValues;
             RedrawValues();
         }
 
@@ -41,13 +39,6 @@ namespace AbyssEditor.Scripts.UI.Windows {
         private void SetNewBrushStrength() {
             brushTool.SetBrushStrength(brushStrengthSelector.lerpedValue);
         }
-        /*public void SetNewBlocktype() {
-            if (byte.TryParse(blocktypePreview.matNumber.ToString(), out byte typeValue)) {
-                if (SnMaterialLoader.instance.blocktypesData[typeValue].ExistsInGame) {
-                    brushTool.SetBrushMaterial(typeValue);
-                }
-            }
-        }*/
 
         // formatting
         private string FormatSize(float val) => Math.Round(val, 1).ToString("0.0");
