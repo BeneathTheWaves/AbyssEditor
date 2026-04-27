@@ -1,6 +1,8 @@
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using AbyssEditor.Scripts.CursorTools;
 using UnityEngine;
 using UnityEngine.EventSystems;
 namespace AbyssEditor.Scripts.UI.Windows.WindowDragComponents
@@ -17,10 +19,9 @@ namespace AbyssEditor.Scripts.UI.Windows.WindowDragComponents
         private static Texture2D diagonalUpwardCursorTexture;
         private static Texture2D diagonalDownwardCursorTexture;
         
-        private static bool isCursorHovered;
-        private static bool isDragging;
+        public static bool isCursorHovered;
+        public static bool isDragging;
         private static bool texturesInitialized = false;
-
         
         [Flags]
         private enum HandleSide
@@ -56,11 +57,13 @@ namespace AbyssEditor.Scripts.UI.Windows.WindowDragComponents
             dragStartScreenPos = eventData.position;
             isDragging = true;
             SetDragCursor();
+            CursorToolManager.main.RegisterInputBlock(window);
         }
         public void OnEndDrag(PointerEventData eventData)
         {
             isDragging = false;
             if(!isCursorHovered) ResetCursor();
+            StartCoroutine(DisableToolBlock());
         }
         
         // Hover
@@ -70,13 +73,22 @@ namespace AbyssEditor.Scripts.UI.Windows.WindowDragComponents
             
             isCursorHovered = true;
             SetDragCursor();
+            CursorToolManager.main.RegisterInputBlock(window);
         }
         public void OnPointerExit(PointerEventData eventData)
         {
             if (isDragging) return;
             
             isCursorHovered = false;
-            if(!isDragging) ResetCursor();
+            ResetCursor();
+            StartCoroutine(DisableToolBlock());
+        }
+
+        public IEnumerator DisableToolBlock()
+        {
+            yield return new WaitForSecondsRealtime(0.1f);
+            if (isDragging || isCursorHovered) yield break;
+            CursorToolManager.main.UnregisterInputBlock(window);
         }
 
         public void OnDrag(PointerEventData eventData)
@@ -132,13 +144,12 @@ namespace AbyssEditor.Scripts.UI.Windows.WindowDragComponents
                     Cursor.SetCursor(diagonalUpwardCursorTexture, new Vector2(16, 16), CursorMode.Auto);
                     break;
                 default:
-                    Cursor.SetCursor(null, Vector2.zero, CursorMode.Auto);
+                    ResetCursor();
                     break;
             }
-            
         }
 
-        private static void ResetCursor()
+        private void ResetCursor()
         {
             Cursor.SetCursor(null, Vector2.zero, CursorMode.Auto);
         }
