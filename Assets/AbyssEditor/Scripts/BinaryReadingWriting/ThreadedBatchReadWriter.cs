@@ -55,6 +55,8 @@ namespace AbyssEditor.Scripts.BinaryReadingWriting
                 densityGrids[containerIndex] = densityGrid;
                 typeGrids[containerIndex] = typeGrid;
             }
+            
+            reader.Close();
         }
 
         /// <summary>
