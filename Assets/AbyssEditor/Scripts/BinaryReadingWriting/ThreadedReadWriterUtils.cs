@@ -50,6 +50,7 @@ namespace AbyssEditor.Scripts.BinaryReadingWriting
             }
             
             reader.Close();
+            reader.Dispose();
             
             return patchByteArray;
         }

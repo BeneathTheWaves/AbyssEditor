@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -15,7 +16,7 @@ using Vector3 = UnityEngine.Vector3;
 
 namespace AbyssEditor.Scripts.VoxelTech.VoxelMeshing
 {
-    public class VoxelBatch : MonoBehaviour
+    public class VoxelBatch : MonoBehaviour, IDisposable
     {
         internal VoxelMesh[] pointContainers;
         public Vector3Int batchIndex;
@@ -170,8 +171,7 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelMeshing
         {
             foreach (VoxelMesh pointContainer in pointContainers)
             {
-                pointContainer.grid.DisposeGrids();
-                pointContainer.DisposeMesh();
+                pointContainer.Dispose();
             }
         }
 
