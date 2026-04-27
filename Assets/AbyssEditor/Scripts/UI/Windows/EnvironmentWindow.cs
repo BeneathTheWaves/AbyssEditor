@@ -11,9 +11,9 @@ namespace AbyssEditor.Scripts.UI.Windows {
         [SerializeField] private UIColorPicker sunColor;
         [SerializeField] private UIHybridInput sunIntensity;
         [SerializeField] private UIHybridInput ambientIntensity;
-        
         [SerializeField] private Toggle brushLightToggle;
         [SerializeField] private Toggle surfaceWaterToggle;
+        [SerializeField] private UIHybridInput lodSlider;
 
         private void Start() {
             sunPitch.OnValueUpdated += OnUpdateSunRotation;
@@ -45,10 +45,16 @@ namespace AbyssEditor.Scripts.UI.Windows {
             
             surfaceWaterToggle.SetIsOnWithoutNotify(Preferences.data.displaySurfaceWater);
             surfaceWaterToggle.onValueChanged.AddListener(OnUpdateSurfaceWater);
+            
+            lodSlider.OnValueUpdated += OnUpdateLODLevel;
+            lodSlider.OnEndDragging += SaveToDisk;
+            lodSlider.formatFunction = FormatLOD;
+            lodSlider.SetValue(Preferences.data.lodLevel);
         }
 
         private static string FormatAngle(float lerpedVal) => $"{Mathf.RoundToInt(lerpedVal)}°";
         private static string FormatScalar(float lerpedVal) => lerpedVal.ToString("0.00");
+        private static string FormatLOD(float lerpedVal) => $"{Mathf.RoundToInt(lerpedVal)}";
 
         private void OnUpdateSunRotation()
         {
@@ -89,6 +95,12 @@ namespace AbyssEditor.Scripts.UI.Windows {
         {
             Preferences.data.displaySurfaceWater = value;
             VoxelMetaspace.metaspace.ReloadBoundaries();
+            SaveToDisk();
+        }
+        
+        private void OnUpdateLODLevel()
+        {
+            Preferences.data.lodLevel = Mathf.RoundToInt(lodSlider.lerpedValue);
             SaveToDisk();
         }
         
