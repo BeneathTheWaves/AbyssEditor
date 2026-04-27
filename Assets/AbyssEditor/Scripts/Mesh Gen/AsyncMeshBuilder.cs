@@ -31,7 +31,7 @@ namespace AbyssEditor.Scripts.Mesh_Gen
         public async Task<MeshResult> RequestMesh(VoxelGrid grid, Vector3 offset, Mesh meshObjToReuse = null)
         {
             int lodLevel = Preferences.data.lodLevel;
-            
+            //TODO: use this Mesh.AllocateWritableMeshData() instead of copying data from seperate thread.
             //get faces from GPU
             //This is sync btw, accessing gpu is blocking in unity (ALTHOUGH VERY fast)
             QuadFace[] faces;
