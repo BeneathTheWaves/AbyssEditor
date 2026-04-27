@@ -1,4 +1,5 @@
 ﻿using AbyssEditor.Scripts.SaveSystem;
+using AbyssEditor.Scripts.VoxelTech;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -12,77 +13,85 @@ namespace AbyssEditor.Scripts.UI.Windows {
         [SerializeField] private UIHybridInput ambientIntensity;
         
         [SerializeField] private Toggle brushLightToggle;
+        [SerializeField] private Toggle surfaceWaterToggle;
 
         private void Start() {
-            sunPitch.OnValueUpdated += UpdateSunRotation;
-            sunPitch.OnEndDragging += SavePreferences;
+            sunPitch.OnValueUpdated += OnUpdateSunRotation;
+            sunPitch.OnEndDragging += SaveToDisk;
             sunPitch.formatFunction = FormatAngle;
             sunPitch.SetValue(Preferences.data.sunPitch);
 
-            sunYaw.OnValueUpdated += UpdateSunRotation;
-            sunYaw.OnEndDragging += SavePreferences;
+            sunYaw.OnValueUpdated += OnUpdateSunRotation;
+            sunYaw.OnEndDragging += SaveToDisk;
             sunYaw.formatFunction = FormatAngle;
             sunYaw.SetValue(Preferences.data.sunYaw);
 
-            sunColor.OnColorChanged += UpdateSunColor;
-            sunColor.OnColorChanged += SavePreferences;
+            sunColor.OnColorChanged += OnUpdateSunColor;
+            sunColor.OnColorChanged += SaveToDisk;
             sunColor.SetInitialColor(new Color(Preferences.data.sunColorR, Preferences.data.sunColorG, Preferences.data.sunColorB));
             
-            sunIntensity.OnValueUpdated += UpdateSunIntensity;
-            sunIntensity.OnEndDragging += SavePreferences;
+            sunIntensity.OnValueUpdated += OnUpdateSunIntensity;
+            sunIntensity.OnEndDragging += SaveToDisk;
             sunIntensity.formatFunction = FormatScalar;
             sunIntensity.SetValue(Preferences.data.sunIntensity);
             
-            ambientIntensity.OnValueUpdated += UpdateAmbientIntensity;
-            ambientIntensity.OnEndDragging += SavePreferences;
+            ambientIntensity.OnValueUpdated += OnUpdateAmbientIntensity;
+            ambientIntensity.OnEndDragging += SaveToDisk;
             ambientIntensity.formatFunction = FormatScalar;
             ambientIntensity.SetValue(Preferences.data.ambientIntensity);
             
             brushLightToggle.SetIsOnWithoutNotify(Preferences.data.enableBrushLight);
-            brushLightToggle.onValueChanged.AddListener(UpdateBrushLight);
+            brushLightToggle.onValueChanged.AddListener(OnUpdateBrushLight);
+            
+            surfaceWaterToggle.SetIsOnWithoutNotify(Preferences.data.displaySurfaceWater);
+            surfaceWaterToggle.onValueChanged.AddListener(OnUpdateSurfaceWater);
         }
 
-        private string FormatAngle(float lerpedVal) => $"{Mathf.RoundToInt(lerpedVal)}°";
-        private string FormatScalar(float lerpedVal) => lerpedVal.ToString("0.00");
+        private static string FormatAngle(float lerpedVal) => $"{Mathf.RoundToInt(lerpedVal)}°";
+        private static string FormatScalar(float lerpedVal) => lerpedVal.ToString("0.00");
 
-        // getting commands from UI
-        private void UpdateBrushLight(bool value)
-        {
-            LightingManager.main.UpdateBrushLight(value);
-            SavePreferences();
-        }
-
-        private void UpdateSunRotation()
-        {
-            LightingManager.main.UpdateSunRotation(sunPitch.lerpedValue, sunYaw.lerpedValue);
-        }
-
-        private void UpdateSunColor()
-        {
-            LightingManager.main.UpdateSunColor(sunColor.color.r, sunColor.color.g, sunColor.color.b);
-        }
-
-        private void UpdateSunIntensity()
-        {
-            LightingManager.main.UpdateSunIntensity(sunIntensity.lerpedValue);
-        }
-
-        private void UpdateAmbientIntensity()
-        {
-            LightingManager.main.UpdateAmbientIntensity(ambientIntensity.lerpedValue);
-        }
-
-        private void SavePreferences()
+        private void OnUpdateSunRotation()
         {
             Preferences.data.sunPitch = sunPitch.lerpedValue;
             Preferences.data.sunYaw = sunYaw.lerpedValue;
+            LightingManager.main.UpdateSunRotation(sunPitch.lerpedValue, sunYaw.lerpedValue);
+        }
+
+        private void OnUpdateSunColor()
+        {
             Preferences.data.sunColorR = sunColor.color.r;
             Preferences.data.sunColorG = sunColor.color.g;
             Preferences.data.sunColorB = sunColor.color.b;
-            Preferences.data.sunIntensity = sunIntensity.lerpedValue;
-            Preferences.data.ambientIntensity = ambientIntensity.lerpedValue;
-            
-            Preferences.SavePreferences();
+            LightingManager.main.UpdateSunColor(sunColor.color.r, sunColor.color.g, sunColor.color.b);
         }
+
+        private void OnUpdateSunIntensity()
+        {
+            Preferences.data.sunIntensity = sunIntensity.lerpedValue;
+            LightingManager.main.UpdateSunIntensity(sunIntensity.lerpedValue);
+        }
+
+        private void OnUpdateAmbientIntensity()
+        {
+            Preferences.data.ambientIntensity = ambientIntensity.lerpedValue;
+            LightingManager.main.UpdateAmbientIntensity(ambientIntensity.lerpedValue);
+        }
+
+        // getting commands from UI
+        private static void OnUpdateBrushLight(bool value)
+        {
+            Preferences.data.enableBrushLight = value;
+            LightingManager.main.UpdateBrushLight(value);
+            SaveToDisk();
+        }
+        
+        private static void OnUpdateSurfaceWater(bool value)
+        {
+            Preferences.data.displaySurfaceWater = value;
+            VoxelMetaspace.metaspace.ReloadBoundaries();
+            SaveToDisk();
+        }
+        
+        private static void SaveToDisk() => Preferences.SavePreferencesToDisk();
     }
 }

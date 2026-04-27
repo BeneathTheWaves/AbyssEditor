@@ -34,7 +34,7 @@ namespace AbyssEditor.Scripts.TerrainMaterials
                     {
                         Preferences.data.favoritedMaterials.Remove(mat.blockType);
                     }
-                    Preferences.SavePreferences();
+                    Preferences.SavePreferencesToDisk();
                     favorited = value;
                 }
             }

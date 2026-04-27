@@ -313,7 +313,7 @@ namespace AbyssEditor.Scripts.VoxelTech {
             return batches.TryGetValue(batchIndex, out VoxelBatch _);
         }
 
-        private void ReloadBoundaries()
+        public void ReloadBoundaries()
         {
             foreach (VoxelBatch mesh in batches.Values)
             {

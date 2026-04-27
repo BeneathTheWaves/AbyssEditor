@@ -30,6 +30,7 @@ namespace AbyssEditor.Scripts.SaveSystem
         public float sunColorB = 1f;
         public float sunIntensity = 0.5f;
         public float ambientIntensity = 0.5f;
+        public bool displaySurfaceWater = true;
         
         //Settings
         public string gamePath = "";
@@ -54,7 +55,7 @@ namespace AbyssEditor.Scripts.SaveSystem
 
         public static PreferencesMainFormat data;
 
-        public static void SavePreferences()
+        public static void SavePreferencesToDisk()
         {
             try
             {
@@ -71,7 +72,7 @@ namespace AbyssEditor.Scripts.SaveSystem
         private void Awake()
         {
             data = Load();
-            SavePreferences();
+            SavePreferencesToDisk();
         }
 
         private static PreferencesMainFormat Load()

@@ -72,6 +72,7 @@
   "SunColor": "Sun Color",
   "SunIntensity": "Sun Intensity",
   "AmbientIntensity": "Ambient Light Intensity",
+  "EnableWaterSurface": "Enable Water Surface",
   
   // Settings
   "SettingsTitle": "Settings",

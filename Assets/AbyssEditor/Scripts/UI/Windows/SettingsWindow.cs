@@ -116,7 +116,7 @@ namespace AbyssEditor.Scripts.UI.Windows {
 
         private static void SavePreferences()
         {
-            Preferences.SavePreferences();
+            Preferences.SavePreferencesToDisk();
         }
     }
 }

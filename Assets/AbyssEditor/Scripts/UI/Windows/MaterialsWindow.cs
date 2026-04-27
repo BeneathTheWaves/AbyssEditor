@@ -68,7 +68,7 @@ namespace AbyssEditor.Scripts.UI.Windows
         {
             showFavoritedOnly = value;
             Preferences.data.showFavoritedOnly = value;
-            Preferences.SavePreferences();
+            Preferences.SavePreferencesToDisk();
             UpdateFilter();
         }
 
