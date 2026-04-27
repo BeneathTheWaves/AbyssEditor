@@ -59,7 +59,6 @@ namespace AbyssEditor.Scripts.UI.Windows.WindowDragComponents
         }
         public void OnEndDrag(PointerEventData eventData)
         {
-            Debug.Log("OnEndDrag");
             isDragging = false;
             if(!isCursorHovered) ResetCursor();
         }
