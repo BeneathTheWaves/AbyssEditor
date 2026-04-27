@@ -1,4 +1,3 @@
-using AbyssEditor.Scripts.UI.HotBar;
 using AbyssEditor.Scripts.UI.HotBar.HotBarButtons;
 using JetBrains.Annotations;
 
@@ -32,6 +31,6 @@ namespace AbyssEditor.Scripts.CursorTools
         /// <param name="hideTool">If the tool should be hidden. Is only true if the cursor is over UI, in which case block input is true but this will also be. This does not trip for blocking scripts</param>
         public void HandleToolUpdate(bool blockInput) { }
 
-        public CursorTool ToolType { get; }
+        public CursorTool toolType { get; }
     }
 }

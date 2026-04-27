@@ -21,7 +21,7 @@ namespace AbyssEditor.Scripts.CursorTools
 
         private bool dialogOpen = false;
         
-        public CursorTool ToolType => CursorTool.RemoveBatch;
+        public CursorTool toolType => CursorTool.RemoveBatch;
         
         public void Start()
         {
