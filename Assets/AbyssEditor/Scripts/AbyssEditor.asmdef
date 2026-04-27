@@ -17,7 +17,8 @@
         "HSVPicker",
         "StandaloneFileBrowser",
         "AssetStudio",
-        "DiscordRPC"
+        "DiscordRPC",
+        "Autodesk.Fbx"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

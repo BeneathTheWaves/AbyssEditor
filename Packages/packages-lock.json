@@ -1,5 +1,11 @@
 {
   "dependencies": {
+    "com.autodesk.fbx": {
+      "version": "file:../LocalPackages/com.autodesk.fbx",
+      "depth": 0,
+      "source": "local",
+      "dependencies": {}
+    },
     "com.judahperez.hsvcolorpicker": {
       "version": "file:../LocalPackages/com.judahperez.hsvcolorpicker",
       "depth": 0,

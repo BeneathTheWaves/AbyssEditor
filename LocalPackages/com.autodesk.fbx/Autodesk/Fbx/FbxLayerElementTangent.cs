@@ -1,0 +1,37 @@
+namespace Autodesk.Fbx {
+
+public class FbxLayerElementTangent : FbxLayerElementTemplateFbxVector4 {
+  private global::System.Runtime.InteropServices.HandleRef swigCPtr;
+
+  internal FbxLayerElementTangent(global::System.IntPtr cPtr, bool cMemoryOwn) : base(NativeMethods.FbxLayerElementTangent_SWIGUpcast(cPtr), cMemoryOwn) {
+    swigCPtr = new global::System.Runtime.InteropServices.HandleRef(this, cPtr);
+  }
+
+  internal static global::System.Runtime.InteropServices.HandleRef getCPtr(FbxLayerElementTangent obj) {
+    return (obj == null) ? new global::System.Runtime.InteropServices.HandleRef(null, global::System.IntPtr.Zero) : obj.swigCPtr;
+  }
+
+  public override void Dispose() {
+    lock(this) {
+      if (swigCPtr.Handle != global::System.IntPtr.Zero) {
+        if (swigCMemOwn) {
+          swigCMemOwn = false;
+          throw new global::System.MethodAccessException("C++ destructor does not have public access");
+        }
+        swigCPtr = new global::System.Runtime.InteropServices.HandleRef(null, global::System.IntPtr.Zero);
+      }
+      global::System.GC.SuppressFinalize(this);
+      base.Dispose();
+    }
+  }
+
+  public static FbxLayerElementTangent Create(FbxLayerContainer pOwner, string pName) {
+    global::System.IntPtr cPtr = NativeMethods.FbxLayerElementTangent_Create(FbxLayerContainer.getCPtr(pOwner), pName);
+    FbxLayerElementTangent ret = (cPtr == global::System.IntPtr.Zero) ? null : new FbxLayerElementTangent(cPtr, false);
+    if (NativeMethods.SWIGPendingException.Pending) throw NativeMethods.SWIGPendingException.Retrieve();
+    return ret;
+  }
+
+}
+
+}

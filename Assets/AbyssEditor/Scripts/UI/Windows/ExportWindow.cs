@@ -1,4 +1,5 @@
-﻿using AbyssEditor.Scripts.VoxelTech;
+﻿using AbyssEditor.Scripts.Legacy;
+using AbyssEditor.Scripts.VoxelTech;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -24,7 +25,7 @@ namespace AbyssEditor.Scripts.UI.Windows {
             exportButton.onClick.AddListener(Export);
         }
 
-        public void Export() {
+        private void Export() {
             if (VoxelMetaspace.metaspace.batches.Count == 0) {
                 EditorUI.inst.DisplayErrorMessage("Nothing to export!");
                 return;
@@ -36,11 +37,9 @@ namespace AbyssEditor.Scripts.UI.Windows {
             {
                 case ExportMode.OptoctreePatch:
                 {
-                    string path = StandaloneFileBrowser.StandaloneFileBrowser.SaveFilePanel("Save patch as...", Application.dataPath, "TerrainPatch", "optoctreepatch");
-                    if (string.IsNullOrEmpty(path)) {
-                        return;
-                    }
-                    exportPath = path;
+                    exportPath = StandaloneFileBrowser.StandaloneFileBrowser.SaveFilePanel("Save patch as...", Application.dataPath, "TerrainPatch", "optoctreepatch");
+                    if (string.IsNullOrEmpty(exportPath)) return;
+                    
                     _ = VoxelWorld.ExportPatch(exportPath);
                     
                     break;
@@ -54,14 +53,21 @@ namespace AbyssEditor.Scripts.UI.Windows {
                     else
                     {
                         string[] paths = StandaloneFileBrowser.StandaloneFileBrowser.OpenFolderPanel("Select export folder...", Application.dataPath, false);
-                        if (paths.Length == 0) {
-                            return;
-                        }
+                        if (paths.Length == 0) return;
+                        
                         exportPath = paths[0];
                     }
                     _ = VoxelWorld.ExportOptoctrees(exportPath);
                     break;
                 }
+                case ExportMode.Fbx:
+                {
+                    exportPath = StandaloneFileBrowser.StandaloneFileBrowser.SaveFilePanel("Save model as...", Application.dataPath, "Fbx Model", "fbx");
+                    if (string.IsNullOrEmpty(exportPath)) return;
+                    StartCoroutine(ExportFBX.ExportMetaspaceAsync(exportPath));
+                    break;
+                }
+                case ExportMode.None:
                 default:
                 {
                     DebugOverlay.LogError("Unexpected export mode! (this shouldn't be possible)");
@@ -97,6 +103,10 @@ namespace AbyssEditor.Scripts.UI.Windows {
                 case ".optoctree":
                     ToggleCheckboxVisibility(true);
                     selectedExportMode = ExportMode.Optoctree;
+                    break;
+                case ".fbx":
+                    ToggleCheckboxVisibility(false);
+                    selectedExportMode = ExportMode.Fbx;
                     break;
             }
         }

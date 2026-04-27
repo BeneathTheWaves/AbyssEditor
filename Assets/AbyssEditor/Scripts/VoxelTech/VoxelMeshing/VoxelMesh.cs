@@ -22,7 +22,7 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelMeshing
 
         // other objects
         public Bounds bounds;
-        private GameObject meshObj;
+        public GameObject meshObj;
 
         private Mesh mesh;
         private MeshFilter meshFilter;

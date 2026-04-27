@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "com.autodesk.fbx": "file:../LocalPackages/com.autodesk.fbx",
     "com.judahperez.hsvcolorpicker": "file:../LocalPackages/com.judahperez.hsvcolorpicker",
     "com.perfare.assetstudio": "file:../LocalPackages/com.perfare.assetstudio",
     "com.unity.2d.sprite": "1.0.0",
