@@ -216,14 +216,14 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelMeshing
                 boundaryPlanes[i].SetActive(!neighbors[i]);
             }
             
-            float halfPos = VoxelWorld.BATCH_WIDTH / 2f;
+            const float halfWidth = VoxelWorld.BATCH_WIDTH / 2f;
             
-            boundaryPlanes[0].transform.localPosition = new Vector3(halfPos, 0, halfPos);
-            boundaryPlanes[1].transform.localPosition = new Vector3(halfPos, VoxelWorld.BATCH_WIDTH, halfPos);
-            boundaryPlanes[2].transform.localPosition = new Vector3(0, halfPos, halfPos);
-            boundaryPlanes[3].transform.localPosition = new Vector3(VoxelWorld.BATCH_WIDTH, halfPos, halfPos);
-            boundaryPlanes[4].transform.localPosition = new Vector3(halfPos, halfPos, 0);
-            boundaryPlanes[5].transform.localPosition = new Vector3(halfPos, halfPos, VoxelWorld.BATCH_WIDTH);
+            boundaryPlanes[0].transform.localPosition = new Vector3(halfWidth, 0, halfWidth);
+            boundaryPlanes[1].transform.localPosition = new Vector3(halfWidth, VoxelWorld.BATCH_WIDTH, halfWidth);
+            boundaryPlanes[2].transform.localPosition = new Vector3(0, halfWidth, halfWidth);
+            boundaryPlanes[3].transform.localPosition = new Vector3(VoxelWorld.BATCH_WIDTH, halfWidth, halfWidth);
+            boundaryPlanes[4].transform.localPosition = new Vector3(halfWidth, halfWidth, 0);
+            boundaryPlanes[5].transform.localPosition = new Vector3(halfWidth, halfWidth, VoxelWorld.BATCH_WIDTH);
             
             foreach (GameObject plane in boundaryPlanes)
             {

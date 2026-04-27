@@ -4,7 +4,7 @@ using UnityEngine.UI;
 
 namespace AbyssEditor.Scripts.UI.Windows {
     [RequireComponent(typeof(UIWindow))]
-    public class LightingWindow : MonoBehaviour {
+    public class EnvironmentWindow : MonoBehaviour {
         [SerializeField] private UIHybridInput sunPitch;
         [SerializeField] private UIHybridInput sunYaw;
         [SerializeField] private UIColorPicker sunColor;
@@ -46,33 +46,33 @@ namespace AbyssEditor.Scripts.UI.Windows {
         private string FormatScalar(float lerpedVal) => lerpedVal.ToString("0.00");
 
         // getting commands from UI
-        public void UpdateBrushLight(bool value)
+        private void UpdateBrushLight(bool value)
         {
             LightingManager.main.UpdateBrushLight(value);
             SavePreferences();
         }
 
-        void UpdateSunRotation()
+        private void UpdateSunRotation()
         {
             LightingManager.main.UpdateSunRotation(sunPitch.lerpedValue, sunYaw.lerpedValue);
         }
 
-        void UpdateSunColor()
+        private void UpdateSunColor()
         {
             LightingManager.main.UpdateSunColor(sunColor.color.r, sunColor.color.g, sunColor.color.b);
         }
 
-        void UpdateSunIntensity()
+        private void UpdateSunIntensity()
         {
             LightingManager.main.UpdateSunIntensity(sunIntensity.lerpedValue);
         }
-        
-        void UpdateAmbientIntensity()
+
+        private void UpdateAmbientIntensity()
         {
             LightingManager.main.UpdateAmbientIntensity(ambientIntensity.lerpedValue);
         }
 
-        void SavePreferences()
+        private void SavePreferences()
         {
             Preferences.data.sunPitch = sunPitch.lerpedValue;
             Preferences.data.sunYaw = sunYaw.lerpedValue;

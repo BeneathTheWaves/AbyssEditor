@@ -308,12 +308,9 @@ namespace AbyssEditor.Scripts.VoxelTech {
         }
         
         
-        public bool BatchLoaded(Vector3Int batchIndex) {
-            if(batches.TryGetValue(batchIndex, out VoxelBatch _))
-            {
-                return true;
-            }
-            return false;
+        public bool BatchLoaded(Vector3Int batchIndex)
+        {
+            return batches.TryGetValue(batchIndex, out VoxelBatch _);
         }
 
         private void ReloadBoundaries()

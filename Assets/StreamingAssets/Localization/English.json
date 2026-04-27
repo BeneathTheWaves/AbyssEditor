@@ -15,7 +15,7 @@
   "TopBarButton_Export": "Export",
   "TopBarButton_Brush": "Tool Settings",
   "TopBarButton_Materials": "Materials",
-  "TopBarButton_Lighting": "Lighting",
+  "TopBarButton_Environment": "Environment",
   "TopBarButton_Settings": "Settings",
   
   // Hotbar buttons
@@ -64,8 +64,8 @@
     // Remove Batch
     "BatchRemoveConfirmationMessage": "This action will delete the selected batch. Any unexported data will be lost!",
   
-  // Lighting
-  "LightingTitle": "Lighting",
+  // Environment
+  "EnvironmentTitle": "Environment",
   "SunPitch": "Sun Pitch",
   "SunYaw": "Sun Yaw",
   "EnableBrushLight": "Enable Brush Light",
