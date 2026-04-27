@@ -802,6 +802,7 @@ MonoBehaviour:
   - {fileID: 2800000, guid: b137918b5c3f3b0b4983b2de7c139b8f, type: 3}
   - {fileID: 2800000, guid: 0640b4b8713e944a29082101e5cb4112, type: 3}
   - {fileID: 2800000, guid: 814dfa2f100c51911a5c78d930c65f91, type: 3}
+  - {fileID: 2800000, guid: e5add17fba65428b792e48a75635fa00, type: 3}
   cycleInterval: 10
   fadeDuration: 3
   autoCycle: 1
