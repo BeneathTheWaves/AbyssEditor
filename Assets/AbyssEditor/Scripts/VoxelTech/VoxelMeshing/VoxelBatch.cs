@@ -216,7 +216,7 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelMeshing
             {
                 topRenderer.material = VoxelWorld.world.waterSurfaceMat;
                 topBoundaryPlane.SetActive(true);//always show the water boundary plane if it exists, even if inside the region
-                topCollider.enabled = neighbors[TOP];//if neighbor exists, make sure collider is disabled
+                topCollider.enabled = !neighbors[TOP];//if neighbor exists, make sure collider is disabled
             }
             else
             {
