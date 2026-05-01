@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using AbyssEditor.Scripts.BinaryReadingWriting;
 using AbyssEditor.Scripts.CursorTools.Brush;
@@ -110,12 +109,16 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelMeshing
             }
         }
 
-        public void CacheNeighboringVoxelGrids()
+        public async Task CacheNeighboringGridsAsync(EditorProcessHandle statusHandle)
         {
-            foreach (VoxelMesh container in pointContainers)
+            await WorkerThreadManager.main.ScheduleParallel(() =>
             {
-                container.CacheNeighborGrids();
-            }
+                foreach (VoxelMesh mesh in pointContainers)
+                {
+                    mesh.CacheNeighborGrids();
+                }
+            });
+            statusHandle.IncrementTasksComplete();
         }
 
         public void Write(string exportFileLocation) => ThreadedBinaryReadWriter.WriteOptoctreeThreadable(this, exportFileLocation);

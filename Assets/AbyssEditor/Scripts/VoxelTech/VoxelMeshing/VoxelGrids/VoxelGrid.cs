@@ -56,25 +56,25 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelMeshing.VoxelGrids {
                 for (int y = -1; y <= 1; y++) {
                     for (int z = -1; z <= 1; z++)
                     {
-                        Vector3Int sampleVoxel = new Vector3Int(x, y, z);
-                        ParseSampleVoxel(ref sampleVoxel);
+                        Vector3Int containerOffset = new Vector3Int(x, y, z);
+                        ParseContainerOffset(ref containerOffset);
                     }
                 }
             }
             return;
-            void ParseSampleVoxel(ref Vector3Int sampleVoxel)
+            void ParseContainerOffset(ref Vector3Int containerOffset)
             {
-                int neighborGridCacheIndex = (sampleVoxel.x + 1) + (sampleVoxel.y + 1) * 3 + (sampleVoxel.z + 1) * 9;
+                int neighborGridCacheIndex = (containerOffset.x + 1) + (containerOffset.y + 1) * 3 + (containerOffset.z + 1) * 9;
                         
                 
-                Vector3Int neighborContainerIndex = octreeIndex + sampleVoxel;
+                Vector3Int neighborContainerIndex = octreeIndex + containerOffset;
                 Vector3Int neighborBatchIndex = batchIndex;
             
                 if (neighborContainerIndex.x < 0 || neighborContainerIndex.y < 0 || neighborContainerIndex.z < 0 ||
                     neighborContainerIndex.x >= VoxelWorld.OCTREES_PER_SIDE || neighborContainerIndex.y >= VoxelWorld.OCTREES_PER_SIDE || neighborContainerIndex.z >= VoxelWorld.OCTREES_PER_SIDE) 
                 {
                     //outside the current batch
-                    neighborBatchIndex = NeighbourBatchFromSampleVoxel(ref sampleVoxel);
+                    neighborBatchIndex = NeighbourBatchFromSampleVoxel(ref containerOffset);
                             
                     if (!VoxelMetaspace.metaspace.BatchLoaded(neighborBatchIndex))
                     {
@@ -100,7 +100,7 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelMeshing.VoxelGrids {
         {
             Vector3Int neighbourGridOffset = NeighbourGridOffsetFromPaddedVoxel(ref voxel, ref fullResolution);
 
-            //Cache is offset by 1 bc indexes cant be negative :/
+            //Cache is offset by 1 bc indexes cant be negative
             VoxelGrid neighborGrid = neighboringGrids[(neighbourGridOffset.x + 1) + (neighbourGridOffset.y + 1) * 3 + (neighbourGridOffset.z + 1) * 9];
             if (neighborGrid == null)
             {
