@@ -33,7 +33,7 @@ namespace AbyssEditor.Scripts.BinaryReadingWriting
                 return;
             }
 
-            BinaryReader reader = new(File.Open(filePath, FileMode.Open));
+            using BinaryReader reader = new(File.Open(filePath, FileMode.Open));
             reader.ReadInt32(); // skip version field
             
             densityGrids = new NativeArray<byte>[VoxelWorld.OCTREES_PER_BATCH];
@@ -55,9 +55,7 @@ namespace AbyssEditor.Scripts.BinaryReadingWriting
                 densityGrids[containerIndex] = densityGrid;
                 typeGrids[containerIndex] = typeGrid;
             }
-            
             reader.Close();
-            reader.Dispose();
         }
 
         /// <summary>
