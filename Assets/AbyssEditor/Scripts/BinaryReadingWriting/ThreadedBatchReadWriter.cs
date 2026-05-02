@@ -146,7 +146,7 @@ namespace AbyssEditor.Scripts.BinaryReadingWriting
 
             DebugOverlay.LogMessage($"Writing {batchname}");
 
-            BinaryWriter writer = new BinaryWriter(File.Open(Path.Combine(exportLocation, batchname), FileMode.OpenOrCreate));
+            using BinaryWriter writer = new BinaryWriter(File.Open(Path.Combine(exportLocation, batchname), FileMode.OpenOrCreate));
             writer.Write(4);//Version number
             
             for (int i = 0; i < VoxelWorld.OCTREES_PER_BATCH; i++)
