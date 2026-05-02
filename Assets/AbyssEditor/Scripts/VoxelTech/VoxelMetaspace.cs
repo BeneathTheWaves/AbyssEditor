@@ -1,5 +1,4 @@
 ﻿using System.Collections;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -22,7 +21,7 @@ namespace AbyssEditor.Scripts.VoxelTech {
     {
         public static VoxelMetaspace metaspace;
         
-        public readonly ConcurrentDictionary<Vector3Int,VoxelBatch> batches = new();
+        public readonly Dictionary<Vector3Int,VoxelBatch> batches = new();
 
         private void Awake() {
             metaspace = this;
@@ -60,8 +59,8 @@ namespace AbyssEditor.Scripts.VoxelTech {
         
         private VoxelBatch CreateMesh(Vector3Int batchIndex)
         {
-            VoxelBatch voxelBatch = new GameObject($"batch-{batchIndex.x}-{batchIndex.y}-{batchIndex.z}").AddComponent<VoxelBatch>();
-            voxelBatch.Create(batchIndex);
+            GameObject obj = new GameObject($"batch-{batchIndex.x}-{batchIndex.y}-{batchIndex.z}");
+            VoxelBatch voxelBatch = new VoxelBatch(batchIndex, obj);
             batches.TryAdd(batchIndex, voxelBatch);
             return voxelBatch;
         }

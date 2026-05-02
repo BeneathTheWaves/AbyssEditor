@@ -15,19 +15,24 @@ using Vector3 = UnityEngine.Vector3;
 
 namespace AbyssEditor.Scripts.VoxelTech.VoxelMeshing
 {
-    public class VoxelBatch : MonoBehaviour, IDisposable
+    public class VoxelBatch : IDisposable
     {
-        internal VoxelMesh[] pointContainers;
+        internal readonly VoxelMesh[] pointContainers;
         public Vector3Int batchIndex;
         public Vector3Int octreeCounts;
 
         private readonly int queuesPerFrame = WorkerThreadManager.main.workersCount;
         
+        public GameObject gameObject;
+        public Transform transform;
+        
         GameObject[] boundaryPlanes;
         
-        public void Create(Vector3Int _batchIndex)
+        public VoxelBatch(Vector3Int batchIndex, GameObject gameObject)
         {
-            batchIndex = _batchIndex;
+            this.batchIndex = batchIndex;
+            this.gameObject = gameObject;
+            this.transform = gameObject.transform;
             SetupGameObject();
 
             octreeCounts = Vector3Int.one * VoxelWorld.OCTREES_PER_SIDE;
@@ -38,7 +43,7 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelMeshing
             for (int y = 0; y < octreeCounts.y; y++)
             for (int x = 0; x < octreeCounts.x; x++)
             { 
-                pointContainers[Utils.LinearIndex(x, y, z, octreeCounts)] = new VoxelMesh(transform, new Vector3Int(x, y, z), batchIndex);
+                pointContainers[Utils.LinearIndex(x, y, z, octreeCounts)] = new VoxelMesh(transform, new Vector3Int(x, y, z), this.batchIndex);
             }
         }
 
@@ -111,13 +116,17 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelMeshing
 
         public async Task CacheNeighboringGridsAsync(EditorProcessHandle statusHandle)
         {
-            await WorkerThreadManager.main.ScheduleParallel(() =>
+            VoxelMetaspace ms = VoxelMetaspace.metaspace;
+    
+            List<Task> tasks = new List<Task>(pointContainers.Length);
+            foreach (VoxelMesh mesh in pointContainers)
             {
-                foreach (VoxelMesh mesh in pointContainers)
+                tasks.Add(WorkerThreadManager.main.ScheduleParallel(() =>
                 {
-                    mesh.CacheNeighborGrids();
-                }
-            });
+                    mesh.CacheNeighborGrids(ms);
+                }));
+            }
+            await Task.WhenAll(tasks);
             statusHandle.IncrementTasksComplete();
         }
 
