@@ -50,7 +50,7 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelMeshing.VoxelGrids {
             array[Utils.LinearIndex(voxel.x, voxel.y, voxel.z, VoxelWorld.GRID_RESOLUTION + GRID_PADDING*2)] = val;
         }
 
-        public void CacheNeighboringVoxelGrids(VoxelMetaspace metaspace)
+        public void CacheNeighboringVoxelGrids()
         {
             for (int x = -1; x <= 1; x++) {
                 for (int y = -1; y <= 1; y++) {
@@ -75,17 +75,17 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelMeshing.VoxelGrids {
                 {
                     //outside the current batch
                     neighborBatchIndex = NeighbourBatchFromSampleVoxel(ref containerOffset);
-                            
-                    if (!metaspace.BatchLoaded(neighborBatchIndex))
+
+                    if (!VoxelMetaspace.metaspace.BatchLoaded(neighborBatchIndex))
                     {
                         neighboringGrids[neighborGridCacheIndex] = null;
                         return;
                     }
-                
+
                     neighborContainerIndex = IndexMod(ref neighborContainerIndex, 5);
                 }
-                        
-                neighboringGrids[neighborGridCacheIndex] = metaspace.TryGetVoxelGrid(neighborBatchIndex, neighborContainerIndex);
+
+                neighboringGrids[neighborGridCacheIndex] = VoxelMetaspace.metaspace.TryGetVoxelGrid(neighborBatchIndex, neighborContainerIndex);
             }
         }
         

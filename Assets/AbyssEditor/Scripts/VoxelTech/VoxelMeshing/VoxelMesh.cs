@@ -49,7 +49,7 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelMeshing
             Object.Destroy(mesh);
         } 
 
-        void CreateMeshObject(Transform batchTransform)
+        private void CreateMeshObject(Transform batchTransform)
         {
             meshObj = new GameObject($"OctreeMesh-");
             meshFilter = meshObj.AddComponent<MeshFilter>();
@@ -114,9 +114,9 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelMeshing
             grid.NeighborDataUpdate();
         }
         
-        public void CacheNeighborGrids(VoxelMetaspace metaspace)
+        public void CacheNeighborGrids()
         {
-            grid.CacheNeighboringVoxelGrids(metaspace);
+            grid.CacheNeighboringVoxelGrids();
         }
 
         public byte SampleBlocktype(Vector3 worldPoint)

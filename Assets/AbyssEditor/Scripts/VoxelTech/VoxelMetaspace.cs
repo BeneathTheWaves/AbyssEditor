@@ -234,7 +234,7 @@ namespace AbyssEditor.Scripts.VoxelTech {
             List<Task> tasks = new List<Task>();
             foreach (VoxelBatch batch in batches.Values)
             {
-                tasks.Add(batch.CacheNeighboringGridsAsync(statusHandle)); 
+                tasks.Add(batch.CacheNeighboringGridsAsync(statusHandle));
             }
             await Task.WhenAll(tasks);
             
@@ -250,14 +250,14 @@ namespace AbyssEditor.Scripts.VoxelTech {
             statusHandle.SetTasksToCompleteForPhase(totalTasks);
             
             if(batches.Values.Count != 0) statusHandle.SetPhasePrefix($"Updating Grid(s) (%completedTasks%/%totalTasks%)");
+            List<Task> tasks = new List<Task>();
             foreach (VoxelBatch batch in batches.Values) {
-                batch.UpdateFullGrids();
-                statusHandle.IncrementTasksComplete();
+                tasks.Add(batch.UpdateFullGridsAsync(statusHandle));
                 await Task.Yield();
             }
 
             if(batches.Values.Count != 0) statusHandle.SetPhasePrefix($"Regenerating Meshes (%completedTasks%/%totalTasks%)");
-            List<Task> tasks = new List<Task>();
+            tasks.Clear();
             foreach (VoxelBatch batch in batches.Values) {
                 tasks.AddRange(await batch.ScheduleMeshRegenAsync(statusHandle));
                 await Task.Yield();

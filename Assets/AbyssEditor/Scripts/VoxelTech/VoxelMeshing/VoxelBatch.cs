@@ -106,27 +106,26 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelMeshing
             return pointContainers[Utils.LinearIndex(containerIndex.x, containerIndex.y, containerIndex.z, octreeCounts)].grid;
         }
 
-        public void UpdateFullGrids()
+        public async Task UpdateFullGridsAsync(EditorProcessHandle statusHandle)
         {
-            foreach (VoxelMesh container in pointContainers)
+            await WorkerThreadManager.main.ScheduleParallel(() =>
             {
-                container.UpdateNeighborData();
-            }
+                for (int i = 0; i < VoxelWorld.OCTREES_PER_BATCH; i++) {
+                    pointContainers[i].UpdateNeighborData();
+                }
+            });
+            statusHandle.IncrementTasksComplete();
         }
 
         public async Task CacheNeighboringGridsAsync(EditorProcessHandle statusHandle)
         {
-            VoxelMetaspace ms = VoxelMetaspace.metaspace;
-    
-            List<Task> tasks = new List<Task>(pointContainers.Length);
-            foreach (VoxelMesh mesh in pointContainers)
+            await WorkerThreadManager.main.ScheduleParallel(() =>
             {
-                tasks.Add(WorkerThreadManager.main.ScheduleParallel(() =>
-                {
-                    mesh.CacheNeighborGrids(ms);
-                }));
-            }
-            await Task.WhenAll(tasks);
+                for (int i = 0; i < VoxelWorld.OCTREES_PER_BATCH; i++) {
+                    pointContainers[i].CacheNeighborGrids();
+                }
+            });
+
             statusHandle.IncrementTasksComplete();
         }
 
