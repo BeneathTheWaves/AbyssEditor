@@ -4,7 +4,6 @@ using AbyssEditor.Scripts.BatchOutline;
 using AbyssEditor.Scripts.CursorTools;
 using AbyssEditor.Scripts.TaskSystem;
 using AbyssEditor.Scripts.UI;
-using AbyssEditor.Scripts.Util;
 using AbyssEditor.Scripts.VoxelTech.VoxelMeshing;
 using UnityEngine;
 using Vector3 = UnityEngine.Vector3;
@@ -38,7 +37,9 @@ namespace AbyssEditor.Scripts.VoxelTech {
         [field: SerializeField] public Material batchCappedMat { get; private set; }
         [field: SerializeField] public Material brushGizmoMat { get; private set; }
         [field: SerializeField] public Material boundaryGizmoMat { get; private set; } 
+        [field: SerializeField] public Material waterSurfaceMat { get; private set; } 
 
+        
         public static VoxelWorld world { get; private set; }
         
         private void Awake() {

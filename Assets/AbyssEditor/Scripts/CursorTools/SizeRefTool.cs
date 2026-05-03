@@ -20,10 +20,10 @@ namespace AbyssEditor.Scripts.CursorTools
         private AbyssEditorInput.SizeRefToolActions input;
 
         private float rotationAngle;
-
         private const float ROTATE_SPEED = 10;
+        private bool inputBlocked;
         
-        public CursorTool ToolType => CursorTool.SizeRef;
+        public CursorTool toolType => CursorTool.SizeRef;
         
         public void Start()
         {
@@ -48,6 +48,8 @@ namespace AbyssEditor.Scripts.CursorTools
 
         private void PlaceSizeRef(InputAction.CallbackContext ctx)
         {
+            if (inputBlocked) return;
+            
             if (!TryGetPlacementHit(out RaycastHit hit)) return;
 
             bool allowMultiple = input.AllowPlacingMultiple.IsPressed();
@@ -75,7 +77,7 @@ namespace AbyssEditor.Scripts.CursorTools
             // Clear strays if needed
             if (!allowMultiple && strays.Count > 0)
             {
-                foreach (var stray in strays)
+                foreach (GameObject stray in strays)
                 {
                     Object.Destroy(stray);
                 }
@@ -97,9 +99,13 @@ namespace AbyssEditor.Scripts.CursorTools
 
         public void HandleToolUpdate(bool blockInput)
         {
+            inputBlocked = blockInput;
             if (blockInput)
+            {
+                sizeRefGhostInstance.SetActive(false);
                 return;
-
+            }
+            
             bool ghostHit = TryGetPlacementHit(out RaycastHit hit);
             
             sizeRefGhostInstance.SetActive(ghostHit);
@@ -112,7 +118,7 @@ namespace AbyssEditor.Scripts.CursorTools
 
         private bool TryGetPlacementHit(out RaycastHit hit)
         {
-            var ray = CameraControls.main.cam.ScreenPointToRay(input.MousePosition.ReadValue<Vector2>());
+            Ray ray = CameraControls.main.cam.ScreenPointToRay(input.MousePosition.ReadValue<Vector2>());
             return Physics.Raycast(ray, out hit, Mathf.Infinity, 1);
         }
     }

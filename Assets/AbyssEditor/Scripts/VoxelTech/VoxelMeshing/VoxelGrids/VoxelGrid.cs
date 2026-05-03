@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using AbyssEditor.Scripts.CursorTools;
 using AbyssEditor.Scripts.CursorTools.Brush;
 using AbyssEditor.Scripts.Mesh_Gen;
@@ -10,13 +11,13 @@ using UnityEngine;
 using Vector3 = UnityEngine.Vector3;
 
 namespace AbyssEditor.Scripts.VoxelTech.VoxelMeshing.VoxelGrids {
-    public class VoxelGrid
+    public class VoxelGrid : IDisposable
     {
         public const int GRID_PADDING = 1;
-        public static int GRID_FULL_SIDE = VoxelWorld.GRID_RESOLUTION + 2;
+        public const int GRID_FULL_SIDE = VoxelWorld.GRID_RESOLUTION + 2;
 
-        public readonly NativeArray<byte> densityGrid;
-        public readonly NativeArray<byte> typeGrid;
+        public NativeArray<byte> densityGrid;
+        public NativeArray<byte> typeGrid;
         public static Vector3Int fullResolution;
         private readonly Vector3Int octreeIndex;
         private readonly Vector3Int batchIndex;
@@ -55,34 +56,35 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelMeshing.VoxelGrids {
                 for (int y = -1; y <= 1; y++) {
                     for (int z = -1; z <= 1; z++)
                     {
-                        Vector3Int sampleVoxel = new Vector3Int(x, y, z);
-                        ParseSampleVoxel(ref sampleVoxel);
+                        Vector3Int containerOffset = new Vector3Int(x, y, z);
+                        ParseContainerOffset(ref containerOffset);
                     }
                 }
             }
-            void ParseSampleVoxel(ref Vector3Int sampleVoxel)
+            return;
+            void ParseContainerOffset(ref Vector3Int containerOffset)
             {
-                int neighborGridCacheIndex = (sampleVoxel.x + 1) + (sampleVoxel.y + 1) * 3 + (sampleVoxel.z + 1) * 9;
+                int neighborGridCacheIndex = (containerOffset.x + 1) + (containerOffset.y + 1) * 3 + (containerOffset.z + 1) * 9;
                         
                 
-                Vector3Int neighborContainerIndex = octreeIndex + sampleVoxel;
+                Vector3Int neighborContainerIndex = octreeIndex + containerOffset;
                 Vector3Int neighborBatchIndex = batchIndex;
             
                 if (neighborContainerIndex.x < 0 || neighborContainerIndex.y < 0 || neighborContainerIndex.z < 0 ||
                     neighborContainerIndex.x >= VoxelWorld.OCTREES_PER_SIDE || neighborContainerIndex.y >= VoxelWorld.OCTREES_PER_SIDE || neighborContainerIndex.z >= VoxelWorld.OCTREES_PER_SIDE) 
                 {
                     //outside the current batch
-                    neighborBatchIndex = NeighbourBatchFromSampleVoxel(ref sampleVoxel);
-                            
+                    neighborBatchIndex = NeighbourBatchFromSampleVoxel(ref containerOffset);
+
                     if (!VoxelMetaspace.metaspace.BatchLoaded(neighborBatchIndex))
                     {
                         neighboringGrids[neighborGridCacheIndex] = null;
                         return;
                     }
-                
+
                     neighborContainerIndex = IndexMod(ref neighborContainerIndex, 5);
                 }
-                        
+
                 neighboringGrids[neighborGridCacheIndex] = VoxelMetaspace.metaspace.TryGetVoxelGrid(neighborBatchIndex, neighborContainerIndex);
             }
         }
@@ -98,7 +100,7 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelMeshing.VoxelGrids {
         {
             Vector3Int neighbourGridOffset = NeighbourGridOffsetFromPaddedVoxel(ref voxel, ref fullResolution);
 
-            //Cache is offset by 1 bc indexes cant be negative :/
+            //Cache is offset by 1 bc indexes cant be negative
             VoxelGrid neighborGrid = neighboringGrids[(neighbourGridOffset.x + 1) + (neighbourGridOffset.y + 1) * 3 + (neighbourGridOffset.z + 1) * 9];
             if (neighborGrid == null)
             {
@@ -221,7 +223,7 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelMeshing.VoxelGrids {
         /// <summary>
         /// This should be called when closing the player to free the memory
         /// </summary>
-        internal void DisposeGrids()
+        public void Dispose()
         {
             densityGrid.Dispose();
             typeGrid.Dispose();

@@ -27,7 +27,7 @@ namespace AbyssEditor.Scripts.UI.MainMenu
         private void Awake()
         {
             if (images == null || images.Count == 0) { Debug.LogWarning("No textures assigned."); return; }
-
+            
             currentIndex = Random.Range(0, images.Count);
             
             for (int i = 0; i < images.Count; i++)
@@ -80,7 +80,7 @@ namespace AbyssEditor.Scripts.UI.MainMenu
         private void NextImage()
         {
             if (groups.Count == 0) return;
-            StartCoroutine(FadeTo((currentIndex + 1) % groups.Count));
+            StartCoroutine(FadeTo(Random.Range(0, groups.Count)));
         }
 
         private IEnumerator FadeTo(int nextIndex)

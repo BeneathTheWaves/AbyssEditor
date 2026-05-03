@@ -36,7 +36,7 @@ namespace AbyssEditor.Scripts.BinaryReadingWriting
                 return null;
             }
             
-            BinaryReader reader = new BinaryReader(File.Open(patchFilePath, FileMode.Open));
+            using BinaryReader reader = new BinaryReader(File.Open(patchFilePath, FileMode.Open));
 
             uint version = reader.ReadUInt32();
             
@@ -50,7 +50,6 @@ namespace AbyssEditor.Scripts.BinaryReadingWriting
             }
             
             reader.Close();
-            
             return patchByteArray;
         }
         

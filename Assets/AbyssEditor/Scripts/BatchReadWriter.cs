@@ -19,7 +19,7 @@ namespace AbyssEditor.Scripts {
             
             DebugOverlay.LogMessage($"Writing {metaspace.batches.Count} batches for {exportFileLocation}");
 
-            BinaryWriter writer = new BinaryWriter(File.Open(exportFileLocation, FileMode.Create));
+            await using BinaryWriter writer = new BinaryWriter(File.Open(exportFileLocation, FileMode.Create));
             writer.Write(0u);// write version
             
             foreach (VoxelBatch batch in metaspace.batches.Values)
@@ -68,7 +68,6 @@ namespace AbyssEditor.Scripts {
 
             }
             statusHandle.CompletePhase();
-
             writer.Close();
         }
     }

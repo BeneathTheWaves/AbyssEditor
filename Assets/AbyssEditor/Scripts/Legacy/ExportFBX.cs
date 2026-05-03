@@ -1,65 +1,65 @@
 ﻿using System.Collections;
+using System.Collections.Generic;
 using System.IO;
+using AbyssEditor.Scripts.TaskSystem;
 using AbyssEditor.Scripts.UI;
 using AbyssEditor.Scripts.VoxelTech;
+using AbyssEditor.Scripts.VoxelTech.VoxelMeshing;
 using Autodesk.Fbx;
 using UnityEngine;
+using Utils = AbyssEditor.Scripts.Util.Utils;
 
 namespace AbyssEditor.Scripts.Legacy {
     public static class ExportFBX {
-        public static IEnumerator ExportMetaspaceAsync(VoxelMetaspace metaspace, string fbxFilePath) {
-            /*
-            Stopwatch sw = new Stopwatch();
-            sw.Start();
+        public static IEnumerator ExportMetaspaceAsync(string fbxFilePath)
+        {
+            EditorProcessHandle handle = TaskManager.main.GetEditorProcessHandle(1);
+            handle.SetTasksToCompleteForPhase(VoxelMetaspace.metaspace.batches.Count);
+            handle.SetPhasePrefix("Exporting batch meshes (%completedTasks%/%totalTasks%)");
+            
+            using FbxManager fbxManager = FbxManager.Create();
+            // configure IO settings.
+            fbxManager.SetIOSettings(FbxIOSettings.Create(fbxManager, Autodesk.Fbx.Globals.IOSROOT));
 
-            using (FbxManager fbxManager = FbxManager.Create()) {
-                // configure IO settings.
-                fbxManager.SetIOSettings(FbxIOSettings.Create(fbxManager, Autodesk.Fbx.Globals.IOSROOT));
+            // Export the scene
+            using FbxExporter exporter = FbxExporter.Create(fbxManager, "myExporter");
+            // Initialize the exporter.
+            bool status = exporter.Initialize(fbxFilePath, -1, fbxManager.GetIOSettings());
 
-                // Export the scene
-                using (FbxExporter exporter = FbxExporter.Create(fbxManager, "myExporter")) {
+            // Create a new scene to export
+            FbxScene scene = FbxScene.Create(fbxManager, "myScene");
 
-                    // Initialize the exporter.
-                    bool status = exporter.Initialize(fbxFilePath, -1, fbxManager.GetIOSettings());
+            // Populate the scene
+            FbxNode rootNode = scene.GetRootNode();
 
-                    // Create a new scene to export
-                    FbxScene scene = FbxScene.Create(fbxManager, "myScene");
+            var node = FbxNode.Create(fbxManager, "World Root");
+            yield return CreateNodeFromMetaspace(fbxManager, fbxFilePath, node, handle);
+            rootNode.AddChild(node);
 
-                    // Populate the scene
-                    FbxNode rootNode = scene.GetRootNode();
-
-                    var node = FbxNode.Create(fbxManager, "World Root");
-                    yield return CreateNodeFromMetaspace(fbxManager, metaspace, fbxFilePath, node);
-                    rootNode.AddChild(node);
-
-                    // Export the scene to the file.
-                    exporter.Export(scene);
-                }
-            }
-
-            sw.Stop();
-            DebugOverlay.LogMessage($"Exporting fbx scene took {sw.ElapsedMilliseconds / 1000f}s");
-            */
-            yield break;
+            // Export the scene to the file.
+            exporter.Export(scene);
+            
+            handle.CompletePhase();
         }
 
-        private static IEnumerator CreateNodeFromMetaspace(FbxManager fbxManager, VoxelMetaspace metaspace, string fbxFilePath, FbxNode node) {
-            /*
-            if (metaspace.meshes.Length == 0) {
+        private static IEnumerator CreateNodeFromMetaspace(FbxManager fbxManager, string fbxFilePath, FbxNode node, EditorProcessHandle handle) {
+            
+            if (VoxelMetaspace.metaspace.batches.Count == 0) {
                 yield break;
             }
 
             Dictionary<string, FbxSurfacePhong> materialDict = new Dictionary<string, FbxSurfacePhong>();
 
-            foreach (VoxelMesh voxelMesh in metaspace.meshes) {
+            foreach (VoxelBatch voxelBatch in VoxelMetaspace.metaspace.batches.Values) {
 
-                FbxNode batchRoot = FbxNode.Create(fbxManager, $"Batch {voxelMesh.batchIndex}");
+                FbxNode batchRoot = FbxNode.Create(fbxManager, $"Batch {voxelBatch.batchIndex}");
 
-                for (int y = 0; y < voxelMesh.octreeCounts.y; y++) {
-                    for (int z = 0; z < voxelMesh.octreeCounts.z; z++) {
-                        for (int x = 0; x < voxelMesh.octreeCounts.x; x++) {
+                for (int y = 0; y < voxelBatch.octreeCounts.y; y++) {
+                    for (int z = 0; z < voxelBatch.octreeCounts.z; z++) {
+                        for (int x = 0; x < voxelBatch.octreeCounts.x; x++)
+                        {
 
-                            GameObject obj = voxelMesh.GetContainerObject(new Vector3Int(x, y, z));
+                            GameObject obj = voxelBatch.pointContainers[Utils.LinearIndex(y, z, x, VoxelWorld.OCTREES_PER_SIDE)].meshObj;
                             FbxNode octreeNode = FbxNode.Create(fbxManager, $"Octree Mesh {x}-{y}-{z}");
 
                             // Create/Add materials
@@ -80,21 +80,18 @@ namespace AbyssEditor.Scripts.Legacy {
                             batchRoot.AddChild(octreeNode);
 
                             // Update info
-                            EditorUI.UpdateStatusBar("Exporting FBX mesh...", (x + z * 5 + y * 25) / 125f);
+                            //EditorUI.UpdateStatusBar("Exporting FBX mesh...", (x + z * 5 + y * 25) / 125f);
                             yield return null;
                         }
                     }
                 }
 
-                var localBatchPos = (voxelMesh.batchIndex - VoxelWorld.startBatch) * VoxelWorld.CONTAINERS_PER_SIDE * VoxelWorld.OCTREE_WIDTH;
+                Vector3 localBatchPos = voxelBatch.transform.position;
                 FbxDouble3 batchPosition = new FbxDouble3(localBatchPos.x, localBatchPos.y, localBatchPos.z);
                 batchRoot.LclTranslation.Set(batchPosition);
                 node.AddChild(batchRoot);
+                handle.IncrementTasksComplete();
             }
-
-            EditorUI.DisableStatusBar();
-            */
-            yield break;
         }
 
         private static FbxMesh CreateNodeFromUnityMesh(FbxManager fbxManager, Mesh mesh) {

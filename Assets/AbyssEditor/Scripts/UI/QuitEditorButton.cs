@@ -15,11 +15,11 @@ namespace AbyssEditor.Scripts.UI
 
         private IEnumerator QuitEditorCoroutine()
         {
-            UIConfirmationWindow.main.OpenWindow(
+            ConfirmationWindow.main.OpenWindow(
                 Language.main.Get("QuitConfirmationMessage"),
                 Language.main.Get("CancelQuit"), 
                 Language.main.Get("ConfirmQuit"), 
-                out UIConfirmationWindow.Response response
+                out ConfirmationWindow.Response response
             );
                 
             yield return new WaitUntil(() => response.receivedResponse);

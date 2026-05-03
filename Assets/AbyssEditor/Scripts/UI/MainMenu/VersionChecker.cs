@@ -21,11 +21,11 @@ namespace AbyssEditor.Scripts.UI.MainMenu
 
         private IEnumerator DisplayOutOfDateMessage(VersionJson versionJson)
         {
-            UIConfirmationWindow.main.OpenWindow(
+            ConfirmationWindow.main.OpenWindow(
                 versionJson.notificationMessage,
                 Language.main.Get("RejectUpdate"),
                 Language.main.Get("ConfirmUpdate"),//
-                out UIConfirmationWindow.Response response
+                out ConfirmationWindow.Response response
             );
             
             yield return new WaitUntil(() => response.receivedResponse);

@@ -21,7 +21,7 @@ namespace AbyssEditor.Scripts.CursorTools
 
         private bool dialogOpen = false;
         
-        public CursorTool ToolType => CursorTool.RemoveBatch;
+        public CursorTool toolType => CursorTool.RemoveBatch;
         
         public void Start()
         {
@@ -92,11 +92,11 @@ namespace AbyssEditor.Scripts.CursorTools
         private IEnumerator RemoveBatchConfirmation(Vector3Int batchIndex)
         {
             dialogOpen = true;
-            UIConfirmationWindow.main.OpenWindow(
+            ConfirmationWindow.main.OpenWindow(
                 Language.main.Get("BatchRemoveConfirmationMessage"),
                 Language.main.Get("GenericCancel"),
                 Language.main.Get("GenericConfirm"),
-                out UIConfirmationWindow.Response response
+                out ConfirmationWindow.Response response
             );
                 
             yield return new WaitUntil(() => response.receivedResponse);

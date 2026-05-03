@@ -16,7 +16,7 @@ namespace AbyssEditor.Scripts
         {
             Screen.fullScreenMode = ConvertFullScreenModeLanguageKey(languageKey);
             Preferences.data.fullscreenMode = languageKey;
-            Preferences.SavePreferences();
+            Preferences.SavePreferencesToDisk();
         }
 
         private static FullScreenMode ConvertFullScreenModeLanguageKey(string languageKey)

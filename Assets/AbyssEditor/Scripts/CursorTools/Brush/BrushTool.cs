@@ -99,7 +99,7 @@ namespace AbyssEditor.Scripts.CursorTools.Brush {
             BrushAction(input.ActivateBrush.IsInProgress());
         }
 
-        public CursorTool ToolType => CursorTool.Brush;
+        public CursorTool toolType => CursorTool.Brush;
 
         private void OnScrollWheel(InputAction.CallbackContext ctx)
         {

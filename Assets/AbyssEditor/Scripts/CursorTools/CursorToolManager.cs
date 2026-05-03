@@ -1,10 +1,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using AbyssEditor.Scripts.CursorTools.Brush;
-using AbyssEditor.Scripts.UI.HotBar;
 using AbyssEditor.Scripts.UI.HotBar.HotBarButtons;
-using NUnit.Framework.Constraints;
-using ProtoBuf.WellKnownTypes;
+using AbyssEditor.Scripts.UI.Windows.WindowDragComponents;
 using UnityEngine;
 using UnityEngine.EventSystems;
 namespace AbyssEditor.Scripts.CursorTools
@@ -45,14 +43,14 @@ namespace AbyssEditor.Scripts.CursorTools
 
         private void Update()
         {
-            activeTool?.HandleToolUpdate(IsInputBlocked());
+            activeTool?.HandleToolUpdate(IsCursorToolInputBlocked());
         }
 
         private void SafeChangeActiveTool(CursorTool tool)
         {
-            if (activeTool != null && activeTool.ToolType == tool) return;
+            if (activeTool != null && activeTool.toolType == tool) return;
             activeTool?.DisableTool();
-            activeTool = tools.First(t => t.ToolType == tool);
+            activeTool = tools.First(t => t.toolType == tool);
         }
 
         public void EnableTool(CursorTool tool, HotBarButton hotBarButton = null)
@@ -90,7 +88,7 @@ namespace AbyssEditor.Scripts.CursorTools
             }
         }
 
-        private bool IsInputBlocked() => IsMouseOverUI() || HasBlockingScripts();
+        private bool IsCursorToolInputBlocked() => IsMouseOverUI() || HasBlockingScripts();
 
         private bool IsMouseOverUI() => EventSystem.current.IsPointerOverGameObject();
         

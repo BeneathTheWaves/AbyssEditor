@@ -2,6 +2,7 @@ using System.Collections.Concurrent;
 using System.Threading;
 using System.Threading.Tasks;
 using AbyssEditor.Scripts.Mesh_Gen.Datas;
+using AbyssEditor.Scripts.SaveSystem;
 using AbyssEditor.Scripts.ThreadingManager;
 using AbyssEditor.Scripts.VoxelTech.VoxelMeshing.VoxelGrids;
 using UnityEngine;
@@ -27,8 +28,10 @@ namespace AbyssEditor.Scripts.Mesh_Gen
             }
         }
         //TODO: lod level is a enum?
-        public async Task<MeshResult> RequestMesh(VoxelGrid grid, Vector3 offset, Mesh meshObjToReuse = null, int lodLevel = 0)
+        public async Task<MeshResult> RequestMesh(VoxelGrid grid, Vector3 offset, Mesh meshObjToReuse = null)
         {
+            int lodLevel = Preferences.data.lodLevel;
+            //TODO: use this Mesh.AllocateWritableMeshData() instead of copying data from seperate thread.
             //get faces from GPU
             //This is sync btw, accessing gpu is blocking in unity (ALTHOUGH VERY fast)
             QuadFace[] faces;

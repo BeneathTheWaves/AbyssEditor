@@ -21,7 +21,7 @@ namespace AbyssEditor.Scripts.SaveSystem
         public bool showFavoritedOnly = false;
         public HashSet<int> favoritedMaterials = new();//must instantiate, forces newtonsoft to initialize the list
         
-        //Lighting Tab
+        //Environment Tab
         public float sunPitch = 60f;
         public float sunYaw = 180;
         public bool enableBrushLight = true;
@@ -30,6 +30,8 @@ namespace AbyssEditor.Scripts.SaveSystem
         public float sunColorB = 1f;
         public float sunIntensity = 0.5f;
         public float ambientIntensity = 0.5f;
+        public bool displaySurfaceWater = true;
+        public int lodLevel = 0;
         
         //Settings
         public string gamePath = "";
@@ -54,7 +56,7 @@ namespace AbyssEditor.Scripts.SaveSystem
 
         public static PreferencesMainFormat data;
 
-        public static void SavePreferences()
+        public static void SavePreferencesToDisk()
         {
             try
             {
@@ -71,7 +73,7 @@ namespace AbyssEditor.Scripts.SaveSystem
         private void Awake()
         {
             data = Load();
-            SavePreferences();
+            SavePreferencesToDisk();
         }
 
         private static PreferencesMainFormat Load()

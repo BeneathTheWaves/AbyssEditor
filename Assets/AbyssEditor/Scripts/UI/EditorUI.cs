@@ -1,35 +1,42 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using AbyssEditor.Scripts.SaveSystem;
 using AbyssEditor.Scripts.TerrainMaterials;
 using AbyssEditor.Scripts.UI.Windows;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace AbyssEditor.Scripts.UI {
     public class EditorUI : MonoBehaviour {
         public static EditorUI inst { get; private set; }
         [SerializeField] private GameObject errorPrefab;
+        [SerializeField] private GameObject mainContentArea;
         [SerializeField] private GameObject statusArea;
         [SerializeField] private Color[] uiColors;
         
-        [SerializeField] private UIConfirmationWindow confirmationWindow;
+        private readonly Dictionary<string, UIWindow> uiWindows = new();
         
-        [SerializeField] private List<UIWindow> uiWindows;
+        private RectTransform rt;
 
         private void Awake() {
+            if (inst != null)
+            {
+                Debug.LogError($"An instance of {GetType().Name} is already created!");
+                Destroy(gameObject);
+            }
             inst = this;
+            rt = GetComponent<RectTransform>();
         }
 
         private void Start()
         {
+            GetAvailableWindows();
+            
             if(string.IsNullOrEmpty(Preferences.data.gamePath))
             {
-                EnableWindow<UISettingsWindow>();
+                EnableWindow("Settings");
             }
             else
             {
-                EnableWindow<UILoadWindow>();
+                EnableWindow("Import");
             }
 
             if (Preferences.data.autoLoadMaterials)
@@ -38,15 +45,44 @@ namespace AbyssEditor.Scripts.UI {
             }
         }
 
-        private void EnableWindow<T>() where T : UIWindow
+        private void GetAvailableWindows()
         {
-            foreach (var window in uiWindows)
+            foreach (Transform child in mainContentArea.transform)
             {
-                if (window.GetType() == typeof(T))
+                if (child.TryGetComponent(out UIWindow window))
                 {
-                    window.ToggleWindow();
+                    uiWindows.Add(window.windowKey, window);
                 }
             }
+        }
+        
+        public void EnableWindow(string key)
+        {
+            if (TryGetWindow(key, out UIWindow window)) window.EnableWindow();
+        }
+        
+        public void DisableWindow(string key)
+        {
+            if (TryGetWindow(key, out UIWindow window)) window.DisableWindow();
+        }
+
+        public void ToggleWindow(string key)
+        {
+            if (TryGetWindow(key, out UIWindow window)) window.ToggleWindow();
+        }
+
+        private bool TryGetWindow(string key, out UIWindow window)
+        {
+            if (!uiWindows.TryGetValue(key, out window)) {
+                Debug.LogError($"Window Key ({key}) could not be associated with a window!");
+                return false;
+            }
+            return true;
+        }
+        
+        public float InverseScaleMousePosToCanvas(float mousePositon)
+        {
+            return mousePositon * (1.0f / rt.localScale.x);
         }
         
         public void DisplayErrorMessage(string message)
@@ -55,6 +91,11 @@ namespace AbyssEditor.Scripts.UI {
             GameObject go = Instantiate(errorPrefab, statusArea.transform);
             EditorErrorDisplay errorDisplay = go.GetComponent<EditorErrorDisplay>();
             errorDisplay.SetErrorText(message);
+        }
+        
+        public void OnDestroy()
+        {
+            inst = null;
         }
     }
 }

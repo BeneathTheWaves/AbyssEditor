@@ -43,6 +43,7 @@ namespace AbyssEditor.Scripts.TerrainMaterials
             }
             if (materialIconsLoaded)
             {
+                onCompleteCallback?.Invoke();
                 Debug.LogWarning("Materials Already Loaded!");
                 return;
             }

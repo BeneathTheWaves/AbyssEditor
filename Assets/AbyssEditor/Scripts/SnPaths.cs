@@ -68,10 +68,9 @@ namespace AbyssEditor.Scripts {
 
         private static bool TrySetGameType()
         {
-            if (string.IsNullOrWhiteSpace(Preferences.data.gamePath))
-            {
-                return false;
-            }
+            if (string.IsNullOrWhiteSpace(Preferences.data.gamePath)) return false;
+
+            if (!Directory.Exists(Preferences.data.gamePath)) return false;
             
             IEnumerable<string> directories = Directory
                 .GetDirectories(Preferences.data.gamePath)

@@ -106,7 +106,7 @@ namespace AbyssEditor.Scripts.BatchOutline
             cube.AddComponent<BatchOutline>();
             MeshRenderer meshRenderer = cube.GetComponent<MeshRenderer>();
             
-            if (VoxelMetaspace.metaspace.TryGetVoxelMesh(batchIndex, out VoxelBatch _))
+            if (VoxelMetaspace.metaspace.TryGetVoxelBatch(batchIndex, out VoxelBatch _))
             {
                 //batch exists to make it red
                 meshRenderer.material.SetColor(wireframeColor, DeleteColor );

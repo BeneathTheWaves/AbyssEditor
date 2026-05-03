@@ -67,7 +67,7 @@ namespace AbyssEditor.Scripts.ThreadingManager
         //This is the separate thread,
         private void WorkerLoop()
         {
-            Profiler.BeginThreadProfiling("AsyncMeshBuilders", "Worker");
+            Profiler.BeginThreadProfiling("WorkerThreads", "Worker");
             while (threadsShouldRun)
             {
                 try
@@ -84,6 +84,7 @@ namespace AbyssEditor.Scripts.ThreadingManager
                 }
                 catch (Exception e)
                 {
+                    if (e is ThreadAbortException) return;
                     Debug.LogException(e);
                 }
             }
@@ -98,7 +99,7 @@ namespace AbyssEditor.Scripts.ThreadingManager
             {
                 if (worker != null && worker.IsAlive)
                 {
-                    worker.Join();
+                    worker.Abort();
                 }
             }
         }

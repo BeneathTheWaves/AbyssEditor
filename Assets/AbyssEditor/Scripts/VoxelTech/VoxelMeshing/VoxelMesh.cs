@@ -1,4 +1,5 @@
-﻿using AbyssEditor.Scripts.CursorTools.Brush;
+﻿using System;
+using AbyssEditor.Scripts.CursorTools.Brush;
 using AbyssEditor.Scripts.Mesh_Gen;
 using AbyssEditor.Scripts.TaskSystem;
 using AbyssEditor.Scripts.TerrainMaterials;
@@ -6,11 +7,12 @@ using AbyssEditor.Scripts.VoxelTech.VoxelMeshing.VoxelGrids;
 using AbyssEditor.Scripts.VoxelTech.VoxelMeshing.VoxelGrids.Brushes;
 using Unity.Collections;
 using UnityEngine;
+using Object = UnityEngine.Object;
 using Task = System.Threading.Tasks.Task;
 
 namespace AbyssEditor.Scripts.VoxelTech.VoxelMeshing
 {
-    public class VoxelMesh
+    public class VoxelMesh: IDisposable
     {
         private readonly Vector3Int batchIndex;
         private readonly Vector3Int octreeIndex;
@@ -20,7 +22,7 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelMeshing
 
         // other objects
         public Bounds bounds;
-        private GameObject meshObj;
+        public GameObject meshObj;
 
         private Mesh mesh;
         private MeshFilter meshFilter;
@@ -41,12 +43,13 @@ namespace AbyssEditor.Scripts.VoxelTech.VoxelMeshing
             CreateMeshObject(batchTransform);
         }
 
-        public void DisposeMesh()
+        public void Dispose()
         {
+            grid.Dispose();
             Object.Destroy(mesh);
         } 
 
-        void CreateMeshObject(Transform batchTransform)
+        private void CreateMeshObject(Transform batchTransform)
         {
             meshObj = new GameObject($"OctreeMesh-");
             meshFilter = meshObj.AddComponent<MeshFilter>();

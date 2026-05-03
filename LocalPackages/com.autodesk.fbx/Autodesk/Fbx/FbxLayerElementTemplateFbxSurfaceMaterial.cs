@@ -1,0 +1,42 @@
+namespace Autodesk.Fbx {
+
+public class FbxLayerElementTemplateFbxSurfaceMaterial : FbxLayerElement {
+  private global::System.Runtime.InteropServices.HandleRef swigCPtr;
+
+  internal FbxLayerElementTemplateFbxSurfaceMaterial(global::System.IntPtr cPtr, bool cMemoryOwn) : base(NativeMethods.FbxLayerElementTemplateFbxSurfaceMaterial_SWIGUpcast(cPtr), cMemoryOwn) {
+    swigCPtr = new global::System.Runtime.InteropServices.HandleRef(this, cPtr);
+  }
+
+  internal static global::System.Runtime.InteropServices.HandleRef getCPtr(FbxLayerElementTemplateFbxSurfaceMaterial obj) {
+    return (obj == null) ? new global::System.Runtime.InteropServices.HandleRef(null, global::System.IntPtr.Zero) : obj.swigCPtr;
+  }
+
+  public override void Dispose() {
+    lock(this) {
+      if (swigCPtr.Handle != global::System.IntPtr.Zero) {
+        if (swigCMemOwn) {
+          swigCMemOwn = false;
+          throw new global::System.MethodAccessException("C++ destructor does not have public access");
+        }
+        swigCPtr = new global::System.Runtime.InteropServices.HandleRef(null, global::System.IntPtr.Zero);
+      }
+      global::System.GC.SuppressFinalize(this);
+      base.Dispose();
+    }
+  }
+
+  public FbxLayerElementArrayTemplateFbxSurfaceMaterial GetDirectArray() {
+    FbxLayerElementArrayTemplateFbxSurfaceMaterial ret = new FbxLayerElementArrayTemplateFbxSurfaceMaterial(NativeMethods.FbxLayerElementTemplateFbxSurfaceMaterial_GetDirectArray(swigCPtr), false);
+    if (NativeMethods.SWIGPendingException.Pending) throw NativeMethods.SWIGPendingException.Retrieve();
+    return ret;
+  }
+
+  public FbxLayerElementArrayTemplateInt GetIndexArray() {
+    FbxLayerElementArrayTemplateInt ret = new FbxLayerElementArrayTemplateInt(NativeMethods.FbxLayerElementTemplateFbxSurfaceMaterial_GetIndexArray(swigCPtr), false);
+    if (NativeMethods.SWIGPendingException.Pending) throw NativeMethods.SWIGPendingException.Retrieve();
+    return ret;
+  }
+
+}
+
+}

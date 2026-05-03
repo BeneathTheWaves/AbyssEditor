@@ -3,6 +3,7 @@ using AbyssEditor.Scripts.CursorTools;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 namespace AbyssEditor.Scripts.UI {
     public class UIHybridInput : MonoBehaviour, IDragHandler, IEndDragHandler, IPointerClickHandler {
@@ -32,29 +33,29 @@ namespace AbyssEditor.Scripts.UI {
         private void Awake()
         {
             rectTransform = transform as RectTransform;
-            OnRectTransformDimensionsChange();
-            
             bar = transform.Find("Bar").Find("fill") as RectTransform;
                 
             field = GetComponentInChildren<TMP_InputField>();
             field.onEndEdit.AddListener(DisableInputField);
             OnValueUpdated += Redraw;
         }
-        
-        void OnRectTransformDimensionsChange()
+
+        private void OnRectTransformDimensionsChange()
         {
             realWidth = rectTransform.rect.width * rectTransform.lossyScale.x;
+            Redraw();
         }
         
         private void Start() {
             field.enabled = false;
+            OnRectTransformDimensionsChange();
         }
         
-        public void OnPointerClick(PointerEventData eventData) {
-            if (!eventData.dragging) {
-                field.enabled = true;
-                field.Select();
-            }
+        public void OnPointerClick(PointerEventData eventData)
+        {
+            if (eventData.dragging) return;
+            field.enabled = true;
+            field.Select();
         }
         
         public void OnDrag(PointerEventData eventData)
