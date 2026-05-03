@@ -73,8 +73,8 @@
   "SunIntensity": "Sun Intensity",
   "AmbientIntensity": "Ambient Light Intensity",
   "EnableWaterSurface": "Enable Water Surface",
-  "LODLevel": "LOD Level",
-  "LODLevel_ToolTip": "(Requires reimporting batches!) Lod level 0 is max detail, level 5 is minimal detail",
+  "LODLevel": "[EXPERIMENTAL] LOD Level",
+  "LODLevel_ToolTip": "[EXPERIMENTAL] Lod level 0 is max detail, level 5 is minimal detail. Requires reloading/restarting",
   
   // Settings
   "SettingsTitle": "Settings",
