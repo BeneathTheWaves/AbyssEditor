@@ -1,0 +1,3 @@
+- [icon:language] [Nexsus](https://www.nexusmods.com/subnautica/mods/3298)
+- [icon:chat_bubble] [Discord](https://discord.gg/jKdBdPD46h)
+- [icon:volunteer_activism] [Support](https://patreon.com/BeneaththeWaves)
