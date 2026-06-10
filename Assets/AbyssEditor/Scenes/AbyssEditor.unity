@@ -12961,6 +12961,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
+      objectReference: {fileID: 7138307495050423517}
+    - target: {fileID: 33013333068547001, guid: 0997b6ab075533dcda6df4752139a070,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: AbyssEditor.Scripts.UI.Windows.SettingsWindow, AbyssEditor
       objectReference: {fileID: 0}
     - target: {fileID: 1955274208461079752, guid: 0997b6ab075533dcda6df4752139a070,
         type: 3}
