@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using AbyssEditor.Scripts.UI;
 using AbyssEditor.Scripts.Util;
@@ -22,7 +23,7 @@ namespace AbyssEditor.Scripts.BinaryReadingWriting
             
             string filePath = GetPath(batchIndex, false, out _);
             
-            if (!File.Exists(filePath))
+            if (!File.Exists(filePath) || IsSpecialOctreeBatch(batchIndex))
             {
                 if (generateEmpty) GenerateEmptyGrids(gridSize, out densityGrids, out typeGrids);
                 else
@@ -134,6 +135,13 @@ namespace AbyssEditor.Scripts.BinaryReadingWriting
                 typeGrids[i] = new NativeArray<byte>(gridSize, Allocator.Persistent);
             }
         }
+
+        /// <summary>
+        /// Batches on the 25 x and z axis only have 75 octrees in them.
+        /// However, every single one of these batches is completely empty so if there is a special batch, just generate empty grids
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static bool IsSpecialOctreeBatch(Vector3Int batchIndex) => batchIndex.x == 25 || batchIndex.z == 25;
 
         /// <summary>
         /// Writes a "Base Game" compiled .optoctree file.
