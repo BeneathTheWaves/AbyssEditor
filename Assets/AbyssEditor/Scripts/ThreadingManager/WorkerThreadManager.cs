@@ -16,6 +16,7 @@ namespace AbyssEditor.Scripts.ThreadingManager
         private readonly Thread[] workers;
         public int workersCount => workers.Length;
         private bool threadsShouldRun = true;
+        public static bool ShouldRun => main != null && main.threadsShouldRun;
 
         public WorkerThreadManager()
         {
