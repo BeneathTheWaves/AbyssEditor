@@ -16,12 +16,13 @@ namespace AbyssEditor.Scripts.ThreadingManager
         private readonly Thread[] workers;
         public int workersCount => workers.Length;
         private bool threadsShouldRun = true;
+        public static bool ShouldRun => main != null && main.threadsShouldRun;
 
         public WorkerThreadManager()
         {
             main = this;
 
-            int workerCount = Preferences.data.threadCount;
+            int workerCount = Mathf.Clamp(Preferences.data.threadCount, 1, SystemInfo.processorCount);
             workers = new Thread[workerCount];
             
             for (int i = 0; i < workerCount; i++)
@@ -97,10 +98,7 @@ namespace AbyssEditor.Scripts.ThreadingManager
             
             foreach (var worker in workers)
             {
-                if (worker != null && worker.IsAlive)
-                {
-                    worker.Abort();
-                }
+                worker?.Join();
             }
         }
     }

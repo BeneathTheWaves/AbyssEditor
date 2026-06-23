@@ -105,7 +105,8 @@ namespace AbyssEditor.Scripts.Mesh_Gen
             {
                 while (meshBuilder.threadLocked)
                 {
-                    Monitor.Wait(meshBuilder);
+                    if (!WorkerThreadManager.ShouldRun) return;
+                    Monitor.Wait(meshBuilder, 100);
                 }
             }
             
