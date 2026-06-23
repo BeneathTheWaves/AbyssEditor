@@ -90,7 +90,7 @@ namespace AbyssEditor.Scripts {
                         instance.currentGameInstallType = GameInstallType.BelowZeroWindows;
                         return true;
                     case "SubnauticaZero.app":
-                        instance.currentGameInstallType = GameInstallType.SubnauticaMac;
+                        instance.currentGameInstallType = GameInstallType.BelowZeroMac;
                         return true;
                 }
             }
