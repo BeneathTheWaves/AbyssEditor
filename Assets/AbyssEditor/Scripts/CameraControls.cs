@@ -19,6 +19,9 @@ namespace AbyssEditor.Scripts
         private AbyssEditorInput.FreeCamActions input;
         private bool moveLock = true;
         private Vector3 velocity; // current velocity
+        private float yaw;
+        private float pitch;
+        private bool lookInitialized;
 
         private static bool holdingRmb
         {
@@ -94,12 +97,20 @@ namespace AbyssEditor.Scripts
             // Rotation
             Vector2 mouseDelta = lookSensitivity * input.Look.ReadValue<Vector2>();
             mouseDelta.y *= -1f;
-            Quaternion rotation = transform.rotation;
-            Quaternion horiz = Quaternion.AngleAxis(mouseDelta.x, Vector3.up);
-            Quaternion vert = Quaternion.AngleAxis(mouseDelta.y, Vector3.right);
+
+            if (!lookInitialized)
+            {
+                Vector3 euler = transform.eulerAngles;
+                pitch = euler.x > 180f ? euler.x - 360f : euler.x;
+                yaw = euler.y;
+                lookInitialized = true;
+            }
+
+            yaw += mouseDelta.x;
+            pitch = Mathf.Clamp(pitch + mouseDelta.y, -90f, 90f);
 
             //Apply
-            transform.rotation = horiz * rotation * vert;
+            transform.rotation = Quaternion.Euler(pitch, yaw, 0f);
             velocity += GetAccelerationVector() * Time.deltaTime;// Position
         }
 
