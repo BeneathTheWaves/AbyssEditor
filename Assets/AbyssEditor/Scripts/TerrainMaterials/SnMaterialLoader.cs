@@ -67,18 +67,35 @@ namespace AbyssEditor.Scripts.TerrainMaterials
             statusHandle.CompletePhase();
         }
 
+        private enum BZAssetLoadStrategy
+        {
+            FullFolder,
+            FilteredBundles,
+        }
+
+        private const BZAssetLoadStrategy bzAssetLoadStrategy = BZAssetLoadStrategy.FilteredBundles;
+
+        private static readonly string[] bzTerrainBundlePrefixes = { "main-discrete_assets" };
+
         private IEnumerator GetMaterialAssetsAsync(List<AssetStudio.Classes.Texture2D> textureAssets, List<AssetStudio.Classes.Material> materialAssets) {
 
-            //TODO: BZ material loading is bugged.
-            //      In Subnautica 1, all the assets for terrain is stored in resources.
-            //      In below zero they are not in that bundle. They are individually within their own bundles in StandaloneWindows64
-            string resourcesPath = Path.Combine(SnPaths.instance.resourcesSourcePath, "resources.assets");
-            
-            string[] files = { resourcesPath };
-
             AssetsManager assetManager = new AssetsManager();
-            assetManager.LoadFiles(files);
-            
+
+            bool isBelowZero =
+                SnPaths.instance.currentGameInstallType == SnPaths.GameInstallType.BelowZeroWindows ||
+                SnPaths.instance.currentGameInstallType == SnPaths.GameInstallType.BelowZeroMac;
+
+            if (isBelowZero)
+            {
+                yield return StartCoroutine(LoadBelowZeroAssetsAsync(assetManager));
+            }
+            else
+            {
+                string resourcesPath = Path.Combine(SnPaths.instance.resourcesSourcePath, "resources.assets");
+                string[] files = { resourcesPath };
+                assetManager.LoadFiles(files);
+            }
+
             foreach (SerializedFile file in assetManager.assetsFileList)
             {
                 yield return null;
@@ -95,6 +112,47 @@ namespace AbyssEditor.Scripts.TerrainMaterials
             }
 
             assetManager.Clear();
+        }
+
+        private IEnumerator LoadBelowZeroAssetsAsync(AssetsManager assetManager)
+        {
+            string addressablesPath = SnPaths.instance.addressablesSourcePath;
+
+            if (!Directory.Exists(addressablesPath))
+            {
+                Debug.LogError($"Below Zero addressables folder not found at {addressablesPath}");
+                yield break;
+            }
+
+            if (bzAssetLoadStrategy == BZAssetLoadStrategy.FullFolder)
+            {
+                assetManager.LoadFolder(addressablesPath);
+                yield return null;
+                yield break;
+            }
+
+            List<string> bundlePaths = new List<string>();
+            foreach (string filePath in Directory.GetFiles(addressablesPath, "*.bundle", SearchOption.AllDirectories))
+            {
+                string fileName = Path.GetFileName(filePath);
+                foreach (string prefix in bzTerrainBundlePrefixes)
+                {
+                    if (fileName.StartsWith(prefix))
+                    {
+                        bundlePaths.Add(filePath);
+                        break;
+                    }
+                }
+            }
+
+            if (bundlePaths.Count == 0)
+            {
+                Debug.LogError($"No Below Zero terrain bundles matched in {addressablesPath}");
+                yield break;
+            }
+
+            assetManager.LoadFiles(bundlePaths.ToArray());
+            yield return null;
         }
         private IEnumerator LoadMaterialNamesAsync() {
             ResourceRequest materialNameRequest = Resources.LoadAsync<TextAsset>(SnPaths.instance.BlockTypeStringsFilename());
