@@ -19,7 +19,7 @@ Downloads are available on nexus [here](https://www.nexusmods.com/subnautica/mod
 > Major improvements and features over [Reef Editor](https://github.com/eternaight/sn-terrain-edit):
 > - Significant performance increases
 > - Batch loading/removing without wiping progress
-> - Improved tools (smoothing, flattening, etc.)
+> - Improved tools (smoothing, adding, etc.)
 > - Discord RPC & scene light customization
 > - Fixed exporting (no more corrupted or cubed batches)
 > - Terrain works anywhere in the Subnautica world, including the void/negative batches
