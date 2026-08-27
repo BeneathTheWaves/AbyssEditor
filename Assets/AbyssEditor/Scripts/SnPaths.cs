@@ -37,6 +37,7 @@ namespace AbyssEditor.Scripts {
             ;
         }
         public string resourcesSourcePath => Path.Combine(Preferences.data.gamePath, GameDataFolder());
+        public string addressablesSourcePath => Path.Combine(Preferences.data.gamePath, GameDataFolder(), dataToAddressables);
         public string BlockTypeStringsFilename()
         {
 
