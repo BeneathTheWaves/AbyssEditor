@@ -39,6 +39,7 @@ namespace AbyssEditor.Scripts.UI.Windows {
                 {
                     exportPath = StandaloneFileBrowser.StandaloneFileBrowser.SaveFilePanel("Save patch as...", Application.dataPath, "TerrainPatch", "optoctreepatch");
                     if (string.IsNullOrEmpty(exportPath)) return;
+                    if (!exportPath.EndsWith(".optoctreepatch")) exportPath += ".optoctreepatch";
                     
                     _ = VoxelWorld.ExportPatch(exportPath);
                     
@@ -64,6 +65,7 @@ namespace AbyssEditor.Scripts.UI.Windows {
                 {
                     exportPath = StandaloneFileBrowser.StandaloneFileBrowser.SaveFilePanel("Save model as...", Application.dataPath, "Fbx Model", "fbx");
                     if (string.IsNullOrEmpty(exportPath)) return;
+                    if (!exportPath.EndsWith(".fbx")) exportPath += ".fbx";
                     StartCoroutine(ExportFBX.ExportMetaspaceAsync(exportPath));
                     break;
                 }

@@ -102,7 +102,7 @@ namespace AbyssEditor.Scripts.TerrainMaterials
 
             string combinedString = (materialNameRequest.asset as TextAsset).text;
             
-            string[] lines = combinedString.Split(new[] {Environment.NewLine}, StringSplitOptions.None);
+            string[] lines = combinedString.Replace("\r\n", "\n").Split('\n');
             blocktypesData = new BlocktypeMaterial[255];
             materialBlocktypes = new Dictionary<string, List<int>>();
 
